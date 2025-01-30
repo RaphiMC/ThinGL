@@ -37,7 +37,7 @@ dependencies {
     compileOnly "org.lwjgl:lwjgl-stb:3.3.3"
 
     // Optional dependencies
-    compileOnly "org.lwjgl:lwjgl-freetype:3.3.3"
+    compileOnly "org.lwjgl:lwjgl-freetype:3.3.6"
     compileOnly "org.lwjgl:lwjgl-meshoptimizer:3.3.3"
     compileOnly "org.lwjgl:lwjgl-par:3.3.3"
 
@@ -47,7 +47,7 @@ dependencies {
         testImplementation "org.lwjgl:lwjgl-glfw:3.3.3:$it"
         testImplementation "org.lwjgl:lwjgl-opengl:3.3.3:$it"
         testImplementation "org.lwjgl:lwjgl-stb:3.3.3:$it"
-        testImplementation "org.lwjgl:lwjgl-freetype:3.3.3:$it"
+        testImplementation "org.lwjgl:lwjgl-freetype:3.3.6:$it"
         testImplementation "org.lwjgl:lwjgl-meshoptimizer:3.3.3:$it"
         testImplementation "org.lwjgl:lwjgl-par:3.3.3:$it"
     }
