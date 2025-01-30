@@ -43,7 +43,7 @@ public class TextRenderingExample extends ExampleBase {
     protected void init() {
         final Font font;
         try {
-            final byte[] fontData = TextRenderingExample.class.getClassLoader().getResourceAsStream("fonts/Roboto-Regular.ttf").readAllBytes();
+            final byte[] fontData = TextRenderingExample.class.getResourceAsStream("/fonts/Roboto-Regular.ttf").readAllBytes();
             font = new Font(fontData, 32);
         } catch (IOException e) {
             throw new RuntimeException(e);
