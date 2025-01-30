@@ -45,6 +45,7 @@ public class BuiltinDrawBatches {
     public static final VertexDataLayout POSITION_COLOR_LAYOUT = new VertexDataLayout(POSITION_ELEMENT, COLOR_ELEMENT);
     public static final VertexDataLayout LINE_LAYOUT = new VertexDataLayout(POSITION_ELEMENT, COLOR_ELEMENT, new VertexDataLayoutElement(DataType.FLOAT, 1));
     public static final VertexDataLayout POSITION_TEXTURE_LAYOUT = new VertexDataLayout(POSITION_ELEMENT, TEXTURE_ELEMENT);
+    public static final VertexDataLayout POSITION_COLOR_TEXTURE_LAYOUT = new VertexDataLayout(POSITION_ELEMENT, COLOR_ELEMENT, TEXTURE_ELEMENT);
     public static final VertexDataLayout HALF_POSITION_COLOR_LAYOUT = new VertexDataLayout(HALF_POSITION_ELEMENT, COLOR_ELEMENT);
 
     public static final DrawBatch QUAD = new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR, () -> BuiltinPrograms.INSTANCED_POSITION_COLOR, () -> BuiltinPrograms.MULTIDRAW_POSITION_COLOR, DrawMode.QUADS, POSITION_COLOR_LAYOUT, HALF_POSITION_COLOR_LAYOUT, PUSH_ENABLE_BLEND, POP);
@@ -65,6 +66,11 @@ public class BuiltinDrawBatches {
     public static final IntFunction<DrawBatch> TEXTURE = CacheUtil.memoizeInt(textureId -> new DrawBatch(() -> BuiltinPrograms.POSITION_TEXTURE, DrawMode.QUADS, POSITION_TEXTURE_LAYOUT,  () -> {
         PUSH_ENABLE_BLEND.run();
         BuiltinPrograms.POSITION_TEXTURE.setUniformTexture("u_Texture", textureId);
+    }, POP));
+
+    public static final IntFunction<DrawBatch> COLORED_TEXTURE = CacheUtil.memoizeInt(textureId -> new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR_TEXTURE, DrawMode.QUADS, POSITION_COLOR_TEXTURE_LAYOUT,  () -> {
+        PUSH_ENABLE_BLEND.run();
+        BuiltinPrograms.POSITION_COLOR_TEXTURE.setUniformTexture("u_Texture", textureId);
     }, POP));
 
     public static final DrawBatch FILLED_CIRCLE = new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR, () -> BuiltinPrograms.INSTANCED_POSITION_COLOR, DrawMode.TRIANGLE_FAN, POSITION_COLOR_LAYOUT, HALF_POSITION_COLOR_LAYOUT,  PUSH_ENABLE_BLEND, POP);
