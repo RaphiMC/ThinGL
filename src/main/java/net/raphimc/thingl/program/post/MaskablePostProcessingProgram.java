@@ -20,9 +20,9 @@ package net.raphimc.thingl.program.post;
 
 import net.raphimc.thingl.framebuffer.impl.TextureFramebuffer;
 import net.raphimc.thingl.program.PostProcessingProgram;
+import net.raphimc.thingl.resource.shader.Shader;
 import net.raphimc.thingl.util.pool.FramebufferPool;
 import net.raphimc.thingl.wrapper.GLStateTracker;
-import net.raphimc.thingl.resource.shader.Shader;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL14C;
@@ -43,7 +43,7 @@ public abstract class MaskablePostProcessingProgram extends PostProcessingProgra
         GL14C.glBlendFuncSeparate(GL11C.GL_SRC_ALPHA, GL11C.GL_ONE_MINUS_SRC_ALPHA, GL11C.GL_ONE, GL11C.GL_ONE_MINUS_SRC_ALPHA);
         GLStateTracker.pushFramebuffer();
         if (this.maskFramebuffer == null) {
-            this.maskFramebuffer = FramebufferPool.borrowFramebuffer(GL11C.GL_NEAREST);
+            this.maskFramebuffer = FramebufferPool.borrowFramebuffer(GL11C.GL_LINEAR);
         }
         this.maskFramebuffer.bind();
     }

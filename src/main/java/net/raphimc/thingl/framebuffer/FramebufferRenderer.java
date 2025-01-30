@@ -19,11 +19,14 @@
 package net.raphimc.thingl.framebuffer;
 
 import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.util.GlobalObjects;
 import net.raphimc.thingl.resource.framebuffer.Framebuffer;
-import net.raphimc.thingl.wrapper.GLStateTracker;
 import net.raphimc.thingl.resource.texture.Texture2D;
+import net.raphimc.thingl.util.GlobalObjects;
+import net.raphimc.thingl.wrapper.GLStateTracker;
 import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL14C;
+import org.lwjgl.opengl.GL45C;
 
 public class FramebufferRenderer {
 
@@ -32,8 +35,15 @@ public class FramebufferRenderer {
     private final Framebuffer framebuffer;
 
     public FramebufferRenderer(final int width, final int height) {
+        this(width, height, GL11C.GL_LINEAR);
+    }
+
+    public FramebufferRenderer(final int width, final int height, final int textureFilter) {
         this.colorAttachment = new Texture2D(Texture2D.InternalFormat.RGBA8, width, height);
+        this.colorAttachment.setFilter(textureFilter);
         this.depthStencilAttachment = new Texture2D(Texture2D.InternalFormat.DEPTH32_STENCIL8, width, height);
+        this.depthStencilAttachment.setFilter(textureFilter);
+        GL45C.glTextureParameteri(this.depthStencilAttachment.getGlId(), GL14C.GL_TEXTURE_COMPARE_MODE, GL11C.GL_NONE);
         this.framebuffer = new Framebuffer(this.colorAttachment, this.depthStencilAttachment);
     }
 

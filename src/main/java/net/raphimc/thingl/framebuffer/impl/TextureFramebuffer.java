@@ -21,9 +21,9 @@ package net.raphimc.thingl.framebuffer.impl;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.framebuffer.ResizingFramebuffer;
 import net.raphimc.thingl.renderer.impl.Renderer2D;
-import net.raphimc.thingl.util.GlobalObjects;
 import net.raphimc.thingl.resource.texture.AbstractTexture;
 import net.raphimc.thingl.resource.texture.Texture2D;
+import net.raphimc.thingl.util.GlobalObjects;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL14C;
@@ -68,6 +68,11 @@ public class TextureFramebuffer extends ResizingFramebuffer {
     @Override
     public Texture2D getColorAttachment() {
         return (Texture2D) super.getColorAttachment();
+    }
+
+    @Override
+    public Texture2D getDepthAttachment() {
+        return (Texture2D) super.getDepthAttachment();
     }
 
 }

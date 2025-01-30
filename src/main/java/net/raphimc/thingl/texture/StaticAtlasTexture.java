@@ -38,7 +38,6 @@ public class StaticAtlasTexture extends Texture2D {
     public StaticAtlasTexture(final InternalFormat internalFormat, final int width, final int height) {
         super(internalFormat, width, height);
         this.setWrap(GL13C.GL_CLAMP_TO_BORDER);
-        this.setFilter(GL11C.GL_LINEAR);
         GL44C.glClearTexImage(this.getGlId(), 0, GL11C.GL_RGBA, GL11C.GL_UNSIGNED_BYTE, (ByteBuffer) null);
 
         this.rectPackContext = STBRPContext.create();

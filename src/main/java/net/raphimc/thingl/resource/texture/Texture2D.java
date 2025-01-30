@@ -53,7 +53,7 @@ public class Texture2D extends AbstractTexture {
         this.mipMapLevels = mipMapLevels;
         GL45C.glTextureStorage2D(this.getGlId(), mipMapLevels, internalFormat.getGlFormat(), width, height);
         this.setWrap(GL12C.GL_CLAMP_TO_EDGE);
-        this.setFilter(GL11C.GL_NEAREST);
+        this.setFilter(GL11C.GL_LINEAR);
     }
 
     public Texture2D(final InternalFormat internalFormat, final byte[] imageData) {
@@ -70,6 +70,8 @@ public class Texture2D extends AbstractTexture {
                 this.height = height[0];
                 this.mipMapLevels = 1;
                 GL45C.glTextureStorage2D(this.getGlId(), this.mipMapLevels, internalFormat.getGlFormat(), this.width, this.height);
+                this.setWrap(GL12C.GL_CLAMP_TO_EDGE);
+                this.setFilter(GL11C.GL_LINEAR);
                 this.uploadImage(0, 0, this.width, this.height, PixelFormat.RGBA, imageBuffer);
             } finally {
                 MemoryUtil.memFree(imageBuffer);

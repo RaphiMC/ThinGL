@@ -67,6 +67,10 @@ public class FramebufferPool {
         if (textureFilter != colorAttachment.getMinificationFilter() || colorAttachment.getMagnificationFilter() != colorAttachment.getMinificationFilter()) {
             colorAttachment.setFilter(textureFilter);
         }
+        final Texture2D depthAttachment = framebuffer.getDepthAttachment();
+        if (textureFilter != depthAttachment.getMinificationFilter() || depthAttachment.getMagnificationFilter() != depthAttachment.getMinificationFilter()) {
+            depthAttachment.setFilter(textureFilter);
+        }
         return framebuffer;
     }
 
