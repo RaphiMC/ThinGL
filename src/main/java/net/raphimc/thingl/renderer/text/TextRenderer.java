@@ -28,11 +28,11 @@ import net.raphimc.thingl.drawbuilder.databuilder.holder.ShaderDataHolder;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.VertexDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.DrawBatchDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.MultiDrawBatchDataHolder;
-import net.raphimc.thingl.renderer.Primitives;
 import net.raphimc.thingl.program.RegularProgram;
+import net.raphimc.thingl.renderer.Primitives;
+import net.raphimc.thingl.resource.texture.AbstractTexture;
 import net.raphimc.thingl.texture.StaticAtlasTexture;
 import net.raphimc.thingl.wrapper.GLStateTracker;
-import net.raphimc.thingl.resource.texture.AbstractTexture;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11C;
 
@@ -48,7 +48,7 @@ public abstract class TextRenderer {
     public static final int STRIKETHROUGH_BIT = 1 << 4;
     public static final int INTERNAL_NO_BEARING_BIT = 1 << 30;
     public static final int INTERNAL_NO_NEWLINE_BIT = 1 << 31;
-    private static final int ATLAS_SIZE = 2048;
+    private static final int ATLAS_SIZE = 1024;
 
     public static int calculateStyleFlags(final boolean shadow, final boolean bold, final boolean italic, final boolean underline, final boolean strikethrough) {
         int styleFlags = 0;
