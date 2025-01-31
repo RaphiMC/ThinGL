@@ -38,6 +38,7 @@ public class BuiltinPrograms {
     public static final RegularProgram POSITION_COLOR = new RegularProgram(getShader("regular/position_color", VERTEX), getShader("regular/position_color", FRAGMENT));
     public static final RegularProgram POSITION_TEXTURE = new RegularProgram(getShader("regular/position_texture", VERTEX), getShader("regular/position_texture", FRAGMENT));
     public static final RegularProgram POSITION_COLOR_TEXTURE = new RegularProgram(getShader("regular/position_color_texture", VERTEX), getShader("regular/position_color_texture", FRAGMENT));
+    public static final RegularProgram COLORIZED_TEXTURE = new RegularProgram(getShader("regular/position_color_texture", VERTEX), getShader("regular/colorized_texture", FRAGMENT));
     public static final RegularProgram BITMAP_TEXT = new RegularProgram(getShader("regular/bitmap_text", VERTEX), getShader("regular/bitmap_text", FRAGMENT));
     public static final RegularProgram SDF_TEXT = new RegularProgram(getShader("regular/sdf_text", VERTEX), getShader("regular/sdf_text", FRAGMENT));
 

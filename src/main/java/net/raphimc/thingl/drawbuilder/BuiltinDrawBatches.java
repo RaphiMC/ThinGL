@@ -73,6 +73,11 @@ public class BuiltinDrawBatches {
         BuiltinPrograms.POSITION_COLOR_TEXTURE.setUniformTexture("u_Texture", textureId);
     }, POP));
 
+    public static final IntFunction<DrawBatch> COLORIZED_TEXTURE = CacheUtil.memoizeInt(textureId -> new DrawBatch(() -> BuiltinPrograms.COLORIZED_TEXTURE, DrawMode.QUADS, POSITION_COLOR_TEXTURE_LAYOUT,  () -> {
+        PUSH_ENABLE_BLEND.run();
+        BuiltinPrograms.COLORIZED_TEXTURE.setUniformTexture("u_Texture", textureId);
+    }, POP));
+
     public static final DrawBatch FILLED_CIRCLE = new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR, () -> BuiltinPrograms.INSTANCED_POSITION_COLOR, DrawMode.TRIANGLE_FAN, POSITION_COLOR_LAYOUT, HALF_POSITION_COLOR_LAYOUT,  PUSH_ENABLE_BLEND, POP);
 
     public static final DrawBatch OUTLINE_CIRCLE = new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR, DrawMode.TRIANGLE_STRIP, POSITION_COLOR_LAYOUT,  PUSH_ENABLE_BLEND, POP);
