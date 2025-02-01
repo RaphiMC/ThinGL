@@ -32,7 +32,7 @@ public class QuadIndexBuffer {
 
     private static final int QUAD_INDEX_COUNT = 6;
     private static final int INT_SIZE = 4;
-    private static final Buffer INT_BUFFER = new Buffer(0L, GL15C.GL_STATIC_DRAW);
+    private static final Buffer INT_BUFFER = new Buffer(0L, GL15C.GL_DYNAMIC_DRAW);
     private static ByteBuffer BYTE_BUFFER = null;
 
     static {

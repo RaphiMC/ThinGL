@@ -48,11 +48,13 @@ public class BufferUtil {
 
         if (abstractBuffer instanceof ImmutableBuffer buffer) {
             final ImmutableBuffer newBuffer = new ImmutableBuffer(size, buffer.getFlags());
+            newBuffer.setDebugName(buffer.getDebugName());
             GL45C.glCopyNamedBufferSubData(buffer.getGlId(), newBuffer.getGlId(), 0, 0, buffer.getSize());
             buffer.delete();
             return newBuffer;
         } else if (abstractBuffer instanceof Buffer buffer) {
             final Buffer newBuffer = new Buffer(size, buffer.getUsage());
+            newBuffer.setDebugName(buffer.getDebugName());
             GL45C.glCopyNamedBufferSubData(buffer.getGlId(), newBuffer.getGlId(), 0, 0, buffer.getSize());
             buffer.delete();
             return newBuffer;
@@ -64,8 +66,11 @@ public class BufferUtil {
     private static AbstractBuffer ensureSize(final AbstractBuffer abstractBuffer, final long size) {
         if (abstractBuffer instanceof ImmutableBuffer buffer) {
             if (buffer.getSize() < size) {
+                final String debugName = buffer.getDebugName();
                 buffer.delete();
-                return new ImmutableBuffer(size, buffer.getFlags());
+                final ImmutableBuffer newBuffer = new ImmutableBuffer(size, buffer.getFlags());
+                newBuffer.setDebugName(debugName);
+                return newBuffer;
             }
             return buffer;
         } else if (abstractBuffer instanceof Buffer buffer) {
