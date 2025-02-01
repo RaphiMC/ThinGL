@@ -24,6 +24,7 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import org.lwjgl.util.freetype.FT_Face;
 import org.lwjgl.util.freetype.FT_GlyphSlot;
+import org.lwjgl.util.freetype.FT_Glyph_Metrics;
 import org.lwjgl.util.freetype.FreeType;
 
 import java.nio.ByteBuffer;
@@ -133,10 +134,12 @@ public class Font {
 
     private FontGlyph getLoadedGlyph() {
         final FT_GlyphSlot glyphSlot = this.fontFace.glyph();
+        final FT_Glyph_Metrics metrics = glyphSlot.metrics();
         final int glyphIndex = glyphSlot.glyph_index();
-        final float advance = glyphSlot.advance().x() / 64F;
-        final float bearingX = glyphSlot.metrics().horiBearingX() / 64F;
-        return new FontGlyph(this, glyphIndex, advance, bearingX);
+        final float width = metrics.width() / 64F;
+        final float advance = metrics.horiAdvance() / 64F;
+        final float bearingX = metrics.horiBearingX() / 64F;
+        return new FontGlyph(this, glyphIndex, width, advance, bearingX);
     }
 
 }

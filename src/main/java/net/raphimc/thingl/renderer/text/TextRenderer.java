@@ -46,6 +46,7 @@ public abstract class TextRenderer {
     public static final int ITALIC_BIT = 1 << 2;
     public static final int UNDERLINE_BIT = 1 << 3;
     public static final int STRIKETHROUGH_BIT = 1 << 4;
+    public static final int WIDTH_CALCULATION_ONLY_OUTLINE_BIT = 1 << 29;
     public static final int INTERNAL_NO_BEARING_BIT = 1 << 30;
     public static final int INTERNAL_NO_NEWLINE_BIT = 1 << 31;
     private static final int ATLAS_SIZE = 1024;
@@ -122,16 +123,25 @@ public abstract class TextRenderer {
         float width = 0;
         for (int i = 0; i < text.length(); i++) {
             final int codePoint = text.codePointAt(i);
-            final AtlasGlyph glyph = this.getGlyph(codePoint);
+            final FontGlyph glyph = this.getGlyph(codePoint).fontGlyph();
             if (i == 0 && (styleFlags & TextRenderer.INTERNAL_NO_BEARING_BIT) == 0) {
-                width -= glyph.fontGlyph().bearingX() * this.globalScale;
+                width -= glyph.bearingX() * this.globalScale;
             }
             if (i != text.length() - 1) {
-                width += glyph.fontGlyph().advance() * this.globalScale;
+                width += glyph.advance() * this.globalScale;
             } else {
                 width += glyph.width() * this.globalScale;
+                width += glyph.bearingX() * this.globalScale;
             }
         }
+
+        if ((styleFlags & TextRenderer.SHADOW_BIT) != 0) {
+            width += 0.075F * this.primaryFont.getSize() * this.globalScale;
+        }
+        if ((styleFlags & TextRenderer.BOLD_BIT) != 0 || (styleFlags & TextRenderer.WIDTH_CALCULATION_ONLY_OUTLINE_BIT) != 0) {
+            width += 2F * this.globalScale;
+        }
+
         return width;
     }
 
