@@ -77,6 +77,7 @@ public abstract class ExampleBase implements Runnable {
             this.render(positionMatrix); // Render the example
             positionMatrix.popMatrix();
 
+            mainFramebuffer.unbind();
             mainFramebuffer.blitTo(WindowFramebuffer.INSTANCE, true, false, false); // Blit the main framebuffer to the window framebuffer
             ThinGL.endFrame(); // Let ThinGL know that the current frame is done rendering
             GLFW.glfwSwapBuffers(window);
