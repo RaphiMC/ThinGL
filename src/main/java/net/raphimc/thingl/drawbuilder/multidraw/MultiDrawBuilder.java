@@ -26,13 +26,13 @@ import net.raphimc.thingl.drawbuilder.builder.command.DrawCommand;
 import net.raphimc.thingl.drawbuilder.builder.command.DrawElementsCommand;
 import net.raphimc.thingl.drawbuilder.index.IndexType;
 import net.raphimc.thingl.drawbuilder.index.QuadIndexBuffer;
-import net.raphimc.thingl.util.ArenaMemoryAllocator;
-import net.raphimc.thingl.util.pool.BufferBuilderPool;
-import net.raphimc.thingl.util.BufferUtil;
-import net.raphimc.thingl.util.MathUtil;
 import net.raphimc.thingl.resource.buffer.AbstractBuffer;
 import net.raphimc.thingl.resource.buffer.ImmutableBuffer;
 import net.raphimc.thingl.resource.vertexarray.VertexArray;
+import net.raphimc.thingl.util.ArenaMemoryAllocator;
+import net.raphimc.thingl.util.BufferUtil;
+import net.raphimc.thingl.util.MathUtil;
+import net.raphimc.thingl.util.pool.BufferBuilderPool;
 import org.lwjgl.opengl.GL42C;
 import org.lwjgl.opengl.GL44C;
 import org.lwjgl.opengl.GL45C;
@@ -90,15 +90,17 @@ public class MultiDrawBuilder {
 
         final AbstractBuffer indexBuffer = vertexArray.getIndexBuffer();
         if (indexBuffer != null) {
-            if (indexBuffer == QuadIndexBuffer.getSharedGlBuffer()) {
-                // Not supported because the size could be way larger than actually needed
-                throw new IllegalArgumentException("Shared quad index buffer is not supported");
-            }
             if (vertexArray.getIndexType() != IndexType.UNSIGNED_INT) {
                 throw new IllegalArgumentException("BuiltBuffer has unsupported index type");
             }
 
-            final long alignedSize = MathUtil.align(indexBuffer.getSize(), IndexType.UNSIGNED_INT.getSize());
+            long indexBufferSize = indexBuffer.getSize();
+            if (indexBuffer == QuadIndexBuffer.getSharedGlBuffer()) {
+                final DrawElementsCommand drawCommand = (DrawElementsCommand) drawCommands.get(0);
+                indexBufferSize = (long) drawCommand.vertexCount() * IndexType.UNSIGNED_INT.getSize();
+            }
+
+            final long alignedSize = MathUtil.align(indexBufferSize, IndexType.UNSIGNED_INT.getSize());
             final long address = this.indexAllocator.alloc(alignedSize);
             if (address == -1) {
                 throw new OutOfMemoryError("Failed to allocate memory for index buffer");
@@ -107,11 +109,11 @@ public class MultiDrawBuilder {
             if (address % IndexType.UNSIGNED_INT.getSize() != 0) {
                 throw new IllegalStateException("Index data is not aligned");
             }
-            final long requiredSize = MathUtil.align(address + indexBuffer.getSize(), MIN_RESIZE_AMOUNT);
+            final long requiredSize = MathUtil.align(address + indexBufferSize, MIN_RESIZE_AMOUNT);
             if (this.indexBuffer.getSize() < requiredSize) {
                 this.indexBuffer = BufferUtil.resize(this.indexBuffer, requiredSize);
             }
-            GL45C.glCopyNamedBufferSubData(indexBuffer.getGlId(), this.indexBuffer.getGlId(), 0, address, indexBuffer.getSize());
+            GL45C.glCopyNamedBufferSubData(indexBuffer.getGlId(), this.indexBuffer.getGlId(), 0, address, indexBufferSize);
             drawCommands.replaceAll(drawCommand -> ((DrawElementsCommand) drawCommand).withIndexOffset(indexAddress));
             this.storedIndexBuffers.put(id, address);
         }
