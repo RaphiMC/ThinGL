@@ -18,17 +18,17 @@
 
 package net.raphimc.thingl.wrapper;
 
-import net.lenni0451.commons.math.shapes.rect.Rect2i;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.util.RenderMathUtil;
 import org.joml.Matrix4f;
+import org.joml.primitives.Rectanglei;
 import org.lwjgl.opengl.GL11C;
 
 import java.util.Stack;
 
 public class ScissorBox {
 
-    private static final Stack<Rect2i> SCISSOR_STACK = new Stack<>();
+    private static final Stack<Rectanglei> SCISSOR_STACK = new Stack<>();
 
     static {
         ThinGL.registerEndFrameCallback(() -> {
@@ -49,8 +49,8 @@ public class ScissorBox {
             GLStateTracker.enable(GL11C.GL_SCISSOR_TEST);
         }
 
-        final Rect2i rectangle = SCISSOR_STACK.push(RenderMathUtil.getScreenRect(positionMatrix, x1, y1, x2, y2));
-        GL11C.glScissor(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
+        final Rectanglei rectangle = SCISSOR_STACK.push(RenderMathUtil.getScreenRect(positionMatrix, x1, y1, x2, y2));
+        GL11C.glScissor(rectangle.minX, rectangle.minY, rectangle.lengthX(), rectangle.lengthY());
     }
 
     public static void pushIntersection(final float x1, final float y1, final float x2, final float y2) {
@@ -63,8 +63,8 @@ public class ScissorBox {
             return;
         }
 
-        final Rect2i rectangle = SCISSOR_STACK.push(SCISSOR_STACK.peek().intersection(RenderMathUtil.getScreenRect(positionMatrix, x1, y1, x2, y2)));
-        GL11C.glScissor(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
+        final Rectanglei rectangle = SCISSOR_STACK.push(SCISSOR_STACK.peek().intersection(RenderMathUtil.getScreenRect(positionMatrix, x1, y1, x2, y2)));
+        GL11C.glScissor(rectangle.minX, rectangle.minY, rectangle.lengthX(), rectangle.lengthY());
     }
 
     public static void pop() {
@@ -72,8 +72,8 @@ public class ScissorBox {
         if (SCISSOR_STACK.isEmpty()) {
             GLStateTracker.pop();
         } else {
-            final Rect2i rectangle = SCISSOR_STACK.peek();
-            GL11C.glScissor(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
+            final Rectanglei rectangle = SCISSOR_STACK.peek();
+            GL11C.glScissor(rectangle.minX, rectangle.minY, rectangle.lengthX(), rectangle.lengthY());
         }
     }
 
@@ -84,9 +84,9 @@ public class ScissorBox {
     public static boolean isAnyPointInside(final Matrix4f positionMatrix, final float x1, final float y1, final float x2, final float y2) {
         if (SCISSOR_STACK.isEmpty()) return true;
 
-        final Rect2i rectangle = RenderMathUtil.getScreenRect(positionMatrix, x1, y1, x2, y2);
-        final Rect2i intersection = SCISSOR_STACK.peek().intersection(rectangle);
-        return intersection.getWidth() > 0 && intersection.getHeight() > 0;
+        final Rectanglei rectangle = RenderMathUtil.getScreenRect(positionMatrix, x1, y1, x2, y2);
+        final Rectanglei intersection = SCISSOR_STACK.peek().intersection(rectangle, rectangle);
+        return intersection.lengthX() > 0 && intersection.lengthY() > 0;
     }
 
     public static boolean isFullyInside(final float x1, final float y1, final float x2, final float y2) {
@@ -96,9 +96,9 @@ public class ScissorBox {
     public static boolean isFullyInside(final Matrix4f positionMatrix, final float x1, final float y1, final float x2, final float y2) {
         if (SCISSOR_STACK.isEmpty()) return true;
 
-        final Rect2i rectangle = RenderMathUtil.getScreenRect(positionMatrix, x1, y1, x2, y2);
-        final Rect2i intersection = SCISSOR_STACK.peek().intersection(rectangle);
-        return rectangle.getWidth() == intersection.getWidth() && rectangle.getHeight() == intersection.getHeight();
+        final Rectanglei rectangle = RenderMathUtil.getScreenRect(positionMatrix, x1, y1, x2, y2);
+        final Rectanglei intersection = SCISSOR_STACK.peek().intersection(rectangle, rectangle);
+        return rectangle.lengthX() == intersection.lengthX() && rectangle.lengthY() == intersection.lengthY();
     }
 
 }

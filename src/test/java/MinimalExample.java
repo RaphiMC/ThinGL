@@ -29,7 +29,7 @@ public class MinimalExample extends ExampleBase {
 
     @Override
     protected void render(final Matrix4fStack positionMatrix) {
-        Renderer2D.INSTANCE.filledRect(positionMatrix, 50, 50, 350, 250, Color.GREEN);
+        Renderer2D.INSTANCE.filledRectangle(positionMatrix, 50, 50, 350, 250, Color.GREEN);
     }
 
 }

@@ -40,7 +40,7 @@ public class DrawCallBatchingExample extends ExampleBase {
             final int y = i * 10;
             final int width = 10;
             final int height = 10;
-            Renderer2D.INSTANCE.filledRect(positionMatrix, x, y, x + width, y + height, Color.fromRGBA(i * 25, 0, 0, 255));
+            Renderer2D.INSTANCE.filledRectangle(positionMatrix, x, y, x + width, y + height, Color.fromRGBA(i * 25, 0, 0, 255));
         }
         Renderer2D.INSTANCE.endBuffering(); // Renderer2D now renders everything immediately again
         // Renderer2D.INSTANCE.endBuffering().draw(); // Same as line above, but also render the contents of the global buffer

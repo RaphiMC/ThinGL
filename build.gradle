@@ -20,14 +20,19 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven {
+        name = "Lenni0451 Snapshots"
+        url = "https://maven.lenni0451.net/snapshots"
+    }
 }
 
 dependencies {
     compileOnly "org.jetbrains:annotations:26.0.2"
     api "org.joml:joml:1.10.8"
+    api "org.joml:joml-primitives:1.10.0"
     api "it.unimi.dsi:fastutil:8.5.15"
     api "org.slf4j:slf4j-api:2.0.16"
-    api "net.lenni0451.commons:core:1.7.0"
+    api "net.lenni0451.commons:core:1.7.1-SNAPSHOT"
     api "net.lenni0451.commons:logging:1.7.0"
 
     // LWJGL needs to be provided by the application using ThinGL

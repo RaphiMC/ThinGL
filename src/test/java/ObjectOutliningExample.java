@@ -41,7 +41,7 @@ public class ObjectOutliningExample extends ExampleBase {
     }
 
     private void renderScene(final Matrix4fStack positionMatrix) {
-        Renderer2D.INSTANCE.filledRect(positionMatrix, 50, 50, 75, 75, Color.RED);
+        Renderer2D.INSTANCE.filledRectangle(positionMatrix, 50, 50, 75, 75, Color.RED);
         Renderer2D.INSTANCE.filledTriangle(positionMatrix, 50, 50, 75, 110, 100, 50, Color.GREEN);
         Renderer2D.INSTANCE.filledCircle(positionMatrix, 120, 100, 50, Color.BLUE);
     }

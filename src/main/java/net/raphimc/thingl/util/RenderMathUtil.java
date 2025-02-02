@@ -18,15 +18,15 @@
 package net.raphimc.thingl.util;
 
 import net.lenni0451.commons.math.MathUtils;
-import net.lenni0451.commons.math.shapes.rect.Rect2i;
 import net.raphimc.thingl.ThinGL;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.joml.primitives.Rectanglei;
 
 public class RenderMathUtil {
 
-    public static Rect2i getScreenRect(final Matrix4f positionMatrix, final float x1, final float y1, final float x2, final float y2) {
+    public static Rectanglei getScreenRect(final Matrix4f positionMatrix, final float x1, final float y1, final float x2, final float y2) {
         final Vector3f start = new Vector3f(x1, y1, 0);
         final Vector3f end = new Vector3f(x2, y2, 0);
         if (positionMatrix != null) {
@@ -35,12 +35,12 @@ public class RenderMathUtil {
         }
 
         final Vector2f scale = ThinGL.getImplementation().get2DScaleFactor();
-        final int x = MathUtils.floorInt(start.x * scale.x);
-        final int y = MathUtils.floorInt((MathUtils.ceilInt(ThinGL.getImplementation().getCurrentFramebuffer().getHeight() / scale.y) - end.y) * scale.y);
-        final int width = MathUtils.ceilInt((end.x - start.x) * scale.x);
-        final int height = MathUtils.ceilInt((end.y - start.y) * scale.y);
-
-        return new Rect2i(x, y, width, height);
+        return new Rectanglei(
+                MathUtils.floorInt(start.x * scale.x),
+                MathUtils.floorInt((MathUtils.ceilInt(ThinGL.getImplementation().getCurrentFramebuffer().getHeight() / scale.y) - end.y) * scale.y),
+                MathUtils.ceilInt(end.x * scale.x),
+                MathUtils.ceilInt(end.y * scale.y)
+        );
     }
 
 }
