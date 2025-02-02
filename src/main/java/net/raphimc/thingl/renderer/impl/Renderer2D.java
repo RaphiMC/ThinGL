@@ -19,16 +19,19 @@
 package net.raphimc.thingl.renderer.impl;
 
 import net.lenni0451.commons.color.Color;
+import net.lenni0451.commons.math.shapes.triangle.TriangleD;
 import net.lenni0451.commons.math.shapes.triangle.TriangleF;
+import net.lenni0451.commons.math.shapes.triangle.TriangleI;
 import net.raphimc.thingl.drawbuilder.BuiltinDrawBatches;
 import net.raphimc.thingl.drawbuilder.builder.BufferBuilder;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.VertexDataHolder;
 import net.raphimc.thingl.renderer.Primitives;
 import net.raphimc.thingl.renderer.Renderer;
 import org.joml.Matrix4f;
+import org.joml.Vector2d;
 import org.joml.Vector2f;
-import org.joml.primitives.Circlef;
-import org.joml.primitives.Rectanglef;
+import org.joml.Vector2i;
+import org.joml.primitives.*;
 import org.lwjgl.util.par.*;
 
 import java.nio.IntBuffer;
@@ -37,7 +40,15 @@ public class Renderer2D extends Renderer {
 
     public static final Renderer2D INSTANCE = new Renderer2D();
 
+    public void filledRectangle(final Matrix4f positionMatrix, final Rectangled rectangle, final Color color) {
+        this.filledRectangle(positionMatrix, (float) rectangle.minX, (float) rectangle.minY, (float) rectangle.maxX, (float) rectangle.maxY, color);
+    }
+
     public void filledRectangle(final Matrix4f positionMatrix, final Rectanglef rectangle, final Color color) {
+        this.filledRectangle(positionMatrix, rectangle.minX, rectangle.minY, rectangle.maxX, rectangle.maxY, color);
+    }
+
+    public void filledRectangle(final Matrix4f positionMatrix, final Rectanglei rectangle, final Color color) {
         this.filledRectangle(positionMatrix, rectangle.minX, rectangle.minY, rectangle.maxX, rectangle.maxY, color);
     }
 
@@ -46,7 +57,15 @@ public class Renderer2D extends Renderer {
         super.drawIfNotBuffering();
     }
 
+    public void outlineRectangle(final Matrix4f positionMatrix, final Rectangled rectangle, final float lineWidth, final Color color) {
+        this.outlineRectangle(positionMatrix, (float) rectangle.minX, (float) rectangle.minY, (float) rectangle.maxX, (float) rectangle.maxY, lineWidth, color);
+    }
+
     public void outlineRectangle(final Matrix4f positionMatrix, final Rectanglef rectangle, final float lineWidth, final Color color) {
+        this.outlineRectangle(positionMatrix, rectangle.minX, rectangle.minY, rectangle.maxX, rectangle.maxY, lineWidth, color);
+    }
+
+    public void outlineRectangle(final Matrix4f positionMatrix, final Rectanglei rectangle, final float lineWidth, final Color color) {
         this.outlineRectangle(positionMatrix, rectangle.minX, rectangle.minY, rectangle.maxX, rectangle.maxY, lineWidth, color);
     }
 
@@ -58,7 +77,15 @@ public class Renderer2D extends Renderer {
         super.drawIfNotBuffering();
     }
 
+    public void filledTriangle(final Matrix4f positionMatrix, final TriangleD triangle, final Color color) {
+        this.filledTriangle(positionMatrix, (float) triangle.getX1(), (float) triangle.getY1(), (float) triangle.getX2(), (float) triangle.getY2(), (float) triangle.getX3(), (float) triangle.getY3(), color);
+    }
+
     public void filledTriangle(final Matrix4f positionMatrix, final TriangleF triangle, final Color color) {
+        this.filledTriangle(positionMatrix, triangle.getX1(), triangle.getY1(), triangle.getX2(), triangle.getY2(), triangle.getX3(), triangle.getY3(), color);
+    }
+
+    public void filledTriangle(final Matrix4f positionMatrix, final TriangleI triangle, final Color color) {
         this.filledTriangle(positionMatrix, triangle.getX1(), triangle.getY1(), triangle.getX2(), triangle.getY2(), triangle.getX3(), triangle.getY3(), color);
     }
 
@@ -67,13 +94,25 @@ public class Renderer2D extends Renderer {
         super.drawIfNotBuffering();
     }
 
+    public void filledTriangle(final Matrix4f positionMatrix, final TriangleD triangle, final Color leftColor, final Color middleColor, final Color rightColor) {
+        this.filledTriangle(positionMatrix, (float) triangle.getX1(), (float) triangle.getY1(), (float) triangle.getX2(), (float) triangle.getY2(), (float) triangle.getX3(), (float) triangle.getY3(), leftColor, middleColor, rightColor);
+    }
+
     public void filledTriangle(final Matrix4f positionMatrix, final TriangleF triangle, final Color leftColor, final Color middleColor, final Color rightColor) {
+        this.filledTriangle(positionMatrix, triangle.getX1(), triangle.getY1(), triangle.getX2(), triangle.getY2(), triangle.getX3(), triangle.getY3(), leftColor, middleColor, rightColor);
+    }
+
+    public void filledTriangle(final Matrix4f positionMatrix, final TriangleI triangle, final Color leftColor, final Color middleColor, final Color rightColor) {
         this.filledTriangle(positionMatrix, triangle.getX1(), triangle.getY1(), triangle.getX2(), triangle.getY2(), triangle.getX3(), triangle.getY3(), leftColor, middleColor, rightColor);
     }
 
     public void filledTriangle(final Matrix4f positionMatrix, final float xl, final float yl, final float xm, final float ym, final float xr, final float yr, final Color leftColor, final Color middleColor, final Color rightColor) {
         Primitives.filledTriangle(positionMatrix, this.targetMultiDrawBatchDataHolder, xl, yl, xm, ym, xr, yr, leftColor.toABGR(), middleColor.toABGR(), rightColor.toABGR());
         super.drawIfNotBuffering();
+    }
+
+    public void filledCircle(final Matrix4f positionMatrix, final Circled circle, final Color color) {
+        this.filledCircle(positionMatrix, (float) circle.x, (float) circle.y, (float) circle.r, color);
     }
 
     public void filledCircle(final Matrix4f positionMatrix, final Circlef circle, final Color color) {
@@ -85,6 +124,10 @@ public class Renderer2D extends Renderer {
         super.drawIfNotBuffering();
     }
 
+    public void filledCircle(final Matrix4f positionMatrix, final Circled circle, final float degStart, final float degEnd, final Color color) {
+        this.filledCircle(positionMatrix, (float) circle.x, (float) circle.y, (float) circle.r, degStart, degEnd, color);
+    }
+
     public void filledCircle(final Matrix4f positionMatrix, final Circlef circle, final float degStart, final float degEnd, final Color color) {
         this.filledCircle(positionMatrix, circle.x, circle.y, circle.r, degStart, degEnd, color);
     }
@@ -92,6 +135,10 @@ public class Renderer2D extends Renderer {
     public void filledCircle(final Matrix4f positionMatrix, final float x, final float y, final float radius, final float degStart, final float degEnd, final Color color) {
         Primitives.filledCircle(positionMatrix, this.targetMultiDrawBatchDataHolder, x, y, radius, degStart, degEnd, color.toABGR());
         super.drawIfNotBuffering();
+    }
+
+    public void outlineCircle(final Matrix4f positionMatrix, final Circled circle, final float width, final Color color) {
+        this.outlineCircle(positionMatrix, (float) circle.x, (float) circle.y, (float) circle.r, width, color);
     }
 
     public void outlineCircle(final Matrix4f positionMatrix, final Circlef circle, final float width, final Color color) {
@@ -103,6 +150,10 @@ public class Renderer2D extends Renderer {
         super.drawIfNotBuffering();
     }
 
+    public void outlineCircle(final Matrix4f positionMatrix, final Circled circle, final float width, final float degStart, final float degEnd, final Color color) {
+        this.outlineCircle(positionMatrix, (float) circle.x, (float) circle.y, (float) circle.r, width, degStart, degEnd, color);
+    }
+
     public void outlineCircle(final Matrix4f positionMatrix, final Circlef circle, final float width, final float degStart, final float degEnd, final Color color) {
         this.outlineCircle(positionMatrix, circle.x, circle.y, circle.r, width, degStart, degEnd, color);
     }
@@ -112,7 +163,15 @@ public class Renderer2D extends Renderer {
         super.drawIfNotBuffering();
     }
 
+    public void rectLine(final Matrix4f positionMatrix, final Vector2d start, final Vector2d end, final float width, final Color color) {
+        this.rectLine(positionMatrix, (float) start.x, (float) start.y, (float) end.x, (float) end.y, width, color);
+    }
+
     public void rectLine(final Matrix4f positionMatrix, final Vector2f start, final Vector2f end, final float width, final Color color) {
+        this.rectLine(positionMatrix, start.x, start.y, end.x, end.y, width, color);
+    }
+
+    public void rectLine(final Matrix4f positionMatrix, final Vector2i start, final Vector2i end, final float width, final Color color) {
         this.rectLine(positionMatrix, start.x, start.y, end.x, end.y, width, color);
     }
 
@@ -121,7 +180,15 @@ public class Renderer2D extends Renderer {
         super.drawIfNotBuffering();
     }
 
+    public void rectLine(final Matrix4f positionMatrix, final Vector2d start, final Vector2d end, final float width, final Color startColor, final Color endColor) {
+        this.rectLine(positionMatrix, (float) start.x, (float) start.y, (float) end.x, (float) end.y, width, startColor, endColor);
+    }
+
     public void rectLine(final Matrix4f positionMatrix, final Vector2f start, final Vector2f end, final float width, final Color startColor, final Color endColor) {
+        this.rectLine(positionMatrix, start.x, start.y, end.x, end.y, width, startColor, endColor);
+    }
+
+    public void rectLine(final Matrix4f positionMatrix, final Vector2i start, final Vector2i end, final float width, final Color startColor, final Color endColor) {
         this.rectLine(positionMatrix, start.x, start.y, end.x, end.y, width, startColor, endColor);
     }
 
@@ -130,7 +197,15 @@ public class Renderer2D extends Renderer {
         super.drawIfNotBuffering();
     }
 
+    public void glLine(final Matrix4f positionMatrix, final Vector2d start, final Vector2d end, final Color color) {
+        this.glLine(positionMatrix, (float) start.x, (float) start.y, (float) end.x, (float) end.y, color);
+    }
+
     public void glLine(final Matrix4f positionMatrix, final Vector2f start, final Vector2f end, final Color color) {
+        this.glLine(positionMatrix, start.x, start.y, end.x, end.y, color);
+    }
+
+    public void glLine(final Matrix4f positionMatrix, final Vector2i start, final Vector2i end, final Color color) {
         this.glLine(positionMatrix, start.x, start.y, end.x, end.y, color);
     }
 
@@ -139,7 +214,15 @@ public class Renderer2D extends Renderer {
         super.drawIfNotBuffering();
     }
 
+    public void glLine(final Matrix4f positionMatrix, final Vector2d start, final Vector2d end, final Color startColor, final Color endColor) {
+        this.glLine(positionMatrix, (float) start.x, (float) start.y, (float) end.x, (float) end.y, startColor, endColor);
+    }
+
     public void glLine(final Matrix4f positionMatrix, final Vector2f start, final Vector2f end, final Color startColor, final Color endColor) {
+        this.glLine(positionMatrix, start.x, start.y, end.x, end.y, startColor, endColor);
+    }
+
+    public void glLine(final Matrix4f positionMatrix, final Vector2i start, final Vector2i end, final Color startColor, final Color endColor) {
         this.glLine(positionMatrix, start.x, start.y, end.x, end.y, startColor, endColor);
     }
 
@@ -148,7 +231,15 @@ public class Renderer2D extends Renderer {
         super.drawIfNotBuffering();
     }
 
+    public void line(final Matrix4f positionMatrix, final Vector2d start, final Vector2d end, final float width, final Color color) {
+        this.line(positionMatrix, (float) start.x, (float) start.y, (float) end.x, (float) end.y, width, color);
+    }
+
     public void line(final Matrix4f positionMatrix, final Vector2f start, final Vector2f end, final float width, final Color color) {
+        this.line(positionMatrix, start.x, start.y, end.x, end.y, width, color);
+    }
+
+    public void line(final Matrix4f positionMatrix, final Vector2i start, final Vector2i end, final float width, final Color color) {
         this.line(positionMatrix, start.x, start.y, end.x, end.y, width, color);
     }
 
@@ -157,7 +248,15 @@ public class Renderer2D extends Renderer {
         super.drawIfNotBuffering();
     }
 
+    public void line(final Matrix4f positionMatrix, final Vector2d start, final Vector2d end, final float width, final Color startColor, final Color endColor) {
+        this.line(positionMatrix, (float) start.x, (float) start.y, (float) end.x, (float) end.y, width, startColor, endColor);
+    }
+
     public void line(final Matrix4f positionMatrix, final Vector2f start, final Vector2f end, final float width, final Color startColor, final Color endColor) {
+        this.line(positionMatrix, start.x, start.y, end.x, end.y, width, startColor, endColor);
+    }
+
+    public void line(final Matrix4f positionMatrix, final Vector2i start, final Vector2i end, final float width, final Color startColor, final Color endColor) {
         this.line(positionMatrix, start.x, start.y, end.x, end.y, width, startColor, endColor);
     }
 
@@ -198,7 +297,15 @@ public class Renderer2D extends Renderer {
         super.drawIfNotBuffering();
     }
 
+    public void filledRoundedRectangle(final Matrix4f positionMatrix, final Rectangled rectangle, final float radius, final Color color) {
+        this.filledRoundedRectangle(positionMatrix, (float) rectangle.minX, (float) rectangle.minY, (float) rectangle.maxX, (float) rectangle.maxY, radius, color);
+    }
+
     public void filledRoundedRectangle(final Matrix4f positionMatrix, final Rectanglef rectangle, final float radius, final Color color) {
+        this.filledRoundedRectangle(positionMatrix, rectangle.minX, rectangle.minY, rectangle.maxX, rectangle.maxY, radius, color);
+    }
+
+    public void filledRoundedRectangle(final Matrix4f positionMatrix, final Rectanglei rectangle, final float radius, final Color color) {
         this.filledRoundedRectangle(positionMatrix, rectangle.minX, rectangle.minY, rectangle.maxX, rectangle.maxY, radius, color);
     }
 
