@@ -49,8 +49,6 @@ public class SDFTextRenderer extends TextRenderer {
         if ((ThinGL.getImplementation().getProjectionMatrix().properties() & Matrix4fc.PROPERTY_AFFINE) != 0) { // If orthographic projection
             final Vector2f scaleFactor = ThinGL.getImplementation().get2DScaleFactor();
             scale.mul(scaleFactor.x, scaleFactor.y, 0F);
-        } else {
-            scale.mul(1 / 0.025F);
         }
         scale.mul(this.globalScale);
         final float maxScale = Math.max(Math.max(scale.x, scale.y), scale.z);

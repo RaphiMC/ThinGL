@@ -14,6 +14,7 @@ struct CharData {
 uniform mat4 u_ProjectionMatrix;
 uniform mat4 u_ViewMatrix;
 uniform mat4 u_ModelMatrix;
+uniform vec2 u_Viewport;
 
 layout (std430) readonly buffer ssbo_StringData {
     StringData stringDatas[];
@@ -30,8 +31,7 @@ out vec4 v_TextColor;
 out vec4 v_OutlineColor;
 out float v_Smoothing;
 flat out int v_StyleFlags;
-out float v_DistanceToCamera;
-out float v_Fov;
+out float v_PerspectiveScale;
 
 vec4 decodeColor(int rgba);
 
@@ -48,8 +48,11 @@ void main() {
     v_OutlineColor = decodeColor(stringData.outlineColor);
     v_Smoothing = stringData.smoothing;
     v_StyleFlags = stringData.styleFlags;
-    v_DistanceToCamera = length(worldPosition.xyz);
-    v_Fov = 2.0 * atan(1.0 / u_ProjectionMatrix[1][1]) * 180.0 / M_PI;
+
+    float distanceToCamera = length(worldPosition.xyz);
+    float fov = 2.0 * atan(1.0 / u_ProjectionMatrix[1][1]) * 180.0 / M_PI;
+    float viewHeight = 2.0 * distanceToCamera * tan(radians(fov * 0.5));
+    v_PerspectiveScale = viewHeight / u_Viewport.y;
 }
 
 vec4 decodeColor(int rgba) {

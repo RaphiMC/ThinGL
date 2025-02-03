@@ -15,17 +15,13 @@ in vec4 v_TextColor;
 in vec4 v_OutlineColor;
 in float v_Smoothing;
 flat in int v_StyleFlags;
-in float v_DistanceToCamera;
-in float v_Fov;
+in float v_PerspectiveScale;
 out vec4 o_Color;
 
 void main() {
     float smoothing = v_Smoothing;
     if (gl_FragCoord.w != 1.0) { /* If not 2D */
-        float cameraSmoothing = clamp(1.0 - (20.0 - v_DistanceToCamera) / 20.0, 0.0, 1.0);
-        smoothing = min(smoothing, smoothing * cameraSmoothing);
-        //if (v_Fov < 30.0) {smoothing = 1.0/64.0;}
-        //smoothing /= 110.0 / v_Fov;
+        smoothing *= v_PerspectiveScale;
     }
 
     float threshold = regularThreshold;
