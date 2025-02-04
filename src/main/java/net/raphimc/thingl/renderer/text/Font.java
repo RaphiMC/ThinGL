@@ -32,6 +32,8 @@ import java.nio.ByteBuffer;
 public class Font {
 
     private final int size;
+    private final ByteBuffer fontDataBuffer;
+    private final FT_Face fontFace;
     private final float ascent;
     private final float descent;
     private final float baseLineHeight;
@@ -40,8 +42,6 @@ public class Font {
     private final float lineThickness;
     private final String family;
     private final String style;
-    private final ByteBuffer fontDataBuffer;
-    private final FT_Face fontFace;
 
     public Font(final byte[] fontData, final int size) {
         this.size = size;
@@ -96,6 +96,10 @@ public class Font {
         return this.size;
     }
 
+    public FT_Face getFontFace() {
+        return this.fontFace;
+    }
+
     public float getAscent() {
         return this.ascent;
     }
@@ -126,10 +130,6 @@ public class Font {
 
     public String getStyle() {
         return this.style;
-    }
-
-    public FT_Face getFontFace() {
-        return this.fontFace;
     }
 
     private FontGlyph getLoadedGlyph() {

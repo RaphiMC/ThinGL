@@ -74,7 +74,7 @@ public class BitmapTextRenderer extends TextRenderer {
     }
 
     @Override
-    protected GlyphBitmap getGlyphBitmap(final FontGlyph fontGlyph) {
+    protected GlyphBitmap createGlyphBitmap(final FontGlyph fontGlyph) {
         final FT_Face fontFace = fontGlyph.font().getFontFace();
         FreeTypeInstance.checkError(FreeType.FT_Load_Glyph(fontFace, fontGlyph.glyphIndex(), FreeType.FT_LOAD_DEFAULT), "Failed to load glyph");
         final FT_GlyphSlot glyphSlot = fontFace.glyph();

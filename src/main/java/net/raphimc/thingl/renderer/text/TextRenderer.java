@@ -76,7 +76,8 @@ public abstract class TextRenderer {
     protected final Font primaryFont;
     protected final DrawBatch textDrawBatch;
     protected final List<StaticAtlasTexture> glyphAtlases = new ArrayList<>();
-    protected final Int2ObjectMap<AtlasGlyph> glyphs = new Int2ObjectOpenHashMap<>();
+    protected final Int2ObjectMap<AtlasGlyph> atlasGlyphs = new Int2ObjectOpenHashMap<>();
+    protected final Int2ObjectMap<FontGlyph> fontGlyphs = new Int2ObjectOpenHashMap<>();
     protected float globalScale = 1F;
     protected float globalXOffset = 0F;
     protected float globalYOffset = 0F;
@@ -123,7 +124,7 @@ public abstract class TextRenderer {
         float width = 0;
         for (int i = 0; i < text.length(); i++) {
             final int codePoint = text.codePointAt(i);
-            final FontGlyph glyph = this.getGlyph(codePoint).fontGlyph();
+            final FontGlyph glyph = this.getFontGlyph(codePoint);
             if (i == 0 && (styleFlags & TextRenderer.INTERNAL_NO_BEARING_BIT) == 0) {
                 width -= glyph.bearingX() * this.globalScale;
             }
@@ -161,7 +162,8 @@ public abstract class TextRenderer {
     public void delete() {
         this.glyphAtlases.forEach(StaticAtlasTexture::delete);
         this.glyphAtlases.clear();
-        this.glyphs.clear();
+        this.atlasGlyphs.clear();
+        this.fontGlyphs.clear();
     }
 
     public Font[] getFonts() {
@@ -206,7 +208,7 @@ public abstract class TextRenderer {
                 y += this.primaryFont.getPaddedHeight() * this.globalScale;
                 continue;
             }
-            final AtlasGlyph glyph = this.getGlyph(codePoint);
+            final AtlasGlyph glyph = this.getAtlasGlyph(codePoint);
             if (x == originX && (styleFlags & TextRenderer.INTERNAL_NO_BEARING_BIT) == 0) {
                 x -= glyph.fontGlyph().bearingX() * this.globalScale;
             }
@@ -257,15 +259,13 @@ public abstract class TextRenderer {
         }
     }
 
-    protected AtlasGlyph getGlyph(final int codePoint) {
-        return this.glyphs.computeIfAbsent(codePoint, this::createGlyph);
+    private AtlasGlyph getAtlasGlyph(final int codePoint) {
+        return this.atlasGlyphs.computeIfAbsent(codePoint, this::createAtlasGlyph);
     }
 
-    protected abstract GlyphBitmap getGlyphBitmap(final FontGlyph fontGlyph);
-
-    private AtlasGlyph createGlyph(final int codePoint) {
+    private AtlasGlyph createAtlasGlyph(final int codePoint) {
         final FontGlyph fontGlyph = this.getFontGlyph(codePoint);
-        final GlyphBitmap glyphBitmap = this.getGlyphBitmap(fontGlyph);
+        final GlyphBitmap glyphBitmap = this.createGlyphBitmap(fontGlyph);
 
         if (glyphBitmap.pixels() == null) {
             return new AtlasGlyph(fontGlyph, -1, 0F, 0F, 0F, 0F, glyphBitmap.width(), glyphBitmap.height(), glyphBitmap.xOffset(), glyphBitmap.yOffset());
@@ -297,7 +297,13 @@ public abstract class TextRenderer {
         return new AtlasGlyph(fontGlyph, this.glyphAtlases.indexOf(atlas), atlasSlot.u1(), atlasSlot.v1(), atlasSlot.u2(), atlasSlot.v2(), glyphBitmap.width(), glyphBitmap.height(), glyphBitmap.xOffset(), glyphBitmap.yOffset());
     }
 
+    protected abstract GlyphBitmap createGlyphBitmap(final FontGlyph fontGlyph);
+
     private FontGlyph getFontGlyph(final int codePoint) {
+        return this.fontGlyphs.computeIfAbsent(codePoint, this::createFontGlyph);
+    }
+
+    private FontGlyph createFontGlyph(final int codePoint) {
         for (Font font : this.fonts) {
             final FontGlyph fontGlyph = font.getGlyphByCodePoint(codePoint);
             if (fontGlyph.glyphIndex() != 0) {
