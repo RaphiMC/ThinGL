@@ -22,9 +22,9 @@ import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.ImmediateMultiDrawBatchDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.MultiDrawBatchDataHolder;
 import net.raphimc.thingl.renderer.text.BitmapTextRenderer;
-import net.raphimc.thingl.renderer.text.Font;
 import net.raphimc.thingl.renderer.text.SDFTextRenderer;
 import net.raphimc.thingl.renderer.text.TextRenderer;
+import net.raphimc.thingl.util.font.Font;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 

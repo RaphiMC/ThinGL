@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.raphimc.thingl.renderer.text;
+package net.raphimc.thingl.util.font;
 
 public record FontGlyph(Font font, int glyphIndex, float width, float advance, float bearingX) {
 }

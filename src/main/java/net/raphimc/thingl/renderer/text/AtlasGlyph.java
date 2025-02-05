@@ -18,5 +18,7 @@
 
 package net.raphimc.thingl.renderer.text;
 
+import net.raphimc.thingl.util.font.FontGlyph;
+
 public record AtlasGlyph(FontGlyph fontGlyph, int atlasIndex, float u1, float v1, float u2, float v2, float width, float height, float xOffset, float yOffset) {
 }

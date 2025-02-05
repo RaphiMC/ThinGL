@@ -32,6 +32,8 @@ import net.raphimc.thingl.program.RegularProgram;
 import net.raphimc.thingl.renderer.Primitives;
 import net.raphimc.thingl.resource.texture.AbstractTexture;
 import net.raphimc.thingl.texture.StaticAtlasTexture;
+import net.raphimc.thingl.util.font.Font;
+import net.raphimc.thingl.util.font.FontGlyph;
 import net.raphimc.thingl.wrapper.GLStateTracker;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11C;
@@ -79,8 +81,6 @@ public abstract class TextRenderer {
     protected final Int2ObjectMap<AtlasGlyph> atlasGlyphs = new Int2ObjectOpenHashMap<>();
     protected final Int2ObjectMap<FontGlyph> fontGlyphs = new Int2ObjectOpenHashMap<>();
     protected float globalScale = 1F;
-    protected float globalXOffset = 0F;
-    protected float globalYOffset = 0F;
 
     public TextRenderer(final RegularProgram shader, final Font... fonts) {
         if (fonts.length == 0) {
@@ -88,12 +88,6 @@ public abstract class TextRenderer {
         }
         this.fonts = fonts;
         this.primaryFont = fonts[0];
-        final float fontSize = this.primaryFont.getSize();
-        for (Font font : fonts) {
-            if (font.getSize() != fontSize) {
-                throw new IllegalArgumentException("All fonts must have the same size");
-            }
-        }
 
         this.textDrawBatch = new DrawBatch(() -> shader, DrawMode.QUADS, BuiltinDrawBatches.POSITION_TEXTURE_LAYOUT, () -> {
             GLStateTracker.push();
@@ -124,15 +118,15 @@ public abstract class TextRenderer {
         float width = 0;
         for (int i = 0; i < text.length(); i++) {
             final int codePoint = text.codePointAt(i);
-            final FontGlyph glyph = this.getFontGlyph(codePoint);
+            final FontGlyph fontGlyph = this.getFontGlyph(codePoint);
             if (i == 0 && (styleFlags & TextRenderer.INTERNAL_NO_BEARING_BIT) == 0) {
-                width -= glyph.bearingX() * this.globalScale;
+                width -= fontGlyph.bearingX() * this.globalScale;
             }
             if (i != text.length() - 1) {
-                width += glyph.advance() * this.globalScale;
+                width += fontGlyph.advance() * this.globalScale;
             } else {
-                width += glyph.width() * this.globalScale;
-                width += glyph.bearingX() * this.globalScale;
+                width += fontGlyph.width() * this.globalScale;
+                width += fontGlyph.bearingX() * this.globalScale;
             }
         }
 
@@ -178,22 +172,6 @@ public abstract class TextRenderer {
         this.globalScale = globalScale;
     }
 
-    public float getGlobalXOffset() {
-        return this.globalXOffset;
-    }
-
-    public void setGlobalXOffset(final float globalXOffset) {
-        this.globalXOffset = globalXOffset;
-    }
-
-    public float getGlobalYOffset() {
-        return this.globalYOffset;
-    }
-
-    public void setGlobalYOffset(final float globalYOffset) {
-        this.globalYOffset = globalYOffset;
-    }
-
     protected float renderString(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final String text, final int startIndex, final int endIndex, float x, float y, float z, final int textColorArgb, final int styleFlags, final int stringDataIndex) {
         final DrawBatchDataHolder drawBatchDataHolder = multiDrawBatchDataHolder.getDrawBatchDataHolder(this.textDrawBatch);
         final VertexDataHolder vertexDataHolder = drawBatchDataHolder.getVertexDataHolder();
@@ -208,15 +186,16 @@ public abstract class TextRenderer {
                 y += this.primaryFont.getPaddedHeight() * this.globalScale;
                 continue;
             }
-            final AtlasGlyph glyph = this.getAtlasGlyph(codePoint);
+            final AtlasGlyph atlasGlyph = this.getAtlasGlyph(codePoint);
+            final FontGlyph fontGlyph = atlasGlyph.fontGlyph();
             if (x == originX && (styleFlags & TextRenderer.INTERNAL_NO_BEARING_BIT) == 0) {
-                x -= glyph.fontGlyph().bearingX() * this.globalScale;
+                x -= fontGlyph.bearingX() * this.globalScale;
             }
-            if (glyph.atlasIndex() != -1) {
-                this.renderGlyph(positionMatrix, vertexDataHolder, charDataHolder, glyph, x, y, z, styleFlags, stringDataIndex);
+            if (atlasGlyph.atlasIndex() != -1) {
+                this.renderGlyph(positionMatrix, vertexDataHolder, charDataHolder, atlasGlyph, x, y, z, styleFlags, stringDataIndex);
             }
 
-            x += glyph.fontGlyph().advance() * this.globalScale;
+            x += fontGlyph.advance() * this.globalScale;
         }
         this.renderTextDecorations(positionMatrix, multiDrawBatchDataHolder, originX, x, y, z, textColorArgb, styleFlags);
 
@@ -305,12 +284,12 @@ public abstract class TextRenderer {
 
     private FontGlyph createFontGlyph(final int codePoint) {
         for (Font font : this.fonts) {
-            final FontGlyph fontGlyph = font.getGlyphByCodePoint(codePoint);
+            final FontGlyph fontGlyph = font.loadGlyphByCodePoint(codePoint);
             if (fontGlyph.glyphIndex() != 0) {
                 return fontGlyph;
             }
         }
-        return this.primaryFont.getGlyphByCodePoint(codePoint);
+        return this.primaryFont.loadGlyphByCodePoint(codePoint);
     }
 
 }

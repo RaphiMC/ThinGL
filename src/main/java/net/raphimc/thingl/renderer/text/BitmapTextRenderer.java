@@ -22,7 +22,9 @@ import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.ShaderDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.MultiDrawBatchDataHolder;
 import net.raphimc.thingl.program.BuiltinPrograms;
-import net.raphimc.thingl.util.FreeTypeInstance;
+import net.raphimc.thingl.util.font.Font;
+import net.raphimc.thingl.util.font.FontGlyph;
+import net.raphimc.thingl.util.font.FreeTypeInstance;
 import org.joml.Matrix4f;
 import org.lwjgl.util.freetype.FT_Face;
 import org.lwjgl.util.freetype.FT_GlyphSlot;
@@ -40,9 +42,6 @@ public class BitmapTextRenderer extends TextRenderer {
     public float renderString(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final String text, final int startIndex, final int endIndex, float x, float y, float z, final Color textColor, final int styleFlags, final Color outlineColor) {
         final ShaderDataHolder stringDataHolder = multiDrawBatchDataHolder.getShaderDataHolder(this.textDrawBatch, "ssbo_StringData");
         final int regularStringDataIndex = stringDataHolder.rawInt(textColor.toRGBA()).endAndGetArrayIndex();
-
-        x += this.globalXOffset * this.globalScale;
-        y += this.globalYOffset * this.globalScale;
 
         if ((styleFlags & TextRenderer.BOLD_BIT) != 0) {
             if (outlineColor.getAlpha() == 0) {

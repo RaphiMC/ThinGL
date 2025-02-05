@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.raphimc.thingl.util;
+package net.raphimc.thingl.util.font;
 
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;

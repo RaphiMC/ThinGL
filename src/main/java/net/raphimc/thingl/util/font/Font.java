@@ -16,24 +16,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.raphimc.thingl.renderer.text;
+package net.raphimc.thingl.util.font;
 
-import net.raphimc.thingl.util.FreeTypeInstance;
+import org.joml.Vector2f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
-import org.lwjgl.util.freetype.FT_Face;
-import org.lwjgl.util.freetype.FT_GlyphSlot;
-import org.lwjgl.util.freetype.FT_Glyph_Metrics;
-import org.lwjgl.util.freetype.FreeType;
+import org.lwjgl.util.freetype.*;
 
 import java.nio.ByteBuffer;
 
 public class Font {
 
-    private final int size;
     private final ByteBuffer fontDataBuffer;
     private final FT_Face fontFace;
+    private final int size;
+    private final GlyphPredicate glyphPredicate;
     private final float ascent;
     private final float descent;
     private final float baseLineHeight;
@@ -44,19 +42,24 @@ public class Font {
     private final String style;
 
     public Font(final byte[] fontData, final int size) {
-        this.size = size;
+        this(fontData, size, new Vector2f(), GlyphPredicate.all());
+    }
+
+    public Font(final byte[] fontData, final int size, final Vector2f shift, final GlyphPredicate glyphPredicate) {
         this.fontDataBuffer = MemoryUtil.memAlloc(fontData.length).put(fontData).flip();
         try {
             try (MemoryStack memoryStack = MemoryStack.stackPush()) {
                 final PointerBuffer fontFaceBuffer = memoryStack.mallocPointer(1);
                 FreeTypeInstance.checkError(FreeType.FT_New_Memory_Face(FreeTypeInstance.get(), this.fontDataBuffer, 0L, fontFaceBuffer), "Failed to load font face");
                 this.fontFace = FT_Face.create(fontFaceBuffer.get());
-            }
 
-            FreeTypeInstance.checkError(FreeType.FT_Set_Pixel_Sizes(this.fontFace, 0, this.size), "Failed to set font size");
+                FreeTypeInstance.checkError(FreeType.FT_Set_Pixel_Sizes(this.fontFace, 0, size), "Failed to set font size");
+                FreeType.FT_Set_Transform(this.fontFace, null, FT_Vector.malloc(memoryStack).set(Math.round(shift.x * 64F), Math.round(-shift.y * 64F)));
+            }
+            this.size = size;
+            this.glyphPredicate = glyphPredicate;
 
             final float sizeMultiplier = (float) this.size / this.fontFace.units_per_EM();
-
             this.ascent = this.fontFace.size().metrics().ascender() / 64F;
             this.descent = this.fontFace.size().metrics().descender() / 64F;
             this.baseLineHeight = this.size - this.ascent - this.descent;
@@ -71,18 +74,20 @@ public class Font {
         }
     }
 
-    public int getGlyphIndex(final int codePoint) {
-        return FreeType.FT_Get_Char_Index(this.fontFace, codePoint);
-    }
+    public FontGlyph loadGlyphByCodePoint(final int codePoint) {
+        if (this.glyphPredicate.test(codePoint)) {
+            FreeTypeInstance.checkError(FreeType.FT_Load_Char(this.fontFace, codePoint, FreeType.FT_LOAD_DEFAULT | FreeType.FT_LOAD_NO_BITMAP), "Failed to load glyph");
+        } else {
+            FreeTypeInstance.checkError(FreeType.FT_Load_Glyph(this.fontFace, 0, FreeType.FT_LOAD_DEFAULT | FreeType.FT_LOAD_NO_BITMAP), "Failed to load glyph");
+        }
 
-    public FontGlyph getGlyphByCodePoint(final int codePoint) {
-        FreeTypeInstance.checkError(FreeType.FT_Load_Char(this.fontFace, codePoint, FreeType.FT_LOAD_DEFAULT | FreeType.FT_LOAD_NO_BITMAP), "Failed to load glyph");
-        return this.getLoadedGlyph();
-    }
-
-    public FontGlyph getGlyphByIndex(final int glyphIndex) {
-        FreeTypeInstance.checkError(FreeType.FT_Load_Glyph(this.fontFace, glyphIndex, FreeType.FT_LOAD_DEFAULT | FreeType.FT_LOAD_NO_BITMAP), "Failed to load glyph");
-        return this.getLoadedGlyph();
+        final FT_GlyphSlot glyphSlot = this.fontFace.glyph();
+        final FT_Glyph_Metrics metrics = glyphSlot.metrics();
+        final int glyphIndex = glyphSlot.glyph_index();
+        final float width = metrics.width() / 64F;
+        final float advance = metrics.horiAdvance() / 64F;
+        final float bearingX = metrics.horiBearingX() / 64F;
+        return new FontGlyph(this, glyphIndex, width, advance, bearingX);
     }
 
     public void delete() {
@@ -130,16 +135,6 @@ public class Font {
 
     public String getStyle() {
         return this.style;
-    }
-
-    private FontGlyph getLoadedGlyph() {
-        final FT_GlyphSlot glyphSlot = this.fontFace.glyph();
-        final FT_Glyph_Metrics metrics = glyphSlot.metrics();
-        final int glyphIndex = glyphSlot.glyph_index();
-        final float width = metrics.width() / 64F;
-        final float advance = metrics.horiAdvance() / 64F;
-        final float bearingX = metrics.horiBearingX() / 64F;
-        return new FontGlyph(this, glyphIndex, width, advance, bearingX);
     }
 
 }

@@ -23,8 +23,10 @@ import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.ShaderDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.MultiDrawBatchDataHolder;
 import net.raphimc.thingl.program.BuiltinPrograms;
-import net.raphimc.thingl.util.FreeTypeInstance;
 import net.raphimc.thingl.util.GlobalObjects;
+import net.raphimc.thingl.util.font.Font;
+import net.raphimc.thingl.util.font.FontGlyph;
+import net.raphimc.thingl.util.font.FreeTypeInstance;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector2f;
@@ -55,9 +57,6 @@ public class SDFTextRenderer extends TextRenderer {
         final float smoothing = 1F / maxScale / 10F;
 
         final int regularStringDataIndex = stringDataHolder.rawInt(textColor.toRGBA()).rawInt(outlineColor.toRGBA()).rawInt(styleFlags).rawFloat(smoothing).endAndGetArrayIndex();
-
-        x += this.globalXOffset * this.globalScale;
-        y += this.globalYOffset * this.globalScale;
 
         if ((styleFlags & TextRenderer.SHADOW_BIT) != 0) {
             final float shadowOffset = 0.075F * this.primaryFont.getSize() * this.globalScale;
