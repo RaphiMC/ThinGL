@@ -47,7 +47,7 @@ dependencies {
     compileOnly "org.lwjgl:lwjgl-par:3.3.3"
 
     // Test dependencies
-    ["natives-windows", "natives-windows-arm64", "natives-linux", "natives-linux-arm64", "natives-macos", "natives-macos-arm64"].each {
+    ["natives-windows", "natives-windows-arm64", "natives-linux", "natives-linux-arm64"].each {
         testImplementation "org.lwjgl:lwjgl:3.3.3:$it"
         testImplementation "org.lwjgl:lwjgl-glfw:3.3.3:$it"
         testImplementation "org.lwjgl:lwjgl-opengl:3.3.3:$it"
