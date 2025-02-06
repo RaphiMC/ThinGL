@@ -70,27 +70,27 @@ public class TextRenderingExample extends ExampleBase {
         }
         { // Bold text
             positionMatrix.translate(0, 32, 0);
-            this.sdfTextRenderer.renderString(positionMatrix, multiDrawBatchDataHolder, "Bold Text", 0, 0, 0, Color.WHITE, TextRenderer.BOLD_BIT, Color.TRANSPARENT);
+            this.sdfTextRenderer.renderString(positionMatrix, multiDrawBatchDataHolder, "Bold Text", 0, 0, 0, Color.WHITE, TextRenderer.STYLE_BOLD_BIT, Color.TRANSPARENT);
         }
         { // Shadowed text
             positionMatrix.translate(0, 32, 0);
-            this.sdfTextRenderer.renderString(positionMatrix, multiDrawBatchDataHolder, "Shadowed Text", 0, 0, 0, Color.WHITE, TextRenderer.SHADOW_BIT, Color.TRANSPARENT);
+            this.sdfTextRenderer.renderString(positionMatrix, multiDrawBatchDataHolder, "Shadowed Text", 0, 0, 0, Color.WHITE, TextRenderer.STYLE_SHADOW_BIT, Color.TRANSPARENT);
         }
         { // Italic text
             positionMatrix.translate(0, 32, 0);
-            this.sdfTextRenderer.renderString(positionMatrix, multiDrawBatchDataHolder, "Italic Text", 0, 0, 0, Color.WHITE, TextRenderer.ITALIC_BIT, Color.TRANSPARENT);
+            this.sdfTextRenderer.renderString(positionMatrix, multiDrawBatchDataHolder, "Italic Text", 0, 0, 0, Color.WHITE, TextRenderer.STYLE_ITALIC_BIT, Color.TRANSPARENT);
         }
         { // Underline text
             positionMatrix.translate(0, 32, 0);
-            this.sdfTextRenderer.renderString(positionMatrix, multiDrawBatchDataHolder, "Underline Text", 0, 0, 0, Color.WHITE, TextRenderer.UNDERLINE_BIT, Color.TRANSPARENT);
+            this.sdfTextRenderer.renderString(positionMatrix, multiDrawBatchDataHolder, "Underline Text", 0, 0, 0, Color.WHITE, TextRenderer.STYLE_UNDERLINE_BIT, Color.TRANSPARENT);
         }
         { // Strikethrough text
             positionMatrix.translate(0, 32, 0);
-            this.sdfTextRenderer.renderString(positionMatrix, multiDrawBatchDataHolder, "Strikethrough Text", 0, 0, 0, Color.WHITE, TextRenderer.STRIKETHROUGH_BIT, Color.TRANSPARENT);
+            this.sdfTextRenderer.renderString(positionMatrix, multiDrawBatchDataHolder, "Strikethrough Text", 0, 0, 0, Color.WHITE, TextRenderer.STYLE_STRIKETHROUGH_BIT, Color.TRANSPARENT);
         }
         { // Multiple styles text
             positionMatrix.translate(0, 32, 0);
-            this.sdfTextRenderer.renderString(positionMatrix, multiDrawBatchDataHolder, "Multiple Styles", 0, 0, 0, Color.WHITE, TextRenderer.SHADOW_BIT | TextRenderer.BOLD_BIT | TextRenderer.ITALIC_BIT, Color.BLUE);
+            this.sdfTextRenderer.renderString(positionMatrix, multiDrawBatchDataHolder, "Multiple Styles", 0, 0, 0, Color.WHITE, TextRenderer.STYLE_SHADOW_BIT | TextRenderer.STYLE_BOLD_BIT | TextRenderer.STYLE_ITALIC_BIT, Color.BLUE);
         }
         positionMatrix.popMatrix();
 

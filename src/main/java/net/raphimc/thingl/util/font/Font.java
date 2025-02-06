@@ -34,9 +34,7 @@ public class Font {
     private final GlyphPredicate glyphPredicate;
     private final float ascent;
     private final float descent;
-    private final float baseLineHeight;
     private final float paddedHeight;
-    private final float boundingHeight;
     private final float lineThickness;
     private final String family;
     private final String style;
@@ -59,12 +57,9 @@ public class Font {
             this.size = size;
             this.glyphPredicate = glyphPredicate;
 
-            final float sizeMultiplier = (float) this.size / this.fontFace.units_per_EM();
             this.ascent = this.fontFace.size().metrics().ascender() / 64F;
             this.descent = this.fontFace.size().metrics().descender() / 64F;
-            this.baseLineHeight = this.size - this.ascent - this.descent;
             this.paddedHeight = this.fontFace.size().metrics().height() / 64F;
-            this.boundingHeight = (this.fontFace.bbox().yMax() + this.fontFace.bbox().yMin()) * sizeMultiplier;
             this.lineThickness = Math.max(this.size / 16F, 1F);
             this.family = this.fontFace.family_nameString();
             this.style = this.fontFace.style_nameString();
@@ -85,9 +80,11 @@ public class Font {
         final FT_Glyph_Metrics metrics = glyphSlot.metrics();
         final int glyphIndex = glyphSlot.glyph_index();
         final float width = metrics.width() / 64F;
+        final float height = metrics.height() / 64F;
         final float advance = metrics.horiAdvance() / 64F;
         final float bearingX = metrics.horiBearingX() / 64F;
-        return new FontGlyph(this, glyphIndex, width, advance, bearingX);
+        final float bearingY = metrics.horiBearingY() / 64F;
+        return new FontGlyph(this, glyphIndex, width, height, advance, bearingX, bearingY);
     }
 
     public void delete() {
@@ -113,16 +110,8 @@ public class Font {
         return this.descent;
     }
 
-    public float getBaseLineHeight() {
-        return this.baseLineHeight;
-    }
-
     public float getPaddedHeight() {
         return this.paddedHeight;
-    }
-
-    public float getBoundingHeight() {
-        return this.boundingHeight;
     }
 
     public float getLineThickness() {

@@ -18,5 +18,5 @@
 
 package net.raphimc.thingl.util.font;
 
-public record FontGlyph(Font font, int glyphIndex, float width, float advance, float bearingX) {
+public record FontGlyph(Font font, int glyphIndex, float width, float height, float advance, float bearingX, float bearingY) {
 }

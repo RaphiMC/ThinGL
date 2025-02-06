@@ -1,5 +1,5 @@
 #version 400 core
-#define BOLD_BIT 2
+#define STYLE_BOLD_BIT 2
 
 const float regularThreshold = 128.0 / 255.0;
 const float regularBoldThreshold = 64.0 / 255.0;
@@ -25,7 +25,7 @@ void main() {
     }
 
     float threshold = regularThreshold;
-    if ((v_StyleFlags & BOLD_BIT) != 0) {
+    if ((v_StyleFlags & STYLE_BOLD_BIT) != 0) {
         if (v_OutlineColor.a != 0) {
             threshold = outlineBoldThreshold;
         } else {

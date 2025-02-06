@@ -35,7 +35,7 @@ public class ImageRenderingExample extends ExampleBase {
     @Override
     protected void init() {
         try {
-            final byte[] imageData = TextRenderingExample.class.getResourceAsStream("/images/triangles-1430105_640.png").readAllBytes();
+            final byte[] imageData = ImageRenderingExample.class.getResourceAsStream("/images/triangles-1430105_640.png").readAllBytes();
             this.image = new Texture2D(AbstractTexture.InternalFormat.RGBA8, imageData);
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -196,8 +196,10 @@ public class Program extends GLResource {
     }
 
     public void unbind() {
+        this.currentTextureUnit = 0;
+        this.currentUniformBlockIndex = 0;
+        this.currentShaderStorageBufferIndex = 0;
         GL20C.glUseProgram(0);
-        GL13C.glActiveTexture(GL13C.GL_TEXTURE0);
         ThinGL.onProgramUnbind();
     }
 

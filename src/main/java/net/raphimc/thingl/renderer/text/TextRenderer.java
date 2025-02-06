@@ -43,34 +43,38 @@ import java.util.List;
 
 public abstract class TextRenderer {
 
-    public static final int SHADOW_BIT = 1 << 0;
-    public static final int BOLD_BIT = 1 << 1;
-    public static final int ITALIC_BIT = 1 << 2;
-    public static final int UNDERLINE_BIT = 1 << 3;
-    public static final int STRIKETHROUGH_BIT = 1 << 4;
-    public static final int WIDTH_CALCULATION_ONLY_OUTLINE_BIT = 1 << 29;
-    public static final int INTERNAL_NO_BEARING_BIT = 1 << 30;
-    public static final int INTERNAL_NO_NEWLINE_BIT = 1 << 31;
+    public static final int STYLE_SHADOW_BIT = 1 << 0;
+    public static final int STYLE_BOLD_BIT = 1 << 1;
+    public static final int STYLE_ITALIC_BIT = 1 << 2;
+    public static final int STYLE_UNDERLINE_BIT = 1 << 3;
+    public static final int STYLE_STRIKETHROUGH_BIT = 1 << 4;
+    public static final int STYLE_OUTLINE_BIT = 1 << 5;
+    public static final int ORIGIN_BASELINE_BIT = 1 << 16;
+    public static final int INTERNAL_NO_BEARING_BIT = 1 << 24;
+
     private static final int ATLAS_SIZE = 1024;
 
-    public static int calculateStyleFlags(final boolean shadow, final boolean bold, final boolean italic, final boolean underline, final boolean strikethrough) {
-        int styleFlags = 0;
+    public static int buildStyleFlags(final boolean shadow, final boolean bold, final boolean italic, final boolean underline, final boolean strikethrough, final boolean outline) {
+        int flags = 0;
         if (shadow) {
-            styleFlags |= SHADOW_BIT;
+            flags |= STYLE_SHADOW_BIT;
         }
         if (bold) {
-            styleFlags |= BOLD_BIT;
+            flags |= STYLE_BOLD_BIT;
         }
         if (italic) {
-            styleFlags |= ITALIC_BIT;
+            flags |= STYLE_ITALIC_BIT;
         }
         if (underline) {
-            styleFlags |= UNDERLINE_BIT;
+            flags |= STYLE_UNDERLINE_BIT;
         }
         if (strikethrough) {
-            styleFlags |= STRIKETHROUGH_BIT;
+            flags |= STYLE_STRIKETHROUGH_BIT;
         }
-        return styleFlags;
+        if (outline) {
+            flags |= STYLE_OUTLINE_BIT;
+        }
+        return flags;
     }
 
 
@@ -104,49 +108,88 @@ public abstract class TextRenderer {
         return this.renderString(positionMatrix, multiDrawBatchDataHolder, text, x, y, z, textColor, 0, Color.TRANSPARENT);
     }
 
-    public float renderString(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final String text, float x, float y, final float z, final Color textColor, final int styleFlags, final Color outlineColor) {
-        return this.renderString(positionMatrix, multiDrawBatchDataHolder, text, 0, text.length(), x, y, z, textColor, styleFlags, outlineColor);
+    public float renderString(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final String text, float x, float y, final float z, final Color textColor, final int flags, final Color outlineColor) {
+        return this.renderString(positionMatrix, multiDrawBatchDataHolder, text, 0, text.length(), x, y, z, textColor, flags, outlineColor);
     }
 
-    public abstract float renderString(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final String text, final int startIndex, final int endIndex, float x, float y, float z, final Color textColor, final int styleFlags, final Color outlineColor);
+    public abstract float renderString(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final String text, final int startIndex, final int endIndex, float x, float y, float z, final Color textColor, final int flags, final Color outlineColor);
 
     public float calculateWidth(final String text) {
         return this.calculateWidth(text, 0);
     }
 
-    public float calculateWidth(final String text, final int styleFlags) {
+    public float calculateWidth(final String text, final int flags) {
         float width = 0;
         for (int i = 0; i < text.length(); i++) {
             final int codePoint = text.codePointAt(i);
             final FontGlyph fontGlyph = this.getFontGlyph(codePoint);
-            if (i == 0 && (styleFlags & TextRenderer.INTERNAL_NO_BEARING_BIT) == 0) {
-                width -= fontGlyph.bearingX() * this.globalScale;
+            if (i == 0 && (flags & TextRenderer.INTERNAL_NO_BEARING_BIT) == 0) {
+                width -= fontGlyph.bearingX();
             }
             if (i != text.length() - 1) {
-                width += fontGlyph.advance() * this.globalScale;
+                width += fontGlyph.advance();
             } else {
-                width += fontGlyph.width() * this.globalScale;
-                width += fontGlyph.bearingX() * this.globalScale;
+                width += fontGlyph.width();
+                width += fontGlyph.bearingX();
             }
         }
 
-        if ((styleFlags & TextRenderer.SHADOW_BIT) != 0) {
-            width += 0.075F * this.primaryFont.getSize() * this.globalScale;
+        if ((flags & TextRenderer.STYLE_SHADOW_BIT) != 0) {
+            width += 0.075F * this.primaryFont.getSize();
         }
-        if ((styleFlags & TextRenderer.BOLD_BIT) != 0 || (styleFlags & TextRenderer.WIDTH_CALCULATION_ONLY_OUTLINE_BIT) != 0) {
-            width += 2F * this.globalScale;
+        if ((flags & TextRenderer.STYLE_BOLD_BIT) != 0 || (flags & TextRenderer.STYLE_OUTLINE_BIT) != 0) {
+            width += 2F;
         }
 
-        return width;
+        return width * this.globalScale;
     }
 
-    public float getExactHeight() {
-        // return this.primaryFont.getSize() * this.globalScale;
-        return (this.primaryFont.getBoundingHeight() - this.primaryFont.getDescent()) * this.globalScale;
+    public float calculateHeight(final String text) {
+        return this.calculateHeight(text, 0);
     }
 
-    public float getBaseLineHeight() {
-        return this.primaryFont.getBaseLineHeight() * this.globalScale;
+    public float calculateHeight(final String text, final int flags) {
+        float minY = 0;
+        float maxY = 0;
+        for (int i = 0; i < text.length(); i++) {
+            final int codePoint = text.codePointAt(i);
+            final FontGlyph fontGlyph = this.getFontGlyph(codePoint);
+            final float glyphMinY = -fontGlyph.bearingY();
+            if (glyphMinY < minY) {
+                minY = glyphMinY;
+            }
+            final float glyphMaxY = glyphMinY + fontGlyph.height();
+            if (glyphMaxY > maxY) {
+                maxY = glyphMaxY;
+            }
+        }
+        float height = maxY - minY;
+
+        if ((flags & TextRenderer.STYLE_SHADOW_BIT) != 0) {
+            height += 0.075F * this.primaryFont.getSize();
+        }
+        if ((flags & TextRenderer.STYLE_BOLD_BIT) != 0 || (flags & TextRenderer.STYLE_OUTLINE_BIT) != 0) {
+            height += 2F;
+        }
+
+        return height * this.globalScale;
+    }
+
+    public float calculateBaselineHeight(final String text) {
+        return this.calculateBaselineHeight(text, 0);
+    }
+
+    public float calculateBaselineHeight(final String text, final int flags) {
+        float height = 0;
+        for (int i = 0; i < text.length(); i++) {
+            final int codePoint = text.codePointAt(i);
+            final FontGlyph fontGlyph = this.getFontGlyph(codePoint);
+            final float glyphHeight = fontGlyph.bearingY();
+            if (glyphHeight > height) {
+                height = glyphHeight;
+            }
+        }
+        return height * this.globalScale;
     }
 
     public float getPaddedHeight() {
@@ -172,45 +215,43 @@ public abstract class TextRenderer {
         this.globalScale = globalScale;
     }
 
-    protected float renderString(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final String text, final int startIndex, final int endIndex, float x, float y, float z, final int textColorArgb, final int styleFlags, final int stringDataIndex) {
+    protected float renderString(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final String text, final int startIndex, final int endIndex, float x, float y, float z, final int textColorArgb, final int flags, final int stringDataIndex) {
         final DrawBatchDataHolder drawBatchDataHolder = multiDrawBatchDataHolder.getDrawBatchDataHolder(this.textDrawBatch);
         final VertexDataHolder vertexDataHolder = drawBatchDataHolder.getVertexDataHolder();
         final ShaderDataHolder charDataHolder = drawBatchDataHolder.getShaderDataHolder("ssbo_CharData");
-
         final float originX = x;
+
+        if ((flags & ORIGIN_BASELINE_BIT) == 0) {
+            y += this.calculateBaselineHeight(text, flags);
+        }
+
         for (int i = startIndex; i < endIndex; i++) {
             final int codePoint = text.codePointAt(i);
-            if (codePoint == '\n' && (styleFlags & TextRenderer.INTERNAL_NO_NEWLINE_BIT) == 0) {
-                this.renderTextDecorations(positionMatrix, multiDrawBatchDataHolder, originX, x, y, z, textColorArgb, styleFlags);
-                x = originX;
-                y += this.primaryFont.getPaddedHeight() * this.globalScale;
-                continue;
-            }
             final AtlasGlyph atlasGlyph = this.getAtlasGlyph(codePoint);
             final FontGlyph fontGlyph = atlasGlyph.fontGlyph();
-            if (x == originX && (styleFlags & TextRenderer.INTERNAL_NO_BEARING_BIT) == 0) {
+            if (x == originX && (flags & TextRenderer.INTERNAL_NO_BEARING_BIT) == 0) {
                 x -= fontGlyph.bearingX() * this.globalScale;
             }
             if (atlasGlyph.atlasIndex() != -1) {
-                this.renderGlyph(positionMatrix, vertexDataHolder, charDataHolder, atlasGlyph, x, y, z, styleFlags, stringDataIndex);
+                this.renderGlyph(positionMatrix, vertexDataHolder, charDataHolder, atlasGlyph, x, y, z, flags, stringDataIndex);
             }
 
             x += fontGlyph.advance() * this.globalScale;
         }
-        this.renderTextDecorations(positionMatrix, multiDrawBatchDataHolder, originX, x, y, z, textColorArgb, styleFlags);
+        this.renderTextDecorations(positionMatrix, multiDrawBatchDataHolder, originX, x, y, z, textColorArgb, flags);
 
         return x - originX;
     }
 
-    protected void renderGlyph(final Matrix4f positionMatrix, final VertexDataHolder vertexDataHolder, final ShaderDataHolder charDataHolder, final AtlasGlyph glyph, final float x, final float y, final float z, final int styleFlags, final int stringDataIndex) {
+    protected void renderGlyph(final Matrix4f positionMatrix, final VertexDataHolder vertexDataHolder, final ShaderDataHolder charDataHolder, final AtlasGlyph glyph, final float x, final float y, final float z, final int flags, final int stringDataIndex) {
         final float x1 = x + glyph.xOffset() * this.globalScale;
         final float x2 = x1 + glyph.width() * this.globalScale;
-        final float y1 = y + (glyph.yOffset() + glyph.fontGlyph().font().getBoundingHeight()) * this.globalScale;
+        final float y1 = y + glyph.yOffset() * this.globalScale;
         final float y2 = y1 + glyph.height() * this.globalScale;
 
         float topOffset = 0F;
         float bottomOffset = 0F;
-        if ((styleFlags & TextRenderer.ITALIC_BIT) != 0) {
+        if ((flags & TextRenderer.STYLE_ITALIC_BIT) != 0) {
             topOffset = 4F * this.globalScale;
             bottomOffset = 2F * this.globalScale;
         }
@@ -223,17 +264,17 @@ public abstract class TextRenderer {
         vertexDataHolder.position(positionMatrix, x1 + topOffset, y1, z).texture(glyph.u1(), glyph.v1()).endVertex();
     }
 
-    protected void renderTextDecorations(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float startX, final float endX, final float y, final float z, final int textColorArgb, final int styleFlags) {
+    protected void renderTextDecorations(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float startX, final float endX, final float y, final float z, final int textColorArgb, final int flags) {
         float lineThickness = this.primaryFont.getLineThickness() * this.globalScale;
-        if ((styleFlags & TextRenderer.BOLD_BIT) != 0) {
+        if ((flags & TextRenderer.STYLE_BOLD_BIT) != 0) {
             lineThickness *= 1.4F;
         }
-        if ((styleFlags & TextRenderer.UNDERLINE_BIT) != 0) {
-            final float lineY = y + this.primaryFont.getBoundingHeight() * this.globalScale + lineThickness;
+        if ((flags & TextRenderer.STYLE_UNDERLINE_BIT) != 0) {
+            final float lineY = y + lineThickness;
             Primitives.filledRectangle(positionMatrix, multiDrawBatchDataHolder, startX, lineY, endX, lineY + lineThickness, z, textColorArgb);
         }
-        if ((styleFlags & TextRenderer.STRIKETHROUGH_BIT) != 0) {
-            final float lineY = y + this.primaryFont.getBoundingHeight() * 0.6F * this.globalScale + lineThickness;
+        if ((flags & TextRenderer.STYLE_STRIKETHROUGH_BIT) != 0) {
+            final float lineY = y - this.primaryFont.getSize() * 0.3F - lineThickness;
             Primitives.filledRectangle(positionMatrix, multiDrawBatchDataHolder, startX, lineY, endX, lineY + lineThickness, z, textColorArgb);
         }
     }
@@ -267,7 +308,7 @@ public abstract class TextRenderer {
             glyphBitmap.freeAction().accept(glyphBitmap);
         }
         if (atlasSlot == null) {
-            throw new IllegalStateException("Glyph (" + codePoint + ") is too large to fit in atlas (" + glyphBitmap.width() + "x" + glyphBitmap.height() + ")");
+            throw new IllegalStateException("Glyph " + codePoint + " is too large to fit in atlas (" + glyphBitmap.width() + "x" + glyphBitmap.height() + ")");
         }
         if (!this.glyphAtlases.contains(atlas)) {
             this.glyphAtlases.add(atlas);
