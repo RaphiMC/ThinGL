@@ -122,6 +122,10 @@ public abstract class TextRenderer {
         float width = 0;
         for (int i = 0; i < text.length(); i++) {
             final int codePoint = text.codePointAt(i);
+            if (codePoint >= Character.MIN_SUPPLEMENTARY_CODE_POINT) {
+                i++;
+            }
+
             final FontGlyph fontGlyph = this.getFontGlyph(codePoint);
             if (i == 0 && (flags & TextRenderer.INTERNAL_NO_BEARING_BIT) == 0) {
                 width -= fontGlyph.bearingX();
@@ -153,6 +157,10 @@ public abstract class TextRenderer {
         float maxY = 0;
         for (int i = 0; i < text.length(); i++) {
             final int codePoint = text.codePointAt(i);
+            if (codePoint >= Character.MIN_SUPPLEMENTARY_CODE_POINT) {
+                i++;
+            }
+
             final FontGlyph fontGlyph = this.getFontGlyph(codePoint);
             final float glyphMinY = -fontGlyph.bearingY();
             if (glyphMinY < minY) {
@@ -183,6 +191,10 @@ public abstract class TextRenderer {
         float height = 0;
         for (int i = 0; i < text.length(); i++) {
             final int codePoint = text.codePointAt(i);
+            if (codePoint >= Character.MIN_SUPPLEMENTARY_CODE_POINT) {
+                i++;
+            }
+
             final FontGlyph fontGlyph = this.getFontGlyph(codePoint);
             final float glyphHeight = fontGlyph.bearingY();
             if (glyphHeight > height) {
@@ -227,6 +239,10 @@ public abstract class TextRenderer {
 
         for (int i = startIndex; i < endIndex; i++) {
             final int codePoint = text.codePointAt(i);
+            if (codePoint >= Character.MIN_SUPPLEMENTARY_CODE_POINT) {
+                i++;
+            }
+
             final AtlasGlyph atlasGlyph = this.getAtlasGlyph(codePoint);
             final FontGlyph fontGlyph = atlasGlyph.fontGlyph();
             if (x == originX && (flags & TextRenderer.INTERNAL_NO_BEARING_BIT) == 0) {

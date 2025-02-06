@@ -23,11 +23,11 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 public interface GlyphPredicate {
 
     static GlyphPredicate all() {
-        return (glyph) -> true;
+        return codePoint -> true;
     }
 
     static GlyphPredicate range(final int min, final int max) {
-        return (glyph) -> glyph >= min && glyph <= max;
+        return codePoint -> codePoint >= min && codePoint <= max;
     }
 
     static GlyphPredicate any(final IntSet codePoints) {
@@ -42,19 +42,19 @@ public interface GlyphPredicate {
     boolean test(final int codePoint);
 
     default GlyphPredicate and(final GlyphPredicate other) {
-        return glyph -> this.test(glyph) && other.test(glyph);
+        return codePoint -> this.test(codePoint) && other.test(codePoint);
     }
 
     default GlyphPredicate or(final GlyphPredicate other) {
-        return glyph -> this.test(glyph) || other.test(glyph);
+        return codePoint -> this.test(codePoint) || other.test(codePoint);
     }
 
     default GlyphPredicate negate() {
-        return glyph -> !this.test(glyph);
+        return codePoint -> !this.test(codePoint);
     }
 
     default GlyphPredicate exclude(final GlyphPredicate other) {
-        return glyph -> this.test(glyph) && !other.test(glyph);
+        return codePoint -> this.test(codePoint) && !other.test(codePoint);
     }
 
 }
