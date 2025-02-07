@@ -28,8 +28,12 @@ repositories {
 
 dependencies {
     compileOnly "org.jetbrains:annotations:26.0.2"
-    api "org.joml:joml:1.10.8"
-    api "org.joml:joml-primitives:1.10.0"
+    api("org.joml:joml:1.10.8") {
+        exclude group: "org.jetbrains.kotlin" // https://github.com/JOML-CI/JOML/issues/352
+    }
+    api("org.joml:joml-primitives:1.10.0") {
+        exclude group: "org.joml", module: "joml"
+    }
     api "it.unimi.dsi:fastutil:8.5.15"
     api "org.slf4j:slf4j-api:2.0.16"
     api "net.lenni0451.commons:core:1.7.1-SNAPSHOT"
