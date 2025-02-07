@@ -5,7 +5,7 @@ uniform sampler2D u_Textures[32];
 
 in vec2 v_TexCoords;
 flat in int v_TextureIndex;
-in vec4 v_TextColor;
+flat in vec4 v_TextColor;
 out vec4 o_Color;
 
 void main() {

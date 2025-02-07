@@ -27,9 +27,9 @@ layout (location = 0) in vec3 i_Position;
 layout (location = 1) in vec2 i_TexCoords;
 out vec2 v_TexCoords;
 flat out int v_TextureIndex;
-out vec4 v_TextColor;
-out vec4 v_OutlineColor;
-out float v_Smoothing;
+flat out vec4 v_TextColor;
+flat out vec4 v_OutlineColor;
+flat out float v_Smoothing;
 flat out int v_StyleFlags;
 out float v_PerspectiveScale;
 

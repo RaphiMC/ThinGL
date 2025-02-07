@@ -22,7 +22,7 @@ layout (location = 0) in vec3 i_Position;
 layout (location = 1) in vec2 i_TexCoords;
 out vec2 v_TexCoords;
 flat out int v_TextureIndex;
-out vec4 v_TextColor;
+flat out vec4 v_TextColor;
 
 vec4 decodeColor(int rgba);
 
