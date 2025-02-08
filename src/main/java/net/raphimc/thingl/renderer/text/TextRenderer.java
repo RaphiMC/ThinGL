@@ -81,9 +81,9 @@ public abstract class TextRenderer {
     protected final Font[] fonts;
     protected final Font primaryFont;
     protected final DrawBatch textDrawBatch;
-    protected final List<StaticAtlasTexture> glyphAtlases = new ArrayList<>();
-    protected final Int2ObjectMap<AtlasGlyph> atlasGlyphs = new Int2ObjectOpenHashMap<>();
-    protected final Int2ObjectMap<FontGlyph> fontGlyphs = new Int2ObjectOpenHashMap<>();
+    private final List<StaticAtlasTexture> glyphAtlases = new ArrayList<>();
+    private final Int2ObjectMap<AtlasGlyph> atlasGlyphs = new Int2ObjectOpenHashMap<>();
+    private final Int2ObjectMap<FontGlyph> fontGlyphs = new Int2ObjectOpenHashMap<>();
     protected float globalScale = 1F;
 
     public TextRenderer(final RegularProgram shader, final Font... fonts) {
@@ -217,6 +217,10 @@ public abstract class TextRenderer {
 
     public Font[] getFonts() {
         return this.fonts;
+    }
+
+    public DrawBatch getTextDrawBatch() {
+        return this.textDrawBatch;
     }
 
     public float getGlobalScale() {

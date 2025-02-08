@@ -71,7 +71,7 @@ public class PersistentMultiDrawBatchDataHolder extends MultiDrawBatchDataHolder
                 this.draw(drawBatch, modelMatrix);
             }
             for (DrawBatch drawBatch : this.builtDrawBatches.keySet()) {
-                if (!ArrayUtils.contains(this.lastOrderedDrawBatches, drawBatch)) {
+                if (!ArrayUtils.contains(this.firstOrderedDrawBatches, drawBatch) && !ArrayUtils.contains(this.lastOrderedDrawBatches, drawBatch)) {
                     this.draw(drawBatch, modelMatrix);
                 }
             }

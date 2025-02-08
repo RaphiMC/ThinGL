@@ -24,14 +24,15 @@ import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
+import net.lenni0451.commons.arrays.ArrayUtils;
 import net.lenni0451.commons.math.MathUtils;
 import net.raphimc.thingl.drawbuilder.DrawBatch;
 import net.raphimc.thingl.drawbuilder.builder.BufferRenderer;
 import net.raphimc.thingl.drawbuilder.builder.BuiltBuffer;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.PersistentMultiDrawBatchDataHolder;
+import net.raphimc.thingl.resource.buffer.AbstractBuffer;
 import net.raphimc.thingl.util.BufferUtil;
 import net.raphimc.thingl.util.GlobalObjects;
-import net.raphimc.thingl.resource.buffer.AbstractBuffer;
 import org.joml.Matrix4f;
 
 import java.util.Map;
@@ -39,13 +40,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class MultiDrawRenderer {
 
-    private final DrawBatch[] orderedDrawBatches;
+    private final DrawBatch[] firstOrderedDrawBatches;
+    private final DrawBatch[] lastOrderedDrawBatches;
     private final Reference2ObjectMap<DrawBatch, MultiDrawBuilder> drawBatches = new Reference2ObjectLinkedOpenHashMap<>();
     private final AtomicInteger idCounter = new AtomicInteger();
     private final Int2ObjectMap<Reference2IntMap<DrawBatch>> drawBatchBuffers = new Int2ObjectOpenHashMap<>();
 
-    public MultiDrawRenderer(final DrawBatch... orderedDrawBatches) {
-        this.orderedDrawBatches = orderedDrawBatches;
+    public MultiDrawRenderer() {
+        this(DrawBatch.EMPTY_ARRAY, DrawBatch.EMPTY_ARRAY);
+    }
+
+    public MultiDrawRenderer(final DrawBatch[] firstOrderedDrawBatches, final DrawBatch[] lastOrderedDrawBatches) {
+        this.firstOrderedDrawBatches = firstOrderedDrawBatches;
+        this.lastOrderedDrawBatches = lastOrderedDrawBatches;
     }
 
     public int uploadDrawBatchBuffers(final PersistentMultiDrawBatchDataHolder multiDrawBatchDataHolder) {
@@ -118,10 +125,15 @@ public class MultiDrawRenderer {
 
     public void draw(final Matrix4f modelMatrix) {
         if (this.hasDrawBatches()) {
-            for (DrawBatch drawBatch : this.orderedDrawBatches) {
+            for (DrawBatch drawBatch : this.firstOrderedDrawBatches) {
                 this.draw(drawBatch, modelMatrix);
             }
             for (DrawBatch drawBatch : this.drawBatches.keySet()) {
+                if (!ArrayUtils.contains(this.firstOrderedDrawBatches, drawBatch) && !ArrayUtils.contains(this.lastOrderedDrawBatches, drawBatch)) {
+                    this.draw(drawBatch, modelMatrix);
+                }
+            }
+            for (DrawBatch drawBatch : this.lastOrderedDrawBatches) {
                 this.draw(drawBatch, modelMatrix);
             }
         }
@@ -129,10 +141,15 @@ public class MultiDrawRenderer {
 
     public void draw(final Matrix4f modelMatrix, final AbstractBuffer drawDataBuffer) {
         if (this.hasDrawBatches()) {
-            for (DrawBatch drawBatch : this.orderedDrawBatches) {
+            for (DrawBatch drawBatch : this.firstOrderedDrawBatches) {
                 this.draw(drawBatch, modelMatrix, drawDataBuffer);
             }
             for (DrawBatch drawBatch : this.drawBatches.keySet()) {
+                if (!ArrayUtils.contains(this.firstOrderedDrawBatches, drawBatch) && !ArrayUtils.contains(this.lastOrderedDrawBatches, drawBatch)) {
+                    this.draw(drawBatch, modelMatrix, drawDataBuffer);
+                }
+            }
+            for (DrawBatch drawBatch : this.lastOrderedDrawBatches) {
                 this.draw(drawBatch, modelMatrix, drawDataBuffer);
             }
         }
