@@ -23,19 +23,13 @@ import net.raphimc.thingl.drawbuilder.databuilder.holder.ShaderDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.MultiDrawBatchDataHolder;
 import net.raphimc.thingl.program.BuiltinPrograms;
 import net.raphimc.thingl.util.font.Font;
-import net.raphimc.thingl.util.font.FontGlyph;
-import net.raphimc.thingl.util.font.FreeTypeInstance;
 import org.joml.Matrix4f;
-import org.lwjgl.util.freetype.FT_Face;
-import org.lwjgl.util.freetype.FT_GlyphSlot;
 import org.lwjgl.util.freetype.FreeType;
-
-import java.nio.ByteBuffer;
 
 public class BitmapTextRenderer extends TextRenderer {
 
     public BitmapTextRenderer(final Font... fonts) {
-        super(BuiltinPrograms.BITMAP_TEXT, fonts);
+        super(BuiltinPrograms.BITMAP_TEXT, FreeType.FT_RENDER_MODE_NORMAL, fonts);
     }
 
     @Override
@@ -70,25 +64,6 @@ public class BitmapTextRenderer extends TextRenderer {
         }
 
         return this.renderString(positionMatrix, multiDrawBatchDataHolder, text, startIndex, endIndex, x, y, z, textColor.toARGB(), flags, regularStringDataIndex);
-    }
-
-    @Override
-    protected GlyphBitmap createGlyphBitmap(final FontGlyph fontGlyph) {
-        final FT_Face fontFace = fontGlyph.font().getFontFace();
-        FreeTypeInstance.checkError(FreeType.FT_Load_Glyph(fontFace, fontGlyph.glyphIndex(), FreeType.FT_LOAD_DEFAULT), "Failed to load glyph");
-        final FT_GlyphSlot glyphSlot = fontFace.glyph();
-        FreeTypeInstance.checkError(FreeType.FT_Render_Glyph(glyphSlot, FreeType.FT_RENDER_MODE_NORMAL), "Failed to render glyph");
-
-        if (glyphSlot.bitmap().pixel_mode() != FreeType.FT_PIXEL_MODE_GRAY) {
-            throw new IllegalStateException("Unsupported pixel mode: " + glyphSlot.bitmap().pixel_mode());
-        }
-
-        final int width = glyphSlot.bitmap().width();
-        final int height = glyphSlot.bitmap().rows();
-        final int xOffset = glyphSlot.bitmap_left();
-        final int yOffset = -glyphSlot.bitmap_top();
-        final ByteBuffer pixels = glyphSlot.bitmap().buffer(width * height);
-        return new GlyphBitmap(pixels, width, height, xOffset, yOffset, null);
     }
 
     private void renderStringOutline(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final String text, final int startIndex, final int endIndex, final float x, final float y, final float z, final int textColorArgb, final int flags, final int stringDataIndex) {

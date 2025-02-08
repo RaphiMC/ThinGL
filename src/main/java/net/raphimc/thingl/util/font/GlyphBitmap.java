@@ -16,10 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.raphimc.thingl.renderer.text;
+package net.raphimc.thingl.util.font;
 
 import java.nio.ByteBuffer;
-import java.util.function.Consumer;
 
-public record GlyphBitmap(ByteBuffer pixels, int width, int height, int xOffset, int yOffset, Consumer<GlyphBitmap> freeAction) {
+public record GlyphBitmap(ByteBuffer pixels, int width, int height, int xOffset, int yOffset) {
 }

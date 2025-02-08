@@ -75,8 +75,8 @@ public class Font {
         } else {
             FreeTypeInstance.checkError(FreeType.FT_Load_Glyph(this.fontFace, 0, FreeType.FT_LOAD_DEFAULT | FreeType.FT_LOAD_NO_BITMAP), "Failed to load glyph");
         }
-
         final FT_GlyphSlot glyphSlot = this.fontFace.glyph();
+
         final FT_Glyph_Metrics metrics = glyphSlot.metrics();
         final int glyphIndex = glyphSlot.glyph_index();
         final float width = metrics.width() / 64F;
@@ -85,6 +85,24 @@ public class Font {
         final float bearingX = metrics.horiBearingX() / 64F;
         final float bearingY = metrics.horiBearingY() / 64F;
         return new FontGlyph(this, glyphIndex, width, height, advance, bearingX, bearingY);
+    }
+
+    public GlyphBitmap loadGlyphBitmap(final int glyphIndex, final int renderMode) {
+        FreeTypeInstance.checkError(FreeType.FT_Load_Glyph(this.fontFace, glyphIndex, FreeType.FT_LOAD_DEFAULT), "Failed to load glyph");
+        final FT_GlyphSlot glyphSlot = this.fontFace.glyph();
+
+        FreeTypeInstance.checkError(FreeType.FT_Render_Glyph(glyphSlot, renderMode), "Failed to render glyph");
+        final FT_Bitmap bitmap = glyphSlot.bitmap();
+        if (bitmap.pixel_mode() != FreeType.FT_PIXEL_MODE_GRAY) {
+            throw new IllegalStateException("Unsupported pixel mode: " + bitmap.pixel_mode());
+        }
+
+        final int width = bitmap.width();
+        final int height = bitmap.rows();
+        final int xOffset = glyphSlot.bitmap_left();
+        final int yOffset = -glyphSlot.bitmap_top();
+        final ByteBuffer pixels = bitmap.buffer(width * height);
+        return new GlyphBitmap(pixels, width, height, xOffset, yOffset);
     }
 
     public void delete() {

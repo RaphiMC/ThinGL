@@ -34,6 +34,7 @@ import net.raphimc.thingl.resource.texture.AbstractTexture;
 import net.raphimc.thingl.texture.StaticAtlasTexture;
 import net.raphimc.thingl.util.font.Font;
 import net.raphimc.thingl.util.font.FontGlyph;
+import net.raphimc.thingl.util.font.GlyphBitmap;
 import net.raphimc.thingl.wrapper.GLStateTracker;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11C;
@@ -80,18 +81,20 @@ public abstract class TextRenderer {
 
     protected final Font[] fonts;
     protected final Font primaryFont;
+    private final int freeTypeRenderMode;
     protected final DrawBatch textDrawBatch;
     private final List<StaticAtlasTexture> glyphAtlases = new ArrayList<>();
     private final Int2ObjectMap<AtlasGlyph> atlasGlyphs = new Int2ObjectOpenHashMap<>();
     private final Int2ObjectMap<FontGlyph> fontGlyphs = new Int2ObjectOpenHashMap<>();
     protected float globalScale = 1F;
 
-    public TextRenderer(final RegularProgram shader, final Font... fonts) {
+    public TextRenderer(final RegularProgram shader, final int freeTypeRenderMode, final Font... fonts) {
         if (fonts.length == 0) {
             throw new IllegalArgumentException("At least one font must be provided");
         }
         this.fonts = fonts;
         this.primaryFont = fonts[0];
+        this.freeTypeRenderMode = freeTypeRenderMode;
 
         this.textDrawBatch = new DrawBatch(() -> shader, DrawMode.QUADS, BuiltinDrawBatches.POSITION_TEXTURE_LAYOUT, () -> {
             GLStateTracker.push();
@@ -305,7 +308,7 @@ public abstract class TextRenderer {
 
     private AtlasGlyph createAtlasGlyph(final int codePoint) {
         final FontGlyph fontGlyph = this.getFontGlyph(codePoint);
-        final GlyphBitmap glyphBitmap = this.createGlyphBitmap(fontGlyph);
+        final GlyphBitmap glyphBitmap = fontGlyph.font().loadGlyphBitmap(fontGlyph.glyphIndex(), this.freeTypeRenderMode);
 
         if (glyphBitmap.pixels() == null) {
             return new AtlasGlyph(fontGlyph, -1, 0F, 0F, 0F, 0F, glyphBitmap.width(), glyphBitmap.height(), glyphBitmap.xOffset(), glyphBitmap.yOffset());
@@ -324,9 +327,6 @@ public abstract class TextRenderer {
                 break;
             }
         }
-        if (glyphBitmap.freeAction() != null) {
-            glyphBitmap.freeAction().accept(glyphBitmap);
-        }
         if (atlasSlot == null) {
             throw new IllegalStateException("Glyph " + codePoint + " is too large to fit in atlas (" + glyphBitmap.width() + "x" + glyphBitmap.height() + ")");
         }
@@ -336,8 +336,6 @@ public abstract class TextRenderer {
 
         return new AtlasGlyph(fontGlyph, this.glyphAtlases.indexOf(atlas), atlasSlot.u1(), atlasSlot.v1(), atlasSlot.u2(), atlasSlot.v2(), glyphBitmap.width(), glyphBitmap.height(), glyphBitmap.xOffset(), glyphBitmap.yOffset());
     }
-
-    protected abstract GlyphBitmap createGlyphBitmap(final FontGlyph fontGlyph);
 
     private FontGlyph getFontGlyph(final int codePoint) {
         return this.fontGlyphs.computeIfAbsent(codePoint, this::createFontGlyph);
