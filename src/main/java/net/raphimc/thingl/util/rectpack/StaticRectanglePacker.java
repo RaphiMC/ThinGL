@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.thingl.util;
+package net.raphimc.thingl.util.rectpack;
 
 import org.lwjgl.stb.STBRPContext;
 import org.lwjgl.stb.STBRPNode;
@@ -34,9 +34,9 @@ public class StaticRectanglePacker {
         STBRectPack.stbrp_init_target(this.rectPackContext, width, height, this.rectPackNodes);
     }
 
-    public Slot pack(final int width, final int height) {
+    public Slot pack(final int rectWidth, final int rectHeight) {
         try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-            final STBRPRect.Buffer rect = STBRPRect.malloc(1, memoryStack).w(width + 1).h(height + 1);
+            final STBRPRect.Buffer rect = STBRPRect.malloc(1, memoryStack).w(rectWidth + 1).h(rectHeight + 1);
             STBRectPack.stbrp_pack_rects(this.rectPackContext, rect);
             if (!rect.was_packed()) {
                 return null;
@@ -46,9 +46,9 @@ public class StaticRectanglePacker {
             final int y = rect.y();
             final float u1 = x / (float) this.getWidth();
             final float v1 = y / (float) this.getHeight();
-            final float u2 = (x + width) / (float) this.getWidth();
-            final float v2 = (y + height) / (float) this.getHeight();
-            return new Slot(x, y, width, height, u1, v1, u2, v2);
+            final float u2 = (x + rectWidth) / (float) this.getWidth();
+            final float v2 = (y + rectHeight) / (float) this.getHeight();
+            return new Slot(x, y, rectWidth, rectHeight, u1, v1, u2, v2);
         }
     }
 
@@ -62,9 +62,6 @@ public class StaticRectanglePacker {
 
     public void delete() {
         this.rectPackNodes.free();
-    }
-
-    public record Slot(int x, int y, int width, int height, float u1, float v1, float u2, float v2) {
     }
 
 }

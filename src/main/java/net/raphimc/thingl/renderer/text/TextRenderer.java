@@ -32,10 +32,10 @@ import net.raphimc.thingl.program.RegularProgram;
 import net.raphimc.thingl.renderer.Primitives;
 import net.raphimc.thingl.resource.texture.AbstractTexture;
 import net.raphimc.thingl.texture.StaticAtlasTexture;
-import net.raphimc.thingl.util.StaticRectanglePacker;
 import net.raphimc.thingl.util.font.Font;
 import net.raphimc.thingl.util.font.FontGlyph;
 import net.raphimc.thingl.util.font.GlyphBitmap;
+import net.raphimc.thingl.util.rectpack.Slot;
 import net.raphimc.thingl.wrapper.GLStateTracker;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11C;
@@ -319,7 +319,7 @@ public abstract class TextRenderer {
             return new AtlasGlyph(fontGlyph, -1, 0F, 0F, 0F, 0F, glyphBitmap.width(), glyphBitmap.height(), glyphBitmap.xOffset(), glyphBitmap.yOffset());
         }
 
-        StaticRectanglePacker.Slot atlasSlot = null;
+        Slot atlasSlot = null;
         StaticAtlasTexture atlas = null;
         for (int i = 0; i < this.glyphAtlases.size() + 1; i++) {
             if (i == this.glyphAtlases.size()) {

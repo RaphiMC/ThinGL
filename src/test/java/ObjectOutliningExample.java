@@ -33,6 +33,7 @@ public class ObjectOutliningExample extends ExampleBase {
         BuiltinPrograms.SMOOTH_OUTLINE.bindMask();
         this.renderScene(positionMatrix);
         BuiltinPrograms.SMOOTH_OUTLINE.unbindMask();
+        BuiltinPrograms.SMOOTH_OUTLINE.configureParameters(1); // Configure the outline width
         BuiltinPrograms.SMOOTH_OUTLINE.renderFullscreenQuad();
         BuiltinPrograms.SMOOTH_OUTLINE.clearMask();
 
