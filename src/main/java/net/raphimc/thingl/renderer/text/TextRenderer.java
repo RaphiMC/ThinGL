@@ -108,7 +108,11 @@ public abstract class TextRenderer {
     }
 
     public float renderString(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final String text, float x, final float y, final float z, final Color textColor) {
-        return this.renderString(positionMatrix, multiDrawBatchDataHolder, text, x, y, z, textColor, 0, Color.TRANSPARENT);
+        return this.renderString(positionMatrix, multiDrawBatchDataHolder, text, x, y, z, textColor, 0);
+    }
+
+    public float renderString(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final String text, float x, float y, final float z, final Color textColor, final int flags) {
+        return this.renderString(positionMatrix, multiDrawBatchDataHolder, text, x, y, z, textColor, flags, Color.TRANSPARENT);
     }
 
     public float renderString(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final String text, float x, float y, final float z, final Color textColor, final int flags, final Color outlineColor) {
