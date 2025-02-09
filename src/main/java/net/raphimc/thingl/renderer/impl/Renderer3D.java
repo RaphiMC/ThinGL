@@ -91,7 +91,7 @@ public class Renderer3D extends Renderer {
             Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, maxX, maxY, maxZ, maxX, minY, maxZ, maxX, minY, minZ, maxX, maxY, minZ, abgr);
         }
 
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
     public void outlineBox(final Matrix4f positionMatrix, final AABBd aabb, final float lineWidth, final Color color) {
@@ -171,7 +171,7 @@ public class Renderer3D extends Renderer {
             }
         }
 
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
     public void line(final Matrix4f positionMatrix, final Vector3d start, final Vector3d end, final float width, final Color color) {
@@ -188,7 +188,7 @@ public class Renderer3D extends Renderer {
 
     public void line(final Matrix4f positionMatrix, final float x1, final float y1, final float z1, final float x2, final float y2, final float z2, final float width, final Color color) {
         Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, x1, y1, z1, x2, y2, z2, width, color.toABGR());
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
     public void line(final Matrix4f positionMatrix, final Vector3d start, final Vector3d end, final float width, final Color startColor, final Color endColor) {
@@ -205,7 +205,7 @@ public class Renderer3D extends Renderer {
 
     public void line(final Matrix4f positionMatrix, final float x1, final float y1, final float z1, final float x2, final float y2, final float z2, final float width, final Color startColor, final Color endColor) {
         Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, x1, y1, z1, x2, y2, z2, width, startColor.toABGR(), endColor.toABGR());
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
 }

@@ -54,7 +54,7 @@ public class Renderer2D extends Renderer {
 
     public void filledRectangle(final Matrix4f positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr, final Color color) {
         Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, xtl, ytl, xbr, ybr, color.toABGR());
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
     public void outlineRectangle(final Matrix4f positionMatrix, final Rectangled rectangle, final float lineWidth, final Color color) {
@@ -74,7 +74,7 @@ public class Renderer2D extends Renderer {
         Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, xtl - lineWidth, ybr, xbr + lineWidth, ybr + lineWidth, color.toABGR()); // bottom line
         Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, xtl - lineWidth, ytl, xtl, ybr, color.toABGR()); // left line
         Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, xbr, ytl, xbr + lineWidth, ybr, color.toABGR()); // right line
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
     public void filledTriangle(final Matrix4f positionMatrix, final TriangleD triangle, final Color color) {
@@ -91,7 +91,7 @@ public class Renderer2D extends Renderer {
 
     public void filledTriangle(final Matrix4f positionMatrix, final float xl, final float yl, final float xm, final float ym, final float xr, final float yr, final Color color) {
         Primitives.filledTriangle(positionMatrix, this.targetMultiDrawBatchDataHolder, xl, yl, xm, ym, xr, yr, color.toABGR());
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
     public void filledTriangle(final Matrix4f positionMatrix, final TriangleD triangle, final Color leftColor, final Color middleColor, final Color rightColor) {
@@ -108,7 +108,7 @@ public class Renderer2D extends Renderer {
 
     public void filledTriangle(final Matrix4f positionMatrix, final float xl, final float yl, final float xm, final float ym, final float xr, final float yr, final Color leftColor, final Color middleColor, final Color rightColor) {
         Primitives.filledTriangle(positionMatrix, this.targetMultiDrawBatchDataHolder, xl, yl, xm, ym, xr, yr, leftColor.toABGR(), middleColor.toABGR(), rightColor.toABGR());
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
     public void filledCircle(final Matrix4f positionMatrix, final Circled circle, final Color color) {
@@ -121,7 +121,7 @@ public class Renderer2D extends Renderer {
 
     public void filledCircle(final Matrix4f positionMatrix, final float x, final float y, final float radius, final Color color) {
         Primitives.filledCircle(positionMatrix, this.targetMultiDrawBatchDataHolder, x, y, radius, color.toABGR());
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
     public void filledCircle(final Matrix4f positionMatrix, final Circled circle, final float degStart, final float degEnd, final Color color) {
@@ -134,7 +134,7 @@ public class Renderer2D extends Renderer {
 
     public void filledCircle(final Matrix4f positionMatrix, final float x, final float y, final float radius, final float degStart, final float degEnd, final Color color) {
         Primitives.filledCircle(positionMatrix, this.targetMultiDrawBatchDataHolder, x, y, radius, degStart, degEnd, color.toABGR());
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
     public void outlineCircle(final Matrix4f positionMatrix, final Circled circle, final float width, final Color color) {
@@ -147,7 +147,7 @@ public class Renderer2D extends Renderer {
 
     public void outlineCircle(final Matrix4f positionMatrix, final float x, final float y, final float radius, final float width, final Color color) {
         Primitives.outlineCircle(positionMatrix, this.targetMultiDrawBatchDataHolder, x, y, radius, width, color.toABGR());
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
     public void outlineCircle(final Matrix4f positionMatrix, final Circled circle, final float width, final float degStart, final float degEnd, final Color color) {
@@ -160,7 +160,7 @@ public class Renderer2D extends Renderer {
 
     public void outlineCircle(final Matrix4f positionMatrix, final float x, final float y, final float radius, final float width, final float degStart, final float degEnd, final Color color) {
         Primitives.outlineCircle(positionMatrix, this.targetMultiDrawBatchDataHolder, x, y, radius, width, degStart, degEnd, color.toABGR());
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
     public void rectLine(final Matrix4f positionMatrix, final Vector2d start, final Vector2d end, final float width, final Color color) {
@@ -177,7 +177,7 @@ public class Renderer2D extends Renderer {
 
     public void rectLine(final Matrix4f positionMatrix, final float x1, final float y1, final float x2, final float y2, final float width, final Color color) {
         Primitives.rectLine(positionMatrix, this.targetMultiDrawBatchDataHolder, x1, y1, x2, y2, width, color.toABGR());
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
     public void rectLine(final Matrix4f positionMatrix, final Vector2d start, final Vector2d end, final float width, final Color startColor, final Color endColor) {
@@ -194,7 +194,7 @@ public class Renderer2D extends Renderer {
 
     public void rectLine(final Matrix4f positionMatrix, final float x1, final float y1, final float x2, final float y2, final float width, final Color startColor, final Color endColor) {
         Primitives.rectLine(positionMatrix, this.targetMultiDrawBatchDataHolder, x1, y1, x2, y2, width, startColor.toABGR(), endColor.toABGR());
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
     public void glLine(final Matrix4f positionMatrix, final Vector2d start, final Vector2d end, final Color color) {
@@ -211,7 +211,7 @@ public class Renderer2D extends Renderer {
 
     public void glLine(final Matrix4f positionMatrix, final float x1, final float y1, final float x2, final float y2, final Color color) {
         Primitives.glLine(positionMatrix, this.targetMultiDrawBatchDataHolder, x1, y1, x2, y2, color.toABGR());
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
     public void glLine(final Matrix4f positionMatrix, final Vector2d start, final Vector2d end, final Color startColor, final Color endColor) {
@@ -228,7 +228,7 @@ public class Renderer2D extends Renderer {
 
     public void glLine(final Matrix4f positionMatrix, final float x1, final float y1, final float x2, final float y2, final Color startColor, final Color endColor) {
         Primitives.glLine(positionMatrix, this.targetMultiDrawBatchDataHolder, x1, y1, x2, y2, startColor.toABGR(), endColor.toABGR());
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
     public void line(final Matrix4f positionMatrix, final Vector2d start, final Vector2d end, final float width, final Color color) {
@@ -245,7 +245,7 @@ public class Renderer2D extends Renderer {
 
     public void line(final Matrix4f positionMatrix, final float x1, final float y1, final float x2, final float y2, final float width, final Color color) {
         Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, x1, y1, x2, y2, width, color.toABGR());
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
     public void line(final Matrix4f positionMatrix, final Vector2d start, final Vector2d end, final float width, final Color startColor, final Color endColor) {
@@ -262,7 +262,7 @@ public class Renderer2D extends Renderer {
 
     public void line(final Matrix4f positionMatrix, final float x1, final float y1, final float x2, final float y2, final float width, final Color startColor, final Color endColor) {
         Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, x1, y1, x2, y2, width, startColor.toABGR(), endColor.toABGR());
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
     public void connectedLine(final Matrix4f positionMatrix, final Vector2f[] points, final float width, final Color color) {
@@ -294,7 +294,7 @@ public class Renderer2D extends Renderer {
 
         ParStreamlines.parsl_destroy_context(ctx);
 
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
     public void filledRoundedRectangle(final Matrix4f positionMatrix, final Rectangled rectangle, final float radius, final Color color) {
@@ -318,25 +318,25 @@ public class Renderer2D extends Renderer {
         Primitives._filledCircle(positionMatrix, vertexDataHolder, xbr - radius, ytl + radius, 0F, radius, 0, 90, color.toABGR());
         vertexDataHolder.endConnectedPrimitive();
 
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
     public void texture(final Matrix4f positionMatrix, final int id, final float x, final float y, final float width, final float height) {
         final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.TEXTURE.apply(id));
         this.texture(positionMatrix, vertexDataHolder, x, y, width, height, 0F, 0F, 1F, 1F);
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
     public void texture(final Matrix4f positionMatrix, final int id, final float x, final float y, final float width, final float height, final float u, final float v, final float texWidth, final float texHeight) {
         final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.TEXTURE.apply(id));
         this.texture(positionMatrix, vertexDataHolder, x, y, width, height, u / texWidth, v / texHeight, width / texWidth, height / texHeight);
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
     public void texture(final Matrix4f positionMatrix, final int id, final float x, final float y, final float width, final float height, final float u, final float v, final float uWidth, final float vHeight, final float texWidth, final float texHeight) {
         final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.TEXTURE.apply(id));
         this.texture(positionMatrix, vertexDataHolder, x, y, width, height, u / texWidth, v / texHeight, uWidth / texWidth, vHeight / texHeight);
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
     private void texture(final Matrix4f positionMatrix, final VertexDataHolder vertexDataHolder, final float x, final float y, final float width, final float height, final float u, final float v, final float uWidth, final float vHeight) {
@@ -349,19 +349,19 @@ public class Renderer2D extends Renderer {
     public void coloredTexture(final Matrix4f positionMatrix, final int id, final float x, final float y, final float width, final float height, final Color color) {
         final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.COLORED_TEXTURE.apply(id));
         this.coloredTexture(positionMatrix, vertexDataHolder, x, y, width, height, 0F, 0F, 1F, 1F, color);
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
     public void coloredTexture(final Matrix4f positionMatrix, final int id, final float x, final float y, final float width, final float height, final float u, final float v, final float texWidth, final float texHeight, final Color color) {
         final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.COLORED_TEXTURE.apply(id));
         this.coloredTexture(positionMatrix, vertexDataHolder, x, y, width, height, u / texWidth, v / texHeight, width / texWidth, height / texHeight, color);
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
     public void coloredTexture(final Matrix4f positionMatrix, final int id, final float x, final float y, final float width, final float height, final float u, final float v, final float uWidth, final float vHeight, final float texWidth, final float texHeight, final Color color) {
         final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.COLORED_TEXTURE.apply(id));
         this.coloredTexture(positionMatrix, vertexDataHolder, x, y, width, height, u / texWidth, v / texHeight, uWidth / texWidth, vHeight / texHeight, color);
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
     private void coloredTexture(final Matrix4f positionMatrix, final VertexDataHolder vertexDataHolder, final float x, final float y, final float width, final float height, final float u, final float v, final float uWidth, final float vHeight, final Color color) {
@@ -374,19 +374,19 @@ public class Renderer2D extends Renderer {
     public void colorizedTexture(final Matrix4f positionMatrix, final int id, final float x, final float y, final float width, final float height, final Color color) {
         final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.COLORIZED_TEXTURE.apply(id));
         this.coloredTexture(positionMatrix, vertexDataHolder, x, y, width, height, 0F, 0F, 1F, 1F, color);
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
     public void colorizedTexture(final Matrix4f positionMatrix, final int id, final float x, final float y, final float width, final float height, final float u, final float v, final float texWidth, final float texHeight, final Color color) {
         final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.COLORIZED_TEXTURE.apply(id));
         this.coloredTexture(positionMatrix, vertexDataHolder, x, y, width, height, u / texWidth, v / texHeight, width / texWidth, height / texHeight, color);
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
     public void colorizedTexture(final Matrix4f positionMatrix, final int id, final float x, final float y, final float width, final float height, final float u, final float v, final float uWidth, final float vHeight, final float texWidth, final float texHeight, final Color color) {
         final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.COLORIZED_TEXTURE.apply(id));
         this.coloredTexture(positionMatrix, vertexDataHolder, x, y, width, height, u / texWidth, v / texHeight, uWidth / texWidth, vHeight / texHeight, color);
-        super.drawIfNotBuffering();
+        drawIfNotBuffering();
     }
 
 }
