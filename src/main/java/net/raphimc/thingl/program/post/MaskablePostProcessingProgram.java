@@ -21,6 +21,7 @@ package net.raphimc.thingl.program.post;
 import net.raphimc.thingl.framebuffer.impl.TextureFramebuffer;
 import net.raphimc.thingl.program.PostProcessingProgram;
 import net.raphimc.thingl.resource.shader.Shader;
+import net.raphimc.thingl.util.GlobalObjects;
 import net.raphimc.thingl.util.pool.FramebufferPool;
 import net.raphimc.thingl.wrapper.GLStateTracker;
 import org.joml.Matrix4f;
@@ -52,6 +53,10 @@ public abstract class MaskablePostProcessingProgram extends PostProcessingProgra
         GLStateTracker.popFramebuffer();
         GLStateTracker.popBlendFunc();
         GLStateTracker.pop();
+    }
+
+    public void renderMask() {
+        this.renderMask(GlobalObjects.IDENTITY_MATRIX);
     }
 
     public void renderMask(final Matrix4f positionMatrix) {
