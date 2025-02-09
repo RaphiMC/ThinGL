@@ -42,6 +42,10 @@ public class GridRectanglePacker {
     public Slot getSlot(final int index) {
         final int x = (index % this.rectsPerRow) * this.paddedRectWidth;
         final int y = (index / this.rectsPerRow) * this.paddedRectHeight;
+        if (x < 0 || x >= this.width || y < 0 || y >= this.height) {
+            return null;
+        }
+
         final float u1 = x / (float) this.width;
         final float v1 = y / (float) this.height;
         final float u2 = (x + this.rectWidth) / (float) this.width;
