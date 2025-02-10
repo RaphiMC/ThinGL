@@ -87,6 +87,7 @@ public abstract class TextRenderer {
     private final List<StaticAtlasTexture> glyphAtlases = new ArrayList<>();
     private final Int2ObjectMap<AtlasGlyph> atlasGlyphs = new Int2ObjectOpenHashMap<>();
     private final Int2ObjectMap<FontGlyph> fontGlyphs = new Int2ObjectOpenHashMap<>();
+    private float italicShearFactor = (float) Math.tan(Math.toRadians(14));
     protected float globalScale = 1F;
 
     public TextRenderer(final RegularProgram shader, final int freeTypeRenderMode, final Font... fonts) {
@@ -141,8 +142,10 @@ public abstract class TextRenderer {
             if (i != text.length() - 1) {
                 width += fontGlyph.advance();
             } else {
-                width += fontGlyph.width();
-                width += fontGlyph.bearingX();
+                width += fontGlyph.bearingX() + fontGlyph.width();
+                if ((flags & TextRenderer.STYLE_ITALIC_BIT) != 0) {
+                    width += this.italicShearFactor * fontGlyph.bearingY();
+                }
             }
         }
 
@@ -231,6 +234,14 @@ public abstract class TextRenderer {
         return this.textDrawBatch;
     }
 
+    public float getItalicAngle() {
+        return (float) Math.toDegrees(Math.atan(this.italicShearFactor));
+    }
+
+    public void setItalicAngle(final float italicAngle) {
+        this.italicShearFactor = (float) Math.tan(Math.toRadians(italicAngle));
+    }
+
     public float getGlobalScale() {
         return this.globalScale;
     }
@@ -280,8 +291,8 @@ public abstract class TextRenderer {
         float topOffset = 0F;
         float bottomOffset = 0F;
         if ((flags & TextRenderer.STYLE_ITALIC_BIT) != 0) {
-            topOffset = 4F * this.globalScale;
-            bottomOffset = 2F * this.globalScale;
+            topOffset = this.italicShearFactor * -(y1 - y);
+            bottomOffset = this.italicShearFactor * (y2 - y);
         }
 
         charDataHolder.rawInt((glyph.atlasIndex() << 27) | stringDataIndex).end();
