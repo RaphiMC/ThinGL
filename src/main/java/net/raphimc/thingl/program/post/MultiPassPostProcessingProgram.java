@@ -50,6 +50,7 @@ public class MultiPassPostProcessingProgram<S extends MaskablePostProcessingProg
         }
 
         GLStateTracker.push();
+        GLStateTracker.disable(GL11C.GL_BLEND);
         GLStateTracker.disable(GL11C.GL_DEPTH_TEST);
         GLStateTracker.disable(GL11C.GL_STENCIL_TEST);
 
