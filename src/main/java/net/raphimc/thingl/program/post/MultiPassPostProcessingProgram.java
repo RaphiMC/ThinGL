@@ -20,10 +20,10 @@ package net.raphimc.thingl.program.post;
 
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.framebuffer.impl.TextureFramebuffer;
-import net.raphimc.thingl.util.pool.FramebufferPool;
 import net.raphimc.thingl.resource.framebuffer.Framebuffer;
-import net.raphimc.thingl.wrapper.GLStateTracker;
 import net.raphimc.thingl.resource.shader.Shader;
+import net.raphimc.thingl.util.pool.FramebufferPool;
+import net.raphimc.thingl.wrapper.GLStateTracker;
 import org.lwjgl.opengl.GL11C;
 
 import java.util.function.Consumer;
@@ -41,7 +41,7 @@ public class MultiPassPostProcessingProgram<S extends MaskablePostProcessingProg
     }
 
     @Override
-    protected void renderQuad0(final float x, final float y, final float width, final float height) {
+    protected void renderQuad0(final float x1, final float y1, final float x2, final float y2) {
         final Framebuffer sourceFramebuffer = ThinGL.getImplementation().getCurrentFramebuffer();
 
         final TextureFramebuffer[] framebuffers = new TextureFramebuffer[this.passes.length - 1];
@@ -56,13 +56,13 @@ public class MultiPassPostProcessingProgram<S extends MaskablePostProcessingProg
         this.setUniformTexture("u_Source", sourceFramebuffer);
         framebuffers[0].bind();
         this.passes[0].accept((S) this);
-        super.renderQuad0(x, y, width, height);
+        super.renderQuad0(x1, y1, x2, y2);
 
         for (int i = 1; i < this.passes.length - 1; i++) {
             this.setUniformTexture("u_Source", framebuffers[i - 1]);
             framebuffers[i].bind();
             this.passes[i].accept((S) this);
-            super.renderQuad0(x, y, width, height);
+            super.renderQuad0(x1, y1, x2, y2);
         }
 
         GLStateTracker.pop();
@@ -70,7 +70,7 @@ public class MultiPassPostProcessingProgram<S extends MaskablePostProcessingProg
         this.setUniformTexture("u_Source", framebuffers[this.passes.length - 2]);
         sourceFramebuffer.bind();
         this.passes[this.passes.length - 1].accept((S) this);
-        super.renderQuad0(x, y, width, height);
+        super.renderQuad0(x1, y1, x2, y2);
 
         for (TextureFramebuffer framebuffer : framebuffers) {
             FramebufferPool.returnFramebuffer(framebuffer);

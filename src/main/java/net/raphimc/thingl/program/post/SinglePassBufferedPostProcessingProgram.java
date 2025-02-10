@@ -33,12 +33,12 @@ public class SinglePassBufferedPostProcessingProgram<S extends SinglePassPostPro
     }
 
     @Override
-    protected void renderQuad0(final float x, final float y, final float width, final float height) {
+    protected void renderQuad0(final float x1, final float y1, final float x2, final float y2) {
         final TextureFramebuffer tempFramebuffer = FramebufferPool.borrowFramebuffer(GL11C.GL_LINEAR);
         ThinGL.getImplementation().getCurrentFramebuffer().blitTo(tempFramebuffer, true, false, false);
 
         this.setUniformTexture("u_Source", tempFramebuffer);
-        super.renderQuad0(x, y, width, height);
+        super.renderQuad0(x1, y1, x2, y2);
 
         FramebufferPool.returnFramebuffer(tempFramebuffer);
     }

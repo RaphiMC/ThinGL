@@ -35,15 +35,15 @@ import net.raphimc.thingl.drawbuilder.databuilder.holder.VertexDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.DrawBatchDataHolder;
 import net.raphimc.thingl.drawbuilder.index.IndexType;
 import net.raphimc.thingl.drawbuilder.index.QuadIndexBuffer;
+import net.raphimc.thingl.drawbuilder.vertex.SharedVertexArrays;
 import net.raphimc.thingl.drawbuilder.vertex.VertexDataLayout;
 import net.raphimc.thingl.program.RegularProgram;
-import net.raphimc.thingl.util.pool.BufferBuilderPool;
-import net.raphimc.thingl.util.BufferUtil;
-import net.raphimc.thingl.drawbuilder.vertex.SharedVertexArrays;
 import net.raphimc.thingl.resource.buffer.AbstractBuffer;
 import net.raphimc.thingl.resource.buffer.ImmutableBuffer;
-import net.raphimc.thingl.resource.vertexarray.VertexArray;
 import net.raphimc.thingl.resource.program.Program;
+import net.raphimc.thingl.resource.vertexarray.VertexArray;
+import net.raphimc.thingl.util.BufferUtil;
+import net.raphimc.thingl.util.pool.BufferBuilderPool;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.lwjgl.opengl.GL11C;
@@ -87,10 +87,6 @@ public class BufferRenderer {
         }
 
         int totalVertexCount = vertexDataHolder.getVertexCount();
-        if (drawBatch.drawMode() == DrawMode.QUADS) {
-            totalVertexCount = vertexDataHolder.getVertexCount() / 4 * 6;
-        }
-
         Pair<IndexType, ByteBuffer> indexBuffer = null;
         if (drawBatchDataHolder.hasIndexDataHolder()) {
             if (!drawBatch.drawMode().usesConnectedPrimitives()) {
@@ -113,6 +109,7 @@ public class BufferRenderer {
                 QuadIndexBuffer.ensureSize(quadCount);
                 indexBuffer = Pair.of(IndexType.UNSIGNED_INT, QuadIndexBuffer.getSharedByteBuffer());
             }
+            totalVertexCount = quadCount * 6;
         }
 
         if (optimizeMesh && connectedPrimitiveIndices == null && drawBatch.drawMode().getGlMode() == GL11C.GL_TRIANGLES) {
