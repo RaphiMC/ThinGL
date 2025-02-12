@@ -28,7 +28,7 @@ public class SingleColorProgram extends SinglePassPostProcessingProgram<SingleCo
 
     public SingleColorProgram() {
         super(BuiltinPrograms.getShader("post/post_processing", Shader.Type.VERTEX), BuiltinPrograms.getShader("post/single_color", Shader.Type.FRAGMENT), s -> {
-            s.setUniform("u_Color", s.color.getRed() / 255F, s.color.getGreen() / 255F, s.color.getBlue() / 255F);
+            s.setUniform("u_Color", s.color.getRed() / 255F, s.color.getGreen() / 255F, s.color.getBlue() / 255F, s.color.getAlpha() / 255F);
         });
     }
 
