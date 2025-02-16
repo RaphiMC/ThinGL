@@ -48,38 +48,38 @@ public class BuiltinDrawBatches {
     public static final VertexDataLayout POSITION_COLOR_TEXTURE_LAYOUT = new VertexDataLayout(POSITION_ELEMENT, COLOR_ELEMENT, TEXTURE_ELEMENT);
     public static final VertexDataLayout HALF_POSITION_COLOR_LAYOUT = new VertexDataLayout(HALF_POSITION_ELEMENT, COLOR_ELEMENT);
 
-    public static final DrawBatch QUAD = new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR, () -> BuiltinPrograms.INSTANCED_POSITION_COLOR, () -> BuiltinPrograms.MULTIDRAW_POSITION_COLOR, DrawMode.QUADS, POSITION_COLOR_LAYOUT, HALF_POSITION_COLOR_LAYOUT, PUSH_ENABLE_BLEND, POP);
+    public static final DrawBatch COLORED_QUAD = new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR, () -> BuiltinPrograms.INSTANCED_POSITION_COLOR, () -> BuiltinPrograms.MULTIDRAW_POSITION_COLOR, DrawMode.QUADS, POSITION_COLOR_LAYOUT, HALF_POSITION_COLOR_LAYOUT, PUSH_ENABLE_BLEND, POP);
 
-    public static final DrawBatch TRIANGLE = new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR, () -> BuiltinPrograms.INSTANCED_POSITION_COLOR, () -> BuiltinPrograms.MULTIDRAW_POSITION_COLOR, DrawMode.TRIANGLES, POSITION_COLOR_LAYOUT, HALF_POSITION_COLOR_LAYOUT, PUSH_ENABLE_BLEND, POP);
+    public static final DrawBatch COLORED_TRIANGLE = new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR, () -> BuiltinPrograms.INSTANCED_POSITION_COLOR, () -> BuiltinPrograms.MULTIDRAW_POSITION_COLOR, DrawMode.TRIANGLES, POSITION_COLOR_LAYOUT, HALF_POSITION_COLOR_LAYOUT, PUSH_ENABLE_BLEND, POP);
 
-    public static final DrawBatch GL_LINE = new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR, () -> BuiltinPrograms.INSTANCED_POSITION_COLOR, () -> BuiltinPrograms.MULTIDRAW_POSITION_COLOR, DrawMode.LINES, POSITION_COLOR_LAYOUT, HALF_POSITION_COLOR_LAYOUT, () -> {
+    public static final DrawBatch COLORED_GL_LINE = new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR, () -> BuiltinPrograms.INSTANCED_POSITION_COLOR, () -> BuiltinPrograms.MULTIDRAW_POSITION_COLOR, DrawMode.LINES, POSITION_COLOR_LAYOUT, HALF_POSITION_COLOR_LAYOUT, () -> {
         PUSH_ENABLE_BLEND.run();
         GLStateTracker.enable(GL11C.GL_LINE_SMOOTH);
         GL11C.glHint(GL11C.GL_LINE_SMOOTH_HINT, GL11C.GL_NICEST);
     }, POP);
 
-    public static final DrawBatch LINE = new DrawBatch(() -> BuiltinPrograms.LINE, () -> BuiltinPrograms.MULTIDRAW_LINE, DrawMode.LINES, LINE_LAYOUT,  () -> {
+    public static final DrawBatch COLORED_LINE = new DrawBatch(() -> BuiltinPrograms.LINE, () -> BuiltinPrograms.MULTIDRAW_LINE, DrawMode.LINES, LINE_LAYOUT,  () -> {
         PUSH_ENABLE_BLEND.run();
         GLStateTracker.disable(GL11C.GL_CULL_FACE);
     }, POP);
 
-    public static final IntFunction<DrawBatch> TEXTURE = CacheUtil.memoizeInt(textureId -> new DrawBatch(() -> BuiltinPrograms.POSITION_TEXTURE, DrawMode.QUADS, POSITION_TEXTURE_LAYOUT,  () -> {
+    public static final IntFunction<DrawBatch> TEXTURED_QUAD = CacheUtil.memoizeInt(textureId -> new DrawBatch(() -> BuiltinPrograms.POSITION_TEXTURE, DrawMode.QUADS, POSITION_TEXTURE_LAYOUT,  () -> {
         PUSH_ENABLE_BLEND.run();
         BuiltinPrograms.POSITION_TEXTURE.setUniformTexture("u_Texture", textureId);
     }, POP));
 
-    public static final IntFunction<DrawBatch> COLORED_TEXTURE = CacheUtil.memoizeInt(textureId -> new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR_TEXTURE, DrawMode.QUADS, POSITION_COLOR_TEXTURE_LAYOUT,  () -> {
+    public static final IntFunction<DrawBatch> COLORED_TEXTURED_QUAD = CacheUtil.memoizeInt(textureId -> new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR_TEXTURE, DrawMode.QUADS, POSITION_COLOR_TEXTURE_LAYOUT,  () -> {
         PUSH_ENABLE_BLEND.run();
         BuiltinPrograms.POSITION_COLOR_TEXTURE.setUniformTexture("u_Texture", textureId);
     }, POP));
 
-    public static final IntFunction<DrawBatch> COLORIZED_TEXTURE = CacheUtil.memoizeInt(textureId -> new DrawBatch(() -> BuiltinPrograms.COLORIZED_TEXTURE, DrawMode.QUADS, POSITION_COLOR_TEXTURE_LAYOUT,  () -> {
+    public static final IntFunction<DrawBatch> COLORIZED_TEXTURED_QUAD = CacheUtil.memoizeInt(textureId -> new DrawBatch(() -> BuiltinPrograms.COLORIZED_TEXTURE, DrawMode.QUADS, POSITION_COLOR_TEXTURE_LAYOUT,  () -> {
         PUSH_ENABLE_BLEND.run();
         BuiltinPrograms.COLORIZED_TEXTURE.setUniformTexture("u_Texture", textureId);
     }, POP));
 
-    public static final DrawBatch FILLED_CIRCLE = new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR, () -> BuiltinPrograms.INSTANCED_POSITION_COLOR, DrawMode.TRIANGLE_FAN, POSITION_COLOR_LAYOUT, HALF_POSITION_COLOR_LAYOUT,  PUSH_ENABLE_BLEND, POP);
+    public static final DrawBatch COLORED_TRIANGLE_FAN = new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR, () -> BuiltinPrograms.INSTANCED_POSITION_COLOR, DrawMode.TRIANGLE_FAN, POSITION_COLOR_LAYOUT, HALF_POSITION_COLOR_LAYOUT,  PUSH_ENABLE_BLEND, POP);
 
-    public static final DrawBatch OUTLINE_CIRCLE = new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR, DrawMode.TRIANGLE_STRIP, POSITION_COLOR_LAYOUT,  PUSH_ENABLE_BLEND, POP);
+    public static final DrawBatch COLORED_TRIANGLE_STRIP = new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR, DrawMode.TRIANGLE_STRIP, POSITION_COLOR_LAYOUT,  PUSH_ENABLE_BLEND, POP);
 
 }
