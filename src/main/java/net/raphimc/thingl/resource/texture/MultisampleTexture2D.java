@@ -37,7 +37,7 @@ public class MultisampleTexture2D extends AbstractTexture {
     }
 
     protected MultisampleTexture2D(final int glId) {
-        super(glId);
+        super(glId, Type.TEX_2D_MULTISAMPLE);
         this.width = GL45C.glGetTextureLevelParameteri(glId, 0, GL11C.GL_TEXTURE_WIDTH);
         this.height = GL45C.glGetTextureLevelParameteri(glId, 0, GL11C.GL_TEXTURE_HEIGHT);
         this.samples = GL45C.glGetTextureLevelParameteri(glId, 0, GL32C.GL_TEXTURE_SAMPLES);

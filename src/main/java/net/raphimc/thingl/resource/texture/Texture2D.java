@@ -83,7 +83,7 @@ public class Texture2D extends AbstractTexture {
     }
 
     protected Texture2D(final int glId) {
-        super(glId);
+        super(glId, Type.TEX_2D);
         this.width = GL45C.glGetTextureLevelParameteri(glId, 0, GL11C.GL_TEXTURE_WIDTH);
         this.height = GL45C.glGetTextureLevelParameteri(glId, 0, GL11C.GL_TEXTURE_HEIGHT);
         this.mipMapLevels = GL45C.glGetTextureParameteri(glId, GL43C.GL_TEXTURE_IMMUTABLE_LEVELS);

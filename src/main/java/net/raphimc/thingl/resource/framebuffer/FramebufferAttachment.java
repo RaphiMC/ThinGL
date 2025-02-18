@@ -26,9 +26,9 @@ import org.lwjgl.opengl.GL45C;
 
 public interface FramebufferAttachment {
 
-    static FramebufferAttachment fromGlId(final int glId, final int attachmentType) {
-        final int type = GL45C.glGetNamedFramebufferAttachmentParameteri(glId, attachmentType, GL30C.GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE);
-        final int attachmentId = GL45C.glGetNamedFramebufferAttachmentParameteri(glId, attachmentType, GL30C.GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME);
+    static FramebufferAttachment fromGlId(final int glId, final int attachment) {
+        final int type = GL45C.glGetNamedFramebufferAttachmentParameteri(glId, attachment, GL30C.GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE);
+        final int attachmentId = GL45C.glGetNamedFramebufferAttachmentParameteri(glId, attachment, GL30C.GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME);
         return switch (type) {
             case GL11C.GL_TEXTURE -> AbstractTexture.fromGlId(attachmentId);
             case GL30C.GL_RENDERBUFFER -> AbstractRenderBuffer.fromGlId(attachmentId);

@@ -26,6 +26,7 @@ import net.raphimc.thingl.drawbuilder.index.QuadIndexBuffer;
 import net.raphimc.thingl.framebuffer.impl.MSAARenderBufferFramebuffer;
 import net.raphimc.thingl.framebuffer.impl.MSAATextureFramebuffer;
 import net.raphimc.thingl.implementation.ThinGLImplementation;
+import net.raphimc.thingl.implementation.Workarounds;
 import net.raphimc.thingl.program.BuiltinPrograms;
 import net.raphimc.thingl.util.BufferUtil;
 import org.jetbrains.annotations.ApiStatus;
@@ -51,6 +52,7 @@ public class ThinGL {
     private static final List<Runnable> END_FRAME_ACTIONS = new ArrayList<>();
 
     private static ThinGLImplementation IMPLEMENTATION;
+    private static Workarounds WORKAROUNDS;
     private static GLFWFramebufferSizeCallback PREV_FRAMEBUFFER_SIZE_CALLBACK;
     private static Thread RENDER_THREAD;
     private static int WINDOW_FRAMEBUFFER_WIDTH = 0;
@@ -63,6 +65,7 @@ public class ThinGL {
         final long windowHandle = GLFW.glfwGetCurrentContext();
         RENDER_THREAD = Thread.currentThread();
         IMPLEMENTATION = implementation;
+        WORKAROUNDS = new Workarounds();
 
         final int[] windowFramebufferWidth = new int[1];
         final int[] windowFramebufferHeight = new int[1];
@@ -188,6 +191,10 @@ public class ThinGL {
 
     public static ThinGLImplementation getImplementation() {
         return IMPLEMENTATION;
+    }
+
+    public static Workarounds getWorkarounds() {
+        return WORKAROUNDS;
     }
 
     public static int getWindowFramebufferWidth() {

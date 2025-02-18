@@ -18,6 +18,7 @@
 
 package net.raphimc.thingl.resource.texture;
 
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.resource.GLResource;
 import net.raphimc.thingl.resource.framebuffer.FramebufferAttachment;
 import org.lwjgl.opengl.*;
@@ -33,9 +34,9 @@ public abstract class AbstractTexture extends GLResource implements FramebufferA
         this.internalFormat = internalFormat.getGlFormat();
     }
 
-    protected AbstractTexture(final int glId) {
+    protected AbstractTexture(final int glId, final Type type) {
         super(GL11C.GL_TEXTURE, glId);
-        this.type = GL45C.glGetTextureParameteri(glId, GL45C.GL_TEXTURE_TARGET);
+        this.type = type.getGlType();
         this.internalFormat = GL45C.glGetTextureLevelParameteri(glId, 0, GL30C.GL_TEXTURE_INTERNAL_FORMAT);
     }
 
@@ -43,12 +44,21 @@ public abstract class AbstractTexture extends GLResource implements FramebufferA
         if (!GL11C.glIsTexture(glId)) {
             throw new IllegalArgumentException("Invalid OpenGL resource");
         }
-        final Type type = Type.fromGlType(GL45C.glGetTextureParameteri(glId, GL45C.GL_TEXTURE_TARGET));
-        return switch (type) {
-            case TEX_2D -> new Texture2D(glId);
-            case TEX_2D_MULTISAMPLE -> new MultisampleTexture2D(glId);
-            default -> throw new IllegalArgumentException("Unsupported texture type: " + type.getDisplayName());
-        };
+        if (!ThinGL.getWorkarounds().isGetTextureParameterTextureTargetBroken()) {
+            final Type type = Type.fromGlType(GL45C.glGetTextureParameteri(glId, GL45C.GL_TEXTURE_TARGET));
+            return switch (type) {
+                case TEX_2D -> new Texture2D(glId);
+                case TEX_2D_MULTISAMPLE -> new MultisampleTexture2D(glId);
+                default -> throw new IllegalArgumentException("Unsupported texture type: " + type.getDisplayName());
+            };
+        } else {
+            final int samples = GL45C.glGetTextureLevelParameteri(glId, 0, GL32C.GL_TEXTURE_SAMPLES);
+            if (samples <= 0) {
+                return new Texture2D(glId);
+            } else {
+                return new MultisampleTexture2D(glId);
+            }
+        }
     }
 
     @Override

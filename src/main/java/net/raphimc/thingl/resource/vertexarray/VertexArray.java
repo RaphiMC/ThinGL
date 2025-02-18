@@ -20,6 +20,7 @@ package net.raphimc.thingl.resource.vertexarray;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.DrawMode;
 import net.raphimc.thingl.drawbuilder.index.IndexType;
 import net.raphimc.thingl.drawbuilder.vertex.VertexDataLayout;
@@ -65,7 +66,14 @@ public class VertexArray extends GLResource {
         if (buffer != null) {
             GL45C.glVertexArrayElementBuffer(this.getGlId(), buffer.getGlId());
         } else {
-            GL45C.glVertexArrayElementBuffer(this.getGlId(), 0);
+            if (!ThinGL.getWorkarounds().isDsaVertexArrayElementBufferUnbindBroken()) {
+                GL45C.glVertexArrayElementBuffer(this.getGlId(), 0);
+            } else {
+                final int prevVertexArray = GL11C.glGetInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
+                GL30C.glBindVertexArray(this.getGlId());
+                GL15C.glBindBuffer(GL15C.GL_ELEMENT_ARRAY_BUFFER, 0);
+                GL30C.glBindVertexArray(prevVertexArray);
+            }
         }
     }
 
