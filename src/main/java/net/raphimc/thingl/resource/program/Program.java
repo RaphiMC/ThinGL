@@ -137,16 +137,16 @@ public class Program extends GLResource {
     }
 
     public void setUniform(final String name, final Matrix3f matrix) {
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            final FloatBuffer buffer = stack.mallocFloat(3 * 3);
+        try (MemoryStack memoryStack = MemoryStack.stackPush()) {
+            final FloatBuffer buffer = memoryStack.mallocFloat(3 * 3);
             matrix.get(buffer);
             GL41C.glProgramUniformMatrix3fv(this.getGlId(), this.getUniformLocation(name), false, buffer);
         }
     }
 
     public void setUniform(final String name, final Matrix4f matrix) {
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            final FloatBuffer buffer = stack.mallocFloat(4 * 4);
+        try (MemoryStack memoryStack = MemoryStack.stackPush()) {
+            final FloatBuffer buffer = memoryStack.mallocFloat(4 * 4);
             matrix.get(buffer);
             GL41C.glProgramUniformMatrix4fv(this.getGlId(), this.getUniformLocation(name), false, buffer);
         }

@@ -34,6 +34,7 @@ import org.joml.Vector2d;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.primitives.*;
+import org.lwjgl.system.MemoryStack;
 import org.lwjgl.util.par.*;
 
 import java.nio.IntBuffer;
@@ -269,35 +270,42 @@ public class Renderer2D extends Renderer {
         this.drawIfNotBuffering();
     }
 
-    public void connectedLine(final Matrix4f positionMatrix, final Vector2f[] points, final float width, final Color color) {
+    public void connectedLine(final Matrix4f positionMatrix, final List<Vector2f> points, final float width, final Color color) {
+        this.connectedLine(positionMatrix, points, width, color, false);
+    }
+
+    public void connectedLine(final Matrix4f positionMatrix, final List<Vector2f> points, final float width, final Color color, final boolean closedLoop) {
+        final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.INDEXED_COLORED_TRIANGLE);
+        final IndexDataHolder indexDataHolder = this.targetMultiDrawBatchDataHolder.getIndexDataHolder(BuiltinDrawBatches.INDEXED_COLORED_TRIANGLE);
         final int abgr = color.toABGR();
-        final BufferBuilder positionsBuilder = new BufferBuilder();
-        for (Vector2f point : points) {
-            positionsBuilder.putVec2f(point);
+
+        try (MemoryStack memoryStack = MemoryStack.stackPush()) {
+            final ParSLConfig config = ParSLConfig.malloc(memoryStack).thickness(width);
+            final long ctx = ParStreamlines.parsl_create_context(config);
+
+            final BufferBuilder positionsBuilder = new BufferBuilder(memoryStack, points.size() * Float.BYTES * 2);
+            for (Vector2f point : points) {
+                positionsBuilder.putVec2f(point);
+            }
+
+            final ParSLSpineList lineList = ParSLSpineList.malloc(memoryStack).set(new ParSLPosition.Buffer(positionsBuilder.finish()), memoryStack.shorts((short) points.size()), closedLoop);
+            final ParSLMesh mesh = ParStreamlines.parsl_mesh_from_lines(ctx, lineList);
+
+            final int vertexCount = mesh.num_vertices();
+            final ParSLPosition.Buffer verticesBuffer = mesh.positions();
+            for (int i = 0; i < vertexCount; i++) {
+                final ParSLPosition position = verticesBuffer.get(i);
+                vertexDataHolder.position(positionMatrix, position.x(), position.y(), 0F).color(abgr).endVertex();
+            }
+
+            final int triangleCount = mesh.num_triangles();
+            final IntBuffer indicesBuffer = mesh.triangle_indices(triangleCount * 3);
+            for (int i = 0; i < indicesBuffer.capacity(); i++) {
+                indexDataHolder.rawIndex(indicesBuffer.get(i));
+            }
+
+            ParStreamlines.parsl_destroy_context(ctx);
         }
-        final BufferBuilder sizeBuilder = new BufferBuilder(2);
-        sizeBuilder.putShort((short) points.length);
-
-        final ParSLConfig config = ParSLConfig.create().thickness(width);
-        final long ctx = ParStreamlines.parsl_create_context(config);
-
-        final ParSLSpineList lineList = ParSLSpineList.create().set(new ParSLPosition.Buffer(positionsBuilder.finish()), sizeBuilder.finish().asShortBuffer(), false);
-        final ParSLMesh mesh = ParStreamlines.parsl_mesh_from_lines(ctx, lineList);
-
-        positionsBuilder.close();
-        sizeBuilder.close();
-
-        final int triangleCount = mesh.num_triangles();
-        final ParSLPosition.Buffer verticesBuffer = mesh.positions();
-        final IntBuffer indicesBuffer = mesh.triangle_indices(triangleCount * 3);
-        for (int i = 0; i < triangleCount; i++) {
-            final ParSLPosition left = verticesBuffer.get(indicesBuffer.get(i * 3));
-            final ParSLPosition right = verticesBuffer.get(indicesBuffer.get(i * 3 + 1));
-            final ParSLPosition middle = verticesBuffer.get(indicesBuffer.get(i * 3 + 2));
-            Primitives.filledTriangle(positionMatrix, this.targetMultiDrawBatchDataHolder, left.x(), left.y(), middle.x(), middle.y(), right.x(), right.y(), abgr);
-        }
-
-        ParStreamlines.parsl_destroy_context(ctx);
 
         this.drawIfNotBuffering();
     }

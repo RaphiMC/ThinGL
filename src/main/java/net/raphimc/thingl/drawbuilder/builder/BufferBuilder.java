@@ -21,6 +21,7 @@ package net.raphimc.thingl.drawbuilder.builder;
 import net.raphimc.thingl.util.MathUtil;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
@@ -32,6 +33,7 @@ public class BufferBuilder implements AutoCloseable {
     private long baseAddress;
     private long cursorAddress;
     private int size;
+    private final boolean isExternallyAllocated;
 
     public BufferBuilder() {
         this(DEFAULT_INITIAL_SIZE);
@@ -44,6 +46,21 @@ public class BufferBuilder implements AutoCloseable {
         }
         this.cursorAddress = this.baseAddress;
         this.size = initialSize;
+        this.isExternallyAllocated = false;
+    }
+
+    public BufferBuilder(final MemoryStack memoryStack, final int size) {
+        this.baseAddress = memoryStack.nmalloc(size);
+        this.cursorAddress = this.baseAddress;
+        this.size = size;
+        this.isExternallyAllocated = true;
+    }
+
+    public BufferBuilder(final ByteBuffer byteBuffer) {
+        this.baseAddress = MemoryUtil.memAddress0(byteBuffer);
+        this.cursorAddress = this.baseAddress + byteBuffer.position();
+        this.size = byteBuffer.capacity();
+        this.isExternallyAllocated = true;
     }
 
     public final BufferBuilder putByte(final byte b) {
@@ -183,7 +200,9 @@ public class BufferBuilder implements AutoCloseable {
 
     @Override
     public void close() {
-        MemoryUtil.nmemFree(this.baseAddress);
+        if (!this.isExternallyAllocated) {
+            MemoryUtil.nmemFree(this.baseAddress);
+        }
         this.baseAddress = 0;
         this.cursorAddress = 0;
         this.size = 0;
@@ -191,7 +210,11 @@ public class BufferBuilder implements AutoCloseable {
 
     public void ensureHasEnoughSpace(final int size) {
         if (this.baseAddress + this.size < this.cursorAddress + size) {
-            this.resize(MathUtil.align(this.size + Math.max(size, 512 * 1024), 8 * 1024));
+            if (!this.isExternallyAllocated) {
+                this.resize(MathUtil.align(this.size + Math.max(size, 512 * 1024), 8 * 1024));
+            } else {
+                throw new IllegalStateException("Buffer is full");
+            }
         }
     }
 
@@ -220,6 +243,10 @@ public class BufferBuilder implements AutoCloseable {
     }
 
     private void resize(final int newSize) {
+        if (this.isExternallyAllocated) {
+            throw new IllegalStateException("Cannot resize externally allocated buffer");
+        }
+
         final int position = this.getPosition();
         final long newAddress = MemoryUtil.nmemRealloc(this.baseAddress, newSize);
         if (newAddress == 0) {
