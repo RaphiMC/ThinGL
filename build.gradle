@@ -48,7 +48,7 @@ dependencies {
     // Optional dependencies
     compileOnly "org.lwjgl:lwjgl-freetype:3.3.3"
     compileOnly "org.lwjgl:lwjgl-meshoptimizer:3.3.3"
-    compileOnly "org.lwjgl:lwjgl-par:3.3.3"
+    compileOnly "org.lwjgl:lwjgl-par:3.3.6"
     compileOnly "io.github.earcut4j:earcut4j:2.2.2"
 
     // Test dependencies
@@ -59,7 +59,7 @@ dependencies {
         testImplementation "org.lwjgl:lwjgl-stb:3.3.3:$it"
         testImplementation "org.lwjgl:lwjgl-freetype:3.3.3:$it"
         testImplementation "org.lwjgl:lwjgl-meshoptimizer:3.3.3:$it"
-        testImplementation "org.lwjgl:lwjgl-par:3.3.3:$it"
+        testImplementation "org.lwjgl:lwjgl-par:3.3.6:$it"
     }
 }
 
