@@ -49,6 +49,7 @@ dependencies {
     compileOnly "org.lwjgl:lwjgl-freetype:3.3.3"
     compileOnly "org.lwjgl:lwjgl-meshoptimizer:3.3.3"
     compileOnly "org.lwjgl:lwjgl-par:3.3.3"
+    compileOnly "io.github.earcut4j:earcut4j:2.2.2"
 
     // Test dependencies
     ["natives-windows", "natives-windows-arm64", "natives-linux", "natives-linux-arm64"].each {

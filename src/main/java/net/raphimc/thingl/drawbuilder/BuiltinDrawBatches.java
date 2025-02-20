@@ -52,6 +52,8 @@ public class BuiltinDrawBatches {
 
     public static final DrawBatch COLORED_TRIANGLE = new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR, () -> BuiltinPrograms.INSTANCED_POSITION_COLOR, () -> BuiltinPrograms.MULTIDRAW_POSITION_COLOR, DrawMode.TRIANGLES, POSITION_COLOR_LAYOUT, HALF_POSITION_COLOR_LAYOUT, PUSH_ENABLE_BLEND, POP);
 
+    public static final DrawBatch INDEXED_COLORED_TRIANGLE = new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR, () -> BuiltinPrograms.INSTANCED_POSITION_COLOR, () -> BuiltinPrograms.MULTIDRAW_POSITION_COLOR, DrawMode.TRIANGLES, POSITION_COLOR_LAYOUT, HALF_POSITION_COLOR_LAYOUT, PUSH_ENABLE_BLEND, POP);
+
     public static final DrawBatch COLORED_GL_LINE = new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR, () -> BuiltinPrograms.INSTANCED_POSITION_COLOR, () -> BuiltinPrograms.MULTIDRAW_POSITION_COLOR, DrawMode.LINES, POSITION_COLOR_LAYOUT, HALF_POSITION_COLOR_LAYOUT, () -> {
         PUSH_ENABLE_BLEND.run();
         GLStateTracker.enable(GL11C.GL_LINE_SMOOTH);

@@ -18,12 +18,14 @@
 
 package net.raphimc.thingl.renderer.impl;
 
+import earcut4j.Earcut;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.commons.math.shapes.triangle.TriangleD;
 import net.lenni0451.commons.math.shapes.triangle.TriangleF;
 import net.lenni0451.commons.math.shapes.triangle.TriangleI;
 import net.raphimc.thingl.drawbuilder.BuiltinDrawBatches;
 import net.raphimc.thingl.drawbuilder.builder.BufferBuilder;
+import net.raphimc.thingl.drawbuilder.databuilder.holder.IndexDataHolder;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.VertexDataHolder;
 import net.raphimc.thingl.renderer.Primitives;
 import net.raphimc.thingl.renderer.Renderer;
@@ -35,6 +37,7 @@ import org.joml.primitives.*;
 import org.lwjgl.util.par.*;
 
 import java.nio.IntBuffer;
+import java.util.List;
 
 public class Renderer2D extends Renderer {
 
@@ -70,10 +73,11 @@ public class Renderer2D extends Renderer {
     }
 
     public void outlineRectangle(final Matrix4f positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr, final float lineWidth, final Color color) {
-        Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, xtl - lineWidth, ytl - lineWidth, xbr + lineWidth, ytl, color.toABGR()); // top line
-        Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, xtl - lineWidth, ybr, xbr + lineWidth, ybr + lineWidth, color.toABGR()); // bottom line
-        Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, xtl - lineWidth, ytl, xtl, ybr, color.toABGR()); // left line
-        Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, xbr, ytl, xbr + lineWidth, ybr, color.toABGR()); // right line
+        final int abgr = color.toABGR();
+        Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, xtl - lineWidth, ytl - lineWidth, xbr + lineWidth, ytl, abgr); // top line
+        Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, xtl - lineWidth, ybr, xbr + lineWidth, ybr + lineWidth, abgr); // bottom line
+        Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, xtl - lineWidth, ytl, xtl, ybr, abgr); // left line
+        Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, xbr, ytl, xbr + lineWidth, ybr, abgr); // right line
         this.drawIfNotBuffering();
     }
 
@@ -266,6 +270,7 @@ public class Renderer2D extends Renderer {
     }
 
     public void connectedLine(final Matrix4f positionMatrix, final Vector2f[] points, final float width, final Color color) {
+        final int abgr = color.toABGR();
         final BufferBuilder positionsBuilder = new BufferBuilder();
         for (Vector2f point : points) {
             positionsBuilder.putVec2f(point);
@@ -289,7 +294,7 @@ public class Renderer2D extends Renderer {
             final ParSLPosition left = verticesBuffer.get(indicesBuffer.get(i * 3));
             final ParSLPosition right = verticesBuffer.get(indicesBuffer.get(i * 3 + 1));
             final ParSLPosition middle = verticesBuffer.get(indicesBuffer.get(i * 3 + 2));
-            Primitives.filledTriangle(positionMatrix, this.targetMultiDrawBatchDataHolder, left.x(), left.y(), middle.x(), middle.y(), right.x(), right.y(), color.toABGR());
+            Primitives.filledTriangle(positionMatrix, this.targetMultiDrawBatchDataHolder, left.x(), left.y(), middle.x(), middle.y(), right.x(), right.y(), abgr);
         }
 
         ParStreamlines.parsl_destroy_context(ctx);
@@ -311,12 +316,33 @@ public class Renderer2D extends Renderer {
 
     public void filledRoundedRectangle(final Matrix4f positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr, final float radius, final Color color) {
         final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.COLORED_TRIANGLE_FAN);
+        final int abgr = color.toABGR();
 
-        Primitives._filledCircle(positionMatrix, vertexDataHolder, xtl + radius, ytl + radius, 0F, radius, 270, 360, color.toABGR());
-        Primitives._filledCircle(positionMatrix, vertexDataHolder, xtl + radius, ybr - radius, 0F, radius, 180, 270, color.toABGR());
-        Primitives._filledCircle(positionMatrix, vertexDataHolder, xbr - radius, ybr - radius, 0F, radius, 90, 180, color.toABGR());
-        Primitives._filledCircle(positionMatrix, vertexDataHolder, xbr - radius, ytl + radius, 0F, radius, 0, 90, color.toABGR());
+        Primitives._filledCircle(positionMatrix, vertexDataHolder, xtl + radius, ytl + radius, 0F, radius, 270, 360, abgr);
+        Primitives._filledCircle(positionMatrix, vertexDataHolder, xtl + radius, ybr - radius, 0F, radius, 180, 270, abgr);
+        Primitives._filledCircle(positionMatrix, vertexDataHolder, xbr - radius, ybr - radius, 0F, radius, 90, 180, abgr);
+        Primitives._filledCircle(positionMatrix, vertexDataHolder, xbr - radius, ytl + radius, 0F, radius, 0, 90, abgr);
         vertexDataHolder.endConnectedPrimitive();
+
+        this.drawIfNotBuffering();
+    }
+
+    public void filledPolygon(final Matrix4f positionMatrix, final List<Vector2f> points, final Color color) {
+        final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.INDEXED_COLORED_TRIANGLE);
+        final IndexDataHolder indexDataHolder = this.targetMultiDrawBatchDataHolder.getIndexDataHolder(BuiltinDrawBatches.INDEXED_COLORED_TRIANGLE);
+        final int abgr = color.toABGR();
+
+        final double[] data = new double[points.size() * 2];
+        for (int i = 0; i < points.size(); i++) {
+            final Vector2f point = points.get(i);
+            data[i * 2] = point.x;
+            data[i * 2 + 1] = point.y;
+            vertexDataHolder.position(positionMatrix, point.x, point.y, 0F).color(abgr).endVertex();
+        }
+        final List<Integer> indices = Earcut.earcut(data);
+        for (int index : indices) {
+            indexDataHolder.rawIndex(index);
+        }
 
         this.drawIfNotBuffering();
     }
