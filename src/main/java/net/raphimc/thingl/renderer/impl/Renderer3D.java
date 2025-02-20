@@ -70,25 +70,25 @@ public class Renderer3D extends Renderer {
 
     public void filledBox(final Matrix4f positionMatrix, final float minX, float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final Color color, final byte excludedFaces) {
         if (excludedFaces == ALL_FACES) return;
-        final int abgr = color.toABGR();
+        final int abgrColor = color.toABGR();
 
         if ((excludedFaces & FACE_DOWN) == 0) {
-            Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, minX, minY, minZ, maxX, minY, minZ, maxX, minY, maxZ, minX, minY, maxZ, abgr);
+            Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, minX, minY, minZ, maxX, minY, minZ, maxX, minY, maxZ, minX, minY, maxZ, abgrColor);
         }
         if ((excludedFaces & FACE_UP) == 0) {
-            Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, maxX, maxY, maxZ, maxX, maxY, minZ, minX, maxY, minZ, minX, maxY, maxZ, abgr);
+            Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, maxX, maxY, maxZ, maxX, maxY, minZ, minX, maxY, minZ, minX, maxY, maxZ, abgrColor);
         }
         if ((excludedFaces & FACE_NORTH) == 0) {
-            Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, maxX, maxY, minZ, maxX, minY, minZ, minX, minY, minZ, minX, maxY, minZ, abgr);
+            Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, maxX, maxY, minZ, maxX, minY, minZ, minX, minY, minZ, minX, maxY, minZ, abgrColor);
         }
         if ((excludedFaces & FACE_SOUTH) == 0) {
-            Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, minX, minY, maxZ, maxX, minY, maxZ, maxX, maxY, maxZ, minX, maxY, maxZ, abgr);
+            Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, minX, minY, maxZ, maxX, minY, maxZ, maxX, maxY, maxZ, minX, maxY, maxZ, abgrColor);
         }
         if ((excludedFaces & FACE_WEST) == 0) {
-            Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, minX, minY, minZ, minX, minY, maxZ, minX, maxY, maxZ, minX, maxY, minZ, abgr);
+            Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, minX, minY, minZ, minX, minY, maxZ, minX, maxY, maxZ, minX, maxY, minZ, abgrColor);
         }
         if ((excludedFaces & FACE_EAST) == 0) {
-            Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, maxX, maxY, maxZ, maxX, minY, maxZ, maxX, minY, minZ, maxX, maxY, minZ, abgr);
+            Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, maxX, maxY, maxZ, maxX, minY, maxZ, maxX, minY, minZ, maxX, maxY, minZ, abgrColor);
         }
 
         this.drawIfNotBuffering();
@@ -124,50 +124,50 @@ public class Renderer3D extends Renderer {
 
     public void outlineBox(final Matrix4f positionMatrix, final float minX, float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final float lineWidth, final Color color, final byte excludedFaces) {
         if (excludedFaces == ALL_FACES) return;
-        final int abgr = color.toABGR();
+        final int abgrColor = color.toABGR();
 
         if ((excludedFaces & FACE_DOWN) == 0) {
             if ((excludedFaces & FACE_NORTH) == 0) {
-                Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, minX, minY, minZ, maxX, minY, minZ, lineWidth, abgr);
+                Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, minX, minY, minZ, maxX, minY, minZ, lineWidth, abgrColor);
             }
             if ((excludedFaces & FACE_EAST) == 0) {
-                Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, maxX, minY, minZ, maxX, minY, maxZ, lineWidth, abgr);
+                Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, maxX, minY, minZ, maxX, minY, maxZ, lineWidth, abgrColor);
             }
             if ((excludedFaces & FACE_SOUTH) == 0) {
-                Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, minX, minY, maxZ, maxX, minY, maxZ, lineWidth, abgr);
+                Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, minX, minY, maxZ, maxX, minY, maxZ, lineWidth, abgrColor);
             }
             if ((excludedFaces & FACE_WEST) == 0) {
-                Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, minX, minY, minZ, minX, minY, maxZ, lineWidth, abgr);
+                Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, minX, minY, minZ, minX, minY, maxZ, lineWidth, abgrColor);
             }
         }
         if ((excludedFaces & FACE_UP) == 0) {
             if ((excludedFaces & FACE_NORTH) == 0) {
-                Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, minX, maxY, minZ, maxX, maxY, minZ, lineWidth, abgr);
+                Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, minX, maxY, minZ, maxX, maxY, minZ, lineWidth, abgrColor);
             }
             if ((excludedFaces & FACE_EAST) == 0) {
-                Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, maxX, maxY, minZ, maxX, maxY, maxZ, lineWidth, abgr);
+                Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, maxX, maxY, minZ, maxX, maxY, maxZ, lineWidth, abgrColor);
             }
             if ((excludedFaces & FACE_SOUTH) == 0) {
-                Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, minX, maxY, maxZ, maxX, maxY, maxZ, lineWidth, abgr);
+                Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, minX, maxY, maxZ, maxX, maxY, maxZ, lineWidth, abgrColor);
             }
             if ((excludedFaces & FACE_WEST) == 0) {
-                Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, minX, maxY, minZ, minX, maxY, maxZ, lineWidth, abgr);
+                Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, minX, maxY, minZ, minX, maxY, maxZ, lineWidth, abgrColor);
             }
         }
         if ((excludedFaces & FACE_NORTH) == 0) {
             if ((excludedFaces & FACE_WEST) == 0) {
-                Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, minX, minY, minZ, minX, maxY, minZ, lineWidth, abgr);
+                Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, minX, minY, minZ, minX, maxY, minZ, lineWidth, abgrColor);
             }
             if ((excludedFaces & FACE_EAST) == 0) {
-                Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, maxX, minY, minZ, maxX, maxY, minZ, lineWidth, abgr);
+                Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, maxX, minY, minZ, maxX, maxY, minZ, lineWidth, abgrColor);
             }
         }
         if ((excludedFaces & FACE_SOUTH) == 0) {
             if ((excludedFaces & FACE_WEST) == 0) {
-                Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, minX, minY, maxZ, minX, maxY, maxZ, lineWidth, abgr);
+                Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, minX, minY, maxZ, minX, maxY, maxZ, lineWidth, abgrColor);
             }
             if ((excludedFaces & FACE_EAST) == 0) {
-                Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, maxX, minY, maxZ, maxX, maxY, maxZ, lineWidth, abgr);
+                Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, maxX, minY, maxZ, maxX, maxY, maxZ, lineWidth, abgrColor);
             }
         }
 

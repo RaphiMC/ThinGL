@@ -61,24 +61,49 @@ public class Renderer2D extends Renderer {
         this.drawIfNotBuffering();
     }
 
-    public void outlineRectangle(final Matrix4f positionMatrix, final Rectangled rectangle, final float lineWidth, final Color color) {
-        this.outlineRectangle(positionMatrix, (float) rectangle.minX, (float) rectangle.minY, (float) rectangle.maxX, (float) rectangle.maxY, lineWidth, color);
+    public void outlinedRectangle(final Matrix4f positionMatrix, final Rectangled rectangle, final float lineWidth, final Color color) {
+        this.outlinedRectangle(positionMatrix, (float) rectangle.minX, (float) rectangle.minY, (float) rectangle.maxX, (float) rectangle.maxY, lineWidth, color);
     }
 
-    public void outlineRectangle(final Matrix4f positionMatrix, final Rectanglef rectangle, final float lineWidth, final Color color) {
-        this.outlineRectangle(positionMatrix, rectangle.minX, rectangle.minY, rectangle.maxX, rectangle.maxY, lineWidth, color);
+    public void outlinedRectangle(final Matrix4f positionMatrix, final Rectanglef rectangle, final float lineWidth, final Color color) {
+        this.outlinedRectangle(positionMatrix, rectangle.minX, rectangle.minY, rectangle.maxX, rectangle.maxY, lineWidth, color);
     }
 
-    public void outlineRectangle(final Matrix4f positionMatrix, final Rectanglei rectangle, final float lineWidth, final Color color) {
-        this.outlineRectangle(positionMatrix, rectangle.minX, rectangle.minY, rectangle.maxX, rectangle.maxY, lineWidth, color);
+    public void outlinedRectangle(final Matrix4f positionMatrix, final Rectanglei rectangle, final float lineWidth, final Color color) {
+        this.outlinedRectangle(positionMatrix, rectangle.minX, rectangle.minY, rectangle.maxX, rectangle.maxY, lineWidth, color);
     }
 
-    public void outlineRectangle(final Matrix4f positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr, final float lineWidth, final Color color) {
-        final int abgr = color.toABGR();
-        Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, xtl - lineWidth, ytl - lineWidth, xbr + lineWidth, ytl, abgr); // top line
-        Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, xtl - lineWidth, ybr, xbr + lineWidth, ybr + lineWidth, abgr); // bottom line
-        Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, xtl - lineWidth, ytl, xtl, ybr, abgr); // left line
-        Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, xbr, ytl, xbr + lineWidth, ybr, abgr); // right line
+    public void outlinedRectangle(final Matrix4f positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr, final float lineWidth, final Color color) {
+        final int abgrColor = color.toABGR();
+        Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, xtl - lineWidth, ytl - lineWidth, xbr + lineWidth, ytl, abgrColor); // top line
+        Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, xtl - lineWidth, ybr, xbr + lineWidth, ybr + lineWidth, abgrColor); // bottom line
+        Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, xtl - lineWidth, ytl, xtl, ybr, abgrColor); // left line
+        Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, xbr, ytl, xbr + lineWidth, ybr, abgrColor); // right line
+        this.drawIfNotBuffering();
+    }
+
+    public void filledRoundedRectangle(final Matrix4f positionMatrix, final Rectangled rectangle, final float radius, final Color color) {
+        this.filledRoundedRectangle(positionMatrix, (float) rectangle.minX, (float) rectangle.minY, (float) rectangle.maxX, (float) rectangle.maxY, radius, color);
+    }
+
+    public void filledRoundedRectangle(final Matrix4f positionMatrix, final Rectanglef rectangle, final float radius, final Color color) {
+        this.filledRoundedRectangle(positionMatrix, rectangle.minX, rectangle.minY, rectangle.maxX, rectangle.maxY, radius, color);
+    }
+
+    public void filledRoundedRectangle(final Matrix4f positionMatrix, final Rectanglei rectangle, final float radius, final Color color) {
+        this.filledRoundedRectangle(positionMatrix, rectangle.minX, rectangle.minY, rectangle.maxX, rectangle.maxY, radius, color);
+    }
+
+    public void filledRoundedRectangle(final Matrix4f positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr, final float radius, final Color color) {
+        final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.COLORED_TRIANGLE_FAN);
+        final int abgrColor = color.toABGR();
+
+        Primitives._filledCircle(positionMatrix, vertexDataHolder, xtl + radius, ytl + radius, 0F, radius, 270, 360, abgrColor);
+        Primitives._filledCircle(positionMatrix, vertexDataHolder, xtl + radius, ybr - radius, 0F, radius, 180, 270, abgrColor);
+        Primitives._filledCircle(positionMatrix, vertexDataHolder, xbr - radius, ybr - radius, 0F, radius, 90, 180, abgrColor);
+        Primitives._filledCircle(positionMatrix, vertexDataHolder, xbr - radius, ytl + radius, 0F, radius, 0, 90, abgrColor);
+        vertexDataHolder.endConnectedPrimitive();
+
         this.drawIfNotBuffering();
     }
 
@@ -142,29 +167,29 @@ public class Renderer2D extends Renderer {
         this.drawIfNotBuffering();
     }
 
-    public void outlineCircle(final Matrix4f positionMatrix, final Circled circle, final float width, final Color color) {
-        this.outlineCircle(positionMatrix, (float) circle.x, (float) circle.y, (float) circle.r, width, color);
+    public void outlinedCircle(final Matrix4f positionMatrix, final Circled circle, final float width, final Color color) {
+        this.outlinedCircle(positionMatrix, (float) circle.x, (float) circle.y, (float) circle.r, width, color);
     }
 
-    public void outlineCircle(final Matrix4f positionMatrix, final Circlef circle, final float width, final Color color) {
-        this.outlineCircle(positionMatrix, circle.x, circle.y, circle.r, width, color);
+    public void outlinedCircle(final Matrix4f positionMatrix, final Circlef circle, final float width, final Color color) {
+        this.outlinedCircle(positionMatrix, circle.x, circle.y, circle.r, width, color);
     }
 
-    public void outlineCircle(final Matrix4f positionMatrix, final float x, final float y, final float radius, final float width, final Color color) {
-        Primitives.outlineCircle(positionMatrix, this.targetMultiDrawBatchDataHolder, x, y, radius, width, color.toABGR());
+    public void outlinedCircle(final Matrix4f positionMatrix, final float x, final float y, final float radius, final float width, final Color color) {
+        Primitives.outlinedCircle(positionMatrix, this.targetMultiDrawBatchDataHolder, x, y, radius, width, color.toABGR());
         this.drawIfNotBuffering();
     }
 
-    public void outlineCircle(final Matrix4f positionMatrix, final Circled circle, final float width, final float degStart, final float degEnd, final Color color) {
-        this.outlineCircle(positionMatrix, (float) circle.x, (float) circle.y, (float) circle.r, width, degStart, degEnd, color);
+    public void outlinedCircle(final Matrix4f positionMatrix, final Circled circle, final float width, final float degStart, final float degEnd, final Color color) {
+        this.outlinedCircle(positionMatrix, (float) circle.x, (float) circle.y, (float) circle.r, width, degStart, degEnd, color);
     }
 
-    public void outlineCircle(final Matrix4f positionMatrix, final Circlef circle, final float width, final float degStart, final float degEnd, final Color color) {
-        this.outlineCircle(positionMatrix, circle.x, circle.y, circle.r, width, degStart, degEnd, color);
+    public void outlinedCircle(final Matrix4f positionMatrix, final Circlef circle, final float width, final float degStart, final float degEnd, final Color color) {
+        this.outlinedCircle(positionMatrix, circle.x, circle.y, circle.r, width, degStart, degEnd, color);
     }
 
-    public void outlineCircle(final Matrix4f positionMatrix, final float x, final float y, final float radius, final float width, final float degStart, final float degEnd, final Color color) {
-        Primitives.outlineCircle(positionMatrix, this.targetMultiDrawBatchDataHolder, x, y, radius, width, degStart, degEnd, color.toABGR());
+    public void outlinedCircle(final Matrix4f positionMatrix, final float x, final float y, final float radius, final float width, final float degStart, final float degEnd, final Color color) {
+        Primitives.outlinedCircle(positionMatrix, this.targetMultiDrawBatchDataHolder, x, y, radius, width, degStart, degEnd, color.toABGR());
         this.drawIfNotBuffering();
     }
 
@@ -277,7 +302,7 @@ public class Renderer2D extends Renderer {
     public void connectedLine(final Matrix4f positionMatrix, final List<Vector2f> points, final float width, final Color color, final boolean closedLoop) {
         final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.INDEXED_COLORED_TRIANGLE);
         final IndexDataHolder indexDataHolder = this.targetMultiDrawBatchDataHolder.getIndexDataHolder(BuiltinDrawBatches.INDEXED_COLORED_TRIANGLE);
-        final int abgr = color.toABGR();
+        final int abgrColor = color.toABGR();
 
         try (MemoryStack memoryStack = MemoryStack.stackPush()) {
             final ParSLConfig config = ParSLConfig.malloc(memoryStack).thickness(width);
@@ -295,7 +320,7 @@ public class Renderer2D extends Renderer {
             final ParSLPosition.Buffer verticesBuffer = mesh.positions();
             for (int i = 0; i < vertexCount; i++) {
                 final ParSLPosition position = verticesBuffer.get(i);
-                vertexDataHolder.position(positionMatrix, position.x(), position.y(), 0F).color(abgr).endVertex();
+                vertexDataHolder.position(positionMatrix, position.x(), position.y(), 0F).color(abgrColor).endVertex();
             }
 
             final int triangleCount = mesh.num_triangles();
@@ -310,42 +335,17 @@ public class Renderer2D extends Renderer {
         this.drawIfNotBuffering();
     }
 
-    public void filledRoundedRectangle(final Matrix4f positionMatrix, final Rectangled rectangle, final float radius, final Color color) {
-        this.filledRoundedRectangle(positionMatrix, (float) rectangle.minX, (float) rectangle.minY, (float) rectangle.maxX, (float) rectangle.maxY, radius, color);
-    }
-
-    public void filledRoundedRectangle(final Matrix4f positionMatrix, final Rectanglef rectangle, final float radius, final Color color) {
-        this.filledRoundedRectangle(positionMatrix, rectangle.minX, rectangle.minY, rectangle.maxX, rectangle.maxY, radius, color);
-    }
-
-    public void filledRoundedRectangle(final Matrix4f positionMatrix, final Rectanglei rectangle, final float radius, final Color color) {
-        this.filledRoundedRectangle(positionMatrix, rectangle.minX, rectangle.minY, rectangle.maxX, rectangle.maxY, radius, color);
-    }
-
-    public void filledRoundedRectangle(final Matrix4f positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr, final float radius, final Color color) {
-        final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.COLORED_TRIANGLE_FAN);
-        final int abgr = color.toABGR();
-
-        Primitives._filledCircle(positionMatrix, vertexDataHolder, xtl + radius, ytl + radius, 0F, radius, 270, 360, abgr);
-        Primitives._filledCircle(positionMatrix, vertexDataHolder, xtl + radius, ybr - radius, 0F, radius, 180, 270, abgr);
-        Primitives._filledCircle(positionMatrix, vertexDataHolder, xbr - radius, ybr - radius, 0F, radius, 90, 180, abgr);
-        Primitives._filledCircle(positionMatrix, vertexDataHolder, xbr - radius, ytl + radius, 0F, radius, 0, 90, abgr);
-        vertexDataHolder.endConnectedPrimitive();
-
-        this.drawIfNotBuffering();
-    }
-
     public void filledPolygon(final Matrix4f positionMatrix, final List<Vector2f> points, final Color color) {
         final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.INDEXED_COLORED_TRIANGLE);
         final IndexDataHolder indexDataHolder = this.targetMultiDrawBatchDataHolder.getIndexDataHolder(BuiltinDrawBatches.INDEXED_COLORED_TRIANGLE);
-        final int abgr = color.toABGR();
+        final int abgrColor = color.toABGR();
 
         final double[] data = new double[points.size() * 2];
         for (int i = 0; i < points.size(); i++) {
             final Vector2f point = points.get(i);
             data[i * 2] = point.x;
             data[i * 2 + 1] = point.y;
-            vertexDataHolder.position(positionMatrix, point.x, point.y, 0F).color(abgr).endVertex();
+            vertexDataHolder.position(positionMatrix, point.x, point.y, 0F).color(abgrColor).endVertex();
         }
         final List<Integer> indices = Earcut.earcut(data);
         for (int index : indices) {

@@ -66,8 +66,8 @@ public abstract class BufferVertexDataWriter<T extends BufferVertexDataWriter<T>
         return this.color(color.toABGR());
     }
 
-    public T color(final int abgr) {
-        this.bufferBuilder.putInt(abgr);
+    public T color(final int abgrColor) {
+        this.bufferBuilder.putInt(abgrColor);
         return (T) this;
     }
 

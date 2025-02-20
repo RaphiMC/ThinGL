@@ -211,22 +211,22 @@ public class Primitives {
         vertexDataHolder.endConnectedPrimitive();
     }
 
-    public static void outlineCircle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float radius, final float w, final int c) {
-        outlineCircle(positionMatrix, multiDrawBatchDataHolder, x, y, 0F, radius, w, 0, 360, c);
+    public static void outlinedCircle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float radius, final float w, final int c) {
+        outlinedCircle(positionMatrix, multiDrawBatchDataHolder, x, y, 0F, radius, w, 0, 360, c);
     }
 
-    public static void outlineCircle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float z, final float radius, final float w, final int c) {
-        outlineCircle(positionMatrix, multiDrawBatchDataHolder, x, y, z, radius, w, 0, 360, c);
+    public static void outlinedCircle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float z, final float radius, final float w, final int c) {
+        outlinedCircle(positionMatrix, multiDrawBatchDataHolder, x, y, z, radius, w, 0, 360, c);
     }
 
-    public static void outlineCircle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float radius, final float w, final float degStart, final float degEnd, final int c) {
-        outlineCircle(positionMatrix, multiDrawBatchDataHolder, x, y, 0F, w, radius, degStart, degEnd, c);
+    public static void outlinedCircle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float radius, final float w, final float degStart, final float degEnd, final int c) {
+        outlinedCircle(positionMatrix, multiDrawBatchDataHolder, x, y, 0F, w, radius, degStart, degEnd, c);
     }
 
-    public static void outlineCircle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float z, final float radius, final float w, final float degStart, final float degEnd, final int c) {
+    public static void outlinedCircle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float z, final float radius, final float w, final float degStart, final float degEnd, final int c) {
         final VertexDataHolder vertexDataHolder = multiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.COLORED_TRIANGLE_STRIP);
 
-        _outlineCircle(positionMatrix, vertexDataHolder, x, y, z, radius, w, degStart, degEnd, c);
+        _outlinedCircle(positionMatrix, vertexDataHolder, x, y, z, radius, w, degStart, degEnd, c);
         vertexDataHolder.endConnectedPrimitive();
     }
 
@@ -335,7 +335,7 @@ public class Primitives {
         _circle(radius, degStart, degEnd, (xc, yc) -> vertexDataHolder.position(positionMatrix, x + xc, y + yc, z).color(c).endVertex());
     }
 
-    public static void _outlineCircle(final Matrix4f positionMatrix, final VertexDataHolder vertexDataHolder, final float x, final float y, final float z, final float radius, final float w, final float degStart, final float degEnd, final int c) {
+    public static void _outlinedCircle(final Matrix4f positionMatrix, final VertexDataHolder vertexDataHolder, final float x, final float y, final float z, final float radius, final float w, final float degStart, final float degEnd, final int c) {
         _circle(radius, degStart, degEnd, (xc, yc) -> {
             vertexDataHolder.position(positionMatrix, x + xc, y + yc, z).color(c).endVertex();
             vertexDataHolder.position(positionMatrix, x + (xc / radius * (radius + w / 2F)), y + (yc / radius * (radius + w / 2F)), z).color(c).endVertex();
