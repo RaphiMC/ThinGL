@@ -22,12 +22,12 @@ import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.framebuffer.impl.TextureFramebuffer;
 import net.raphimc.thingl.framebuffer.impl.WindowFramebuffer;
 import net.raphimc.thingl.implementation.DebugMessageCallback;
+import net.raphimc.thingl.util.Blending;
 import org.joml.Matrix4fStack;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11C;
-import org.lwjgl.opengl.GL14C;
 
 public abstract class ExampleBase implements Runnable {
 
@@ -62,7 +62,7 @@ public abstract class ExampleBase implements Runnable {
         DebugMessageCallback.install(true); // Enable synchronous debug messages to ensure stack traces are correct (Only use this for debugging!)
 
         GL11C.glEnable(GL11C.GL_BLEND);
-        GL14C.glBlendFuncSeparate(GL11C.GL_SRC_ALPHA, GL11C.GL_ONE_MINUS_SRC_ALPHA, GL11C.GL_ONE, GL11C.GL_ZERO);
+        Blending.standardBlending();
         GL11C.glDisable(GL11C.GL_DEPTH_TEST);
         GL11C.glDepthFunc(GL11C.GL_LEQUAL);
         this.init(); // Initialize the example

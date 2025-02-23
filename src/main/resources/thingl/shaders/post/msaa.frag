@@ -9,13 +9,12 @@ void main() {
     ivec2 texPos = ivec2(v_VpTexCoords * textureSize(u_Mask));
     int samples = textureSamples(u_Mask);
 
-    vec4 averagedColor = vec4(0.0);
+    vec4 colorSum = vec4(0.0);
     for (int i = 0; i < samples; i++) {
-        averagedColor += texelFetch(u_Mask, texPos, i);
+        colorSum += texelFetch(u_Mask, texPos, i);
     }
-    averagedColor /= float(samples);
 
-    o_Color = averagedColor;
+    o_Color = colorSum / float(samples);
     if (o_Color.a == 0.0) {
         discard;
     }

@@ -21,12 +21,12 @@ package net.raphimc.thingl.program.post;
 import net.raphimc.thingl.framebuffer.impl.TextureFramebuffer;
 import net.raphimc.thingl.program.PostProcessingProgram;
 import net.raphimc.thingl.resource.shader.Shader;
+import net.raphimc.thingl.util.Blending;
 import net.raphimc.thingl.util.GlobalObjects;
 import net.raphimc.thingl.util.pool.FramebufferPool;
 import net.raphimc.thingl.wrapper.GLStateTracker;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11C;
-import org.lwjgl.opengl.GL14C;
 
 public abstract class MaskablePostProcessingProgram extends PostProcessingProgram {
 
@@ -41,7 +41,7 @@ public abstract class MaskablePostProcessingProgram extends PostProcessingProgra
         GLStateTracker.disable(GL11C.GL_DEPTH_TEST);
         GLStateTracker.disable(GL11C.GL_STENCIL_TEST);
         GLStateTracker.pushBlendFunc();
-        GL14C.glBlendFuncSeparate(GL11C.GL_SRC_ALPHA, GL11C.GL_ONE_MINUS_SRC_ALPHA, GL11C.GL_ONE, GL11C.GL_ONE_MINUS_SRC_ALPHA);
+        Blending.premultipliedAlphaBlending();
         GLStateTracker.pushFramebuffer();
         if (this.maskFramebuffer == null) {
             this.maskFramebuffer = FramebufferPool.borrowFramebuffer(GL11C.GL_LINEAR);
@@ -63,7 +63,7 @@ public abstract class MaskablePostProcessingProgram extends PostProcessingProgra
         GLStateTracker.push();
         GLStateTracker.enable(GL11C.GL_BLEND);
         GLStateTracker.pushBlendFunc();
-        GL11C.glBlendFunc(GL11C.GL_ONE, GL11C.GL_ONE_MINUS_SRC_ALPHA);
+        Blending.additiveBlending();
         this.maskFramebuffer.render(positionMatrix, 0, 0, this.maskFramebuffer.getWidth(), this.maskFramebuffer.getHeight());
         GLStateTracker.popBlendFunc();
         GLStateTracker.pop();

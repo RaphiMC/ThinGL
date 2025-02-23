@@ -21,6 +21,8 @@ import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.program.BuiltinPrograms;
 import net.raphimc.thingl.program.post.SinglePassPostProcessingProgram;
 import net.raphimc.thingl.resource.shader.Shader;
+import net.raphimc.thingl.util.Blending;
+import net.raphimc.thingl.wrapper.GLStateTracker;
 
 public class ColorTweakProgram extends SinglePassPostProcessingProgram<ColorTweakProgram> {
 
@@ -34,6 +36,14 @@ public class ColorTweakProgram extends SinglePassPostProcessingProgram<ColorTwea
 
     public void configureParameters(final Color color) {
         this.color = color;
+    }
+
+    @Override
+    protected void renderQuad0(final float x1, final float y1, final float x2, final float y2) {
+        GLStateTracker.pushBlendFunc();
+        Blending.additiveBlending();
+        super.renderQuad0(x1, y1, x2, y2);
+        GLStateTracker.popBlendFunc();
     }
 
 }
