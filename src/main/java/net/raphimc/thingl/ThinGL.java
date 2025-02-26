@@ -212,13 +212,15 @@ public class ThinGL {
         if (width == 0 || height == 0) {
             return;
         }
-        for (BiConsumer<Integer, Integer> callback : WINDOW_FRAMEBUFFER_RESIZE_CALLBACKS) {
-            try {
-                callback.accept(width, height);
-            } catch (Throwable e) {
-                LOGGER.error("Exception while invoking window framebuffer resize callback", e);
+        runOnRenderThread(() -> {
+            for (BiConsumer<Integer, Integer> callback : WINDOW_FRAMEBUFFER_RESIZE_CALLBACKS) {
+                try {
+                    callback.accept(width, height);
+                } catch (Throwable e) {
+                    LOGGER.error("Exception while invoking window framebuffer resize callback", e);
+                }
             }
-        }
+        });
     }
 
 }
