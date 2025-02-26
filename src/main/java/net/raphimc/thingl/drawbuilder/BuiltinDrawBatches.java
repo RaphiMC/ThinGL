@@ -67,17 +67,17 @@ public class BuiltinDrawBatches {
 
     public static final IntFunction<DrawBatch> TEXTURED_QUAD = CacheUtil.memoizeInt(textureId -> new DrawBatch(() -> BuiltinPrograms.POSITION_TEXTURE, DrawMode.QUADS, POSITION_TEXTURE_LAYOUT,  () -> {
         PUSH_ENABLE_BLEND.run();
-        BuiltinPrograms.POSITION_TEXTURE.setUniformTexture("u_Texture", textureId);
+        BuiltinPrograms.POSITION_TEXTURE.setUniformSampler("u_Texture", textureId);
     }, POP));
 
     public static final IntFunction<DrawBatch> COLORED_TEXTURED_QUAD = CacheUtil.memoizeInt(textureId -> new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR_TEXTURE, DrawMode.QUADS, POSITION_COLOR_TEXTURE_LAYOUT,  () -> {
         PUSH_ENABLE_BLEND.run();
-        BuiltinPrograms.POSITION_COLOR_TEXTURE.setUniformTexture("u_Texture", textureId);
+        BuiltinPrograms.POSITION_COLOR_TEXTURE.setUniformSampler("u_Texture", textureId);
     }, POP));
 
     public static final IntFunction<DrawBatch> COLORIZED_TEXTURED_QUAD = CacheUtil.memoizeInt(textureId -> new DrawBatch(() -> BuiltinPrograms.COLORIZED_TEXTURE, DrawMode.QUADS, POSITION_COLOR_TEXTURE_LAYOUT,  () -> {
         PUSH_ENABLE_BLEND.run();
-        BuiltinPrograms.COLORIZED_TEXTURE.setUniformTexture("u_Texture", textureId);
+        BuiltinPrograms.COLORIZED_TEXTURE.setUniformSampler("u_Texture", textureId);
     }, POP));
 
     public static final DrawBatch COLORED_TRIANGLE_FAN = new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR, () -> BuiltinPrograms.INSTANCED_POSITION_COLOR, DrawMode.TRIANGLE_FAN, POSITION_COLOR_LAYOUT, HALF_POSITION_COLOR_LAYOUT,  PUSH_ENABLE_BLEND, POP);

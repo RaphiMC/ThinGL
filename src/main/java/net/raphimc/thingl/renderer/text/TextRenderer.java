@@ -105,7 +105,7 @@ public abstract class TextRenderer {
             for (int i = 0; i < this.glyphAtlases.size(); i++) {
                 textureIds[i] = this.glyphAtlases.get(i).getGlId();
             }
-            shader.setUniformTextureArray("u_Textures", textureIds);
+            shader.setUniformSamplerArray("u_Textures", textureIds);
         }, GLStateTracker::pop);
     }
 

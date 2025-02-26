@@ -54,13 +54,13 @@ public class MultiPassPostProcessingProgram<S extends MaskablePostProcessingProg
         GLStateTracker.disable(GL11C.GL_DEPTH_TEST);
         GLStateTracker.disable(GL11C.GL_STENCIL_TEST);
 
-        this.setUniformTexture("u_Source", sourceFramebuffer);
+        this.setUniformSampler("u_Source", sourceFramebuffer);
         framebuffers[0].bind();
         this.passes[0].accept((S) this);
         super.renderQuad0(x1, y1, x2, y2);
 
         for (int i = 1; i < this.passes.length - 1; i++) {
-            this.setUniformTexture("u_Source", framebuffers[i - 1]);
+            this.setUniformSampler("u_Source", framebuffers[i - 1]);
             framebuffers[i].bind();
             this.passes[i].accept((S) this);
             super.renderQuad0(x1, y1, x2, y2);
@@ -68,7 +68,7 @@ public class MultiPassPostProcessingProgram<S extends MaskablePostProcessingProg
 
         GLStateTracker.pop();
 
-        this.setUniformTexture("u_Source", framebuffers[this.passes.length - 2]);
+        this.setUniformSampler("u_Source", framebuffers[this.passes.length - 2]);
         sourceFramebuffer.bind();
         this.passes[this.passes.length - 1].accept((S) this);
         super.renderQuad0(x1, y1, x2, y2);

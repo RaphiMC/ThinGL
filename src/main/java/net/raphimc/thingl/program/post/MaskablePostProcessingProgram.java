@@ -79,7 +79,7 @@ public abstract class MaskablePostProcessingProgram extends PostProcessingProgra
     @Override
     public void bind() {
         super.bind();
-        this.setUniformTexture("u_Mask", this.maskFramebuffer);
+        this.setUniformSampler("u_Mask", this.maskFramebuffer);
     }
 
 }

@@ -152,24 +152,24 @@ public class Program extends GLResource {
         }
     }
 
-    public void setUniformTexture(final String name, final Framebuffer framebuffer) {
+    public void setUniformSampler(final String name, final Framebuffer framebuffer) {
         if (framebuffer.getColorAttachment() instanceof AbstractTexture texture) {
-            this.setUniformTexture(name, texture);
+            this.setUniformSampler(name, texture);
         } else {
             throw new IllegalArgumentException("Framebuffer color attachment is not a texture");
         }
     }
 
-    public void setUniformTexture(final String name, final AbstractTexture texture) {
-        this.setUniformTexture(name, texture.getGlId());
+    public void setUniformSampler(final String name, final AbstractTexture texture) {
+        this.setUniformSampler(name, texture.getGlId());
     }
 
-    public void setUniformTexture(final String name, final int textureId) {
+    public void setUniformSampler(final String name, final int textureId) {
         GL45C.glBindTextureUnit(this.currentTextureUnit, textureId);
         this.setUniform(name, this.currentTextureUnit++);
     }
 
-    public void setUniformTextureArray(final String name, final int... textureIds) {
+    public void setUniformSamplerArray(final String name, final int... textureIds) {
         final int[] textureUnits = new int[textureIds.length];
         for (int i = 0; i < textureIds.length; i++) {
             GL45C.glBindTextureUnit(this.currentTextureUnit + i, textureIds[i]);

@@ -37,7 +37,7 @@ public class SinglePassBufferedPostProcessingProgram<S extends SinglePassPostPro
         final TextureFramebuffer tempFramebuffer = FramebufferPool.borrowFramebuffer(GL11C.GL_LINEAR);
         ThinGL.getImplementation().getCurrentFramebuffer().blitTo(tempFramebuffer, true, false, false);
 
-        this.setUniformTexture("u_Source", tempFramebuffer);
+        this.setUniformSampler("u_Source", tempFramebuffer);
         super.renderQuad0(x1, y1, x2, y2);
 
         FramebufferPool.returnFramebuffer(tempFramebuffer);
