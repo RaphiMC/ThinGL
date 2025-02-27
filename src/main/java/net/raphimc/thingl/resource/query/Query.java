@@ -31,7 +31,7 @@ public class Query extends GLResource {
 
     protected Query(final int glId, final Object unused) {
         super(GL43C.GL_QUERY, glId);
-        this.target = GL15C.glGetQueryObjecti(this.getGlId(), GL45C.GL_QUERY_TARGET);
+        this.target = GL15C.glGetQueryObjecti(glId, GL45C.GL_QUERY_TARGET);
     }
 
     public static Query fromGlId(final int glId) {

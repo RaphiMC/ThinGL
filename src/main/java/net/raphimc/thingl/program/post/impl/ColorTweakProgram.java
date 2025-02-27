@@ -21,7 +21,7 @@ import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.program.BuiltinPrograms;
 import net.raphimc.thingl.program.post.SinglePassPostProcessingProgram;
 import net.raphimc.thingl.resource.shader.Shader;
-import net.raphimc.thingl.util.Blending;
+import net.raphimc.thingl.wrapper.Blending;
 import net.raphimc.thingl.wrapper.GLStateTracker;
 
 public class ColorTweakProgram extends SinglePassPostProcessingProgram<ColorTweakProgram> {

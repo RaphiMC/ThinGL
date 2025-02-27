@@ -20,7 +20,7 @@ package net.raphimc.thingl.program.post.impl;
 import net.raphimc.thingl.program.BuiltinPrograms;
 import net.raphimc.thingl.program.post.SinglePassPostProcessingProgram;
 import net.raphimc.thingl.resource.shader.Shader;
-import net.raphimc.thingl.util.Blending;
+import net.raphimc.thingl.wrapper.Blending;
 import net.raphimc.thingl.wrapper.GLStateTracker;
 
 public class RainbowColorProgram extends SinglePassPostProcessingProgram<RainbowColorProgram> {

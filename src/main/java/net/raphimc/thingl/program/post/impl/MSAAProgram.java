@@ -21,7 +21,7 @@ import net.raphimc.thingl.framebuffer.impl.MSAATextureFramebuffer;
 import net.raphimc.thingl.program.BuiltinPrograms;
 import net.raphimc.thingl.program.PostProcessingProgram;
 import net.raphimc.thingl.resource.shader.Shader;
-import net.raphimc.thingl.util.Blending;
+import net.raphimc.thingl.wrapper.Blending;
 import net.raphimc.thingl.wrapper.GLStateTracker;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL13C;

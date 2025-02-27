@@ -21,10 +21,9 @@ void main() {
         vec2 position = v_RelTexCoords / u_RainbowDivider * u_Direction;
         vec3 hsv = rgb2hsv(maskPixel.rgb);
         o_Color = vec4(hsv2rgb(vec3(position.x + position.y + u_Offset - u_Time / u_SpeedDivider, hsv.y, hsv.z)), maskPixel.a);
-        return;
+    } else {
+        discard;
     }
-
-    discard;
 }
 
 vec3 rgb2hsv(vec3 c) {

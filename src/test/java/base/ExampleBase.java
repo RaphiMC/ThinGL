@@ -22,7 +22,7 @@ import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.framebuffer.impl.TextureFramebuffer;
 import net.raphimc.thingl.framebuffer.impl.WindowFramebuffer;
 import net.raphimc.thingl.implementation.DebugMessageCallback;
-import net.raphimc.thingl.util.Blending;
+import net.raphimc.thingl.wrapper.Blending;
 import org.joml.Matrix4fStack;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;

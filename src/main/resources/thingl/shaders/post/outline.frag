@@ -19,7 +19,7 @@ int decodeDistance(float alpha);
 float encodeDistance(int dist);
 
 void main() {
-    if (!u_FinalPass) {
+    if (!u_FinalPass) { /* x axis pass */
         vec3 color = vec3(0.0);
         int xDistance = 0;
         vec4 currentPixel = texture(u_Mask, v_VpTexCoords);
@@ -54,7 +54,7 @@ void main() {
                 discard;
             }
         }
-    } else {
+    } else { /* y axis combining pass */
         int xyDistance = 0;
         vec3 color = vec3(0.0);
         vec4 currentPixel = texture(u_Source, v_VpTexCoords);
@@ -96,7 +96,6 @@ void main() {
         }
     }
 }
-
 
 int decodeDistance(float alpha) {
     if (alpha != 0.0) {
