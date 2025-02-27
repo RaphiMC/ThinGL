@@ -18,20 +18,34 @@
 package net.raphimc.thingl.program.post.impl;
 
 import net.raphimc.thingl.program.BuiltinPrograms;
-import net.raphimc.thingl.program.post.SinglePassPostProcessingProgram;
+import net.raphimc.thingl.program.post.MultiPassPostProcessingProgram;
 import net.raphimc.thingl.resource.shader.Shader;
 
-public class InnerOutlineProgram extends SinglePassPostProcessingProgram<InnerOutlineProgram> {
+public class OutlineProgram extends MultiPassPostProcessingProgram<OutlineProgram> {
 
+    public static final int STYLE_OUTER_BIT = 1 << 0;
+    public static final int STYLE_INNER_BIT = 1 << 1;
+    public static final int STYLE_ROUNDED_BIT = 1 << 2;
+
+    public static final int STYLE_OUTER_ROUNDED_BITS = STYLE_OUTER_BIT | STYLE_ROUNDED_BIT;
+
+    private int styleFlags = STYLE_OUTER_ROUNDED_BITS;
     private int width = 1;
 
-    public InnerOutlineProgram() {
-        super(BuiltinPrograms.getShader("post/post_processing", Shader.Type.VERTEX), BuiltinPrograms.getShader("post/inner_outline", Shader.Type.FRAGMENT), s -> {
+    public OutlineProgram() {
+        super(BuiltinPrograms.getShader("post/post_processing", Shader.Type.VERTEX), BuiltinPrograms.getShader("post/outline", Shader.Type.FRAGMENT), s -> {
+            s.setUniform("u_FinalPass", false);
+            s.setUniform("u_StyleFlags", s.styleFlags);
+            s.setUniform("u_Width", s.width);
+        }, s -> {
+            s.setUniform("u_FinalPass", true);
+            s.setUniform("u_StyleFlags", s.styleFlags);
             s.setUniform("u_Width", s.width);
         });
     }
 
-    public void configureParameters(final int width) {
+    public void configureParameters(final int styleFlags, final int width) {
+        this.styleFlags = styleFlags;
         this.width = width;
     }
 

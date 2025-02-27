@@ -48,9 +48,7 @@ public class BuiltinPrograms {
     public static final ColorTweakProgram COLOR_TWEAK = new ColorTweakProgram();
     public static final SingleColorProgram SINGLE_COLOR = new SingleColorProgram();
     public static final RainbowColorProgram RAINBOW_COLOR = new RainbowColorProgram();
-    public static final SimpleOutlineProgram SIMPLE_OUTLINE = new SimpleOutlineProgram();
-    public static final SmoothOutlineProgram SMOOTH_OUTLINE = new SmoothOutlineProgram();
-    public static final InnerOutlineProgram INNER_OUTLINE = new InnerOutlineProgram();
+    public static final OutlineProgram OUTLINE = new OutlineProgram();
     public static final MSAAProgram MSAA = new MSAAProgram(4);
 
     // Instancing

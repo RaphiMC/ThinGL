@@ -19,6 +19,7 @@
 import base.ExampleBase;
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.program.BuiltinPrograms;
+import net.raphimc.thingl.program.post.impl.OutlineProgram;
 import net.raphimc.thingl.renderer.impl.Renderer2D;
 import org.joml.Matrix4fStack;
 
@@ -30,12 +31,12 @@ public class ObjectOutliningExample extends ExampleBase {
 
     @Override
     protected void render(final Matrix4fStack positionMatrix) {
-        BuiltinPrograms.SMOOTH_OUTLINE.bindMask();
+        BuiltinPrograms.OUTLINE.bindMask();
         this.renderScene(positionMatrix);
-        BuiltinPrograms.SMOOTH_OUTLINE.unbindMask();
-        BuiltinPrograms.SMOOTH_OUTLINE.configureParameters(1); // Configure the outline width
-        BuiltinPrograms.SMOOTH_OUTLINE.renderFullscreenQuad();
-        BuiltinPrograms.SMOOTH_OUTLINE.clearMask();
+        BuiltinPrograms.OUTLINE.unbindMask();
+        BuiltinPrograms.OUTLINE.configureParameters(OutlineProgram.STYLE_OUTER_ROUNDED_BITS, 1); // Configure the outline
+        BuiltinPrograms.OUTLINE.renderFullscreenQuad();
+        BuiltinPrograms.OUTLINE.clearMask();
 
         positionMatrix.translate(0, 200, 0);
         this.renderScene(positionMatrix);
