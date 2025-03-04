@@ -50,17 +50,17 @@ public class SDFTextRenderer extends TextRenderer {
         final float maxScale = Math.max(Math.max(scale.x, scale.y), scale.z);
         final float smoothing = 1F / maxScale / 10F;
 
-        final int regularStringDataIndex = stringDataHolder.rawInt(textColor.toRGBA()).rawInt(outlineColor.toRGBA()).rawInt(flags).rawFloat(smoothing).endAndGetArrayIndex();
+        final int regularStringDataIndex = stringDataHolder.rawInt(textColor.toABGR()).rawInt(outlineColor.toABGR()).rawInt(flags).rawFloat(smoothing).endAndGetArrayIndex();
 
         if ((flags & TextRenderer.STYLE_SHADOW_BIT) != 0) {
             final float shadowOffset = 0.075F * this.primaryFont.getSize() * this.globalScale;
             final Color shadowTextColor = textColor.multiply(0.25F);
-            final int shadowStringDataIndex = stringDataHolder.rawInt(shadowTextColor.toRGBA()).rawInt(0).rawInt(flags).rawFloat(smoothing).endAndGetArrayIndex();
-            this.renderString(positionMatrix, multiDrawBatchDataHolder, text, startIndex, endIndex, x + shadowOffset, y + shadowOffset, z, shadowTextColor.toARGB(), flags, shadowStringDataIndex);
+            final int shadowStringDataIndex = stringDataHolder.rawInt(shadowTextColor.toABGR()).rawInt(0).rawInt(flags).rawFloat(smoothing).endAndGetArrayIndex();
+            this.renderString(positionMatrix, multiDrawBatchDataHolder, text, startIndex, endIndex, x + shadowOffset, y + shadowOffset, z, shadowTextColor.toABGR(), flags, shadowStringDataIndex);
             z += 0.01F;
         }
 
-        return this.renderString(positionMatrix, multiDrawBatchDataHolder, text, startIndex, endIndex, x, y, z, textColor.toARGB(), flags, regularStringDataIndex);
+        return this.renderString(positionMatrix, multiDrawBatchDataHolder, text, startIndex, endIndex, x, y, z, textColor.toABGR(), flags, regularStringDataIndex);
     }
 
 }

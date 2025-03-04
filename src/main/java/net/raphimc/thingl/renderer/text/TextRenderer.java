@@ -250,7 +250,7 @@ public abstract class TextRenderer {
         this.globalScale = globalScale;
     }
 
-    protected float renderString(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final String text, final int startIndex, final int endIndex, float x, float y, float z, final int textColorArgb, final int flags, final int stringDataIndex) {
+    protected float renderString(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final String text, final int startIndex, final int endIndex, float x, float y, float z, final int abgrTextColor, final int flags, final int stringDataIndex) {
         final DrawBatchDataHolder drawBatchDataHolder = multiDrawBatchDataHolder.getDrawBatchDataHolder(this.textDrawBatch);
         final VertexDataHolder vertexDataHolder = drawBatchDataHolder.getVertexDataHolder();
         final ShaderDataHolder charDataHolder = drawBatchDataHolder.getShaderDataHolder("ssbo_CharData");
@@ -277,7 +277,7 @@ public abstract class TextRenderer {
 
             x += fontGlyph.advance() * this.globalScale;
         }
-        this.renderTextDecorations(positionMatrix, multiDrawBatchDataHolder, originX, x, y, z, textColorArgb, flags);
+        this.renderTextDecorations(positionMatrix, multiDrawBatchDataHolder, originX, x, y, z, abgrTextColor, flags);
 
         return x - originX;
     }
@@ -303,18 +303,18 @@ public abstract class TextRenderer {
         vertexDataHolder.position(positionMatrix, x1 + topOffset, y1, z).texture(glyph.u1(), glyph.v1()).endVertex();
     }
 
-    protected void renderTextDecorations(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float startX, final float endX, final float y, final float z, final int textColorArgb, final int flags) {
+    protected void renderTextDecorations(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float startX, final float endX, final float y, final float z, final int abgrTextColor, final int flags) {
         float lineThickness = this.primaryFont.getLineThickness() * this.globalScale;
         if ((flags & TextRenderer.STYLE_BOLD_BIT) != 0) {
             lineThickness *= 1.4F;
         }
         if ((flags & TextRenderer.STYLE_UNDERLINE_BIT) != 0) {
             final float lineY = y + lineThickness;
-            Primitives.filledRectangle(positionMatrix, multiDrawBatchDataHolder, startX, lineY, endX, lineY + lineThickness, z, textColorArgb);
+            Primitives.filledRectangle(positionMatrix, multiDrawBatchDataHolder, startX, lineY, endX, lineY + lineThickness, z, abgrTextColor);
         }
         if ((flags & TextRenderer.STYLE_STRIKETHROUGH_BIT) != 0) {
             final float lineY = y - this.primaryFont.getSize() * 0.3F - lineThickness;
-            Primitives.filledRectangle(positionMatrix, multiDrawBatchDataHolder, startX, lineY, endX, lineY + lineThickness, z, textColorArgb);
+            Primitives.filledRectangle(positionMatrix, multiDrawBatchDataHolder, startX, lineY, endX, lineY + lineThickness, z, abgrTextColor);
         }
     }
 

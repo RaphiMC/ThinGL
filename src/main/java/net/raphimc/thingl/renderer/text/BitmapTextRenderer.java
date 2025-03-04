@@ -34,43 +34,45 @@ public class BitmapTextRenderer extends TextRenderer {
 
     @Override
     public float renderString(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final String text, final int startIndex, final int endIndex, float x, float y, float z, final Color textColor, final int flags, final Color outlineColor) {
+        final int abgrTextColor = textColor.toABGR();
         final ShaderDataHolder stringDataHolder = multiDrawBatchDataHolder.getShaderDataHolder(this.textDrawBatch, "ssbo_StringData");
-        final int regularStringDataIndex = stringDataHolder.rawInt(textColor.toRGBA()).endAndGetArrayIndex();
+        final int regularStringDataIndex = stringDataHolder.rawInt(abgrTextColor).endAndGetArrayIndex();
 
         if ((flags & TextRenderer.STYLE_BOLD_BIT) != 0) {
             if (outlineColor.getAlpha() == 0) {
-                this.renderStringOutline(positionMatrix, multiDrawBatchDataHolder, text, startIndex, endIndex, x, y, z, textColor.toARGB(), flags, regularStringDataIndex);
+                this.renderStringOutline(positionMatrix, multiDrawBatchDataHolder, text, startIndex, endIndex, x, y, z, abgrTextColor, flags, regularStringDataIndex);
             } else {
                 // bold and outline isn't supported at the same time (yet). Use SDFTextRenderer for that.
-                final int outlineStringDataIndex = stringDataHolder.rawInt(outlineColor.toRGBA()).endAndGetArrayIndex();
-                this.renderStringOutline(positionMatrix, multiDrawBatchDataHolder, text, startIndex, endIndex, x, y, z, textColor.toARGB(), flags, outlineStringDataIndex);
+                final int outlineStringDataIndex = stringDataHolder.rawInt(outlineColor.toABGR()).endAndGetArrayIndex();
+                this.renderStringOutline(positionMatrix, multiDrawBatchDataHolder, text, startIndex, endIndex, x, y, z, abgrTextColor, flags, outlineStringDataIndex);
             }
         } else if (outlineColor.getAlpha() != 0) {
-            final int outlineStringDataIndex = stringDataHolder.rawInt(outlineColor.toRGBA()).endAndGetArrayIndex();
-            this.renderStringOutline(positionMatrix, multiDrawBatchDataHolder, text, startIndex, endIndex, x, y, z, textColor.toARGB(), flags, outlineStringDataIndex);
+            final int outlineStringDataIndex = stringDataHolder.rawInt(outlineColor.toABGR()).endAndGetArrayIndex();
+            this.renderStringOutline(positionMatrix, multiDrawBatchDataHolder, text, startIndex, endIndex, x, y, z, abgrTextColor, flags, outlineStringDataIndex);
         }
 
         if ((flags & TextRenderer.STYLE_SHADOW_BIT) != 0) {
             final float shadowOffset = 0.075F * this.primaryFont.getSize() * this.globalScale;
             final Color shadowTextColor = textColor.multiply(0.25F);
-            final int shadowStringDataIndex = stringDataHolder.rawInt(shadowTextColor.toRGBA()).endAndGetArrayIndex();
+            final int abgrShadowTextColor = shadowTextColor.toABGR();
+            final int shadowStringDataIndex = stringDataHolder.rawInt(abgrShadowTextColor).endAndGetArrayIndex();
 
             if ((flags & TextRenderer.STYLE_BOLD_BIT) != 0) {
-                this.renderStringOutline(positionMatrix, multiDrawBatchDataHolder, text, startIndex, endIndex, x + shadowOffset, y + shadowOffset, z, shadowTextColor.toARGB(), flags, shadowStringDataIndex);
+                this.renderStringOutline(positionMatrix, multiDrawBatchDataHolder, text, startIndex, endIndex, x + shadowOffset, y + shadowOffset, z, abgrShadowTextColor, flags, shadowStringDataIndex);
             }
 
-            this.renderString(positionMatrix, multiDrawBatchDataHolder, text, startIndex, endIndex, x + shadowOffset, y + shadowOffset, z, shadowTextColor.toARGB(), flags, shadowStringDataIndex);
+            this.renderString(positionMatrix, multiDrawBatchDataHolder, text, startIndex, endIndex, x + shadowOffset, y + shadowOffset, z, abgrShadowTextColor, flags, shadowStringDataIndex);
             z += 0.01F;
         }
 
-        return this.renderString(positionMatrix, multiDrawBatchDataHolder, text, startIndex, endIndex, x, y, z, textColor.toARGB(), flags, regularStringDataIndex);
+        return this.renderString(positionMatrix, multiDrawBatchDataHolder, text, startIndex, endIndex, x, y, z, abgrTextColor, flags, regularStringDataIndex);
     }
 
-    private void renderStringOutline(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final String text, final int startIndex, final int endIndex, final float x, final float y, final float z, final int textColorArgb, final int flags, final int stringDataIndex) {
+    private void renderStringOutline(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final String text, final int startIndex, final int endIndex, final float x, final float y, final float z, final int abgrTextColor, final int flags, final int stringDataIndex) {
         for (int xOffset = -1; xOffset <= 1; xOffset++) {
             for (int yOffset = -1; yOffset <= 1; yOffset++) {
                 if (xOffset != 0 || yOffset != 0) {
-                    this.renderString(positionMatrix, multiDrawBatchDataHolder, text, startIndex, endIndex, x + xOffset, y + yOffset, z, textColorArgb, flags, stringDataIndex);
+                    this.renderString(positionMatrix, multiDrawBatchDataHolder, text, startIndex, endIndex, x + xOffset, y + yOffset, z, abgrTextColor, flags, stringDataIndex);
                 }
             }
         }

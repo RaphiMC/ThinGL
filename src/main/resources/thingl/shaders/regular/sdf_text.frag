@@ -10,11 +10,11 @@ uniform vec4 u_ColorModifier;
 uniform sampler2D u_Textures[32];
 
 in vec2 v_TexCoords;
-flat in int v_TextureIndex;
+flat in uint v_TextureIndex;
 flat in vec4 v_TextColor;
 flat in vec4 v_OutlineColor;
 flat in float v_Smoothing;
-flat in int v_StyleFlags;
+flat in uint v_StyleFlags;
 in float v_PerspectiveScale;
 out vec4 o_Color;
 
