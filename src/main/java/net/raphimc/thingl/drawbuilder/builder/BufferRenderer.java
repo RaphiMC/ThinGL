@@ -301,13 +301,16 @@ public class BufferRenderer {
             shaderDataBuffers.put(entry.getKey(), new ImmutableBuffer(entry.getValue(), 0));
         }
 
-        final BufferBuilder commandBufferBuilder = BufferBuilderPool.borrowBufferBuilder();
-        commandBufferBuilder.ensureHasEnoughSpace(preparedBuffer.drawCommands().size() * DrawCommand.SIZE);
-        for (DrawCommand drawCommand : preparedBuffer.drawCommands()) {
-            drawCommand.write(commandBufferBuilder);
+        AbstractBuffer commandBuffer = null;
+        if (preparedBuffer.drawCommands().size() > 1) {
+            final BufferBuilder commandBufferBuilder = BufferBuilderPool.borrowBufferBuilder();
+            commandBufferBuilder.ensureHasEnoughSpace(preparedBuffer.drawCommands().size() * DrawCommand.SIZE);
+            for (DrawCommand drawCommand : preparedBuffer.drawCommands()) {
+                drawCommand.write(commandBufferBuilder);
+            }
+            commandBuffer = new ImmutableBuffer(commandBufferBuilder.finish(), 0);
+            BufferBuilderPool.returnBufferBuilder(commandBufferBuilder);
         }
-        final AbstractBuffer commandBuffer = new ImmutableBuffer(commandBufferBuilder.finish(), 0);
-        BufferBuilderPool.returnBufferBuilder(commandBufferBuilder);
 
         preparedBuffer.delete();
         return new BuiltBuffer(drawBatch, vertexArray, shaderDataBuffers, commandBuffer, preparedBuffer.drawCommands());
@@ -344,18 +347,18 @@ public class BufferRenderer {
             }
         }
 
-        if (builtBuffer.commandBuffer() != null) {
-            if (vertexArray.getIndexBuffer() != null) {
-                vertexArray.drawElementsIndirect(drawMode, builtBuffer.commandBuffer(), 0, drawCommands.size());
-            } else {
-                vertexArray.drawArraysIndirect(drawMode, builtBuffer.commandBuffer(), 0, drawCommands.size());
-            }
-        } else if (drawCommands.size() == 1) {
+        if (drawCommands.size() == 1) {
             final DrawCommand drawCommand = drawCommands.get(0);
             if (drawCommand instanceof DrawElementsCommand drawElementsCommand) {
                 vertexArray.drawElements(drawMode, drawElementsCommand.vertexCount(), drawElementsCommand.firstIndex(), drawElementsCommand.instanceCount(), drawElementsCommand.baseVertex(), drawElementsCommand.baseInstance());
             } else if (drawCommand instanceof DrawArraysCommand drawArraysCommand) {
                 vertexArray.drawArrays(drawMode, drawArraysCommand.vertexCount(), drawArraysCommand.firstVertex(), drawArraysCommand.instanceCount(), drawArraysCommand.baseInstance());
+            }
+        } else if (builtBuffer.commandBuffer() != null) {
+            if (vertexArray.getIndexBuffer() != null) {
+                vertexArray.drawElementsIndirect(drawMode, builtBuffer.commandBuffer(), 0, drawCommands.size());
+            } else {
+                vertexArray.drawArraysIndirect(drawMode, builtBuffer.commandBuffer(), 0, drawCommands.size());
             }
         } else {
             throw new IllegalStateException("Draw calls with multiple draw commands require a command buffer");

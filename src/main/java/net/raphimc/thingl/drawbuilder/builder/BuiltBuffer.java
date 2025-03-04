@@ -40,7 +40,9 @@ public record BuiltBuffer(DrawBatch drawBatch, VertexArray vertexArray, Map<Stri
         for (Map.Entry<String, AbstractBuffer> entry : this.shaderDataBuffers.entrySet()) {
             entry.getValue().delete();
         }
-        this.commandBuffer.delete();
+        if (this.commandBuffer != null) {
+            this.commandBuffer.delete();
+        }
     }
 
 }
