@@ -5,7 +5,7 @@ uniform mat4 u_ProjectionMatrix;
 uniform mat4 u_ViewMatrix;
 uniform mat4 u_ModelMatrix;
 
-layout (std430) readonly buffer ssbo_DrawData {
+layout (std430) restrict readonly buffer ssbo_DrawData {
     vec3 positionOffsets[];
 };
 

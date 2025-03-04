@@ -11,10 +11,10 @@ uniform mat4 u_ProjectionMatrix;
 uniform mat4 u_ViewMatrix;
 uniform mat4 u_ModelMatrix;
 
-layout (std430) readonly buffer ssbo_StringData {
+layout (std430) restrict readonly buffer ssbo_StringData {
     StringData stringDatas[];
 };
-layout (std430) readonly buffer ssbo_CharData {
+layout (std430) restrict readonly buffer ssbo_CharData {
     CharData charDatas[];
 };
 
