@@ -4,7 +4,7 @@
 uniform sampler2D u_Source;
 uniform sampler2D u_Mask;
 uniform bool u_FinalPass;
-uniform float u_Radius;
+uniform int u_Radius;
 uniform float u_Sigma;
 
 in vec2 v_VpPixelSize;
@@ -22,12 +22,12 @@ void main() {
     if (shouldBlur(v_VpTexCoords)) {
         vec4 colorSum = vec4(0.0);
         if (!u_FinalPass) { /* x axis pass */
-            for (float i = -u_Radius; i <= u_Radius; i++) {
-                colorSum += getPixel(v_VpTexCoords + vec2(i, 0) * v_VpPixelSize) * gaussian(i);
+            for (int i = -u_Radius; i <= u_Radius; i++) {
+                colorSum += getPixel(v_VpTexCoords + vec2(i, 0) * v_VpPixelSize) * gaussian(float(i));
             }
         } else { /* y axis pass */
-            for (float i = -u_Radius; i <= u_Radius; i++) {
-                colorSum += getPixel(v_VpTexCoords + vec2(0, i) * v_VpPixelSize) * gaussian(i);
+            for (int i = -u_Radius; i <= u_Radius; i++) {
+                colorSum += getPixel(v_VpTexCoords + vec2(0, i) * v_VpPixelSize) * gaussian(float(i));
             }
         }
         o_Color = colorSum / colorSum.a;

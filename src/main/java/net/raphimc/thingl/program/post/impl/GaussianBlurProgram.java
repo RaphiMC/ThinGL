@@ -23,8 +23,8 @@ import net.raphimc.thingl.resource.shader.Shader;
 
 public class GaussianBlurProgram extends MultiPassPostProcessingProgram<GaussianBlurProgram> {
 
-    private float radius = 10;
-    private float sigma = 8F;
+    private int radius = 10;
+    private float sigma = 10F;
 
     public GaussianBlurProgram() {
         super(BuiltinPrograms.getShader("post/post_processing", Shader.Type.VERTEX), BuiltinPrograms.getShader("post/gaussian_blur", Shader.Type.FRAGMENT), s -> {
@@ -38,12 +38,12 @@ public class GaussianBlurProgram extends MultiPassPostProcessingProgram<Gaussian
         });
     }
 
-    public void configureParameters(final float radius) {
-        this.radius = radius;
-        this.sigma = 8F;
+    public void configureParameters(final int strength) {
+        this.radius = strength;
+        this.sigma = strength;
     }
 
-    public void configureParameters(final float radius, final float sigma) {
+    public void configureParameters(final int radius, final float sigma) {
         this.radius = radius;
         this.sigma = sigma;
     }
