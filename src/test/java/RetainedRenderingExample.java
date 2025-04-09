@@ -50,7 +50,7 @@ public class RetainedRenderingExample extends ExampleBase {
     protected void render(final Matrix4fStack positionMatrix) {
         persistentDrawBatch.draw(positionMatrix); // Draw the built contents of the drawBatch
 
-        // persistentDrawBatch.delete(); // Free up resources when done
+        // persistentDrawBatch.free(); // Free up resources when done
     }
 
 }

@@ -42,6 +42,7 @@ public class NvidiaAntiAliasing {
     }
 
     public static void end() {
+        if (!ThinGL.capabilities().supportsNVFramebufferMixedSamples()) return;
         ThinGL.glStateTracker().pop();
     }
 

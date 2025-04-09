@@ -44,7 +44,7 @@ public class QuadIndexBuffer {
     }
 
     public void ensureSize(final int quadCount) {
-        if (this.indexBuffer.getSize() / QUAD_INDEX_COUNT / Integer.SIZE < quadCount) {
+        if (this.indexBuffer.getSize() / QUAD_INDEX_COUNT / Integer.BYTES < quadCount) {
             if (this.indexData != null) {
                 BufferUtil.memFree(this.indexData);
             }
@@ -55,7 +55,7 @@ public class QuadIndexBuffer {
     }
 
     public ByteBuffer createIndexData(final int quadCount) {
-        final BufferBuilder bufferBuilder = new BufferBuilder(quadCount * QUAD_INDEX_COUNT * Integer.SIZE);
+        final BufferBuilder bufferBuilder = new BufferBuilder(quadCount * QUAD_INDEX_COUNT * Integer.BYTES);
         final IndexDataHolder indexDataHolder = new IndexDataHolder(bufferBuilder);
         for (int i = 0; i < quadCount; i++) {
             indexDataHolder.quad();
