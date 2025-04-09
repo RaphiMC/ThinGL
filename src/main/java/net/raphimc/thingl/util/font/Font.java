@@ -71,15 +71,16 @@ public class Font {
     }
 
     public FontGlyph loadGlyphByCodePoint(final int codePoint) {
+        final int glyphIndex;
         if (this.glyphPredicate.test(codePoint)) {
-            FreeTypeInstance.checkError(FreeType.FT_Load_Char(this.fontFace, codePoint, FreeType.FT_LOAD_DEFAULT | FreeType.FT_LOAD_NO_BITMAP), "Failed to load glyph");
+            glyphIndex = FreeType.FT_Get_Char_Index(this.fontFace, codePoint);
         } else {
-            FreeTypeInstance.checkError(FreeType.FT_Load_Glyph(this.fontFace, 0, FreeType.FT_LOAD_DEFAULT | FreeType.FT_LOAD_NO_BITMAP), "Failed to load glyph");
+            glyphIndex = 0;
         }
+        FreeTypeInstance.checkError(FreeType.FT_Load_Glyph(this.fontFace, glyphIndex, FreeType.FT_LOAD_DEFAULT | FreeType.FT_LOAD_NO_BITMAP), "Failed to load glyph");
         final FT_GlyphSlot glyphSlot = this.fontFace.glyph();
 
         final FT_Glyph_Metrics metrics = glyphSlot.metrics();
-        final int glyphIndex = glyphSlot.glyph_index();
         final float width = metrics.width() / 64F;
         final float height = metrics.height() / 64F;
         final float advance = metrics.horiAdvance() / 64F;

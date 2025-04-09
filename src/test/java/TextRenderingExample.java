@@ -49,6 +49,9 @@ public class TextRenderingExample extends ExampleBase {
             throw new RuntimeException(e);
         }
 
+        // Example to select a custom charmap to use for resolving unicode characters
+        // FreeTypeInstance.checkError(FreeType.FT_Select_Charmap(font.getFontFace(), FreeType.FT_ENCODING_MS_SYMBOL), "Failed to select charmap");
+
         this.bitmapTextRenderer = new BitmapTextRenderer(font);
         this.sdfTextRenderer = new SDFTextRenderer(font);
     }
