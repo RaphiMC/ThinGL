@@ -20,7 +20,6 @@ package net.raphimc.thingl.drawbuilder.builder;
 
 import net.raphimc.thingl.drawbuilder.DrawBatch;
 import net.raphimc.thingl.drawbuilder.builder.command.DrawCommand;
-import net.raphimc.thingl.drawbuilder.index.QuadIndexBuffer;
 import net.raphimc.thingl.resource.buffer.AbstractBuffer;
 import net.raphimc.thingl.resource.vertexarray.VertexArray;
 
@@ -29,19 +28,13 @@ import java.util.Map;
 
 public record BuiltBuffer(DrawBatch drawBatch, VertexArray vertexArray, Map<String, AbstractBuffer> shaderDataBuffers, AbstractBuffer commandBuffer, List<DrawCommand> drawCommands) {
 
-    public void delete() {
-        for (AbstractBuffer buffer : this.vertexArray.getVertexBuffers().values()) {
-            buffer.delete();
-        }
-        if (this.vertexArray.getIndexBuffer() != null && this.vertexArray.getIndexBuffer() != QuadIndexBuffer.getSharedGlBuffer()) {
-            this.vertexArray.getIndexBuffer().delete();
-        }
-        this.vertexArray.delete();
+    public void free() {
+        this.vertexArray.freeFully();
         for (Map.Entry<String, AbstractBuffer> entry : this.shaderDataBuffers.entrySet()) {
-            entry.getValue().delete();
+            entry.getValue().free();
         }
         if (this.commandBuffer != null) {
-            this.commandBuffer.delete();
+            this.commandBuffer.free();
         }
     }
 

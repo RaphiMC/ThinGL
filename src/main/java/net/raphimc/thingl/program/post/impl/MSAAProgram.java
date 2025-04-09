@@ -17,12 +17,11 @@
  */
 package net.raphimc.thingl.program.post.impl;
 
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.framebuffer.impl.MSAATextureFramebuffer;
-import net.raphimc.thingl.program.BuiltinPrograms;
 import net.raphimc.thingl.program.PostProcessingProgram;
 import net.raphimc.thingl.resource.shader.Shader;
 import net.raphimc.thingl.wrapper.Blending;
-import net.raphimc.thingl.wrapper.GLStateTracker;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL13C;
 
@@ -31,20 +30,20 @@ public class MSAAProgram extends PostProcessingProgram {
     private final int samples;
     protected MSAATextureFramebuffer maskFramebuffer;
 
-    public MSAAProgram(final int samples) {
-        super(BuiltinPrograms.getShader("post/post_processing", Shader.Type.VERTEX), BuiltinPrograms.getShader("post/msaa", Shader.Type.FRAGMENT));
+    public MSAAProgram(final Shader vertexShader, final Shader fragmentShader, final int samples) {
+        super(vertexShader, fragmentShader);
 
         this.samples = samples;
     }
 
     public void bindMask() {
-        GLStateTracker.push();
-        GLStateTracker.disable(GL11C.GL_DEPTH_TEST);
-        GLStateTracker.disable(GL11C.GL_STENCIL_TEST);
-        GLStateTracker.enable(GL13C.GL_MULTISAMPLE);
-        GLStateTracker.pushBlendFunc();
+        ThinGL.glStateTracker().push();
+        ThinGL.glStateTracker().disable(GL11C.GL_DEPTH_TEST);
+        ThinGL.glStateTracker().disable(GL11C.GL_STENCIL_TEST);
+        ThinGL.glStateTracker().enable(GL13C.GL_MULTISAMPLE);
+        ThinGL.glStateTracker().pushBlendFunc();
         Blending.premultipliedAlphaBlending();
-        GLStateTracker.pushFramebuffer();
+        ThinGL.glStateTracker().pushFramebuffer();
         if (this.maskFramebuffer == null) {
             this.maskFramebuffer = new MSAATextureFramebuffer(this.samples);
         }
@@ -52,9 +51,9 @@ public class MSAAProgram extends PostProcessingProgram {
     }
 
     public void unbindMask() {
-        GLStateTracker.popFramebuffer();
-        GLStateTracker.popBlendFunc();
-        GLStateTracker.pop();
+        ThinGL.glStateTracker().popFramebuffer();
+        ThinGL.glStateTracker().popBlendFunc();
+        ThinGL.glStateTracker().pop();
     }
 
     public void clearMask() {
@@ -71,19 +70,19 @@ public class MSAAProgram extends PostProcessingProgram {
 
     @Override
     protected void renderQuad0(final float x1, final float y1, final float x2, final float y2) {
-        GLStateTracker.pushBlendFunc();
+        ThinGL.glStateTracker().pushBlendFunc();
         Blending.additiveBlending();
         super.renderQuad0(x1, y1, x2, y2);
-        GLStateTracker.popBlendFunc();
+        ThinGL.glStateTracker().popBlendFunc();
     }
 
     @Override
-    protected void delete0() {
+    protected void free0() {
         if (this.maskFramebuffer != null) {
-            this.maskFramebuffer.delete();
+            this.maskFramebuffer.freeFully();
         }
 
-        super.delete0();
+        super.free0();
     }
 
 }

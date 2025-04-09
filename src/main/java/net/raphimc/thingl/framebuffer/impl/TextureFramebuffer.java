@@ -20,10 +20,9 @@ package net.raphimc.thingl.framebuffer.impl;
 
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.framebuffer.ResizingFramebuffer;
-import net.raphimc.thingl.renderer.impl.Renderer2D;
 import net.raphimc.thingl.resource.texture.AbstractTexture;
 import net.raphimc.thingl.resource.texture.Texture2D;
-import net.raphimc.thingl.util.GlobalObjects;
+import net.raphimc.thingl.util.RenderMathUtil;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL14C;
@@ -58,11 +57,11 @@ public class TextureFramebuffer extends ResizingFramebuffer {
     }
 
     public void render(final Matrix4f positionMatrix, final float x, final float y, final float width, final float height) {
-        ThinGL.getImplementation().pushProjectionMatrix(new Matrix4f().setOrtho(0F, this.getWidth(), this.getHeight(), 0F, -5000F, 5000F));
-        ThinGL.getImplementation().pushViewMatrix(GlobalObjects.IDENTITY_MATRIX);
-        Renderer2D.INSTANCE.texture(positionMatrix, this.getColorAttachment().getGlId(), x, y, width, height, 0F, height, width, -height, width, height);
-        ThinGL.getImplementation().popProjectionMatrix();
-        ThinGL.getImplementation().popViewMatrix();
+        ThinGL.applicationInterface().pushProjectionMatrix(new Matrix4f().setOrtho(0F, this.getWidth(), this.getHeight(), 0F, -5000F, 5000F));
+        ThinGL.applicationInterface().pushViewMatrix(RenderMathUtil.getIdentityMatrix());
+        ThinGL.renderer2D().texture(positionMatrix, this.getColorAttachment().getGlId(), x, y, width, height, 0F, height, width, -height, width, height);
+        ThinGL.applicationInterface().popProjectionMatrix();
+        ThinGL.applicationInterface().popViewMatrix();
     }
 
     @Override

@@ -31,8 +31,7 @@ import net.raphimc.thingl.drawbuilder.builder.BufferRenderer;
 import net.raphimc.thingl.drawbuilder.builder.BuiltBuffer;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.PersistentMultiDrawBatchDataHolder;
 import net.raphimc.thingl.resource.buffer.AbstractBuffer;
-import net.raphimc.thingl.util.BufferUtil;
-import net.raphimc.thingl.util.GlobalObjects;
+import net.raphimc.thingl.util.RenderMathUtil;
 import org.joml.Matrix4f;
 
 import java.util.Map;
@@ -66,7 +65,7 @@ public class MultiDrawRenderer {
         return id;
     }
 
-    public void deleteDrawBatchBuffers(final int id) {
+    public void removeDrawBatchBuffers(final int id) {
         if (!this.drawBatchBuffers.containsKey(id)) {
             throw new IllegalArgumentException("DrawBatch is not uploaded");
         }
@@ -74,13 +73,13 @@ public class MultiDrawRenderer {
         final Reference2IntMap<DrawBatch> multiDrawIds = this.drawBatchBuffers.remove(id);
         for (Reference2IntMap.Entry<DrawBatch> entry : multiDrawIds.reference2IntEntrySet()) {
             final MultiDrawBuilder multiDrawBuilder = this.drawBatches.get(entry.getKey());
-            multiDrawBuilder.deleteBuffer(entry.getIntValue());
+            multiDrawBuilder.removeBuffer(entry.getIntValue());
         }
     }
 
     public void clearDrawBatchBuffers() {
         for (int id : this.drawBatchBuffers.keySet().toIntArray()) {
-            this.deleteDrawBatchBuffers(id);
+            this.removeDrawBatchBuffers(id);
         }
         this.idCounter.set(0);
     }
@@ -120,7 +119,7 @@ public class MultiDrawRenderer {
     }
 
     public void draw() {
-        this.draw(GlobalObjects.IDENTITY_MATRIX);
+        this.draw(RenderMathUtil.getIdentityMatrix());
     }
 
     public void draw(final Matrix4f modelMatrix) {
@@ -156,7 +155,7 @@ public class MultiDrawRenderer {
     }
 
     public void draw(final DrawBatch drawBatch, final Matrix4f modelMatrix) {
-        this.draw(drawBatch, modelMatrix, BufferUtil.EMPTY_BUFFER);
+        this.draw(drawBatch, modelMatrix, null);
     }
 
     public void draw(final DrawBatch drawBatch, final Matrix4f modelMatrix, final AbstractBuffer drawDataBuffer) {
@@ -178,8 +177,8 @@ public class MultiDrawRenderer {
         return "V Mem: " + MathUtils.formatBytes(vertexUsedMemory) + ", I Mem: " + MathUtils.formatBytes(indexUsedMemory);
     }
 
-    public void delete() {
-        this.drawBatches.values().forEach(MultiDrawBuilder::delete);
+    public void free() {
+        this.drawBatches.values().forEach(MultiDrawBuilder::free);
         this.drawBatches.clear();
     }
 

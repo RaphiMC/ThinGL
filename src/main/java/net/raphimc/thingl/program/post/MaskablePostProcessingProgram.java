@@ -18,13 +18,12 @@
 
 package net.raphimc.thingl.program.post;
 
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.framebuffer.impl.TextureFramebuffer;
 import net.raphimc.thingl.program.PostProcessingProgram;
 import net.raphimc.thingl.resource.shader.Shader;
-import net.raphimc.thingl.util.GlobalObjects;
-import net.raphimc.thingl.util.pool.FramebufferPool;
+import net.raphimc.thingl.util.RenderMathUtil;
 import net.raphimc.thingl.wrapper.Blending;
-import net.raphimc.thingl.wrapper.GLStateTracker;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11C;
 
@@ -37,38 +36,38 @@ public abstract class MaskablePostProcessingProgram extends PostProcessingProgra
     }
 
     public void bindMask() {
-        GLStateTracker.push();
-        GLStateTracker.disable(GL11C.GL_DEPTH_TEST);
-        GLStateTracker.disable(GL11C.GL_STENCIL_TEST);
-        GLStateTracker.pushBlendFunc();
+        ThinGL.glStateTracker().push();
+        ThinGL.glStateTracker().disable(GL11C.GL_DEPTH_TEST);
+        ThinGL.glStateTracker().disable(GL11C.GL_STENCIL_TEST);
+        ThinGL.glStateTracker().pushBlendFunc();
         Blending.premultipliedAlphaBlending();
-        GLStateTracker.pushFramebuffer();
+        ThinGL.glStateTracker().pushFramebuffer();
         if (this.maskFramebuffer == null) {
-            this.maskFramebuffer = FramebufferPool.borrowFramebuffer(GL11C.GL_LINEAR);
+            this.maskFramebuffer = ThinGL.framebufferPool().borrowFramebuffer(GL11C.GL_LINEAR);
         }
         this.maskFramebuffer.bind();
     }
 
     public void unbindMask() {
-        GLStateTracker.popFramebuffer();
-        GLStateTracker.popBlendFunc();
-        GLStateTracker.pop();
+        ThinGL.glStateTracker().popFramebuffer();
+        ThinGL.glStateTracker().popBlendFunc();
+        ThinGL.glStateTracker().pop();
     }
 
     public void renderMask() {
-        this.renderMask(GlobalObjects.IDENTITY_MATRIX);
+        this.renderMask(RenderMathUtil.getIdentityMatrix());
     }
 
     public void renderMask(final Matrix4f positionMatrix) {
-        GLStateTracker.pushBlendFunc();
+        ThinGL.glStateTracker().pushBlendFunc();
         Blending.additiveBlending();
         this.maskFramebuffer.render(positionMatrix, 0, 0, this.maskFramebuffer.getWidth(), this.maskFramebuffer.getHeight());
-        GLStateTracker.popBlendFunc();
+        ThinGL.glStateTracker().popBlendFunc();
     }
 
     public void clearMask() {
         if (this.maskFramebuffer != null) {
-            FramebufferPool.returnFramebuffer(this.maskFramebuffer);
+            ThinGL.framebufferPool().returnFramebuffer(this.maskFramebuffer);
             this.maskFramebuffer = null;
         }
     }

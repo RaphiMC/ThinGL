@@ -19,10 +19,10 @@
 package net.raphimc.thingl.drawbuilder.drawbatchdataholder;
 
 import net.lenni0451.commons.arrays.ArrayUtils;
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.DrawBatch;
 import net.raphimc.thingl.drawbuilder.builder.BufferRenderer;
 import net.raphimc.thingl.drawbuilder.builder.BuiltBuffer;
-import net.raphimc.thingl.util.pool.BufferBuilderPool;
 import org.joml.Matrix4f;
 
 public class ImmediateMultiDrawBatchDataHolder extends MultiDrawBatchDataHolder {
@@ -63,7 +63,7 @@ public class ImmediateMultiDrawBatchDataHolder extends MultiDrawBatchDataHolder 
 
     @Override
     protected DrawBatchDataHolder createDrawBatchDataHolder(final DrawBatch drawBatch) {
-        return new DrawBatchDataHolder(BufferBuilderPool::borrowBufferBuilder, BufferBuilderPool::returnBufferBuilder);
+        return new DrawBatchDataHolder(ThinGL.bufferBuilderPool()::borrowBufferBuilder, ThinGL.bufferBuilderPool()::returnBufferBuilder);
     }
 
 }

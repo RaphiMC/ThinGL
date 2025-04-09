@@ -15,23 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package base;
+package net.raphimc.thingl.resource;
 
-import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.implementation.StandaloneApplicationInterface;
-import org.lwjgl.opengl.GL11C;
+public abstract class GLContainerObject extends GLObject {
 
-public class ExampleThinGLImplementation extends StandaloneApplicationInterface {
-
-    public ExampleThinGLImplementation(final ThinGL thinGL) {
-        super(thinGL);
-        thinGL.getWindowInterface().addFramebufferResizeCallback(this::createProjectionMatrix);
-        this.createProjectionMatrix(thinGL.getWindowInterface().getFramebufferWidth(), thinGL.getWindowInterface().getFramebufferHeight());
+    protected GLContainerObject(final int glId) {
+        super(glId);
     }
 
-    private void createProjectionMatrix(final int width, final int height) {
-        this.projectionMatrixStack.setOrtho(0F, width, height, 0F, -5000F, 5000F);
-        GL11C.glViewport(0, 0, width, height);
+    public void freeFully() {
+        try {
+            this.free();
+        } finally {
+            this.freeContainingObjects();
+        }
     }
+
+    protected abstract void freeContainingObjects();
 
 }

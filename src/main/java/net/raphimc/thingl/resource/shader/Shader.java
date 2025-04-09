@@ -19,35 +19,35 @@
 package net.raphimc.thingl.resource.shader;
 
 import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.resource.GLResource;
+import net.raphimc.thingl.resource.GLObject;
 import org.lwjgl.opengl.*;
 
-public class Shader extends GLResource {
+public class Shader extends GLObject {
 
     private final int type;
     private String source;
 
     public Shader(final Type type, final String source) {
-        super(GL43C.GL_SHADER, GL20C.glCreateShader(type.getGlType()));
+        super(GL20C.glCreateShader(type.getGlType()));
         this.type = type.getGlType();
         try {
             this.setSource(source);
             this.compile();
         } catch (Throwable e) {
-            this.delete();
+            this.free();
             throw e;
         }
     }
 
     protected Shader(final int glId) {
-        super(GL43C.GL_SHADER, glId);
+        super(glId);
         this.type = GL20C.glGetShaderi(glId, GL20C.GL_SHADER_TYPE);
         this.refreshCachedData();
     }
 
     public static Shader fromGlId(final int glId) {
         if (!GL20C.glIsShader(glId)) {
-            throw new IllegalArgumentException("Invalid OpenGL resource");
+            throw new IllegalArgumentException("Not a shader object");
         }
         return new Shader(glId);
     }
@@ -68,8 +68,13 @@ public class Shader extends GLResource {
     }
 
     @Override
-    protected void delete0() {
+    protected void free0() {
         GL20C.glDeleteShader(this.getGlId());
+    }
+
+    @Override
+    public final int getGlType() {
+        return GL43C.GL_SHADER;
     }
 
     public int getType() {

@@ -43,6 +43,6 @@ public interface FramebufferAttachment {
 
     int getHeight();
 
-    void delete();
+    void free();
 
 }

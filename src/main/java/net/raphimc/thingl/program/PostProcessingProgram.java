@@ -23,19 +23,11 @@ import net.raphimc.thingl.drawbuilder.DrawMode;
 import net.raphimc.thingl.resource.framebuffer.Framebuffer;
 import net.raphimc.thingl.resource.program.Program;
 import net.raphimc.thingl.resource.shader.Shader;
-import net.raphimc.thingl.resource.vertexarray.VertexArray;
-import net.raphimc.thingl.wrapper.GLStateTracker;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.lwjgl.opengl.GL11C;
 
 public class PostProcessingProgram extends Program {
-
-    private static final VertexArray VAO = new VertexArray();
-
-    static {
-        VAO.setDebugName("Post-Processing VAO");
-    }
 
     public PostProcessingProgram(final Shader vertexShader, final Shader fragmentShader) {
         super(vertexShader, fragmentShader);
@@ -44,38 +36,38 @@ public class PostProcessingProgram extends Program {
     @Override
     public void bind() {
         super.bind();
-        final Framebuffer currentFramebuffer = ThinGL.getImplementation().getCurrentFramebuffer();
+        final Framebuffer currentFramebuffer = ThinGL.applicationInterface().getCurrentFramebuffer();
         this.setUniform("u_ProjectionMatrix", new Matrix4f().setOrtho(0F, currentFramebuffer.getWidth(), currentFramebuffer.getHeight(), 0F, -5000F, 5000F));
         this.setUniform("u_Viewport", currentFramebuffer.getWidth(), currentFramebuffer.getHeight());
         this.setUniform("u_Quad", 0F, 0F, currentFramebuffer.getWidth(), currentFramebuffer.getHeight());
     }
 
     public final void renderScaledQuad(final float x1, final float y1, final float x2, final float y2) {
-        final Vector2f scale = ThinGL.getImplementation().get2DScaleFactor();
+        final Vector2f scale = ThinGL.applicationInterface().get2DScaleFactor();
         this.renderQuad(x1 * scale.x, y1 * scale.y, x2 * scale.x, y2 * scale.y);
     }
 
     public final void renderQuad(final float x1, final float y1, final float x2, final float y2) {
         this.bind();
-        GLStateTracker.push();
-        GLStateTracker.enable(GL11C.GL_BLEND);
-        GLStateTracker.disable(GL11C.GL_DEPTH_TEST);
-        GLStateTracker.pushDepthMask();
+        ThinGL.glStateTracker().push();
+        ThinGL.glStateTracker().enable(GL11C.GL_BLEND);
+        ThinGL.glStateTracker().disable(GL11C.GL_DEPTH_TEST);
+        ThinGL.glStateTracker().pushDepthMask();
         GL11C.glDepthMask(false);
         this.renderQuad0(x1, y1, x2, y2);
-        GLStateTracker.popDepthMask();
-        GLStateTracker.pop();
+        ThinGL.glStateTracker().popDepthMask();
+        ThinGL.glStateTracker().pop();
         this.unbind();
     }
 
     public final void renderFullscreenQuad() {
-        final Framebuffer currentFramebuffer = ThinGL.getImplementation().getCurrentFramebuffer();
+        final Framebuffer currentFramebuffer = ThinGL.applicationInterface().getCurrentFramebuffer();
         this.renderQuad(0F, 0F, currentFramebuffer.getWidth(), currentFramebuffer.getHeight());
     }
 
     protected void renderQuad0(final float x1, final float y1, final float x2, final float y2) {
         this.setUniform("u_Quad", x1, y1, x2, y2);
-        VAO.drawArrays(DrawMode.TRIANGLES, 6, 0);
+        ThinGL.immediateBuffers().getPostProcessingVao().drawArrays(DrawMode.TRIANGLES, 6, 0);
     }
 
 }

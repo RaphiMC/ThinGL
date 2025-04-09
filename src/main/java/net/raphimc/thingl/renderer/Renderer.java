@@ -18,10 +18,10 @@
 
 package net.raphimc.thingl.renderer;
 
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.ImmediateMultiDrawBatchDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.MultiDrawBatchDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.PersistentMultiDrawBatchDataHolder;
-import net.raphimc.thingl.util.GlobalObjects;
 
 public abstract class Renderer {
 
@@ -38,7 +38,7 @@ public abstract class Renderer {
     }
 
     public void beginGlobalBuffering() {
-        this.beginBuffering(GlobalObjects.GLOBAL_BATCH);
+        this.beginBuffering(ThinGL.globalDrawBatch());
     }
 
     public void beginBuffering(final MultiDrawBatchDataHolder targetMultiDrawBatchDataHolder) {

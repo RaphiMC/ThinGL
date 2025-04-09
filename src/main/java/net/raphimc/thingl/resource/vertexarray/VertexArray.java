@@ -25,27 +25,27 @@ import net.raphimc.thingl.drawbuilder.DrawMode;
 import net.raphimc.thingl.drawbuilder.index.IndexType;
 import net.raphimc.thingl.drawbuilder.vertex.VertexDataLayout;
 import net.raphimc.thingl.drawbuilder.vertex.VertexDataLayoutElement;
-import net.raphimc.thingl.resource.GLResource;
+import net.raphimc.thingl.resource.GLContainerObject;
 import net.raphimc.thingl.resource.buffer.AbstractBuffer;
 import org.lwjgl.opengl.*;
 
-public class VertexArray extends GLResource {
+public class VertexArray extends GLContainerObject {
 
     private final Int2ObjectMap<AbstractBuffer> vertexBuffers = new Int2ObjectOpenHashMap<>();
     private IndexType indexType;
     private AbstractBuffer indexBuffer;
 
     public VertexArray() {
-        super(GL11C.GL_VERTEX_ARRAY, GL45C.glCreateVertexArrays());
+        super(GL45C.glCreateVertexArrays());
     }
 
     protected VertexArray(final int glId) {
-        super(GL11C.GL_VERTEX_ARRAY, glId);
+        super(glId);
     }
 
     public static VertexArray fromGlId(final int glId) {
         if (!GL30C.glIsVertexArray(glId)) {
-            throw new IllegalArgumentException("Invalid OpenGL resource");
+            throw new IllegalArgumentException("Not a vertex array object");
         }
         return new VertexArray(glId);
     }
@@ -66,7 +66,7 @@ public class VertexArray extends GLResource {
         if (buffer != null) {
             GL45C.glVertexArrayElementBuffer(this.getGlId(), buffer.getGlId());
         } else {
-            if (!ThinGL.getWorkarounds().isDsaVertexArrayElementBufferUnbindBroken()) {
+            if (!ThinGL.workarounds().isDsaVertexArrayElementBufferUnbindBroken()) {
                 GL45C.glVertexArrayElementBuffer(this.getGlId(), 0);
             } else {
                 final int prevVertexArray = GL11C.glGetInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
@@ -150,8 +150,25 @@ public class VertexArray extends GLResource {
     }
 
     @Override
-    protected void delete0() {
+    protected void free0() {
         GL30C.glDeleteVertexArrays(this.getGlId());
+    }
+
+    @Override
+    protected void freeContainingObjects() {
+        for (AbstractBuffer buffer : this.vertexBuffers.values()) {
+            buffer.free();
+        }
+        this.vertexBuffers.clear();
+        if (this.indexBuffer != null && this.indexBuffer != ThinGL.quadIndexBuffer().getSharedGlBuffer()) {
+            this.indexBuffer.free();
+        }
+        this.indexBuffer = null;
+    }
+
+    @Override
+    public final int getGlType() {
+        return GL11C.GL_VERTEX_ARRAY;
     }
 
     public Int2ObjectMap<AbstractBuffer> getVertexBuffers() {

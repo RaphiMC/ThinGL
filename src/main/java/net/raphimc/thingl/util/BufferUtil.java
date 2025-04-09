@@ -21,19 +21,14 @@ package net.raphimc.thingl.util;
 import net.raphimc.thingl.resource.buffer.AbstractBuffer;
 import net.raphimc.thingl.resource.buffer.Buffer;
 import net.raphimc.thingl.resource.buffer.ImmutableBuffer;
-import org.lwjgl.opengl.GL15C;
 import org.lwjgl.opengl.GL45C;
+import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
 
 public class BufferUtil {
 
-    public static final long DEFAULT_BUFFER_SIZE = 1024 * 1024L;
-    public static final AbstractBuffer EMPTY_BUFFER = new Buffer(0L, GL15C.GL_STATIC_DRAW);
-
-    static {
-        EMPTY_BUFFER.setDebugName("Empty Buffer");
-    }
+    public static final long DEFAULT_BUFFER_SIZE = 512 * 1024L;
 
     public static AbstractBuffer uploadResizing(AbstractBuffer abstractBuffer, final ByteBuffer data) {
         abstractBuffer = ensureSize(abstractBuffer, data.remaining());
@@ -50,13 +45,13 @@ public class BufferUtil {
             final ImmutableBuffer newBuffer = new ImmutableBuffer(size, buffer.getFlags());
             newBuffer.setDebugName(buffer.getDebugName());
             GL45C.glCopyNamedBufferSubData(buffer.getGlId(), newBuffer.getGlId(), 0, 0, buffer.getSize());
-            buffer.delete();
+            buffer.free();
             return newBuffer;
         } else if (abstractBuffer instanceof Buffer buffer) {
             final Buffer newBuffer = new Buffer(size, buffer.getUsage());
             newBuffer.setDebugName(buffer.getDebugName());
             GL45C.glCopyNamedBufferSubData(buffer.getGlId(), newBuffer.getGlId(), 0, 0, buffer.getSize());
-            buffer.delete();
+            buffer.free();
             return newBuffer;
         } else {
             throw new IllegalArgumentException("Unsupported buffer type " + abstractBuffer.getClass().getSimpleName());
@@ -67,7 +62,7 @@ public class BufferUtil {
         if (abstractBuffer instanceof ImmutableBuffer buffer) {
             if (buffer.getSize() < size) {
                 final String debugName = buffer.getDebugName();
-                buffer.delete();
+                buffer.free();
                 final ImmutableBuffer newBuffer = new ImmutableBuffer(size, buffer.getFlags());
                 newBuffer.setDebugName(debugName);
                 return newBuffer;
@@ -81,6 +76,14 @@ public class BufferUtil {
         } else {
             throw new IllegalArgumentException("Unsupported buffer type " + abstractBuffer.getClass().getSimpleName());
         }
+    }
+
+    /**
+     * Wrapper method to call {@link MemoryUtil#memFree}. Needed for LWJGL 3.3.3 support.
+     * @param buffer The buffer to free
+     */
+    public static void memFree(final java.nio.Buffer buffer) {
+        MemoryUtil.memFree(buffer);
     }
 
 }

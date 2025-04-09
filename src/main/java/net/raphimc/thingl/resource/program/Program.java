@@ -22,7 +22,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.resource.GLResource;
+import net.raphimc.thingl.resource.GLContainerObject;
 import net.raphimc.thingl.resource.buffer.AbstractBuffer;
 import net.raphimc.thingl.resource.framebuffer.Framebuffer;
 import net.raphimc.thingl.resource.shader.Shader;
@@ -37,7 +37,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Program extends GLResource {
+public class Program extends GLContainerObject {
 
     private final Set<Shader> shaders = new HashSet<>();
     private final Object2IntMap<String> uniformLocationCache = new Object2IntOpenHashMap<>();
@@ -49,26 +49,26 @@ public class Program extends GLResource {
     private int currentShaderStorageBufferIndex;
 
     public Program(final Shader... shaders) {
-        super(GL43C.GL_PROGRAM, GL20C.glCreateProgram());
+        super(GL20C.glCreateProgram());
         try {
             for (Shader shader : shaders) {
                 this.attachShader(shader);
             }
             this.linkAndValidate();
         } catch (Throwable e) {
-            this.delete();
+            this.free();
             throw e;
         }
     }
 
     protected Program(final int glId) {
-        super(GL43C.GL_PROGRAM, glId);
+        super(glId);
         this.refreshCachedData();
     }
 
     public static Program fromGlId(final int glId) {
         if (!GL20C.glIsProgram(glId)) {
-            throw new IllegalArgumentException("Invalid OpenGL resource");
+            throw new IllegalArgumentException("Not a program object");
         }
         return new Program(glId);
     }
@@ -83,6 +83,7 @@ public class Program extends GLResource {
             this.shaders.add(Shader.fromGlId(shaderId));
         }
         this.uniformLocationCache.clear();
+        this.uniformBlockIndexCache.clear();
         this.shaderStorageBlockIndexCache.clear();
     }
 
@@ -180,12 +181,20 @@ public class Program extends GLResource {
 
     public void setUniformBuffer(final String name, final AbstractBuffer buffer) {
         GL31C.glUniformBlockBinding(this.getGlId(), this.getUniformBlockIndex(name), this.currentUniformBlockIndex);
-        GL30C.glBindBufferBase(GL31C.GL_UNIFORM_BUFFER, this.currentUniformBlockIndex++, buffer.getGlId());
+        if (buffer != null) {
+            GL30C.glBindBufferBase(GL31C.GL_UNIFORM_BUFFER, this.currentUniformBlockIndex++, buffer.getGlId());
+        } else {
+            GL30C.glBindBufferBase(GL31C.GL_UNIFORM_BUFFER, this.currentUniformBlockIndex++, 0);
+        }
     }
 
     public void setShaderStorageBuffer(final String name, final AbstractBuffer buffer) {
         GL43C.glShaderStorageBlockBinding(this.getGlId(), this.getShaderStorageBlockIndex(name), this.currentShaderStorageBufferIndex);
-        GL30C.glBindBufferBase(GL43C.GL_SHADER_STORAGE_BUFFER, this.currentShaderStorageBufferIndex++, buffer.getGlId());
+        if (buffer != null) {
+            GL30C.glBindBufferBase(GL43C.GL_SHADER_STORAGE_BUFFER, this.currentShaderStorageBufferIndex++, buffer.getGlId());
+        } else {
+            GL30C.glBindBufferBase(GL43C.GL_SHADER_STORAGE_BUFFER, this.currentShaderStorageBufferIndex++, 0);
+        }
     }
 
     public void bind() {
@@ -200,12 +209,25 @@ public class Program extends GLResource {
         this.currentUniformBlockIndex = 0;
         this.currentShaderStorageBufferIndex = 0;
         GL20C.glUseProgram(0);
-        ThinGL.onProgramUnbind();
+        ThinGL.applicationInterface().onProgramUnbind();
     }
 
     @Override
-    protected void delete0() {
+    protected void free0() {
         GL20C.glDeleteProgram(this.getGlId());
+    }
+
+    @Override
+    protected void freeContainingObjects() {
+        for (Shader shader : this.shaders) {
+            shader.free();
+        }
+        this.shaders.clear();
+    }
+
+    @Override
+    public final int getGlType() {
+        return GL43C.GL_PROGRAM;
     }
 
     public Shader getShader(final Shader.Type type) {

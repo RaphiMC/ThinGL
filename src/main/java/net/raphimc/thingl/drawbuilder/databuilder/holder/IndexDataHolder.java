@@ -20,6 +20,7 @@ package net.raphimc.thingl.drawbuilder.databuilder.holder;
 
 import net.raphimc.thingl.drawbuilder.builder.BufferBuilder;
 import net.raphimc.thingl.drawbuilder.databuilder.writer.BufferWriter;
+import net.raphimc.thingl.drawbuilder.index.QuadIndexBuffer;
 
 public class IndexDataHolder extends BufferWriter<IndexDataHolder> {
 
@@ -46,8 +47,8 @@ public class IndexDataHolder extends BufferWriter<IndexDataHolder> {
 
     public IndexDataHolder quad(final int i1, final int i2, final int i3, final int i4) {
         this.bufferBuilder.putInt(this.vertexOffset + i1).putInt(this.vertexOffset + i2).putInt(this.vertexOffset + i3).putInt(this.vertexOffset + i3).putInt(this.vertexOffset + i4).putInt(this.vertexOffset + i1);
-        this.indexCount += 6;
-        this.vertexOffset += 4;
+        this.indexCount += QuadIndexBuffer.QUAD_INDEX_COUNT;
+        this.vertexOffset += QuadIndexBuffer.QUAD_VERTEX_COUNT;
         return this;
     }
 

@@ -18,9 +18,9 @@
 
 import base.ExampleBase;
 import net.lenni0451.commons.color.Color;
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.ImmediateMultiDrawBatchDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.MultiDrawBatchDataHolder;
-import net.raphimc.thingl.renderer.impl.Renderer2D;
 import org.joml.Matrix4fStack;
 
 public class DrawCallBatchingExample extends ExampleBase {
@@ -33,20 +33,20 @@ public class DrawCallBatchingExample extends ExampleBase {
     protected void render(final Matrix4fStack positionMatrix) {
         final MultiDrawBatchDataHolder drawBatch = new ImmediateMultiDrawBatchDataHolder();
 
-        Renderer2D.INSTANCE.beginBuffering(drawBatch); // Renderer2D now renders everything into drawBatch
-        // Renderer2D.INSTANCE.beginGlobalBuffering(); // Alternatively render everything into a global buffer
+        ThinGL.renderer2D().beginBuffering(drawBatch); // Renderer2D now renders everything into drawBatch
+        // ThinGL.renderer2D().beginGlobalBuffering(); // Alternatively render everything into a global buffer
         for (int i = 0; i < 10; i++) {
             final int x = i * 10;
             final int y = i * 10;
             final int width = 10;
             final int height = 10;
-            Renderer2D.INSTANCE.filledRectangle(positionMatrix, x, y, x + width, y + height, Color.fromRGBA(i * 25, 0, 0, 255));
+            ThinGL.renderer2D().filledRectangle(positionMatrix, x, y, x + width, y + height, Color.fromRGBA(i * 25, 0, 0, 255));
         }
-        Renderer2D.INSTANCE.endBuffering(); // Renderer2D now renders everything immediately again
-        // Renderer2D.INSTANCE.endBuffering().draw(); // Same as line above, but also render the contents of the global buffer
+        ThinGL.renderer2D().endBuffering(); // Renderer2D now renders everything immediately again
+        // ThinGL.renderer2D().endBuffering().draw(); // Same as line above, but also render the contents of the global buffer
 
         drawBatch.draw(); // Draw everything in drawBatch
-        drawBatch.delete(); // Free up resources
+        drawBatch.free(); // Free up resources
     }
 
 }

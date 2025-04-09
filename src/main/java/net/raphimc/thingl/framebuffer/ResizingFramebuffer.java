@@ -46,23 +46,23 @@ public abstract class ResizingFramebuffer extends Framebuffer {
         this.colorAttachmentSupplier = colorAttachmentSupplier;
         this.depthAttachmentSupplier = depthAttachmentSupplier;
         this.stencilAttachmentSupplier = stencilAttachmentSupplier;
-        ThinGL.registerWindowFramebufferResizeCallback(this.framebufferResizeCallback);
+        ThinGL.windowInterface().addFramebufferResizeCallback(this.framebufferResizeCallback);
     }
 
     protected void init() {
-        this.resize(ThinGL.getWindowFramebufferWidth(), ThinGL.getWindowFramebufferHeight());
+        this.resize(ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight());
     }
 
     @Override
-    protected void delete0() {
-        ThinGL.unregisterWindowFramebufferResizeCallback(this.framebufferResizeCallback);
-        super.delete0();
-        this.deleteAttachments();
+    protected void free0() {
+        ThinGL.windowInterface().removeFramebufferResizeCallback(this.framebufferResizeCallback);
+        super.free0();
+        this.freeContainingObjects();
     }
 
     private void resize(final int width, final int height) {
         try {
-            this.deleteAttachments();
+            this.freeContainingObjects();
             this.setAttachment(GL30C.GL_COLOR_ATTACHMENT0, this.colorAttachmentSupplier.apply(width, height));
             if (this.stencilAttachmentSupplier == this.depthAttachmentSupplier && this.depthAttachmentSupplier != null) {
                 this.setAttachment(GL30C.GL_DEPTH_STENCIL_ATTACHMENT, this.depthAttachmentSupplier.apply(width, height));
@@ -74,23 +74,8 @@ public abstract class ResizingFramebuffer extends Framebuffer {
             this.checkFramebufferStatus();
             this.clear();
         } catch (Throwable e) {
-            this.delete();
+            this.freeFully();
             throw e;
-        }
-    }
-
-    private void deleteAttachments() {
-        if (this.colorAttachment != null) {
-            this.colorAttachment.delete();
-            this.colorAttachment = null;
-        }
-        if (this.depthAttachment != null) {
-            this.depthAttachment.delete();
-            this.depthAttachment = null;
-        }
-        if (this.stencilAttachment != null) {
-            this.stencilAttachment.delete();
-            this.stencilAttachment = null;
         }
     }
 

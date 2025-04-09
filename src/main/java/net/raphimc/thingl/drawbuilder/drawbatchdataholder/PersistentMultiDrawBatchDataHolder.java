@@ -43,14 +43,14 @@ public class PersistentMultiDrawBatchDataHolder extends MultiDrawBatchDataHolder
     }
 
     public void optimize() {
-        this.deletePreparedBatches();
+        this.freePreparedBatches();
         for (Map.Entry<DrawBatch, DrawBatchDataHolder> entry : this.drawBatches.entrySet()) {
             this.preparedDrawBatches.put(entry.getKey(), BufferRenderer.prepareBuffer(entry.getKey(), entry.getValue(), true));
         }
     }
 
     public void build() {
-        this.deleteBuiltBatches();
+        this.freeBuiltBatches();
         for (Map.Entry<DrawBatch, DrawBatchDataHolder> entry : this.drawBatches.entrySet()) {
             final PreparedBuffer preparedBuffer;
             if (this.preparedDrawBatches.containsKey(entry.getKey())) {
@@ -97,10 +97,10 @@ public class PersistentMultiDrawBatchDataHolder extends MultiDrawBatchDataHolder
         return this.builtDrawBatches;
     }
 
-    public void delete() {
-        super.delete();
-        this.deletePreparedBatches();
-        this.deleteBuiltBatches();
+    public void free() {
+        super.free();
+        this.freePreparedBatches();
+        this.freeBuiltBatches();
     }
 
     @Override
@@ -110,16 +110,16 @@ public class PersistentMultiDrawBatchDataHolder extends MultiDrawBatchDataHolder
 
     @Override
     protected DrawBatchDataHolder createDrawBatchDataHolder(final DrawBatch drawBatch) {
-        return new DrawBatchDataHolder(BufferBuilder::new, BufferBuilder::close);
+        return new DrawBatchDataHolder(BufferBuilder::new, BufferBuilder::free);
     }
 
-    private void deletePreparedBatches() {
-        this.preparedDrawBatches.values().forEach(PreparedBuffer::delete);
+    private void freePreparedBatches() {
+        this.preparedDrawBatches.values().forEach(PreparedBuffer::free);
         this.preparedDrawBatches.clear();
     }
 
-    private void deleteBuiltBatches() {
-        this.builtDrawBatches.values().forEach(BuiltBuffer::delete);
+    private void freeBuiltBatches() {
+        this.builtDrawBatches.values().forEach(BuiltBuffer::free);
         this.builtDrawBatches.clear();
     }
 

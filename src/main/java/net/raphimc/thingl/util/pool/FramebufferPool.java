@@ -25,27 +25,29 @@ import it.unimi.dsi.fastutil.objects.ReferenceList;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.framebuffer.impl.TextureFramebuffer;
 import net.raphimc.thingl.resource.texture.Texture2D;
+import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.opengl.GL30C;
 import org.lwjgl.opengl.GL45C;
 
 public class FramebufferPool {
 
-    private static final ReferenceList<TextureFramebuffer> FREE = new ReferenceArrayList<>();
-    private static final ReferenceList<TextureFramebuffer> IN_USE = new ReferenceArrayList<>();
-    private static final Reference2LongMap<TextureFramebuffer> FRAME_BUFFER_ACCESS_TIME = new Reference2LongOpenHashMap<>();
+    private final ReferenceList<TextureFramebuffer> free = new ReferenceArrayList<>();
+    private final ReferenceList<TextureFramebuffer> inUse = new ReferenceArrayList<>();
+    private final Reference2LongMap<TextureFramebuffer> framebufferAccessTime = new Reference2LongOpenHashMap<>();
 
-    static {
-        ThinGL.registerEndFrameCallback(() -> {
-            if (!IN_USE.isEmpty()) {
-                ThinGL.LOGGER.warn(IN_USE.size() + " Framebuffer(s) were not returned to the pool. Forcibly reclaiming them.");
-                FREE.addAll(IN_USE);
-                IN_USE.clear();
+    @ApiStatus.Internal
+    public FramebufferPool(final ThinGL thinGL) {
+        thinGL.addEndFrameCallback(() -> {
+            if (!this.inUse.isEmpty()) {
+                ThinGL.LOGGER.warn(this.inUse.size() + " Framebuffer(s) were not returned to the pool. Forcibly reclaiming them.");
+                this.free.addAll(this.inUse);
+                this.inUse.clear();
             }
-            FRAME_BUFFER_ACCESS_TIME.reference2LongEntrySet().removeIf(entry -> {
+            this.framebufferAccessTime.reference2LongEntrySet().removeIf(entry -> {
                 if (System.currentTimeMillis() - entry.getLongValue() > 60 * 1000) {
-                    if (FREE.contains(entry.getKey())) {
-                        FREE.remove(entry.getKey());
-                        entry.getKey().delete();
+                    if (this.free.contains(entry.getKey())) {
+                        this.free.remove(entry.getKey());
+                        entry.getKey().freeFully();
                     }
                     return true;
                 }
@@ -54,17 +56,17 @@ public class FramebufferPool {
         });
     }
 
-    public static TextureFramebuffer borrowFramebuffer(final int textureFilter) {
-        ThinGL.assertOnRenderThread();
+    public TextureFramebuffer borrowFramebuffer(final int textureFilter) {
+        ThinGL.get().assertOnRenderThread();
         final TextureFramebuffer framebuffer;
-        if (FREE.isEmpty()) {
+        if (this.free.isEmpty()) {
             framebuffer = new TextureFramebuffer(textureFilter);
         } else {
-            framebuffer = FREE.remove(0);
+            framebuffer = this.free.remove(0);
             framebuffer.clear();
         }
-        IN_USE.add(framebuffer);
-        FRAME_BUFFER_ACCESS_TIME.put(framebuffer, System.currentTimeMillis());
+        this.inUse.add(framebuffer);
+        this.framebufferAccessTime.put(framebuffer, System.currentTimeMillis());
         final Texture2D colorAttachment = framebuffer.getColorAttachment();
         if (textureFilter != colorAttachment.getMinificationFilter() || colorAttachment.getMagnificationFilter() != colorAttachment.getMinificationFilter()) {
             colorAttachment.setFilter(textureFilter);
@@ -76,17 +78,27 @@ public class FramebufferPool {
         return framebuffer;
     }
 
-    public static void returnFramebuffer(final TextureFramebuffer framebuffer) {
-        ThinGL.assertOnRenderThread();
-        if (!IN_USE.remove(framebuffer)) {
+    public void returnFramebuffer(final TextureFramebuffer framebuffer) {
+        ThinGL.get().assertOnRenderThread();
+        if (!this.inUse.remove(framebuffer)) {
             throw new IllegalStateException("Framebuffer is not part of the pool");
         }
         GL45C.glInvalidateNamedFramebufferData(framebuffer.getGlId(), new int[]{GL30C.GL_COLOR_ATTACHMENT0, GL30C.GL_DEPTH_STENCIL_ATTACHMENT});
-        FREE.add(framebuffer);
+        this.free.add(framebuffer);
     }
 
-    public static int getSize() {
-        return FREE.size() + IN_USE.size();
+    public int getSize() {
+        return this.free.size() + this.inUse.size();
+    }
+
+    @ApiStatus.Internal
+    public void free() {
+        for (TextureFramebuffer framebuffer : this.free) {
+            framebuffer.freeFully();
+        }
+        for (TextureFramebuffer framebuffer : this.inUse) {
+            framebuffer.freeFully();
+        }
     }
 
 }

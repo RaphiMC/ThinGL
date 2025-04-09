@@ -18,7 +18,6 @@
 package net.raphimc.thingl.program.post.impl;
 
 import net.lenni0451.commons.color.Color;
-import net.raphimc.thingl.program.BuiltinPrograms;
 import net.raphimc.thingl.program.post.SinglePassPostProcessingProgram;
 import net.raphimc.thingl.resource.shader.Shader;
 
@@ -26,8 +25,8 @@ public class SingleColorProgram extends SinglePassPostProcessingProgram<SingleCo
 
     private Color color = Color.WHITE;
 
-    public SingleColorProgram() {
-        super(BuiltinPrograms.getShader("post/post_processing", Shader.Type.VERTEX), BuiltinPrograms.getShader("post/single_color", Shader.Type.FRAGMENT), s -> {
+    public SingleColorProgram(final Shader vertexShader, final Shader fragmentShader) {
+        super(vertexShader, fragmentShader, s -> {
             s.setUniform("u_Color", s.color.getRed() / 255F, s.color.getGreen() / 255F, s.color.getBlue() / 255F, s.color.getAlpha() / 255F);
         });
     }

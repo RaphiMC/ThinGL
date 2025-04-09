@@ -17,7 +17,6 @@
  */
 package net.raphimc.thingl.program.post.impl;
 
-import net.raphimc.thingl.program.BuiltinPrograms;
 import net.raphimc.thingl.program.post.MultiPassPostProcessingProgram;
 import net.raphimc.thingl.resource.shader.Shader;
 
@@ -26,8 +25,8 @@ public class GaussianBlurProgram extends MultiPassPostProcessingProgram<Gaussian
     private int radius = 10;
     private float sigma = 10F;
 
-    public GaussianBlurProgram() {
-        super(BuiltinPrograms.getShader("post/post_processing", Shader.Type.VERTEX), BuiltinPrograms.getShader("post/gaussian_blur", Shader.Type.FRAGMENT), s -> {
+    public GaussianBlurProgram(final Shader vertexShader, final Shader fragmentShader) {
+        super(vertexShader, fragmentShader, s -> {
             s.setUniform("u_FinalPass", false);
             s.setUniform("u_Radius", s.radius);
             s.setUniform("u_Sigma", s.sigma);

@@ -22,8 +22,6 @@ import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.framebuffer.impl.TextureFramebuffer;
 import net.raphimc.thingl.resource.framebuffer.Framebuffer;
 import net.raphimc.thingl.resource.shader.Shader;
-import net.raphimc.thingl.util.pool.FramebufferPool;
-import net.raphimc.thingl.wrapper.GLStateTracker;
 import org.lwjgl.opengl.GL11C;
 
 import java.util.function.Consumer;
@@ -42,17 +40,17 @@ public class MultiPassPostProcessingProgram<S extends MaskablePostProcessingProg
 
     @Override
     protected void renderQuad0(final float x1, final float y1, final float x2, final float y2) {
-        final Framebuffer sourceFramebuffer = ThinGL.getImplementation().getCurrentFramebuffer();
+        final Framebuffer sourceFramebuffer = ThinGL.applicationInterface().getCurrentFramebuffer();
 
         final TextureFramebuffer[] framebuffers = new TextureFramebuffer[this.passes.length - 1];
         for (int i = 0; i < framebuffers.length; i++) {
-            framebuffers[i] = FramebufferPool.borrowFramebuffer(GL11C.GL_LINEAR);
+            framebuffers[i] = ThinGL.framebufferPool().borrowFramebuffer(GL11C.GL_LINEAR);
         }
 
-        GLStateTracker.push();
-        GLStateTracker.disable(GL11C.GL_BLEND);
-        GLStateTracker.disable(GL11C.GL_DEPTH_TEST);
-        GLStateTracker.disable(GL11C.GL_STENCIL_TEST);
+        ThinGL.glStateTracker().push();
+        ThinGL.glStateTracker().disable(GL11C.GL_BLEND);
+        ThinGL.glStateTracker().disable(GL11C.GL_DEPTH_TEST);
+        ThinGL.glStateTracker().disable(GL11C.GL_STENCIL_TEST);
 
         this.setUniformSampler("u_Source", sourceFramebuffer);
         framebuffers[0].bind();
@@ -66,7 +64,7 @@ public class MultiPassPostProcessingProgram<S extends MaskablePostProcessingProg
             super.renderQuad0(x1, y1, x2, y2);
         }
 
-        GLStateTracker.pop();
+        ThinGL.glStateTracker().pop();
 
         this.setUniformSampler("u_Source", framebuffers[this.passes.length - 2]);
         sourceFramebuffer.bind();
@@ -74,7 +72,7 @@ public class MultiPassPostProcessingProgram<S extends MaskablePostProcessingProg
         super.renderQuad0(x1, y1, x2, y2);
 
         for (TextureFramebuffer framebuffer : framebuffers) {
-            FramebufferPool.returnFramebuffer(framebuffer);
+            ThinGL.framebufferPool().returnFramebuffer(framebuffer);
         }
     }
 

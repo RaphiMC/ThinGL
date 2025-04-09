@@ -35,7 +35,7 @@ public class FreeTypeInstance {
                 checkError(FreeType.FT_Init_FreeType(instanceBuffer), "Failed to initialize FreeType library");
                 INSTANCE = instanceBuffer.get();
 
-                final ByteBuffer propertyBuffer = memoryStack.malloc(4);
+                final ByteBuffer propertyBuffer = memoryStack.malloc(Integer.BYTES);
                 propertyBuffer.putInt(0, 3);
                 checkError(FreeType.FT_Property_Set(INSTANCE, "sdf", "spread", propertyBuffer), "Failed to set SDF spread property");
             }
@@ -44,9 +44,9 @@ public class FreeTypeInstance {
         return INSTANCE;
     }
 
-    public static void delete() {
+    public static void free() {
         if (INSTANCE != 0L) {
-            checkError(FreeType.FT_Done_FreeType(INSTANCE), "Failed to close FreeType library");
+            checkError(FreeType.FT_Done_FreeType(INSTANCE), "Failed to free FreeType library");
             INSTANCE = 0L;
         }
     }

@@ -17,11 +17,10 @@
  */
 package net.raphimc.thingl.program.post.impl;
 
-import net.raphimc.thingl.program.BuiltinPrograms;
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.program.post.SinglePassPostProcessingProgram;
 import net.raphimc.thingl.resource.shader.Shader;
 import net.raphimc.thingl.wrapper.Blending;
-import net.raphimc.thingl.wrapper.GLStateTracker;
 
 public class RainbowColorProgram extends SinglePassPostProcessingProgram<RainbowColorProgram> {
 
@@ -32,8 +31,8 @@ public class RainbowColorProgram extends SinglePassPostProcessingProgram<Rainbow
     private int offset = 0;
     private Direction direction = Direction.DOWN;
 
-    public RainbowColorProgram() {
-        super(BuiltinPrograms.getShader("post/post_processing", Shader.Type.VERTEX), BuiltinPrograms.getShader("post/rainbow_color", Shader.Type.FRAGMENT), s -> {
+    public RainbowColorProgram(final Shader vertexShader, final Shader fragmentShader) {
+        super(vertexShader, fragmentShader, s -> {
             s.setUniform("u_Time", (System.currentTimeMillis() - s.startTime) / 1000F);
             s.setUniform("u_SpeedDivider", (float) s.speedDivider);
             s.setUniform("u_RainbowDivider", (float) s.rainbowDivider);
@@ -51,10 +50,10 @@ public class RainbowColorProgram extends SinglePassPostProcessingProgram<Rainbow
 
     @Override
     protected void renderQuad0(final float x1, final float y1, final float x2, final float y2) {
-        GLStateTracker.pushBlendFunc();
+        ThinGL.glStateTracker().pushBlendFunc();
         Blending.additiveBlending();
         super.renderQuad0(x1, y1, x2, y2);
-        GLStateTracker.popBlendFunc();
+        ThinGL.glStateTracker().popBlendFunc();
     }
 
     public enum Direction {

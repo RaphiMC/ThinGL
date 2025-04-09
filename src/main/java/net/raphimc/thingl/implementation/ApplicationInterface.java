@@ -17,13 +17,19 @@
  */
 package net.raphimc.thingl.implementation;
 
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.resource.framebuffer.Framebuffer;
-import net.raphimc.thingl.util.GlobalObjects;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector2f;
 
-public abstract class ThinGLImplementation {
+public abstract class ApplicationInterface {
+
+    protected final ThinGL thinGL;
+
+    public ApplicationInterface(final ThinGL thinGL) {
+        this.thinGL = thinGL;
+    }
 
     public abstract Matrix4f getProjectionMatrix();
 
@@ -42,7 +48,7 @@ public abstract class ThinGLImplementation {
     public abstract void setCurrentFramebuffer(final Framebuffer framebuffer);
 
     public Vector2f get2DScaleFactor() {
-        final Vector2f scale = GlobalObjects.VECTOR2F;
+        final Vector2f scale = new Vector2f();
         final Matrix4f projectionMatrix = this.getProjectionMatrix();
         if ((projectionMatrix.properties() & Matrix4fc.PROPERTY_AFFINE) != 0) { // If orthographic projection
             final Framebuffer currentFramebuffer = this.getCurrentFramebuffer();
@@ -53,6 +59,9 @@ public abstract class ThinGLImplementation {
             scale.set(1F);
         }
         return scale;
+    }
+
+    public void onProgramUnbind() {
     }
 
 }

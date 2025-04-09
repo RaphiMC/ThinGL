@@ -19,24 +19,25 @@
 package net.raphimc.thingl.drawbuilder.multidraw;
 
 import it.unimi.dsi.fastutil.ints.*;
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.DrawBatch;
 import net.raphimc.thingl.drawbuilder.builder.BufferBuilder;
 import net.raphimc.thingl.drawbuilder.builder.BuiltBuffer;
 import net.raphimc.thingl.drawbuilder.builder.command.DrawCommand;
 import net.raphimc.thingl.drawbuilder.builder.command.DrawElementsCommand;
 import net.raphimc.thingl.drawbuilder.index.IndexType;
-import net.raphimc.thingl.drawbuilder.index.QuadIndexBuffer;
 import net.raphimc.thingl.resource.buffer.AbstractBuffer;
+import net.raphimc.thingl.resource.buffer.Buffer;
 import net.raphimc.thingl.resource.buffer.ImmutableBuffer;
 import net.raphimc.thingl.resource.vertexarray.VertexArray;
 import net.raphimc.thingl.util.ArenaMemoryAllocator;
 import net.raphimc.thingl.util.BufferUtil;
 import net.raphimc.thingl.util.MathUtil;
-import net.raphimc.thingl.util.pool.BufferBuilderPool;
+import org.lwjgl.opengl.GL15C;
 import org.lwjgl.opengl.GL42C;
-import org.lwjgl.opengl.GL44C;
 import org.lwjgl.opengl.GL45C;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,7 +52,7 @@ public class MultiDrawBuilder {
     private final ArenaMemoryAllocator vertexAllocator;
     private final ArenaMemoryAllocator indexAllocator;
     private AbstractBuffer indexBuffer;
-    private final AbstractBuffer commandBuffer;
+    private final Buffer commandBuffer;
     private final VertexArray vertexArray;
     private final AtomicInteger idCounter = new AtomicInteger();
     private final Int2LongMap storedVertexBuffers = new Int2LongOpenHashMap(); // id -> vertex address
@@ -65,7 +66,7 @@ public class MultiDrawBuilder {
         this.vertexAllocator = new ArenaMemoryAllocator(0, MAX_BUFFER_SIZE);
         this.indexAllocator = new ArenaMemoryAllocator(0, MAX_BUFFER_SIZE);
         this.indexBuffer = new ImmutableBuffer(BufferUtil.DEFAULT_BUFFER_SIZE, 0);
-        this.commandBuffer = new ImmutableBuffer(DrawCommand.SIZE * 8192L, GL44C.GL_DYNAMIC_STORAGE_BIT);
+        this.commandBuffer = new Buffer(DrawCommand.SIZE * 512L, GL15C.GL_DYNAMIC_DRAW);
         this.vertexArray = new VertexArray();
         this.vertexArray.setVertexBuffer(0, new ImmutableBuffer(BufferUtil.DEFAULT_BUFFER_SIZE, 0), 0, drawBatch.vertexDataLayout().getSize());
         this.vertexArray.configureVertexDataLayout(0, 0, drawBatch.vertexDataLayout(), 0);
@@ -95,18 +96,18 @@ public class MultiDrawBuilder {
             }
 
             long indexBufferSize = indexBuffer.getSize();
-            if (indexBuffer == QuadIndexBuffer.getSharedGlBuffer()) {
+            if (indexBuffer == ThinGL.quadIndexBuffer().getSharedGlBuffer()) {
                 final DrawElementsCommand drawCommand = (DrawElementsCommand) drawCommands.get(0);
-                indexBufferSize = (long) drawCommand.vertexCount() * IndexType.UNSIGNED_INT.getSize();
+                indexBufferSize = (long) drawCommand.vertexCount() * Integer.BYTES;
             }
 
-            final long alignedSize = MathUtil.align(indexBufferSize, IndexType.UNSIGNED_INT.getSize());
+            final long alignedSize = MathUtil.align(indexBufferSize, Integer.BYTES);
             final long address = this.indexAllocator.alloc(alignedSize);
             if (address == -1) {
                 throw new OutOfMemoryError("Failed to allocate memory for index buffer");
             }
-            final int indexAddress = (int) (address / IndexType.UNSIGNED_INT.getSize());
-            if (address % IndexType.UNSIGNED_INT.getSize() != 0) {
+            final int indexAddress = (int) (address / Integer.BYTES);
+            if (address % Integer.BYTES != 0) {
                 throw new IllegalStateException("Index data is not aligned");
             }
             final long requiredSize = MathUtil.align(address + indexBufferSize, MIN_RESIZE_AMOUNT);
@@ -141,7 +142,7 @@ public class MultiDrawBuilder {
         return id;
     }
 
-    public void deleteBuffer(final int id) {
+    public void removeBuffer(final int id) {
         if (!this.storedVertexBuffers.containsKey(id)) {
             throw new IllegalArgumentException("BuiltBuffer is not uploaded");
         }
@@ -157,7 +158,7 @@ public class MultiDrawBuilder {
 
     public void clearBuffers() {
         for (int id : this.storedVertexBuffers.keySet().toIntArray()) {
-            this.deleteBuffer(id);
+            this.removeBuffer(id);
         }
         this.idCounter.set(0);
     }
@@ -185,7 +186,7 @@ public class MultiDrawBuilder {
         for (int id : this.renderBuffers) {
             drawCommands.addAll(this.bufferDrawCommands.get(id));
         }
-        final BufferBuilder commandBufferBuilder = BufferBuilderPool.borrowBufferBuilder();
+        final BufferBuilder commandBufferBuilder = ThinGL.bufferBuilderPool().borrowBufferBuilder();
         commandBufferBuilder.ensureHasEnoughSpace(drawCommands.size() * DrawCommand.SIZE);
         this.vertexArray.setIndexBuffer(null, null);
         for (DrawCommand drawCommand : drawCommands) {
@@ -195,14 +196,18 @@ public class MultiDrawBuilder {
 
             drawCommand.write(commandBufferBuilder);
         }
-        this.commandBuffer.upload(0, commandBufferBuilder.finish());
-        BufferBuilderPool.returnBufferBuilder(commandBufferBuilder);
+        final ByteBuffer commandData = commandBufferBuilder.finish();
+        if (this.commandBuffer.getSize() < commandData.remaining()) {
+            this.commandBuffer.setSize(commandData.remaining());
+        }
+        this.commandBuffer.upload(0, commandData);
+        ThinGL.bufferBuilderPool().returnBufferBuilder(commandBufferBuilder);
         this.builtBuffer = new BuiltBuffer(this.drawBatch, this.vertexArray, new HashMap<>(), this.commandBuffer, drawCommands);
     }
 
-    public void delete() {
-        this.builtBuffer.delete();
-        this.indexBuffer.delete();
+    public void free() {
+        this.builtBuffer.free();
+        this.indexBuffer.free();
     }
 
     public ArenaMemoryAllocator getVertexAllocator() {

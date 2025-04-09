@@ -21,6 +21,7 @@ package net.raphimc.thingl.renderer.text;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.lenni0451.commons.color.Color;
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.BuiltinDrawBatches;
 import net.raphimc.thingl.drawbuilder.DrawBatch;
 import net.raphimc.thingl.drawbuilder.DrawMode;
@@ -28,20 +29,20 @@ import net.raphimc.thingl.drawbuilder.databuilder.holder.ShaderDataHolder;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.VertexDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.DrawBatchDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.MultiDrawBatchDataHolder;
-import net.raphimc.thingl.program.RegularProgram;
 import net.raphimc.thingl.renderer.Primitives;
+import net.raphimc.thingl.resource.program.Program;
 import net.raphimc.thingl.resource.texture.AbstractTexture;
 import net.raphimc.thingl.texture.StaticAtlasTexture;
 import net.raphimc.thingl.util.font.Font;
 import net.raphimc.thingl.util.font.FontGlyph;
 import net.raphimc.thingl.util.font.GlyphBitmap;
 import net.raphimc.thingl.util.rectpack.Slot;
-import net.raphimc.thingl.wrapper.GLStateTracker;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11C;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 public abstract class TextRenderer {
 
@@ -90,7 +91,7 @@ public abstract class TextRenderer {
     private float italicShearFactor = (float) Math.tan(Math.toRadians(14));
     protected float globalScale = 1F;
 
-    public TextRenderer(final RegularProgram shader, final int freeTypeRenderMode, final Font... fonts) {
+    public TextRenderer(final Supplier<Program> program, final int freeTypeRenderMode, final Font... fonts) {
         if (fonts.length == 0) {
             throw new IllegalArgumentException("At least one font must be provided");
         }
@@ -98,15 +99,15 @@ public abstract class TextRenderer {
         this.primaryFont = fonts[0];
         this.freeTypeRenderMode = freeTypeRenderMode;
 
-        this.textDrawBatch = new DrawBatch(() -> shader, DrawMode.QUADS, BuiltinDrawBatches.POSITION_TEXTURE_LAYOUT, () -> {
-            GLStateTracker.push();
-            GLStateTracker.enable(GL11C.GL_BLEND);
+        this.textDrawBatch = new DrawBatch(program, DrawMode.QUADS, BuiltinDrawBatches.POSITION_TEXTURE_LAYOUT, () -> {
+            ThinGL.glStateTracker().push();
+            ThinGL.glStateTracker().enable(GL11C.GL_BLEND);
             final int[] textureIds = new int[this.glyphAtlases.size()];
             for (int i = 0; i < this.glyphAtlases.size(); i++) {
                 textureIds[i] = this.glyphAtlases.get(i).getGlId();
             }
-            shader.setUniformSamplerArray("u_Textures", textureIds);
-        }, GLStateTracker::pop);
+            program.get().setUniformSamplerArray("u_Textures", textureIds);
+        }, () -> ThinGL.glStateTracker().pop());
     }
 
     public float renderString(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final String text, float x, final float y, final float z, final Color textColor) {
@@ -219,8 +220,8 @@ public abstract class TextRenderer {
         return this.primaryFont.getPaddedHeight() * this.globalScale;
     }
 
-    public void delete() {
-        this.glyphAtlases.forEach(StaticAtlasTexture::delete);
+    public void free() {
+        this.glyphAtlases.forEach(StaticAtlasTexture::free);
         this.glyphAtlases.clear();
         this.atlasGlyphs.clear();
         this.fontGlyphs.clear();

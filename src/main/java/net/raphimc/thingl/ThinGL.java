@@ -15,78 +15,174 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package net.raphimc.thingl;
 
 import net.lenni0451.commons.logging.Logger;
 import net.lenni0451.commons.logging.impl.Slf4jLogger;
 import net.lenni0451.commons.logging.special.LazyInitLogger;
-import net.raphimc.thingl.drawbuilder.builder.BufferRenderer;
+import net.raphimc.thingl.drawbuilder.drawbatchdataholder.ImmediateMultiDrawBatchDataHolder;
 import net.raphimc.thingl.drawbuilder.index.QuadIndexBuffer;
-import net.raphimc.thingl.framebuffer.impl.MSAARenderBufferFramebuffer;
-import net.raphimc.thingl.framebuffer.impl.MSAATextureFramebuffer;
-import net.raphimc.thingl.implementation.ThinGLImplementation;
+import net.raphimc.thingl.implementation.ApplicationInterface;
+import net.raphimc.thingl.implementation.Capabilities;
+import net.raphimc.thingl.implementation.WindowInterface;
 import net.raphimc.thingl.implementation.Workarounds;
-import net.raphimc.thingl.program.BuiltinPrograms;
-import net.raphimc.thingl.util.BufferUtil;
-import org.jetbrains.annotations.ApiStatus;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
+import net.raphimc.thingl.program.Programs;
+import net.raphimc.thingl.renderer.impl.Renderer2D;
+import net.raphimc.thingl.renderer.impl.Renderer3D;
+import net.raphimc.thingl.util.pool.BufferBuilderPool;
+import net.raphimc.thingl.util.pool.FramebufferPool;
+import net.raphimc.thingl.util.pool.ImmediateBuffers;
+import net.raphimc.thingl.util.pool.ImmediateVertexArrays;
+import net.raphimc.thingl.wrapper.GLStateTracker;
+import net.raphimc.thingl.wrapper.ScissorStack;
+import net.raphimc.thingl.wrapper.StencilStack;
 import org.lwjgl.opengl.GL11C;
 
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 public class ThinGL {
 
     public static final String VERSION = "${version}";
     public static final String IMPL_VERSION = "${impl_version}";
-
     public static Logger LOGGER = new LazyInitLogger(() -> new Slf4jLogger("ThinGL"));
 
-    private static final List<BiConsumer<Integer, Integer>> WINDOW_FRAMEBUFFER_RESIZE_CALLBACKS = new ArrayList<>();
-    private static final List<Runnable> END_FRAME_CALLBACKS = new ArrayList<>();
-    private static final List<Runnable> PROGRAM_UNBIND_CALLBACKS = new ArrayList<>();
-    private static final List<Runnable> END_FRAME_ACTIONS = new ArrayList<>();
+    private static ThinGL INSTANCE;
 
-    private static ThinGLImplementation IMPLEMENTATION;
-    private static Workarounds WORKAROUNDS;
-    private static GLFWFramebufferSizeCallback PREV_FRAMEBUFFER_SIZE_CALLBACK;
-    private static Thread RENDER_THREAD;
-    private static int WINDOW_FRAMEBUFFER_WIDTH = 0;
-    private static int WINDOW_FRAMEBUFFER_HEIGHT = 0;
-
-    public static synchronized void init(final ThinGLImplementation implementation) {
-        if (IMPLEMENTATION != null) {
-            throw new RuntimeException("ThinGL has already been initialized!");
+    public static void setInstance(final ThinGL instance) {
+        if (instance == null) {
+            throw new IllegalArgumentException("Instance cannot be null");
         }
-        final long windowHandle = GLFW.glfwGetCurrentContext();
-        RENDER_THREAD = Thread.currentThread();
-        IMPLEMENTATION = implementation;
-        WORKAROUNDS = new Workarounds();
+        if (INSTANCE != null) {
+            throw new IllegalStateException("ThinGL instance is already set");
+        }
+        INSTANCE = instance;
+    }
 
-        final int[] windowFramebufferWidth = new int[1];
-        final int[] windowFramebufferHeight = new int[1];
-        GLFW.glfwGetFramebufferSize(windowHandle, windowFramebufferWidth, windowFramebufferHeight);
-        registerWindowFramebufferResizeCallback((width, height) -> {
-            WINDOW_FRAMEBUFFER_WIDTH = width;
-            WINDOW_FRAMEBUFFER_HEIGHT = height;
+    public static ThinGL get() {
+        if (INSTANCE == null) {
+            throw new IllegalStateException("ThinGL has not been initialized yet");
+        }
+        return INSTANCE;
+    }
+
+    public static boolean isInitialized() {
+        return INSTANCE != null;
+    }
+
+    public static WindowInterface windowInterface() {
+        return get().getWindowInterface();
+    }
+
+    public static ApplicationInterface applicationInterface() {
+        return get().getApplicationInterface();
+    }
+
+    public static Capabilities capabilities() {
+        return get().getCapabilities();
+    }
+
+    public static Workarounds workarounds() {
+        return get().getWorkarounds();
+    }
+
+    public static GLStateTracker glStateTracker() {
+        return get().getGLStateTracker();
+    }
+
+    public static ScissorStack scissorStack() {
+        return get().getScissorStack();
+    }
+
+    public static StencilStack stencilStack() {
+        return get().getStencilStack();
+    }
+
+    public static Programs programs() {
+        return get().getPrograms();
+    }
+
+    public static Renderer2D renderer2D() {
+        return get().getRenderer2D();
+    }
+
+    public static Renderer3D renderer3D() {
+        return get().getRenderer3D();
+    }
+
+    public static ImmediateMultiDrawBatchDataHolder globalDrawBatch() {
+        return get().getGlobalDrawBatch();
+    }
+
+    public static BufferBuilderPool bufferBuilderPool() {
+        return get().getBufferBuilderPool();
+    }
+
+    public static FramebufferPool framebufferPool() {
+        return get().getFramebufferPool();
+    }
+
+    public static ImmediateVertexArrays immediateVertexArrays() {
+        return get().getImmediateVertexArrays();
+    }
+
+    public static ImmediateBuffers immediateBuffers() {
+        return get().getImmediateBuffers();
+    }
+
+    public static QuadIndexBuffer quadIndexBuffer() {
+        return get().getQuadIndexBuffer();
+    }
+
+    private final Thread renderThread;
+    private final WindowInterface windowInterface;
+    private final ApplicationInterface applicationInterface;
+    private final Capabilities capabilities;
+    private final Workarounds workarounds;
+
+    private final GLStateTracker glStateTracker;
+    private final ScissorStack scissorStack;
+    private final StencilStack stencilStack;
+    private final Programs programs;
+    private final Renderer2D renderer2D;
+    private final Renderer3D renderer3D;
+
+    private final ImmediateMultiDrawBatchDataHolder globalDrawBatch;
+    private final BufferBuilderPool bufferBuilderPool;
+    private final FramebufferPool framebufferPool;
+    private final ImmediateVertexArrays immediateVertexArrays;
+    private final ImmediateBuffers immediateBuffers;
+    private final QuadIndexBuffer quadIndexBuffer;
+
+    private final List<Runnable> endFrameCallbacks = new ArrayList<>();
+    private final List<Runnable> endFrameActions = new ArrayList<>();
+
+    public ThinGL(final Function<ThinGL, ApplicationInterface> applicationInterface, final Function<ThinGL, WindowInterface> windowInterface) {
+        this.renderThread = Thread.currentThread();
+        this.windowInterface = windowInterface.apply(this);
+        this.applicationInterface = applicationInterface.apply(this);
+        this.capabilities = new Capabilities(this);
+        this.workarounds = new Workarounds(this);
+        this.glStateTracker = new GLStateTracker(this);
+        this.scissorStack = new ScissorStack(this);
+        this.stencilStack = new StencilStack(this);
+        this.programs = new Programs(this);
+        this.renderer2D = new Renderer2D();
+        this.renderer3D = new Renderer3D();
+        this.globalDrawBatch = new ImmediateMultiDrawBatchDataHolder();
+        this.bufferBuilderPool = new BufferBuilderPool(this);
+        this.framebufferPool = new FramebufferPool(this);
+        this.immediateVertexArrays = new ImmediateVertexArrays(this);
+        this.immediateBuffers = new ImmediateBuffers(this);
+        this.quadIndexBuffer = new QuadIndexBuffer(this);
+
+        this.addEndFrameCallback(() -> {
+            if (this.globalDrawBatch.hasDrawBatches()) {
+                this.globalDrawBatch.free();
+                ThinGL.LOGGER.warn("Global draw batch was not empty at the end of the frame!");
+            }
         });
-        onWindowFramebufferResize(windowHandle, windowFramebufferWidth[0], windowFramebufferHeight[0]);
-
-        PREV_FRAMEBUFFER_SIZE_CALLBACK = GLFW.glfwSetFramebufferSizeCallback(windowHandle, ThinGL::onWindowFramebufferResize);
-
-        try {
-            MethodHandles.lookup().ensureInitialized(BuiltinPrograms.class); // Compile builtin programs
-            MethodHandles.lookup().ensureInitialized(QuadIndexBuffer.class); // Allocate index buffer for quad rendering
-            MethodHandles.lookup().ensureInitialized(BufferUtil.class); // Allocate empty buffer
-            MethodHandles.lookup().ensureInitialized(BufferRenderer.class); // Allocate immediate mode buffers
-            MethodHandles.lookup().ensureInitialized(MSAATextureFramebuffer.class); // Get max supported MSAA samples
-            MethodHandles.lookup().ensureInitialized(MSAARenderBufferFramebuffer.class); // Get max supported MSAA samples
-        } catch (IllegalAccessException ignored) {
-        }
 
         final String gpuVendor = GL11C.glGetString(GL11C.GL_VENDOR);
         final String gpuModel = GL11C.glGetString(GL11C.GL_RENDERER);
@@ -94,19 +190,16 @@ public class ThinGL {
         LOGGER.info("Initialized ThinGL " + VERSION + " on " + gpuModel + " (" + gpuVendor + ") with OpenGL " + glVersion);
     }
 
-    public static synchronized void endFrame() {
-        if (IMPLEMENTATION == null) {
-            return;
-        }
-        for (Runnable action : END_FRAME_ACTIONS) {
+    public synchronized void onEndFrame() {
+        for (Runnable action : this.endFrameActions) {
             try {
                 action.run();
             } catch (Throwable e) {
                 LOGGER.error("Exception while invoking end frame action", e);
             }
         }
-        END_FRAME_ACTIONS.clear();
-        for (Runnable callback : END_FRAME_CALLBACKS) {
+        this.endFrameActions.clear();
+        for (Runnable callback : this.endFrameCallbacks) {
             try {
                 callback.run();
             } catch (Throwable e) {
@@ -115,112 +208,128 @@ public class ThinGL {
         }
     }
 
-    @ApiStatus.Internal
-    public static synchronized void onProgramUnbind() {
-        if (IMPLEMENTATION == null) {
-            return;
-        }
-        for (Runnable callback : PROGRAM_UNBIND_CALLBACKS) {
-            try {
-                callback.run();
-            } catch (Throwable e) {
-                LOGGER.error("Exception while invoking program unbind callback", e);
-            }
-        }
-    }
-
-    public static synchronized void registerWindowFramebufferResizeCallback(final BiConsumer<Integer, Integer> callback) {
-        if (WINDOW_FRAMEBUFFER_RESIZE_CALLBACKS.contains(callback)) {
-            throw new RuntimeException("Window framebuffer resize callback already registered");
-        }
-        WINDOW_FRAMEBUFFER_RESIZE_CALLBACKS.add(callback);
-    }
-
-    public static synchronized void unregisterWindowFramebufferResizeCallback(final BiConsumer<Integer, Integer> callback) {
-        if (!WINDOW_FRAMEBUFFER_RESIZE_CALLBACKS.remove(callback)) {
-            throw new RuntimeException("Window framebuffer resize callback not registered");
-        }
-    }
-
-    public static synchronized void registerEndFrameCallback(final Runnable callback) {
-        if (END_FRAME_CALLBACKS.contains(callback)) {
+    public synchronized void addEndFrameCallback(final Runnable callback) {
+        if (this.endFrameCallbacks.contains(callback)) {
             throw new RuntimeException("End frame callback already registered");
         }
-        END_FRAME_CALLBACKS.add(callback);
+        this.endFrameCallbacks.add(callback);
     }
 
-    public static synchronized void unregisterEndFrameCallback(final Runnable callback) {
-        if (!END_FRAME_CALLBACKS.remove(callback)) {
+    public synchronized void removeEndFrameCallback(final Runnable callback) {
+        if (!this.endFrameCallbacks.remove(callback)) {
             throw new RuntimeException("End frame callback not registered");
         }
     }
 
-    public static synchronized void registerProgramUnbindCallback(final Runnable callback) {
-        if (PROGRAM_UNBIND_CALLBACKS.contains(callback)) {
-            throw new RuntimeException("Program unbind callback already registered");
-        }
-        PROGRAM_UNBIND_CALLBACKS.add(callback);
-    }
-
-    public static synchronized void unregisterProgramUnbindCallback(final Runnable callback) {
-        if (!PROGRAM_UNBIND_CALLBACKS.remove(callback)) {
-            throw new RuntimeException("Program unbind callback not registered");
-        }
-    }
-
-    public static synchronized void runOnRenderThread(final Runnable action) {
-        if (isOnRenderThread()) {
+    public void runOnRenderThread(final Runnable action) {
+        if (this.isOnRenderThread()) {
             action.run();
         } else {
-            END_FRAME_ACTIONS.add(action);
+            synchronized (this) {
+                this.endFrameActions.add(action);
+            }
         }
     }
 
-    public static void assertOnRenderThread() {
-        if (!isOnRenderThread()) {
+    public void assertOnRenderThread() {
+        if (!this.isOnRenderThread()) {
             throw new RuntimeException("Not on render thread");
         }
     }
 
-    public static boolean isOnRenderThread() {
-        if (RENDER_THREAD == null) {
-            throw new RuntimeException("ThinGL has not been initialized!");
+    public boolean isOnRenderThread() {
+        return Thread.currentThread() == this.renderThread;
+    }
+
+    public void free() {
+        this.assertOnRenderThread();
+        this.windowInterface.free();
+        this.programs.free();
+        if (this.renderer2D.isBuffering()) {
+            this.renderer2D.endBuffering();
         }
-        return Thread.currentThread() == RENDER_THREAD;
-    }
-
-    public static ThinGLImplementation getImplementation() {
-        return IMPLEMENTATION;
-    }
-
-    public static Workarounds getWorkarounds() {
-        return WORKAROUNDS;
-    }
-
-    public static int getWindowFramebufferWidth() {
-        return WINDOW_FRAMEBUFFER_WIDTH;
-    }
-
-    public static int getWindowFramebufferHeight() {
-        return WINDOW_FRAMEBUFFER_HEIGHT;
-    }
-
-    private static void onWindowFramebufferResize(final long windowId, final int width, final int height) {
-        if (PREV_FRAMEBUFFER_SIZE_CALLBACK != null) {
-            PREV_FRAMEBUFFER_SIZE_CALLBACK.invoke(windowId, width, height);
+        this.renderer2D.getTargetMultiDrawBatchDataHolder().free();
+        if (this.renderer3D.isBuffering()) {
+            this.renderer3D.endBuffering();
         }
-        if (width == 0 || height == 0) {
-            return;
+        this.renderer3D.getTargetMultiDrawBatchDataHolder().free();
+        this.globalDrawBatch.free();
+        this.bufferBuilderPool.free();
+        this.framebufferPool.free();
+        this.immediateVertexArrays.free();
+        this.immediateBuffers.free();
+        this.quadIndexBuffer.free();
+        if (INSTANCE == this) {
+            INSTANCE = null;
         }
-        runOnRenderThread(() -> {
-            for (BiConsumer<Integer, Integer> callback : WINDOW_FRAMEBUFFER_RESIZE_CALLBACKS) {
-                try {
-                    callback.accept(width, height);
-                } catch (Throwable e) {
-                    LOGGER.error("Exception while invoking window framebuffer resize callback", e);
-                }
-            }
-        });
+    }
+
+    public Thread getRenderThread() {
+        return this.renderThread;
+    }
+
+    public WindowInterface getWindowInterface() {
+        return this.windowInterface;
+    }
+
+    public ApplicationInterface getApplicationInterface() {
+        return this.applicationInterface;
+    }
+
+    public Capabilities getCapabilities() {
+        return this.capabilities;
+    }
+
+    public Workarounds getWorkarounds() {
+        return this.workarounds;
+    }
+
+    public GLStateTracker getGLStateTracker() {
+        return this.glStateTracker;
+    }
+
+    public ScissorStack getScissorStack() {
+        return this.scissorStack;
+    }
+
+    public StencilStack getStencilStack() {
+        return this.stencilStack;
+    }
+
+    public Programs getPrograms() {
+        return this.programs;
+    }
+
+    public Renderer2D getRenderer2D() {
+        return this.renderer2D;
+    }
+
+    public Renderer3D getRenderer3D() {
+        return this.renderer3D;
+    }
+
+    public ImmediateMultiDrawBatchDataHolder getGlobalDrawBatch() {
+        return this.globalDrawBatch;
+    }
+
+    public BufferBuilderPool getBufferBuilderPool() {
+        return this.bufferBuilderPool;
+    }
+
+    public FramebufferPool getFramebufferPool() {
+        return this.framebufferPool;
+    }
+
+    public ImmediateVertexArrays getImmediateVertexArrays() {
+        return this.immediateVertexArrays;
+    }
+
+    public ImmediateBuffers getImmediateBuffers() {
+        return this.immediateBuffers;
+    }
+
+    public QuadIndexBuffer getQuadIndexBuffer() {
+        return this.quadIndexBuffer;
     }
 
 }

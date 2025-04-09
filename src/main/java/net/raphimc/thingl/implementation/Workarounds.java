@@ -17,13 +17,16 @@
  */
 package net.raphimc.thingl.implementation;
 
+import net.raphimc.thingl.ThinGL;
+import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.opengl.GL11C;
 
 public class Workarounds {
 
     private final boolean isIntelGpu;
 
-    public Workarounds() {
+    @ApiStatus.Internal
+    public Workarounds(final ThinGL thinGL) {
         final String gpuVendor = GL11C.glGetString(GL11C.GL_VENDOR);
         this.isIntelGpu = gpuVendor != null && gpuVendor.equalsIgnoreCase("Intel");
     }

@@ -18,7 +18,7 @@
 
 package net.raphimc.thingl.resource.buffer;
 
-import net.raphimc.thingl.resource.GLResource;
+import net.raphimc.thingl.resource.GLObject;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL15C;
 import org.lwjgl.opengl.GL43C;
@@ -27,23 +27,23 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
 
-public abstract class AbstractBuffer extends GLResource {
+public abstract class AbstractBuffer extends GLObject {
 
     protected long size;
 
     public AbstractBuffer(final long size) {
-        super(GL43C.GL_BUFFER, GL45C.glCreateBuffers());
+        super(GL45C.glCreateBuffers());
         this.size = size;
     }
 
     protected AbstractBuffer(final int glId) {
-        super(GL43C.GL_BUFFER, glId);
+        super(glId);
         this.size = GL45C.glGetNamedBufferParameteri64(glId, GL15C.GL_BUFFER_SIZE);
     }
 
     public static AbstractBuffer fromGlId(final int glId) {
         if (!GL15C.glIsBuffer(glId)) {
-            throw new IllegalArgumentException("Invalid OpenGL resource");
+            throw new IllegalArgumentException("Not a buffer object");
         }
         final boolean immutable = GL45C.glGetNamedBufferParameteri(glId, GL45C.GL_BUFFER_IMMUTABLE_STORAGE) != GL11C.GL_FALSE;
         if (immutable) {
@@ -88,8 +88,13 @@ public abstract class AbstractBuffer extends GLResource {
     }
 
     @Override
-    protected void delete0() {
+    protected void free0() {
         GL15C.glDeleteBuffers(this.getGlId());
+    }
+
+    @Override
+    public final int getGlType() {
+        return GL43C.GL_BUFFER;
     }
 
     public long getSize() {

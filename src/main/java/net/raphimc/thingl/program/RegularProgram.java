@@ -20,10 +20,10 @@ package net.raphimc.thingl.program;
 
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.util.GlobalObjects;
 import net.raphimc.thingl.resource.framebuffer.Framebuffer;
 import net.raphimc.thingl.resource.program.Program;
 import net.raphimc.thingl.resource.shader.Shader;
+import net.raphimc.thingl.util.RenderMathUtil;
 import org.jetbrains.annotations.ApiStatus;
 
 public class RegularProgram extends Program {
@@ -40,10 +40,10 @@ public class RegularProgram extends Program {
     @Override
     public void bind() {
         super.bind();
-        final Framebuffer currentFramebuffer = ThinGL.getImplementation().getCurrentFramebuffer();
-        this.setUniform("u_ProjectionMatrix", ThinGL.getImplementation().getProjectionMatrix());
-        this.setUniform("u_ViewMatrix", ThinGL.getImplementation().getViewMatrix());
-        this.setUniform("u_ModelMatrix", GlobalObjects.IDENTITY_MATRIX);
+        final Framebuffer currentFramebuffer = ThinGL.applicationInterface().getCurrentFramebuffer();
+        this.setUniform("u_ProjectionMatrix", ThinGL.applicationInterface().getProjectionMatrix());
+        this.setUniform("u_ViewMatrix", ThinGL.applicationInterface().getViewMatrix());
+        this.setUniform("u_ModelMatrix", RenderMathUtil.getIdentityMatrix());
         this.setUniform("u_Viewport", currentFramebuffer.getWidth(), currentFramebuffer.getHeight());
         this.setUniform("u_ColorModifier", Color.WHITE);
     }

@@ -17,7 +17,7 @@
  */
 
 import base.ExampleBase;
-import net.raphimc.thingl.renderer.impl.Renderer2D;
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.resource.texture.AbstractTexture;
 import net.raphimc.thingl.resource.texture.Texture2D;
 import org.joml.Matrix4fStack;
@@ -44,7 +44,7 @@ public class ImageRenderingExample extends ExampleBase {
 
     @Override
     protected void render(final Matrix4fStack positionMatrix) {
-        Renderer2D.INSTANCE.texture(positionMatrix, this.image.getGlId(), 50, 50, this.image.getWidth(), this.image.getHeight());
+        ThinGL.renderer2D().texture(positionMatrix, this.image.getGlId(), 50, 50, this.image.getWidth(), this.image.getHeight());
     }
 
 }

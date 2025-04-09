@@ -18,9 +18,8 @@
 
 import base.ExampleBase;
 import net.lenni0451.commons.color.Color;
-import net.raphimc.thingl.program.BuiltinPrograms;
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.program.post.impl.OutlineProgram;
-import net.raphimc.thingl.renderer.impl.Renderer2D;
 import org.joml.Matrix4fStack;
 
 public class ObjectOutliningExample extends ExampleBase {
@@ -31,21 +30,21 @@ public class ObjectOutliningExample extends ExampleBase {
 
     @Override
     protected void render(final Matrix4fStack positionMatrix) {
-        BuiltinPrograms.OUTLINE.bindMask();
+        ThinGL.programs().getOutline().bindMask();
         this.renderScene(positionMatrix);
-        BuiltinPrograms.OUTLINE.unbindMask();
-        BuiltinPrograms.OUTLINE.configureParameters(OutlineProgram.STYLE_OUTER_ROUNDED_BITS, 1); // Configure the outline
-        BuiltinPrograms.OUTLINE.renderFullscreenQuad();
-        BuiltinPrograms.OUTLINE.clearMask();
+        ThinGL.programs().getOutline().unbindMask();
+        ThinGL.programs().getOutline().configureParameters(OutlineProgram.STYLE_OUTER_ROUNDED_BITS, 1); // Configure the outline
+        ThinGL.programs().getOutline().renderFullscreenQuad();
+        ThinGL.programs().getOutline().clearMask();
 
         positionMatrix.translate(0, 200, 0);
         this.renderScene(positionMatrix);
     }
 
     private void renderScene(final Matrix4fStack positionMatrix) {
-        Renderer2D.INSTANCE.filledRectangle(positionMatrix, 50, 50, 75, 75, Color.RED);
-        Renderer2D.INSTANCE.filledTriangle(positionMatrix, 50, 50, 75, 110, 100, 50, Color.GREEN);
-        Renderer2D.INSTANCE.filledCircle(positionMatrix, 120, 100, 50, Color.BLUE);
+        ThinGL.renderer2D().filledRectangle(positionMatrix, 50, 50, 75, 75, Color.RED);
+        ThinGL.renderer2D().filledTriangle(positionMatrix, 50, 50, 75, 110, 100, 50, Color.GREEN);
+        ThinGL.renderer2D().filledCircle(positionMatrix, 120, 100, 50, Color.BLUE);
     }
 
 }

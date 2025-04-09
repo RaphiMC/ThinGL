@@ -18,6 +18,7 @@
 
 package net.raphimc.thingl.util.font;
 
+import net.raphimc.thingl.util.BufferUtil;
 import org.joml.Vector2f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
@@ -64,7 +65,7 @@ public class Font {
             this.family = this.fontFace.family_nameString();
             this.style = this.fontFace.style_nameString();
         } catch (Throwable e) {
-            this.delete();
+            this.free();
             throw e;
         }
     }
@@ -105,11 +106,11 @@ public class Font {
         return new GlyphBitmap(pixels, width, height, xOffset, yOffset);
     }
 
-    public void delete() {
+    public void free() {
         if (this.fontFace != null) {
-            FreeTypeInstance.checkError(FreeType.FT_Done_Face(this.fontFace), "Failed to delete font face");
+            FreeTypeInstance.checkError(FreeType.FT_Done_Face(this.fontFace), "Failed to free font face");
         }
-        MemoryUtil.memFree(this.fontDataBuffer);
+        BufferUtil.memFree(this.fontDataBuffer);
     }
 
     public int getSize() {

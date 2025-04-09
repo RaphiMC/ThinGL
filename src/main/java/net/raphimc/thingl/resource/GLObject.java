@@ -22,38 +22,34 @@ import org.lwjgl.opengl.GL43C;
 
 import java.util.Objects;
 
-public abstract class GLResource {
+public abstract class GLObject {
 
-    private final int glType;
     private int glId;
 
-    protected GLResource(final int glType, final int glId) {
-        this.glType = glType;
+    protected GLObject(final int glId) {
         this.glId = glId;
     }
 
     public void refreshCachedData() {
     }
 
-    public void delete() {
+    public void free() {
         if (this.isAllocated()) {
             try {
-                this.delete0();
+                this.free0();
             } finally {
                 this.glId = -1;
             }
         }
     }
 
-    protected abstract void delete0();
+    protected abstract void free0();
 
     public boolean isAllocated() {
         return this.glId > 0;
     }
 
-    public final int getGlType() {
-        return this.glType;
-    }
+    public abstract int getGlType();
 
     public final int getGlId() {
         this.checkAllocated();
@@ -62,29 +58,29 @@ public abstract class GLResource {
 
     public final String getDebugName() {
         this.checkAllocated();
-        return GL43C.glGetObjectLabel(this.glType, this.glId);
+        return GL43C.glGetObjectLabel(this.getGlType(), this.glId);
     }
 
     public final void setDebugName(final String name) {
         this.checkAllocated();
-        GL43C.glObjectLabel(this.glType, this.glId, name);
+        GL43C.glObjectLabel(this.getGlType(), this.glId, name);
     }
 
     @Override
     public final boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        GLResource that = (GLResource) o;
-        return glType == that.glType && glId == that.glId;
+        GLObject that = (GLObject) o;
+        return glId == that.glId;
     }
 
     @Override
     public final int hashCode() {
-        return Objects.hash(glType, glId);
+        return Objects.hashCode(glId);
     }
 
     protected final void checkAllocated() {
         if (!this.isAllocated()) {
-            throw new IllegalStateException("The OpenGL resource is not allocated or has been deleted");
+            throw new IllegalStateException("The OpenGL object is not allocated or has been freed");
         }
     }
 

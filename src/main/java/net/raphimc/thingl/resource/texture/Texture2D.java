@@ -18,7 +18,8 @@
 
 package net.raphimc.thingl.resource.texture;
 
-import net.raphimc.thingl.wrapper.GLStateTracker;
+import net.raphimc.thingl.ThinGL;
+import net.raphimc.thingl.util.BufferUtil;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL12C;
 import org.lwjgl.opengl.GL43C;
@@ -74,10 +75,10 @@ public class Texture2D extends AbstractTexture {
                 this.setFilter(GL11C.GL_LINEAR);
                 this.uploadImage(0, 0, this.width, this.height, PixelFormat.RGBA, imageBuffer);
             } finally {
-                MemoryUtil.memFree(imageBuffer);
+                BufferUtil.memFree(imageBuffer);
             }
         } catch (Throwable e) {
-            this.delete();
+            this.free();
             throw e;
         }
     }
@@ -103,7 +104,7 @@ public class Texture2D extends AbstractTexture {
         try {
             this.uploadImage(x, y, width, height, pixelFormat, imageBuffer);
         } finally {
-            MemoryUtil.memFree(imageBuffer);
+            BufferUtil.memFree(imageBuffer);
         }
     }
 
@@ -126,12 +127,12 @@ public class Texture2D extends AbstractTexture {
     }
 
     public void uploadPixels(final int x, final int y, final int width, final int height, final PixelFormat pixelFormat, final int[] pixelData, final boolean bigEndian) {
-        final ByteBuffer pixelBuffer = MemoryUtil.memAlloc(pixelData.length * 4);
+        final ByteBuffer pixelBuffer = MemoryUtil.memAlloc(pixelData.length * Integer.BYTES);
         pixelBuffer.order(bigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN).asIntBuffer().put(pixelData).flip();
         try {
             this.uploadPixels(x, y, width, height, pixelFormat, pixelBuffer);
         } finally {
-            MemoryUtil.memFree(pixelBuffer);
+            BufferUtil.memFree(pixelBuffer);
         }
     }
 
@@ -140,7 +141,7 @@ public class Texture2D extends AbstractTexture {
         try {
             this.uploadPixels(x, y, width, height, pixelFormat, pixelBuffer);
         } finally {
-            MemoryUtil.memFree(pixelBuffer);
+            BufferUtil.memFree(pixelBuffer);
         }
     }
 
@@ -152,13 +153,13 @@ public class Texture2D extends AbstractTexture {
             throw new IllegalArgumentException("Pixel buffer size does not match the specified dimensions");
         }
 
-        GLStateTracker.pushPixelStore();
-        GLStateTracker.pixelStore(GL11C.GL_UNPACK_ALIGNMENT, pixelFormat.getAlignment());
-        GLStateTracker.pixelStore(GL11C.GL_UNPACK_SKIP_PIXELS, 0);
-        GLStateTracker.pixelStore(GL11C.GL_UNPACK_SKIP_ROWS, 0);
-        GLStateTracker.pixelStore(GL11C.GL_UNPACK_ROW_LENGTH, 0);
+        ThinGL.glStateTracker().pushPixelStore();
+        ThinGL.glStateTracker().pixelStore(GL11C.GL_UNPACK_ALIGNMENT, pixelFormat.getAlignment());
+        ThinGL.glStateTracker().pixelStore(GL11C.GL_UNPACK_SKIP_PIXELS, 0);
+        ThinGL.glStateTracker().pixelStore(GL11C.GL_UNPACK_SKIP_ROWS, 0);
+        ThinGL.glStateTracker().pixelStore(GL11C.GL_UNPACK_ROW_LENGTH, 0);
         GL45C.glTextureSubImage2D(this.getGlId(), 0, x, y, width, height, pixelFormat.getGlFormat(), GL11C.GL_UNSIGNED_BYTE, pixelBuffer);
-        GLStateTracker.popPixelStore();
+        ThinGL.glStateTracker().popPixelStore();
     }
 
     public byte[] downloadPixelData(final int x, final int y, final int width, final int height, final PixelFormat pixelFormat) {
@@ -168,7 +169,7 @@ public class Texture2D extends AbstractTexture {
             pixelBuffer.get(pixelData);
             return pixelData;
         } finally {
-            MemoryUtil.memFree(pixelBuffer);
+            BufferUtil.memFree(pixelBuffer);
         }
     }
 
@@ -178,13 +179,13 @@ public class Texture2D extends AbstractTexture {
         }
 
         final ByteBuffer pixelBuffer = MemoryUtil.memAlloc(width * height * pixelFormat.getChannelCount());
-        GLStateTracker.pushPixelStore();
-        GLStateTracker.pixelStore(GL11C.GL_PACK_ALIGNMENT, pixelFormat.getAlignment());
-        GLStateTracker.pixelStore(GL11C.GL_PACK_SKIP_PIXELS, 0);
-        GLStateTracker.pixelStore(GL11C.GL_PACK_SKIP_ROWS, 0);
-        GLStateTracker.pixelStore(GL11C.GL_PACK_ROW_LENGTH, 0);
+        ThinGL.glStateTracker().pushPixelStore();
+        ThinGL.glStateTracker().pixelStore(GL11C.GL_PACK_ALIGNMENT, pixelFormat.getAlignment());
+        ThinGL.glStateTracker().pixelStore(GL11C.GL_PACK_SKIP_PIXELS, 0);
+        ThinGL.glStateTracker().pixelStore(GL11C.GL_PACK_SKIP_ROWS, 0);
+        ThinGL.glStateTracker().pixelStore(GL11C.GL_PACK_ROW_LENGTH, 0);
         GL45C.glGetTextureSubImage(this.getGlId(), 0, x, y, 0, width, height, 1, pixelFormat.getGlFormat(), GL11C.GL_UNSIGNED_BYTE, pixelBuffer);
-        GLStateTracker.popPixelStore();
+        ThinGL.glStateTracker().popPixelStore();
         return pixelBuffer;
     }
 
@@ -199,7 +200,7 @@ public class Texture2D extends AbstractTexture {
             return writeCallback.getImageData();
         } finally {
             writeCallback.free();
-            MemoryUtil.memFree(pixelBuffer);
+            BufferUtil.memFree(pixelBuffer);
         }
     }
 

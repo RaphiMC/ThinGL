@@ -18,7 +18,6 @@
 package net.raphimc.thingl.program.post.impl;
 
 import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.program.BuiltinPrograms;
 import net.raphimc.thingl.program.post.MultiPassPostProcessingProgram;
 import net.raphimc.thingl.resource.framebuffer.Framebuffer;
 import net.raphimc.thingl.resource.shader.Shader;
@@ -27,8 +26,8 @@ public class KawaseBlurProgram extends MultiPassPostProcessingProgram<KawaseBlur
 
     private float offset = 3F;
 
-    public KawaseBlurProgram() {
-        super(BuiltinPrograms.getShader("post/post_processing", Shader.Type.VERTEX), BuiltinPrograms.getShader("post/kawase_blur", Shader.Type.FRAGMENT), s -> {
+    public KawaseBlurProgram(final Shader vertexShader, final Shader fragmentShader) {
+        super(vertexShader, fragmentShader, s -> {
             s.setUniform("u_Pass", 0);
             s.setUniform("u_Offset", s.offset);
         }, s -> {
@@ -49,7 +48,7 @@ public class KawaseBlurProgram extends MultiPassPostProcessingProgram<KawaseBlur
 
     @Override
     protected void renderQuad0(final float x1, final float y1, final float x2, final float y2) {
-        final Framebuffer currentFramebuffer = ThinGL.getImplementation().getCurrentFramebuffer();
+        final Framebuffer currentFramebuffer = ThinGL.applicationInterface().getCurrentFramebuffer();
         if (x1 == 0 && y1 == 0 && x2 == currentFramebuffer.getWidth() && y2 == currentFramebuffer.getHeight()) {
             super.renderQuad0(x1, y1, x2, y2);
         } else {

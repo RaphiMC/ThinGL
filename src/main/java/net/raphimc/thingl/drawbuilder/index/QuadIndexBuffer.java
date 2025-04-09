@@ -23,37 +23,39 @@ import net.raphimc.thingl.drawbuilder.builder.BufferBuilder;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.IndexDataHolder;
 import net.raphimc.thingl.resource.buffer.AbstractBuffer;
 import net.raphimc.thingl.resource.buffer.Buffer;
+import net.raphimc.thingl.util.BufferUtil;
+import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.opengl.GL15C;
-import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
 
 public class QuadIndexBuffer {
 
-    private static final int QUAD_INDEX_COUNT = 6;
-    private static final int INT_SIZE = 4;
-    private static final Buffer INT_BUFFER = new Buffer(0L, GL15C.GL_DYNAMIC_DRAW);
-    private static ByteBuffer BYTE_BUFFER = null;
+    public static final int QUAD_VERTEX_COUNT = 4;
+    public static final int QUAD_INDEX_COUNT = 6;
 
-    static {
-        ensureSize(4096);
-        INT_BUFFER.setDebugName("Quad Index Buffer");
+    private final Buffer indexBuffer = new Buffer(0L, GL15C.GL_DYNAMIC_DRAW);
+    private ByteBuffer indexData = null;
+
+    @ApiStatus.Internal
+    public QuadIndexBuffer(final ThinGL thinGL) {
+        this.ensureSize(4096);
+        this.indexBuffer.setDebugName("Quad Index Buffer");
     }
 
-    public static void ensureSize(final int quadCount) {
-        ThinGL.assertOnRenderThread();
-        if (INT_BUFFER.getSize() / QUAD_INDEX_COUNT / INT_SIZE < quadCount) {
-            if (BYTE_BUFFER != null) {
-                MemoryUtil.memFree(BYTE_BUFFER);
+    public void ensureSize(final int quadCount) {
+        if (this.indexBuffer.getSize() / QUAD_INDEX_COUNT / Integer.SIZE < quadCount) {
+            if (this.indexData != null) {
+                BufferUtil.memFree(this.indexData);
             }
-            BYTE_BUFFER = createIndexBuffer(quadCount);
-            INT_BUFFER.setSize(BYTE_BUFFER.remaining());
-            INT_BUFFER.upload(0, BYTE_BUFFER);
+            this.indexData = this.createIndexData(quadCount);
+            this.indexBuffer.setSize(this.indexData.remaining());
+            this.indexBuffer.upload(0, this.indexData);
         }
     }
 
-    public static ByteBuffer createIndexBuffer(final int quadCount) {
-        final BufferBuilder bufferBuilder = new BufferBuilder(quadCount * QUAD_INDEX_COUNT * INT_SIZE);
+    public ByteBuffer createIndexData(final int quadCount) {
+        final BufferBuilder bufferBuilder = new BufferBuilder(quadCount * QUAD_INDEX_COUNT * Integer.SIZE);
         final IndexDataHolder indexDataHolder = new IndexDataHolder(bufferBuilder);
         for (int i = 0; i < quadCount; i++) {
             indexDataHolder.quad();
@@ -61,12 +63,18 @@ public class QuadIndexBuffer {
         return bufferBuilder.finish();
     }
 
-    public static AbstractBuffer getSharedGlBuffer() {
-        return INT_BUFFER;
+    public AbstractBuffer getSharedGlBuffer() {
+        return this.indexBuffer;
     }
 
-    public static ByteBuffer getSharedByteBuffer() {
-        return BYTE_BUFFER;
+    public ByteBuffer getSharedByteBuffer() {
+        return this.indexData;
+    }
+
+    @ApiStatus.Internal
+    public void free() {
+        this.indexBuffer.free();
+        BufferUtil.memFree(this.indexData);
     }
 
 }

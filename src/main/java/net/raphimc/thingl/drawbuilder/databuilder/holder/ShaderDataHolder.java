@@ -23,7 +23,7 @@ import net.raphimc.thingl.drawbuilder.databuilder.writer.BufferDataWriter;
 
 public class ShaderDataHolder extends BufferDataWriter<ShaderDataHolder> {
 
-    private int alignment = 1;
+    private int alignment = Byte.BYTES;
     private int structSize = 0;
 
     public ShaderDataHolder(final BufferBuilder bufferBuilder) {
@@ -32,28 +32,28 @@ public class ShaderDataHolder extends BufferDataWriter<ShaderDataHolder> {
 
     @Override
     public ShaderDataHolder rawInt(final int i) {
-        this.alignment = Math.max(this.alignment, 4);
-        this.structSize += 4;
+        this.alignment = Math.max(this.alignment, Integer.BYTES);
+        this.structSize += Integer.BYTES;
         return super.rawInt(i);
     }
 
     @Override
     public ShaderDataHolder rawFloat(final float f) {
-        this.alignment = Math.max(this.alignment, 4);
-        this.structSize += 4;
+        this.alignment = Math.max(this.alignment, Float.BYTES);
+        this.structSize += Float.BYTES;
         return super.rawFloat(f);
     }
 
     @Override
     public ShaderDataHolder rawDouble(final double d) {
-        this.alignment = Math.max(this.alignment, 8);
-        this.structSize += 8;
+        this.alignment = Math.max(this.alignment, Double.BYTES);
+        this.structSize += Double.BYTES;
         return super.rawDouble(d);
     }
 
     public void end() {
         this.bufferBuilder.align(this.alignment);
-        this.alignment = 1;
+        this.alignment = Byte.BYTES;
         this.structSize = 0;
     }
 

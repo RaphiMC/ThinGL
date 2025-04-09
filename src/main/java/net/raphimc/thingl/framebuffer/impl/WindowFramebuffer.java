@@ -43,7 +43,11 @@ public class WindowFramebuffer extends Framebuffer {
     }
 
     @Override
-    public void delete() {
+    public void free() {
+    }
+
+    @Override
+    protected void freeContainingObjects() {
     }
 
     @Override
@@ -58,12 +62,12 @@ public class WindowFramebuffer extends Framebuffer {
 
     @Override
     public int getWidth() {
-        return ThinGL.getWindowFramebufferWidth();
+        return ThinGL.windowInterface().getFramebufferWidth();
     }
 
     @Override
     public int getHeight() {
-        return ThinGL.getWindowFramebufferHeight();
+        return ThinGL.windowInterface().getFramebufferHeight();
     }
 
 }

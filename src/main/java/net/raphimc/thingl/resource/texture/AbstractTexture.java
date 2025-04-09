@@ -19,32 +19,32 @@
 package net.raphimc.thingl.resource.texture;
 
 import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.resource.GLResource;
+import net.raphimc.thingl.resource.GLObject;
 import net.raphimc.thingl.resource.framebuffer.FramebufferAttachment;
 import org.lwjgl.opengl.*;
 
-public abstract class AbstractTexture extends GLResource implements FramebufferAttachment {
+public abstract class AbstractTexture extends GLObject implements FramebufferAttachment {
 
     private final int type;
     private final int internalFormat;
 
     public AbstractTexture(final Type type, final InternalFormat internalFormat) {
-        super(GL11C.GL_TEXTURE, GL45C.glCreateTextures(type.getGlType()));
+        super(GL45C.glCreateTextures(type.getGlType()));
         this.type = type.getGlType();
         this.internalFormat = internalFormat.getGlFormat();
     }
 
     protected AbstractTexture(final int glId, final Type type) {
-        super(GL11C.GL_TEXTURE, glId);
+        super(glId);
         this.type = type.getGlType();
         this.internalFormat = GL45C.glGetTextureLevelParameteri(glId, 0, GL30C.GL_TEXTURE_INTERNAL_FORMAT);
     }
 
     public static AbstractTexture fromGlId(final int glId) {
         if (!GL11C.glIsTexture(glId)) {
-            throw new IllegalArgumentException("Invalid OpenGL resource");
+            throw new IllegalArgumentException("Not a texture object");
         }
-        if (!ThinGL.getWorkarounds().isGetTextureParameterTextureTargetBroken()) {
+        if (!ThinGL.workarounds().isGetTextureParameterTextureTargetBroken()) {
             final Type type = Type.fromGlType(GL45C.glGetTextureParameteri(glId, GL45C.GL_TEXTURE_TARGET));
             return switch (type) {
                 case TEX_2D -> new Texture2D(glId);
@@ -62,8 +62,13 @@ public abstract class AbstractTexture extends GLResource implements FramebufferA
     }
 
     @Override
-    protected void delete0() {
+    protected void free0() {
         GL11C.glDeleteTextures(this.getGlId());
+    }
+
+    @Override
+    public final int getGlType() {
+        return GL11C.GL_TEXTURE;
     }
 
     public int getType() {
@@ -209,14 +214,14 @@ public abstract class AbstractTexture extends GLResource implements FramebufferA
         }
 
         public int getAlignment() {
-            if (this.channelCount % 8 == 0) {
-                return 8;
-            } else if (this.channelCount % 4 == 0) {
-                return 4;
-            } else if (this.channelCount % 2 == 0) {
-                return 2;
+            if (this.channelCount % Long.BYTES == 0) {
+                return Long.BYTES;
+            } else if (this.channelCount % Integer.BYTES == 0) {
+                return Integer.BYTES;
+            } else if (this.channelCount % Short.BYTES == 0) {
+                return Short.BYTES;
             } else {
-                return 1;
+                return Byte.BYTES;
             }
         }
 

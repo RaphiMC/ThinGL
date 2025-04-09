@@ -22,8 +22,6 @@ import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.ShaderDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.MultiDrawBatchDataHolder;
-import net.raphimc.thingl.program.BuiltinPrograms;
-import net.raphimc.thingl.util.GlobalObjects;
 import net.raphimc.thingl.util.font.Font;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
@@ -34,16 +32,16 @@ import org.lwjgl.util.freetype.FreeType;
 public class SDFTextRenderer extends TextRenderer {
 
     public SDFTextRenderer(final Font... fonts) {
-        super(BuiltinPrograms.SDF_TEXT, FreeType.FT_RENDER_MODE_SDF, fonts);
+        super(() -> ThinGL.programs().getSdfText(), FreeType.FT_RENDER_MODE_SDF, fonts);
     }
 
     @Override
     public float renderString(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final String text, final int startIndex, final int endIndex, float x, float y, float z, final Color textColor, final int flags, final Color outlineColor) {
         final ShaderDataHolder stringDataHolder = multiDrawBatchDataHolder.getShaderDataHolder(this.textDrawBatch, "ssbo_StringData");
 
-        final Vector3f scale = positionMatrix.getScale(GlobalObjects.VECTOR3F);
-        if ((ThinGL.getImplementation().getProjectionMatrix().properties() & Matrix4fc.PROPERTY_AFFINE) != 0) { // If orthographic projection
-            final Vector2f scaleFactor = ThinGL.getImplementation().get2DScaleFactor();
+        final Vector3f scale = positionMatrix.getScale(new Vector3f());
+        if ((ThinGL.applicationInterface().getProjectionMatrix().properties() & Matrix4fc.PROPERTY_AFFINE) != 0) { // If orthographic projection
+            final Vector2f scaleFactor = ThinGL.applicationInterface().get2DScaleFactor();
             scale.mul(scaleFactor.x, scaleFactor.y, 0F);
         }
         scale.mul(this.globalScale);

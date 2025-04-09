@@ -19,9 +19,9 @@
 package net.raphimc.thingl.renderer.text;
 
 import net.lenni0451.commons.color.Color;
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.ShaderDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.MultiDrawBatchDataHolder;
-import net.raphimc.thingl.program.BuiltinPrograms;
 import net.raphimc.thingl.util.font.Font;
 import org.joml.Matrix4f;
 import org.lwjgl.util.freetype.FreeType;
@@ -29,7 +29,7 @@ import org.lwjgl.util.freetype.FreeType;
 public class BitmapTextRenderer extends TextRenderer {
 
     public BitmapTextRenderer(final Font... fonts) {
-        super(BuiltinPrograms.BITMAP_TEXT, FreeType.FT_RENDER_MODE_NORMAL, fonts);
+        super(() -> ThinGL.programs().getBitmapText(), FreeType.FT_RENDER_MODE_NORMAL, fonts);
     }
 
     @Override

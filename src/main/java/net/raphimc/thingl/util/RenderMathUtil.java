@@ -27,6 +27,16 @@ import org.joml.primitives.Rectanglei;
 
 public class RenderMathUtil {
 
+    private static final Matrix4f IDENTITY_MATRIX = new Matrix4f();
+
+    public static Matrix4f getIdentityMatrix() {
+        if ((IDENTITY_MATRIX.properties() & Matrix4fc.PROPERTY_IDENTITY) == 0) {
+            IDENTITY_MATRIX.identity();
+            ThinGL.LOGGER.warn("IDENTITY_MATRIX was modified");
+        }
+        return IDENTITY_MATRIX;
+    }
+
     public static Rectanglei getScreenRect(final Matrix4f positionMatrix, final float x1, final float y1, final float x2, final float y2) {
         final Vector3f start = new Vector3f(x1, y1, 0);
         final Vector3f end = new Vector3f(x2, y2, 0);
@@ -35,12 +45,12 @@ public class RenderMathUtil {
             positionMatrix.transformPosition(end);
         }
 
-        final Vector2f scale = ThinGL.getImplementation().get2DScaleFactor();
+        final Vector2f scale = ThinGL.applicationInterface().get2DScaleFactor();
         return new Rectanglei(
                 MathUtils.floorInt(start.x * scale.x),
-                MathUtils.floorInt((MathUtils.ceilInt(ThinGL.getImplementation().getCurrentFramebuffer().getHeight() / scale.y) - end.y) * scale.y),
+                MathUtils.floorInt((MathUtils.ceilInt(ThinGL.applicationInterface().getCurrentFramebuffer().getHeight() / scale.y) - end.y) * scale.y),
                 MathUtils.ceilInt(end.x * scale.x),
-                MathUtils.ceilInt((MathUtils.ceilInt(ThinGL.getImplementation().getCurrentFramebuffer().getHeight() / scale.y) - start.y) * scale.y)
+                MathUtils.ceilInt((MathUtils.ceilInt(ThinGL.applicationInterface().getCurrentFramebuffer().getHeight() / scale.y) - start.y) * scale.y)
         );
     }
 

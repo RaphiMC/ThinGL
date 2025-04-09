@@ -33,29 +33,29 @@ import java.util.function.Supplier;
 public class DrawBatchDataHolder {
 
     private final Supplier<BufferBuilder> bufferBuilderSupplier;
-    private final Consumer<BufferBuilder> bufferBuilderDeleter;
+    private final Consumer<BufferBuilder> bufferBuilderDisposer;
     private VertexDataHolder vertexDataHolder;
     private IndexDataHolder indexDataHolder;
     private InstanceDataHolder instanceDataHolder;
     private final Object2ObjectMap<String, ShaderDataHolder> shaderDataHolders = new Object2ObjectOpenHashMap<>();
 
-    public DrawBatchDataHolder(final Supplier<BufferBuilder> bufferBuilderSupplier, final Consumer<BufferBuilder> bufferBuilderDeleter) {
+    public DrawBatchDataHolder(final Supplier<BufferBuilder> bufferBuilderSupplier, final Consumer<BufferBuilder> bufferBuilderDisposer) {
         this.bufferBuilderSupplier = bufferBuilderSupplier;
-        this.bufferBuilderDeleter = bufferBuilderDeleter;
+        this.bufferBuilderDisposer = bufferBuilderDisposer;
     }
 
-    public void delete() {
+    public void free() {
         if (this.vertexDataHolder != null) {
-            this.bufferBuilderDeleter.accept(this.vertexDataHolder.getBufferBuilder());
+            this.bufferBuilderDisposer.accept(this.vertexDataHolder.getBufferBuilder());
         }
         if (this.indexDataHolder != null) {
-            this.bufferBuilderDeleter.accept(this.indexDataHolder.getBufferBuilder());
+            this.bufferBuilderDisposer.accept(this.indexDataHolder.getBufferBuilder());
         }
         if (this.instanceDataHolder != null) {
-            this.bufferBuilderDeleter.accept(this.instanceDataHolder.getBufferBuilder());
+            this.bufferBuilderDisposer.accept(this.instanceDataHolder.getBufferBuilder());
         }
         for (ShaderDataHolder bufferShaderDataHolder : this.shaderDataHolders.values()) {
-            this.bufferBuilderDeleter.accept(bufferShaderDataHolder.getBufferBuilder());
+            this.bufferBuilderDisposer.accept(bufferShaderDataHolder.getBufferBuilder());
         }
     }
 

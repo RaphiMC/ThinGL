@@ -22,6 +22,7 @@ import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.framebuffer.impl.TextureFramebuffer;
 import net.raphimc.thingl.framebuffer.impl.WindowFramebuffer;
 import net.raphimc.thingl.implementation.DebugMessageCallback;
+import net.raphimc.thingl.implementation.GLFWWindowInterface;
 import net.raphimc.thingl.wrapper.Blending;
 import org.joml.Matrix4fStack;
 import org.lwjgl.glfw.GLFW;
@@ -58,7 +59,7 @@ public abstract class ExampleBase implements Runnable {
         GL.createCapabilities();
 
         ThinGL.LOGGER = SysoutLogger.builder().name("ThinGL").build();
-        ThinGL.init(new ExampleThinGLImplementation()); // Init ThinGL
+        ThinGL.setInstance(new ThinGL(ExampleThinGLImplementation::new, GLFWWindowInterface::new)); // Init ThinGL
         DebugMessageCallback.install(true); // Enable synchronous debug messages to ensure stack traces are correct (Only use this for debugging!)
 
         GL11C.glEnable(GL11C.GL_BLEND);
@@ -79,11 +80,12 @@ public abstract class ExampleBase implements Runnable {
 
             mainFramebuffer.unbind();
             mainFramebuffer.blitTo(WindowFramebuffer.INSTANCE, true, false, false); // Blit the main framebuffer to the window framebuffer
-            ThinGL.endFrame(); // Let ThinGL know that the current frame is done rendering
+            ThinGL.get().onEndFrame(); // Let ThinGL know that the current frame is done rendering
             GLFW.glfwSwapBuffers(window);
             GLFW.glfwPollEvents();
         }
 
+        ThinGL.get().free(); // Destroy the ThinGL instance and free all resources
         GLFW.glfwDestroyWindow(window);
         GLFW.glfwTerminate();
     }

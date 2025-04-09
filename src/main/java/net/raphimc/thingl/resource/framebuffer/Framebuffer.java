@@ -20,7 +20,7 @@ package net.raphimc.thingl.resource.framebuffer;
 
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.framebuffer.impl.WindowFramebuffer;
-import net.raphimc.thingl.resource.GLResource;
+import net.raphimc.thingl.resource.GLContainerObject;
 import net.raphimc.thingl.resource.renderbuffer.AbstractRenderBuffer;
 import net.raphimc.thingl.resource.texture.AbstractTexture;
 import org.lwjgl.opengl.GL11C;
@@ -30,7 +30,7 @@ import org.lwjgl.opengl.GL45C;
 
 import java.util.Objects;
 
-public class Framebuffer extends GLResource {
+public class Framebuffer extends GLContainerObject {
 
     private final float[] clearColor = new float[4];
 
@@ -47,7 +47,7 @@ public class Framebuffer extends GLResource {
     }
 
     public Framebuffer(final FramebufferAttachment colorAttachment, final FramebufferAttachment depthAttachment, final FramebufferAttachment stencilAttachment) {
-        super(GL30C.GL_FRAMEBUFFER, GL45C.glCreateFramebuffers());
+        super(GL45C.glCreateFramebuffers());
         if (colorAttachment == null && depthAttachment == null && stencilAttachment == null) { // Attachments can be added later
             return;
         }
@@ -64,13 +64,13 @@ public class Framebuffer extends GLResource {
             this.checkFramebufferStatus();
             this.clear();
         } catch (Throwable e) {
-            this.delete();
+            this.free();
             throw e;
         }
     }
 
     protected Framebuffer(final int glId) {
-        super(GL30C.GL_FRAMEBUFFER, glId);
+        super(glId);
         this.refreshCachedData();
     }
 
@@ -79,7 +79,7 @@ public class Framebuffer extends GLResource {
             return WindowFramebuffer.INSTANCE;
         }
         if (!GL30C.glIsFramebuffer(glId)) {
-            throw new IllegalArgumentException("Invalid OpenGL resource");
+            throw new IllegalArgumentException("Not a framebuffer object");
         }
         return new Framebuffer(glId);
     }
@@ -123,7 +123,7 @@ public class Framebuffer extends GLResource {
 
     public void bind(final boolean setViewport) {
         GL30C.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, this.getGlId());
-        ThinGL.getImplementation().setCurrentFramebuffer(this);
+        ThinGL.applicationInterface().setCurrentFramebuffer(this);
         if (setViewport) {
             GL11C.glViewport(0, 0, this.getWidth(), this.getHeight());
         }
@@ -155,8 +155,29 @@ public class Framebuffer extends GLResource {
     }
 
     @Override
-    protected void delete0() {
+    protected void free0() {
         GL30C.glDeleteFramebuffers(this.getGlId());
+    }
+
+    @Override
+    protected void freeContainingObjects() {
+        if (this.colorAttachment != null) {
+            this.colorAttachment.free();
+            this.colorAttachment = null;
+        }
+        if (this.depthAttachment != null) {
+            this.depthAttachment.free();
+            this.depthAttachment = null;
+        }
+        if (this.stencilAttachment != null) {
+            this.stencilAttachment.free();
+            this.stencilAttachment = null;
+        }
+    }
+
+    @Override
+    public final int getGlType() {
+        return GL30C.GL_FRAMEBUFFER;
     }
 
     public void setClearColor(final float r, final float g, final float b, final float a) {

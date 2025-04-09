@@ -17,7 +17,6 @@
  */
 package net.raphimc.thingl.program.post.impl;
 
-import net.raphimc.thingl.program.BuiltinPrograms;
 import net.raphimc.thingl.program.post.MultiPassPostProcessingProgram;
 import net.raphimc.thingl.resource.shader.Shader;
 
@@ -32,8 +31,8 @@ public class OutlineProgram extends MultiPassPostProcessingProgram<OutlineProgra
     private int styleFlags = STYLE_OUTER_ROUNDED_BITS;
     private int width = 1;
 
-    public OutlineProgram() {
-        super(BuiltinPrograms.getShader("post/post_processing", Shader.Type.VERTEX), BuiltinPrograms.getShader("post/outline", Shader.Type.FRAGMENT), s -> {
+    public OutlineProgram(final Shader vertexShader, final Shader fragmentShader) {
+        super(vertexShader, fragmentShader, s -> {
             s.setUniform("u_FinalPass", false);
             s.setUniform("u_StyleFlags", s.styleFlags);
             s.setUniform("u_Width", s.width);

@@ -25,7 +25,7 @@ import net.raphimc.thingl.drawbuilder.databuilder.holder.IndexDataHolder;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.InstanceDataHolder;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.ShaderDataHolder;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.VertexDataHolder;
-import net.raphimc.thingl.util.GlobalObjects;
+import net.raphimc.thingl.util.RenderMathUtil;
 import org.joml.Matrix4f;
 
 public abstract class MultiDrawBatchDataHolder {
@@ -70,15 +70,15 @@ public abstract class MultiDrawBatchDataHolder {
     }
 
     public void draw() {
-        this.draw(GlobalObjects.IDENTITY_MATRIX);
+        this.draw(RenderMathUtil.getIdentityMatrix());
     }
 
     public abstract void draw(final Matrix4f modelMatrix);
 
     public abstract void draw(final DrawBatch drawBatch, final Matrix4f modelMatrix);
 
-    public void delete() {
-        this.drawBatches.values().forEach(DrawBatchDataHolder::delete);
+    public void free() {
+        this.drawBatches.values().forEach(DrawBatchDataHolder::free);
         this.drawBatches.clear();
         this.invalidateCache();
     }

@@ -18,8 +18,7 @@
 
 import base.ExampleBase;
 import net.lenni0451.commons.color.Color;
-import net.raphimc.thingl.program.BuiltinPrograms;
-import net.raphimc.thingl.renderer.impl.Renderer2D;
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.resource.texture.AbstractTexture;
 import net.raphimc.thingl.resource.texture.Texture2D;
 import org.joml.Matrix4fStack;
@@ -46,15 +45,15 @@ public class BlurExample extends ExampleBase {
 
     @Override
     protected void render(final Matrix4fStack positionMatrix) {
-        Renderer2D.INSTANCE.texture(positionMatrix, this.image.getGlId(), 50, 50, this.image.getWidth(), this.image.getHeight());
+        ThinGL.renderer2D().texture(positionMatrix, this.image.getGlId(), 50, 50, this.image.getWidth(), this.image.getHeight());
 
         final float x = (System.currentTimeMillis() % 5000) / 5000F * (this.image.getWidth() * 1.25F);
-        BuiltinPrograms.GAUSSIAN_BLUR.bindMask();
-        Renderer2D.INSTANCE.filledCircle(positionMatrix, x, 200, 75, Color.RED);
-        BuiltinPrograms.GAUSSIAN_BLUR.unbindMask();
-        BuiltinPrograms.GAUSSIAN_BLUR.configureParameters(10); // Configure the blur radius
-        BuiltinPrograms.GAUSSIAN_BLUR.renderScaledQuad(50, 50, 50 + this.image.getWidth(), 50 + this.image.getHeight());
-        BuiltinPrograms.GAUSSIAN_BLUR.clearMask();
+        ThinGL.programs().getGaussianBlur().bindMask();
+        ThinGL.renderer2D().filledCircle(positionMatrix, x, 200, 75, Color.RED);
+        ThinGL.programs().getGaussianBlur().unbindMask();
+        ThinGL.programs().getGaussianBlur().configureParameters(10); // Configure the blur radius
+        ThinGL.programs().getGaussianBlur().renderScaledQuad(50, 50, 50 + this.image.getWidth(), 50 + this.image.getHeight());
+        ThinGL.programs().getGaussianBlur().clearMask();
     }
 
 }

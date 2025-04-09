@@ -60,7 +60,7 @@ public class StaticRectanglePacker {
         return this.rectPackContext.height();
     }
 
-    public void delete() {
+    public void free() {
         this.rectPackNodes.free();
     }
 

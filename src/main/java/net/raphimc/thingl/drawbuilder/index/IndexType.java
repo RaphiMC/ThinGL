@@ -22,9 +22,9 @@ import org.lwjgl.opengl.GL11C;
 
 public enum IndexType {
 
-    UNSIGNED_BYTE(GL11C.GL_UNSIGNED_BYTE, "Unsigned Byte", 1),
-    UNSIGNED_SHORT(GL11C.GL_UNSIGNED_SHORT, "Unsigned Short", 2),
-    UNSIGNED_INT(GL11C.GL_UNSIGNED_INT, "Unsigned Int", 4),
+    UNSIGNED_BYTE(GL11C.GL_UNSIGNED_BYTE, "Unsigned Byte", Byte.BYTES),
+    UNSIGNED_SHORT(GL11C.GL_UNSIGNED_SHORT, "Unsigned Short", Short.BYTES),
+    UNSIGNED_INT(GL11C.GL_UNSIGNED_INT, "Unsigned Int", Integer.BYTES),
     ;
 
     public static IndexType fromGlType(final int glType) {

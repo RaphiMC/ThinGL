@@ -23,6 +23,7 @@ import it.unimi.dsi.fastutil.booleans.BooleanStack;
 import it.unimi.dsi.fastutil.ints.*;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.resource.framebuffer.Framebuffer;
+import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL14C;
 
@@ -30,141 +31,142 @@ import java.util.Stack;
 
 public class GLStateTracker {
 
-    private static final Stack<Int2BooleanMap> STATE_STACK = new Stack<>();
-    private static final Stack<Int2IntMap> PIXEL_STORE_STACK = new Stack<>();
-    private static final Stack<BlendFunc> BLEND_FUNC_STACK = new Stack<>();
-    private static final IntStack DEPTH_FUNC_STACK = new IntArrayList();
-    private static final BooleanStack DEPTH_MASK_STACK = new BooleanArrayList();
-    private static final Stack<int[]> VIEWPORT_STACK = new Stack<>();
-    private static final Stack<Framebuffer> FRAMEBUFFER_STACK = new Stack<>();
+    private final Stack<Int2BooleanMap> stateStack = new Stack<>();
+    private final Stack<Int2IntMap> pixelStoreStack = new Stack<>();
+    private final Stack<BlendFunc> blendFuncStack = new Stack<>();
+    private final IntStack depthFuncStack = new IntArrayList();
+    private final BooleanStack depthMaskStack = new BooleanArrayList();
+    private final Stack<int[]> viewportStack = new Stack<>();
+    private final Stack<Framebuffer> framebufferStack = new Stack<>();
 
-    static {
-        ThinGL.registerEndFrameCallback(() -> {
-            if (!STATE_STACK.isEmpty()) {
-                while (!STATE_STACK.isEmpty()) pop();
-                ThinGL.LOGGER.warn("GLStateTracker STATE_STACK was not empty after rendering one frame!");
+    @ApiStatus.Internal
+    public GLStateTracker(final ThinGL thinGL) {
+        thinGL.addEndFrameCallback(() -> {
+            if (!this.stateStack.isEmpty()) {
+                while (!this.stateStack.isEmpty()) this.pop();
+                ThinGL.LOGGER.warn("GLStateTracker state stack was not empty at the end of the frame!");
             }
-            if (!PIXEL_STORE_STACK.isEmpty()) {
-                while (!PIXEL_STORE_STACK.isEmpty()) popPixelStore();
-                ThinGL.LOGGER.warn("GLStateTracker PIXEL_STORE_STACK was not empty after rendering one frame!");
+            if (!this.pixelStoreStack.isEmpty()) {
+                while (!this.pixelStoreStack.isEmpty()) this.popPixelStore();
+                ThinGL.LOGGER.warn("GLStateTracker pixel store stack was not empty at the end of the frame!");
             }
-            if (!BLEND_FUNC_STACK.isEmpty()) {
-                while (!BLEND_FUNC_STACK.isEmpty()) popBlendFunc();
-                ThinGL.LOGGER.warn("GLStateTracker BLEND_FUNC_STACK was not empty after rendering one frame!");
+            if (!this.blendFuncStack.isEmpty()) {
+                while (!this.blendFuncStack.isEmpty()) this.popBlendFunc();
+                ThinGL.LOGGER.warn("GLStateTracker blend func stack was not empty at the end of the frame!");
             }
-            if (!DEPTH_FUNC_STACK.isEmpty()) {
-                while (!DEPTH_FUNC_STACK.isEmpty()) popDepthFunc();
-                ThinGL.LOGGER.warn("GLStateTracker DEPTH_FUNC_STACK was not empty after rendering one frame!");
+            if (!this.depthFuncStack.isEmpty()) {
+                while (!this.depthFuncStack.isEmpty()) this.popDepthFunc();
+                ThinGL.LOGGER.warn("GLStateTracker depth func stack was not empty at the end of the frame!");
             }
-            if (!DEPTH_MASK_STACK.isEmpty()) {
-                while (!DEPTH_MASK_STACK.isEmpty()) popDepthMask();
-                ThinGL.LOGGER.warn("GLStateTracker DEPTH_MASK_STACK was not empty after rendering one frame!");
+            if (!this.depthMaskStack.isEmpty()) {
+                while (!this.depthMaskStack.isEmpty()) this.popDepthMask();
+                ThinGL.LOGGER.warn("GLStateTracker depth mask stack was not empty at the end of the frame!");
             }
-            if (!VIEWPORT_STACK.isEmpty()) {
-                while (!VIEWPORT_STACK.isEmpty()) popViewport();
-                ThinGL.LOGGER.warn("GLStateTracker VIEWPORT_STACK was not empty after rendering one frame!");
+            if (!this.viewportStack.isEmpty()) {
+                while (!this.viewportStack.isEmpty()) this.popViewport();
+                ThinGL.LOGGER.warn("GLStateTracker viewport stack was not empty at the end of the frame!");
             }
-            if (!FRAMEBUFFER_STACK.isEmpty()) {
-                while (!FRAMEBUFFER_STACK.isEmpty()) popFramebuffer();
-                ThinGL.LOGGER.warn("GLStateTracker FRAMEBUFFER_STACK was not empty after rendering one frame!");
+            if (!this.framebufferStack.isEmpty()) {
+                while (!this.framebufferStack.isEmpty()) this.popFramebuffer();
+                ThinGL.LOGGER.warn("GLStateTracker framebuffer stack was not empty at the end of the frame!");
             }
         });
     }
 
-    public static void push() {
-        STATE_STACK.push(new Int2BooleanOpenHashMap());
+    public void push() {
+        this.stateStack.push(new Int2BooleanOpenHashMap());
     }
 
-    public static void enable(final int capability) {
-        set(capability, true);
+    public void enable(final int capability) {
+        this.set(capability, true);
     }
 
-    public static void disable(final int capability) {
-        set(capability, false);
+    public void disable(final int capability) {
+        this.set(capability, false);
     }
 
-    private static void set(final int capability, final boolean state) {
+    private void set(final int capability, final boolean state) {
         final boolean currentState = GL11C.glIsEnabled(capability);
         if (currentState == state) return;
 
-        STATE_STACK.peek().put(capability, currentState);
+        this.stateStack.peek().put(capability, currentState);
         if (state) GL11C.glEnable(capability);
         else GL11C.glDisable(capability);
     }
 
-    public static void pop() {
-        final Int2BooleanMap states = STATE_STACK.pop();
+    public void pop() {
+        final Int2BooleanMap states = this.stateStack.pop();
         for (Int2BooleanMap.Entry entry : states.int2BooleanEntrySet()) {
             if (entry.getBooleanValue()) GL11C.glEnable(entry.getIntKey());
             else GL11C.glDisable(entry.getIntKey());
         }
     }
 
-    public static void pushPixelStore() {
-        PIXEL_STORE_STACK.push(new Int2IntOpenHashMap());
+    public void pushPixelStore() {
+        this.pixelStoreStack.push(new Int2IntOpenHashMap());
     }
 
-    public static void pixelStore(final int parameter, final int value) {
+    public void pixelStore(final int parameter, final int value) {
         final int currentValue = GL11C.glGetInteger(parameter);
         if (currentValue == value) return;
 
-        PIXEL_STORE_STACK.peek().put(parameter, currentValue);
+        this.pixelStoreStack.peek().put(parameter, currentValue);
         GL11C.glPixelStorei(parameter, value);
     }
 
-    public static void popPixelStore() {
-        final Int2IntMap pixelStores = PIXEL_STORE_STACK.pop();
+    public void popPixelStore() {
+        final Int2IntMap pixelStores = this.pixelStoreStack.pop();
         for (Int2IntMap.Entry entry : pixelStores.int2IntEntrySet()) {
             GL11C.glPixelStorei(entry.getIntKey(), entry.getIntValue());
         }
     }
 
-    public static void pushBlendFunc() {
-        BLEND_FUNC_STACK.push(new BlendFunc());
+    public void pushBlendFunc() {
+        this.blendFuncStack.push(new BlendFunc());
     }
 
-    public static void popBlendFunc() {
-        final BlendFunc blendFunc = BLEND_FUNC_STACK.pop();
+    public void popBlendFunc() {
+        final BlendFunc blendFunc = this.blendFuncStack.pop();
         GL14C.glBlendFuncSeparate(blendFunc.GL_BLEND_SRC_RGB, blendFunc.GL_BLEND_DST_RGB, blendFunc.GL_BLEND_SRC_ALPHA, blendFunc.GL_BLEND_DST_ALPHA);
     }
 
-    public static void pushDepthFunc() {
-        DEPTH_FUNC_STACK.push(GL11C.glGetInteger(GL11C.GL_DEPTH_FUNC));
+    public void pushDepthFunc() {
+        this.depthFuncStack.push(GL11C.glGetInteger(GL11C.GL_DEPTH_FUNC));
     }
 
-    public static void popDepthFunc() {
-        GL11C.glDepthFunc(DEPTH_FUNC_STACK.popInt());
+    public void popDepthFunc() {
+        GL11C.glDepthFunc(this.depthFuncStack.popInt());
     }
 
-    public static void pushDepthMask() {
-        DEPTH_MASK_STACK.push(GL11C.glGetBoolean(GL11C.GL_DEPTH_WRITEMASK));
+    public void pushDepthMask() {
+        this.depthMaskStack.push(GL11C.glGetBoolean(GL11C.GL_DEPTH_WRITEMASK));
     }
 
-    public static void popDepthMask() {
-        GL11C.glDepthMask(DEPTH_MASK_STACK.popBoolean());
+    public void popDepthMask() {
+        GL11C.glDepthMask(this.depthMaskStack.popBoolean());
     }
 
-    public static void pushViewport() {
+    public void pushViewport() {
         final int[] viewport = new int[4];
         GL11C.glGetIntegerv(GL11C.GL_VIEWPORT, viewport);
-        VIEWPORT_STACK.push(viewport);
+        this.viewportStack.push(viewport);
     }
 
-    public static void popViewport() {
-        final int[] viewport = VIEWPORT_STACK.pop();
+    public void popViewport() {
+        final int[] viewport = this.viewportStack.pop();
         GL11C.glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
     }
 
-    public static void pushFramebuffer() {
-        FRAMEBUFFER_STACK.push(ThinGL.getImplementation().getCurrentFramebuffer());
+    public void pushFramebuffer() {
+        this.framebufferStack.push(ThinGL.applicationInterface().getCurrentFramebuffer());
     }
 
-    public static void popFramebuffer() {
+    public void popFramebuffer() {
         popFramebuffer(false);
     }
 
-    public static void popFramebuffer(final boolean setViewport) {
-        final Framebuffer framebuffer = FRAMEBUFFER_STACK.pop();
+    public void popFramebuffer(final boolean setViewport) {
+        final Framebuffer framebuffer = this.framebufferStack.pop();
         if (framebuffer.getGlId() < 0) throw new IllegalStateException("Framebuffer is no longer available");
         framebuffer.bind(setViewport);
     }

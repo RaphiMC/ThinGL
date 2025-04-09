@@ -40,26 +40,26 @@ dependencies {
     api "net.lenni0451.commons:logging:1.7.0"
 
     // LWJGL needs to be provided by the application using ThinGL
-    compileOnly "org.lwjgl:lwjgl:3.3.3"
-    compileOnly "org.lwjgl:lwjgl-glfw:3.3.3"
-    compileOnly "org.lwjgl:lwjgl-opengl:3.3.3"
-    compileOnly "org.lwjgl:lwjgl-stb:3.3.3"
+    compileOnly "org.lwjgl:lwjgl:3.3.6"
+    compileOnly "org.lwjgl:lwjgl-opengl:3.3.6"
+    compileOnly "org.lwjgl:lwjgl-stb:3.3.6"
 
     // Optional dependencies
-    compileOnly "org.lwjgl:lwjgl-freetype:3.3.3"
-    compileOnly "org.lwjgl:lwjgl-meshoptimizer:3.3.3"
-    compileOnly "org.lwjgl:lwjgl-par:3.3.3"
+    compileOnly "org.lwjgl:lwjgl-glfw:3.3.6"
+    compileOnly "org.lwjgl:lwjgl-freetype:3.3.6"
+    compileOnly "org.lwjgl:lwjgl-meshoptimizer:3.3.6"
+    compileOnly "org.lwjgl:lwjgl-par:3.3.6"
     compileOnly "io.github.earcut4j:earcut4j:2.2.2"
 
     // Test dependencies
     ["natives-windows", "natives-windows-arm64", "natives-linux", "natives-linux-arm64"].each {
-        testImplementation "org.lwjgl:lwjgl:3.3.3:$it"
-        testImplementation "org.lwjgl:lwjgl-glfw:3.3.3:$it"
-        testImplementation "org.lwjgl:lwjgl-opengl:3.3.3:$it"
-        testImplementation "org.lwjgl:lwjgl-stb:3.3.3:$it"
-        testImplementation "org.lwjgl:lwjgl-freetype:3.3.3:$it"
-        testImplementation "org.lwjgl:lwjgl-meshoptimizer:3.3.3:$it"
-        testImplementation "org.lwjgl:lwjgl-par:3.3.3:$it"
+        testImplementation "org.lwjgl:lwjgl:3.3.6:$it"
+        testImplementation "org.lwjgl:lwjgl-glfw:3.3.6:$it"
+        testImplementation "org.lwjgl:lwjgl-opengl:3.3.6:$it"
+        testImplementation "org.lwjgl:lwjgl-stb:3.3.6:$it"
+        testImplementation "org.lwjgl:lwjgl-freetype:3.3.6:$it"
+        testImplementation "org.lwjgl:lwjgl-meshoptimizer:3.3.6:$it"
+        testImplementation "org.lwjgl:lwjgl-par:3.3.6:$it"
     }
 }
 

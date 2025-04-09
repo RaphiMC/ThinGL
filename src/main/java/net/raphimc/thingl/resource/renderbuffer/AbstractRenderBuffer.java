@@ -18,26 +18,26 @@
 
 package net.raphimc.thingl.resource.renderbuffer;
 
-import net.raphimc.thingl.resource.GLResource;
+import net.raphimc.thingl.resource.GLObject;
 import net.raphimc.thingl.resource.framebuffer.FramebufferAttachment;
 import org.lwjgl.opengl.GL30C;
 import org.lwjgl.opengl.GL45C;
 
-public abstract class AbstractRenderBuffer extends GLResource implements FramebufferAttachment {
+public abstract class AbstractRenderBuffer extends GLObject implements FramebufferAttachment {
 
     private final int internalFormat;
     private final int width;
     private final int height;
 
     public AbstractRenderBuffer(final int internalFormat, final int width, final int height) {
-        super(GL30C.GL_RENDERBUFFER, GL45C.glCreateRenderbuffers());
+        super(GL45C.glCreateRenderbuffers());
         this.internalFormat = internalFormat;
         this.width = width;
         this.height = height;
     }
 
     protected AbstractRenderBuffer(final int glId) {
-        super(GL30C.GL_RENDERBUFFER, glId);
+        super(glId);
         this.internalFormat = GL45C.glGetNamedRenderbufferParameteri(this.getGlId(), GL30C.GL_RENDERBUFFER_INTERNAL_FORMAT);
         this.width = GL45C.glGetNamedRenderbufferParameteri(this.getGlId(), GL30C.GL_RENDERBUFFER_WIDTH);
         this.height = GL45C.glGetNamedRenderbufferParameteri(this.getGlId(), GL30C.GL_RENDERBUFFER_HEIGHT);
@@ -45,7 +45,7 @@ public abstract class AbstractRenderBuffer extends GLResource implements Framebu
 
     public static AbstractRenderBuffer fromGlId(final int glId) {
         if (!GL30C.glIsRenderbuffer(glId)) {
-            throw new IllegalArgumentException("Invalid OpenGL resource");
+            throw new IllegalArgumentException("Not a renderbuffer object");
         }
         final int samples = GL45C.glGetNamedRenderbufferParameteri(glId, GL30C.GL_RENDERBUFFER_SAMPLES);
         if (samples <= 0) {
@@ -56,8 +56,13 @@ public abstract class AbstractRenderBuffer extends GLResource implements Framebu
     }
 
     @Override
-    protected void delete0() {
+    protected void free0() {
         GL30C.glDeleteRenderbuffers(this.getGlId());
+    }
+
+    @Override
+    public final int getGlType() {
+        return GL30C.GL_RENDERBUFFER;
     }
 
     public int getInternalFormat() {

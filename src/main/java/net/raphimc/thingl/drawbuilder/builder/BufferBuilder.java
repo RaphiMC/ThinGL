@@ -24,9 +24,10 @@ import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
-public class BufferBuilder implements AutoCloseable {
+public class BufferBuilder {
 
     private static final int DEFAULT_INITIAL_SIZE = 64 * 1024;
 
@@ -57,7 +58,7 @@ public class BufferBuilder implements AutoCloseable {
     }
 
     public BufferBuilder(final ByteBuffer byteBuffer) {
-        this.baseAddress = MemoryUtil.memAddress0(byteBuffer);
+        this.baseAddress = MemoryUtil.memAddress0((Buffer) byteBuffer);
         this.cursorAddress = this.baseAddress + byteBuffer.position();
         this.size = byteBuffer.capacity();
         this.isExternallyAllocated = true;
@@ -198,8 +199,7 @@ public class BufferBuilder implements AutoCloseable {
         this.cursorAddress = this.baseAddress;
     }
 
-    @Override
-    public void close() {
+    public void free() {
         if (!this.isExternallyAllocated) {
             MemoryUtil.nmemFree(this.baseAddress);
         }

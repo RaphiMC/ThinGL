@@ -21,7 +21,6 @@ package net.raphimc.thingl.program.post;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.framebuffer.impl.TextureFramebuffer;
 import net.raphimc.thingl.resource.shader.Shader;
-import net.raphimc.thingl.util.pool.FramebufferPool;
 import org.lwjgl.opengl.GL11C;
 
 import java.util.function.Consumer;
@@ -34,13 +33,13 @@ public class SinglePassBufferedPostProcessingProgram<S extends SinglePassPostPro
 
     @Override
     protected void renderQuad0(final float x1, final float y1, final float x2, final float y2) {
-        final TextureFramebuffer tempFramebuffer = FramebufferPool.borrowFramebuffer(GL11C.GL_LINEAR);
-        ThinGL.getImplementation().getCurrentFramebuffer().blitTo(tempFramebuffer, true, false, false);
+        final TextureFramebuffer tempFramebuffer = ThinGL.framebufferPool().borrowFramebuffer(GL11C.GL_LINEAR);
+        ThinGL.applicationInterface().getCurrentFramebuffer().blitTo(tempFramebuffer, true, false, false);
 
         this.setUniformSampler("u_Source", tempFramebuffer);
         super.renderQuad0(x1, y1, x2, y2);
 
-        FramebufferPool.returnFramebuffer(tempFramebuffer);
+        ThinGL.framebufferPool().returnFramebuffer(tempFramebuffer);
     }
 
 }

@@ -18,18 +18,17 @@
 package net.raphimc.thingl.program.post.impl;
 
 import net.lenni0451.commons.color.Color;
-import net.raphimc.thingl.program.BuiltinPrograms;
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.program.post.SinglePassPostProcessingProgram;
 import net.raphimc.thingl.resource.shader.Shader;
 import net.raphimc.thingl.wrapper.Blending;
-import net.raphimc.thingl.wrapper.GLStateTracker;
 
 public class ColorTweakProgram extends SinglePassPostProcessingProgram<ColorTweakProgram> {
 
     private Color color = Color.WHITE;
 
-    public ColorTweakProgram() {
-        super(BuiltinPrograms.getShader("post/post_processing", Shader.Type.VERTEX), BuiltinPrograms.getShader("post/color_tweak", Shader.Type.FRAGMENT), s -> {
+    public ColorTweakProgram(final Shader vertexShader, final Shader fragmentShader) {
+        super(vertexShader, fragmentShader, s -> {
             s.setUniform("u_Color", s.color.getRed() / 255F, s.color.getGreen() / 255F, s.color.getBlue() / 255F, s.color.getAlpha() / 255F);
         });
     }
@@ -40,10 +39,10 @@ public class ColorTweakProgram extends SinglePassPostProcessingProgram<ColorTwea
 
     @Override
     protected void renderQuad0(final float x1, final float y1, final float x2, final float y2) {
-        GLStateTracker.pushBlendFunc();
+        ThinGL.glStateTracker().pushBlendFunc();
         Blending.additiveBlending();
         super.renderQuad0(x1, y1, x2, y2);
-        GLStateTracker.popBlendFunc();
+        ThinGL.glStateTracker().popBlendFunc();
     }
 
 }

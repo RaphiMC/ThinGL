@@ -17,26 +17,26 @@
  */
 package net.raphimc.thingl.resource.query;
 
-import net.raphimc.thingl.resource.GLResource;
+import net.raphimc.thingl.resource.GLObject;
 import org.lwjgl.opengl.*;
 
-public class Query extends GLResource {
+public class Query extends GLObject {
 
     private final int target;
 
     public Query(final int target) {
-        super(GL43C.GL_QUERY, GL45C.glCreateQueries(target));
+        super(GL45C.glCreateQueries(target));
         this.target = target;
     }
 
     protected Query(final int glId, final Object unused) {
-        super(GL43C.GL_QUERY, glId);
+        super(glId);
         this.target = GL15C.glGetQueryObjecti(glId, GL45C.GL_QUERY_TARGET);
     }
 
     public static Query fromGlId(final int glId) {
         if (!GL15C.glIsQuery(glId)) {
-            throw new IllegalArgumentException("Invalid OpenGL resource");
+            throw new IllegalArgumentException("Not a query object");
         }
         return new Query(glId, null);
     }
@@ -66,8 +66,13 @@ public class Query extends GLResource {
     }
 
     @Override
-    protected void delete0() {
+    protected void free0() {
         GL15C.glDeleteQueries(this.getGlId());
+    }
+
+    @Override
+    public final int getGlType() {
+        return GL43C.GL_QUERY;
     }
 
     public int getTarget() {

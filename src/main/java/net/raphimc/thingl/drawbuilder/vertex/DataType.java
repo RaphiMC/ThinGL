@@ -23,14 +23,14 @@ import org.lwjgl.opengl.GL30C;
 
 public enum DataType {
 
-    BYTE(GL11C.GL_BYTE, "Byte", 1, true),
-    UNSIGNED_BYTE(GL11C.GL_UNSIGNED_BYTE, "Unsigned Byte", 1, true),
-    SHORT(GL11C.GL_SHORT, "Short", 2, true),
-    UNSIGNED_SHORT(GL11C.GL_UNSIGNED_SHORT, "Unsigned Short", 2, true),
-    INT(GL11C.GL_INT, "Int", 4, true),
-    UNSIGNED_INT(GL11C.GL_UNSIGNED_INT, "Unsigned Int", 4, true),
-    FLOAT(GL11C.GL_FLOAT, "Float", 4, false),
-    HALF_FLOAT(GL30C.GL_HALF_FLOAT, "Half Float", 2, false),
+    BYTE(GL11C.GL_BYTE, "Byte", Byte.BYTES, true),
+    UNSIGNED_BYTE(GL11C.GL_UNSIGNED_BYTE, "Unsigned Byte", Byte.BYTES, true),
+    SHORT(GL11C.GL_SHORT, "Short", Short.BYTES, true),
+    UNSIGNED_SHORT(GL11C.GL_UNSIGNED_SHORT, "Unsigned Short", Short.BYTES, true),
+    INT(GL11C.GL_INT, "Int", Integer.BYTES, true),
+    UNSIGNED_INT(GL11C.GL_UNSIGNED_INT, "Unsigned Int", Integer.BYTES, true),
+    FLOAT(GL11C.GL_FLOAT, "Float", Float.BYTES, false),
+    HALF_FLOAT(GL30C.GL_HALF_FLOAT, "Half Float", Short.BYTES, false),
     ;
 
     public static DataType fromGlType(final int glType) {

@@ -59,7 +59,7 @@ public class TextRenderingExample extends ExampleBase {
 
         positionMatrix.pushMatrix();
         { // Multi color text
-            positionMatrix.translate(ThinGL.getWindowFramebufferWidth() / 2F, 10, 0);
+            positionMatrix.translate(ThinGL.windowInterface().getFramebufferWidth() / 2F, 10, 0);
             float xOffset = this.sdfTextRenderer.renderString(positionMatrix, multiDrawBatchDataHolder, "Multi", 0, 0, 0, Color.RED, 0, Color.TRANSPARENT);
             xOffset += this.sdfTextRenderer.renderString(positionMatrix, multiDrawBatchDataHolder, "color ", xOffset, 0, 0, Color.GREEN, TextRenderer.INTERNAL_NO_BEARING_BIT, Color.TRANSPARENT);
             this.sdfTextRenderer.renderString(positionMatrix, multiDrawBatchDataHolder, "Text", xOffset, 0, 0, Color.BLUE, TextRenderer.INTERNAL_NO_BEARING_BIT, Color.TRANSPARENT);
@@ -101,7 +101,7 @@ public class TextRenderingExample extends ExampleBase {
             positionMatrix.popMatrix();
         }
 
-        positionMatrix.translate(0, ThinGL.getWindowFramebufferHeight() / 2F, 0);
+        positionMatrix.translate(0, ThinGL.windowInterface().getFramebufferHeight() / 2F, 0);
 
         { // SDF text renderer
             positionMatrix.pushMatrix();
@@ -111,7 +111,7 @@ public class TextRenderingExample extends ExampleBase {
         }
 
         multiDrawBatchDataHolder.draw();
-        multiDrawBatchDataHolder.delete();
+        multiDrawBatchDataHolder.free();
     }
 
     private void animatedScale(final Matrix4f positionMatrix) {

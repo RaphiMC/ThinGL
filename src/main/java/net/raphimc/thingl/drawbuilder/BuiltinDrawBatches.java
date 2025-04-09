@@ -18,24 +18,20 @@
 
 package net.raphimc.thingl.drawbuilder;
 
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.vertex.DataType;
 import net.raphimc.thingl.drawbuilder.vertex.VertexDataLayout;
 import net.raphimc.thingl.drawbuilder.vertex.VertexDataLayoutElement;
-import net.raphimc.thingl.program.BuiltinPrograms;
-import net.raphimc.thingl.util.CacheUtil;
-import net.raphimc.thingl.wrapper.GLStateTracker;
 import org.lwjgl.opengl.GL11C;
-
-import java.util.function.IntFunction;
 
 public class BuiltinDrawBatches {
 
     private static final Runnable PUSH_ENABLE_BLEND = () -> {
-        GLStateTracker.push();
-        GLStateTracker.enable(GL11C.GL_BLEND);
+        ThinGL.glStateTracker().push();
+        ThinGL.glStateTracker().enable(GL11C.GL_BLEND);
     };
 
-    private static final Runnable POP = GLStateTracker::pop;
+    private static final Runnable POP = () -> ThinGL.glStateTracker().pop();
 
     private static final VertexDataLayoutElement POSITION_ELEMENT = new VertexDataLayoutElement(DataType.FLOAT, 3);
     private static final VertexDataLayoutElement HALF_POSITION_ELEMENT = new VertexDataLayoutElement(DataType.HALF_FLOAT, 3);
@@ -48,40 +44,25 @@ public class BuiltinDrawBatches {
     public static final VertexDataLayout POSITION_COLOR_TEXTURE_LAYOUT = new VertexDataLayout(POSITION_ELEMENT, COLOR_ELEMENT, TEXTURE_ELEMENT);
     public static final VertexDataLayout HALF_POSITION_COLOR_LAYOUT = new VertexDataLayout(HALF_POSITION_ELEMENT, COLOR_ELEMENT);
 
-    public static final DrawBatch COLORED_QUAD = new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR, () -> BuiltinPrograms.INSTANCED_POSITION_COLOR, () -> BuiltinPrograms.MULTIDRAW_POSITION_COLOR, DrawMode.QUADS, POSITION_COLOR_LAYOUT, HALF_POSITION_COLOR_LAYOUT, PUSH_ENABLE_BLEND, POP);
+    public static final DrawBatch COLORED_QUAD = new DrawBatch(() -> ThinGL.programs().getPositionColor(), () -> ThinGL.programs().getInstancedPositionColor(), () -> ThinGL.programs().getMultidrawPositionColor(), DrawMode.QUADS, POSITION_COLOR_LAYOUT, HALF_POSITION_COLOR_LAYOUT, PUSH_ENABLE_BLEND, POP);
 
-    public static final DrawBatch COLORED_TRIANGLE = new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR, () -> BuiltinPrograms.INSTANCED_POSITION_COLOR, () -> BuiltinPrograms.MULTIDRAW_POSITION_COLOR, DrawMode.TRIANGLES, POSITION_COLOR_LAYOUT, HALF_POSITION_COLOR_LAYOUT, PUSH_ENABLE_BLEND, POP);
+    public static final DrawBatch COLORED_TRIANGLE = new DrawBatch(() -> ThinGL.programs().getPositionColor(), () -> ThinGL.programs().getInstancedPositionColor(), () -> ThinGL.programs().getMultidrawPositionColor(), DrawMode.TRIANGLES, POSITION_COLOR_LAYOUT, HALF_POSITION_COLOR_LAYOUT, PUSH_ENABLE_BLEND, POP);
 
-    public static final DrawBatch INDEXED_COLORED_TRIANGLE = new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR, () -> BuiltinPrograms.INSTANCED_POSITION_COLOR, () -> BuiltinPrograms.MULTIDRAW_POSITION_COLOR, DrawMode.TRIANGLES, POSITION_COLOR_LAYOUT, HALF_POSITION_COLOR_LAYOUT, PUSH_ENABLE_BLEND, POP);
+    public static final DrawBatch INDEXED_COLORED_TRIANGLE = new DrawBatch(() -> ThinGL.programs().getPositionColor(), () -> ThinGL.programs().getInstancedPositionColor(), () -> ThinGL.programs().getMultidrawPositionColor(), DrawMode.TRIANGLES, POSITION_COLOR_LAYOUT, HALF_POSITION_COLOR_LAYOUT, PUSH_ENABLE_BLEND, POP);
 
-    public static final DrawBatch COLORED_GL_LINE = new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR, () -> BuiltinPrograms.INSTANCED_POSITION_COLOR, () -> BuiltinPrograms.MULTIDRAW_POSITION_COLOR, DrawMode.LINES, POSITION_COLOR_LAYOUT, HALF_POSITION_COLOR_LAYOUT, () -> {
+    public static final DrawBatch COLORED_GL_LINE = new DrawBatch(() -> ThinGL.programs().getPositionColor(), () -> ThinGL.programs().getInstancedPositionColor(), () -> ThinGL.programs().getMultidrawPositionColor(), DrawMode.LINES, POSITION_COLOR_LAYOUT, HALF_POSITION_COLOR_LAYOUT, () -> {
         PUSH_ENABLE_BLEND.run();
-        GLStateTracker.enable(GL11C.GL_LINE_SMOOTH);
+        ThinGL.glStateTracker().enable(GL11C.GL_LINE_SMOOTH);
         GL11C.glHint(GL11C.GL_LINE_SMOOTH_HINT, GL11C.GL_NICEST);
     }, POP);
 
-    public static final DrawBatch COLORED_LINE = new DrawBatch(() -> BuiltinPrograms.LINE, () -> BuiltinPrograms.MULTIDRAW_LINE, DrawMode.LINES, LINE_LAYOUT,  () -> {
+    public static final DrawBatch COLORED_LINE = new DrawBatch(() -> ThinGL.programs().getLine(), () -> ThinGL.programs().getMultidrawLine(), DrawMode.LINES, LINE_LAYOUT, () -> {
         PUSH_ENABLE_BLEND.run();
-        GLStateTracker.disable(GL11C.GL_CULL_FACE);
+        ThinGL.glStateTracker().disable(GL11C.GL_CULL_FACE);
     }, POP);
 
-    public static final IntFunction<DrawBatch> TEXTURED_QUAD = CacheUtil.memoizeInt(textureId -> new DrawBatch(() -> BuiltinPrograms.POSITION_TEXTURE, DrawMode.QUADS, POSITION_TEXTURE_LAYOUT,  () -> {
-        PUSH_ENABLE_BLEND.run();
-        BuiltinPrograms.POSITION_TEXTURE.setUniformSampler("u_Texture", textureId);
-    }, POP));
+    public static final DrawBatch COLORED_TRIANGLE_FAN = new DrawBatch(() -> ThinGL.programs().getPositionColor(), () -> ThinGL.programs().getInstancedPositionColor(), DrawMode.TRIANGLE_FAN, POSITION_COLOR_LAYOUT, HALF_POSITION_COLOR_LAYOUT, PUSH_ENABLE_BLEND, POP);
 
-    public static final IntFunction<DrawBatch> COLORED_TEXTURED_QUAD = CacheUtil.memoizeInt(textureId -> new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR_TEXTURE, DrawMode.QUADS, POSITION_COLOR_TEXTURE_LAYOUT,  () -> {
-        PUSH_ENABLE_BLEND.run();
-        BuiltinPrograms.POSITION_COLOR_TEXTURE.setUniformSampler("u_Texture", textureId);
-    }, POP));
-
-    public static final IntFunction<DrawBatch> COLORIZED_TEXTURED_QUAD = CacheUtil.memoizeInt(textureId -> new DrawBatch(() -> BuiltinPrograms.COLORIZED_TEXTURE, DrawMode.QUADS, POSITION_COLOR_TEXTURE_LAYOUT,  () -> {
-        PUSH_ENABLE_BLEND.run();
-        BuiltinPrograms.COLORIZED_TEXTURE.setUniformSampler("u_Texture", textureId);
-    }, POP));
-
-    public static final DrawBatch COLORED_TRIANGLE_FAN = new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR, () -> BuiltinPrograms.INSTANCED_POSITION_COLOR, DrawMode.TRIANGLE_FAN, POSITION_COLOR_LAYOUT, HALF_POSITION_COLOR_LAYOUT,  PUSH_ENABLE_BLEND, POP);
-
-    public static final DrawBatch COLORED_TRIANGLE_STRIP = new DrawBatch(() -> BuiltinPrograms.POSITION_COLOR, DrawMode.TRIANGLE_STRIP, POSITION_COLOR_LAYOUT,  PUSH_ENABLE_BLEND, POP);
+    public static final DrawBatch COLORED_TRIANGLE_STRIP = new DrawBatch(() -> ThinGL.programs().getPositionColor(), DrawMode.TRIANGLE_STRIP, POSITION_COLOR_LAYOUT, PUSH_ENABLE_BLEND, POP);
 
 }

@@ -38,8 +38,6 @@ public class Renderer3D extends Renderer {
     public static final byte FACE_EAST = 0b00100000;
     private static final byte ALL_FACES = 0b00111111;
 
-    public static final Renderer3D INSTANCE = new Renderer3D();
-
     public void filledBox(final Matrix4f positionMatrix, final AABBd aabb, final Color color) {
         this.filledBox(positionMatrix, (float) aabb.minX, (float) aabb.minY, (float) aabb.minZ, (float) aabb.maxX, (float) aabb.maxY, (float) aabb.maxZ, color);
     }

@@ -61,7 +61,7 @@ public class ComputeShaderExample extends ExampleBase {
             counterBufferBuilder.putInt(i + 10);
         }
         final AbstractBuffer counterBuffer = new ImmutableBuffer(counterBufferBuilder.finish(), GL44C.GL_CLIENT_STORAGE_BIT);
-        counterBufferBuilder.close();
+        counterBufferBuilder.free();
 
         computeProgram.bind();
         computeProgram.setShaderStorageBuffer("ssbo_Counter", counterBuffer);

@@ -51,9 +51,9 @@ public class StaticAtlasTexture extends Texture2D {
     }
 
     @Override
-    protected void delete0() {
-        super.delete0();
-        this.rectanglePacker.delete();
+    protected void free0() {
+        super.free0();
+        this.rectanglePacker.free();
     }
 
 }

@@ -18,9 +18,9 @@
 
 import base.ExampleBase;
 import net.lenni0451.commons.color.Color;
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.PersistentMultiDrawBatchDataHolder;
-import net.raphimc.thingl.renderer.impl.Renderer2D;
-import net.raphimc.thingl.util.GlobalObjects;
+import net.raphimc.thingl.util.RenderMathUtil;
 import org.joml.Matrix4fStack;
 
 public class RetainedRenderingExample extends ExampleBase {
@@ -33,15 +33,15 @@ public class RetainedRenderingExample extends ExampleBase {
 
     @Override
     protected void init() {
-        Renderer2D.INSTANCE.beginBuffering(persistentDrawBatch); // Renderer2D now renders everything into drawBatch
+        ThinGL.renderer2D().beginBuffering(persistentDrawBatch); // Renderer2D now renders everything into drawBatch
         for (int i = 0; i < 10; i++) {
             final int x = i * 10;
             final int y = i * 10;
             final int width = 10;
             final int height = 10;
-            Renderer2D.INSTANCE.filledRectangle(GlobalObjects.IDENTITY_MATRIX, x, y, x + width, y + height, Color.fromRGBA(i * 25, 0, 0, 255));
+            ThinGL.renderer2D().filledRectangle(RenderMathUtil.getIdentityMatrix(), x, y, x + width, y + height, Color.fromRGBA(i * 25, 0, 0, 255));
         }
-        Renderer2D.INSTANCE.endBuffering(); // Renderer2D now renders everything immediately again
+        ThinGL.renderer2D().endBuffering(); // Renderer2D now renders everything immediately again
 
         persistentDrawBatch.build(); // Build the buffers
     }

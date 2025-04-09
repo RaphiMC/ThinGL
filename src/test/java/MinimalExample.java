@@ -18,7 +18,7 @@
 
 import base.ExampleBase;
 import net.lenni0451.commons.color.Color;
-import net.raphimc.thingl.renderer.impl.Renderer2D;
+import net.raphimc.thingl.ThinGL;
 import org.joml.Matrix4fStack;
 
 public class MinimalExample extends ExampleBase {
@@ -29,7 +29,7 @@ public class MinimalExample extends ExampleBase {
 
     @Override
     protected void render(final Matrix4fStack positionMatrix) {
-        Renderer2D.INSTANCE.filledRectangle(positionMatrix, 50, 50, 350, 250, Color.GREEN);
+        ThinGL.renderer2D().filledRectangle(positionMatrix, 50, 50, 350, 250, Color.GREEN);
     }
 
 }

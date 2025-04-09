@@ -18,6 +18,7 @@
 
 package net.raphimc.thingl.framebuffer.impl;
 
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.framebuffer.ResizingFramebuffer;
 import net.raphimc.thingl.resource.renderbuffer.MultisampleRenderBuffer;
 import org.joml.Math;
@@ -26,9 +27,6 @@ import org.lwjgl.opengl.GL30C;
 import org.lwjgl.system.MathUtil;
 
 public class MSAARenderBufferFramebuffer extends ResizingFramebuffer {
-
-    private static final int MIN_SAMPLES = 2;
-    private static final int MAX_SAMPLES = GL11C.glGetInteger(GL30C.GL_MAX_SAMPLES);
 
     private final int samples;
 
@@ -50,7 +48,7 @@ public class MSAARenderBufferFramebuffer extends ResizingFramebuffer {
         if (!MathUtil.mathIsPoT(samples)) {
             throw new IllegalArgumentException("The number of samples must be a power of two");
         }
-        return Math.clamp(samples, MIN_SAMPLES, MAX_SAMPLES);
+        return Math.clamp(samples, 2, ThinGL.capabilities().getMaxSamples());
     }
 
 }

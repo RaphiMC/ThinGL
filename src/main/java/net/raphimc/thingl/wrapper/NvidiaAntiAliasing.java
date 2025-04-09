@@ -18,35 +18,31 @@
 
 package net.raphimc.thingl.wrapper;
 
+import net.raphimc.thingl.ThinGL;
 import org.joml.Math;
-import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.NVFramebufferMixedSamples;
 import org.lwjgl.system.MathUtil;
 
 public class NvidiaAntiAliasing {
 
-    private static final boolean SUPPORTED = GL.getCapabilities().GL_NV_framebuffer_mixed_samples;
-    private static final int MIN_SAMPLES = SUPPORTED ? 2 : 0;
-    private static final int MAX_SAMPLES = SUPPORTED ? GL11C.glGetInteger(NVFramebufferMixedSamples.GL_MAX_RASTER_SAMPLES_EXT) : 0;
-
     public static void begin(final int samples) {
-        if (!SUPPORTED) return;
+        if (!ThinGL.capabilities().supportsNVFramebufferMixedSamples()) return;
         if (!MathUtil.mathIsPoT(samples)) {
             throw new IllegalArgumentException("The number of samples must be a power of two");
         }
 
-        GLStateTracker.push();
-        GLStateTracker.disable(GL11C.GL_DEPTH_TEST);
-        GLStateTracker.disable(GL11C.GL_STENCIL_TEST);
-        GLStateTracker.enable(NVFramebufferMixedSamples.GL_RASTER_MULTISAMPLE_EXT);
-        GLStateTracker.enable(NVFramebufferMixedSamples.GL_COVERAGE_MODULATION_TABLE_NV);
+        ThinGL.glStateTracker().push();
+        ThinGL.glStateTracker().disable(GL11C.GL_DEPTH_TEST);
+        ThinGL.glStateTracker().disable(GL11C.GL_STENCIL_TEST);
+        ThinGL.glStateTracker().enable(NVFramebufferMixedSamples.GL_RASTER_MULTISAMPLE_EXT);
+        ThinGL.glStateTracker().enable(NVFramebufferMixedSamples.GL_COVERAGE_MODULATION_TABLE_NV);
         NVFramebufferMixedSamples.glCoverageModulationNV(GL11C.GL_ALPHA);
-        NVFramebufferMixedSamples.glRasterSamplesEXT(Math.clamp(samples, MIN_SAMPLES, MAX_SAMPLES), true);
+        NVFramebufferMixedSamples.glRasterSamplesEXT(Math.clamp(samples, 2, ThinGL.capabilities().getNVFramebufferMixedSamplesMaxRasterSamples()), true);
     }
 
     public static void end() {
-        GLStateTracker.pop();
+        ThinGL.glStateTracker().pop();
     }
 
 }

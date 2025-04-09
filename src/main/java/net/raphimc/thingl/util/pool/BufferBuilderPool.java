@@ -24,28 +24,30 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import it.unimi.dsi.fastutil.objects.ReferenceList;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.builder.BufferBuilder;
+import org.jetbrains.annotations.ApiStatus;
 
 public class BufferBuilderPool {
 
-    private static final ReferenceList<BufferBuilder> FREE = new ReferenceArrayList<>();
-    private static final ReferenceList<BufferBuilder> IN_USE = new ReferenceArrayList<>();
-    private static final Reference2LongMap<BufferBuilder> BUFFER_BUILDER_ACCESS_TIME = new Reference2LongOpenHashMap<>();
+    private final ReferenceList<BufferBuilder> free = new ReferenceArrayList<>();
+    private final ReferenceList<BufferBuilder> inUse = new ReferenceArrayList<>();
+    private final Reference2LongMap<BufferBuilder> bufferBuilderAccessTime = new Reference2LongOpenHashMap<>();
 
-    static {
-        ThinGL.registerEndFrameCallback(() -> {
-            if (!IN_USE.isEmpty()) {
-                ThinGL.LOGGER.warn(IN_USE.size() + " BufferBuilder(s) were not returned to the pool. Forcibly reclaiming them.");
-                for (BufferBuilder bufferBuilder : IN_USE) {
+    @ApiStatus.Internal
+    public BufferBuilderPool(final ThinGL thinGL) {
+        thinGL.addEndFrameCallback(() -> {
+            if (!this.inUse.isEmpty()) {
+                ThinGL.LOGGER.warn(this.inUse.size() + " BufferBuilder(s) were not returned to the pool. Forcibly reclaiming them.");
+                for (BufferBuilder bufferBuilder : this.inUse) {
                     bufferBuilder.reset();
                 }
-                FREE.addAll(IN_USE);
-                IN_USE.clear();
+                this.free.addAll(this.inUse);
+                this.inUse.clear();
             }
-            BUFFER_BUILDER_ACCESS_TIME.reference2LongEntrySet().removeIf(entry -> {
+            this.bufferBuilderAccessTime.reference2LongEntrySet().removeIf(entry -> {
                 if (System.currentTimeMillis() - entry.getLongValue() > 60 * 1000) {
-                    if (FREE.contains(entry.getKey())) {
-                        FREE.remove(entry.getKey());
-                        entry.getKey().close();
+                    if (this.free.contains(entry.getKey())) {
+                        this.free.remove(entry.getKey());
+                        entry.getKey().free();
                     }
                     return true;
                 }
@@ -54,30 +56,40 @@ public class BufferBuilderPool {
         });
     }
 
-    public static BufferBuilder borrowBufferBuilder() {
-        ThinGL.assertOnRenderThread();
+    public BufferBuilder borrowBufferBuilder() {
+        ThinGL.get().assertOnRenderThread();
         final BufferBuilder bufferBuilder;
-        if (FREE.isEmpty()) {
+        if (this.free.isEmpty()) {
             bufferBuilder = new BufferBuilder();
         } else {
-            bufferBuilder = FREE.remove(0);
+            bufferBuilder = this.free.remove(0);
         }
-        IN_USE.add(bufferBuilder);
-        BUFFER_BUILDER_ACCESS_TIME.put(bufferBuilder, System.currentTimeMillis());
+        this.inUse.add(bufferBuilder);
+        this.bufferBuilderAccessTime.put(bufferBuilder, System.currentTimeMillis());
         return bufferBuilder;
     }
 
-    public static void returnBufferBuilder(final BufferBuilder bufferBuilder) {
-        ThinGL.assertOnRenderThread();
-        if (!IN_USE.remove(bufferBuilder)) {
+    public void returnBufferBuilder(final BufferBuilder bufferBuilder) {
+        ThinGL.get().assertOnRenderThread();
+        if (!this.inUse.remove(bufferBuilder)) {
             throw new IllegalStateException("BufferBuilder is not part of the pool");
         }
         bufferBuilder.reset();
-        FREE.add(bufferBuilder);
+        this.free.add(bufferBuilder);
     }
 
-    public static int getSize() {
-        return FREE.size() + IN_USE.size();
+    public int getSize() {
+        return this.free.size() + this.inUse.size();
+    }
+
+    @ApiStatus.Internal
+    public void free() {
+        for (BufferBuilder bufferBuilder : this.free) {
+            bufferBuilder.free();
+        }
+        for (BufferBuilder bufferBuilder : this.inUse) {
+            bufferBuilder.free();
+        }
     }
 
 }

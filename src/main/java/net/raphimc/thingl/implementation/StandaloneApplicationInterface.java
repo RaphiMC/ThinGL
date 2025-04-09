@@ -17,16 +17,21 @@
  */
 package net.raphimc.thingl.implementation;
 
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.framebuffer.impl.WindowFramebuffer;
 import net.raphimc.thingl.resource.framebuffer.Framebuffer;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 
-public class StandaloneThinGLImplementation extends ThinGLImplementation {
+public class StandaloneApplicationInterface extends ApplicationInterface {
 
     protected final Matrix4fStack projectionMatrixStack = new Matrix4fStack(16);
     protected final Matrix4fStack viewMatrixStack = new Matrix4fStack(16);
     private Framebuffer framebuffer = WindowFramebuffer.INSTANCE;
+
+    public StandaloneApplicationInterface(final ThinGL thinGL) {
+        super(thinGL);
+    }
 
     @Override
     public Matrix4f getProjectionMatrix() {
