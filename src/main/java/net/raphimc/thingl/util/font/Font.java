@@ -88,13 +88,18 @@ public class Font {
         return new FontGlyph(this, glyphIndex, width, height, advance, bearingX, bearingY);
     }
 
-    public GlyphBitmap loadGlyphBitmap(final int glyphIndex, final int renderMode) {
+    public GlyphBitmap loadGlyphBitmap(final int glyphIndex, final boolean normal, final boolean sdf) {
         FreeTypeInstance.checkError(FreeType.FT_Load_Glyph(this.fontFace, glyphIndex, FreeType.FT_LOAD_DEFAULT), "Failed to load glyph");
         final FT_GlyphSlot glyphSlot = this.fontFace.glyph();
 
-        FreeTypeInstance.checkError(FreeType.FT_Render_Glyph(glyphSlot, renderMode), "Failed to render glyph");
+        if (normal) {
+            FreeTypeInstance.checkError(FreeType.FT_Render_Glyph(glyphSlot, FreeType.FT_RENDER_MODE_NORMAL), "Failed to render glyph");
+        }
+        if (sdf) {
+            FreeTypeInstance.checkError(FreeType.FT_Render_Glyph(glyphSlot, FreeType.FT_RENDER_MODE_SDF), "Failed to render glyph");
+        }
         final FT_Bitmap bitmap = glyphSlot.bitmap();
-        if (bitmap.pixel_mode() != FreeType.FT_PIXEL_MODE_GRAY) {
+        if (bitmap.pixel_mode() != FreeType.FT_PIXEL_MODE_NONE && bitmap.pixel_mode() != FreeType.FT_PIXEL_MODE_GRAY) {
             throw new IllegalStateException("Unsupported pixel mode: " + bitmap.pixel_mode());
         }
 

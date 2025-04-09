@@ -38,6 +38,7 @@ public class FreeTypeInstance {
                 final ByteBuffer propertyBuffer = memoryStack.malloc(Integer.BYTES);
                 propertyBuffer.putInt(0, 3);
                 checkError(FreeType.FT_Property_Set(INSTANCE, "sdf", "spread", propertyBuffer), "Failed to set SDF spread property");
+                checkError(FreeType.FT_Property_Set(INSTANCE, "bsdf", "spread", propertyBuffer), "Failed to set BSDF spread property");
             }
         }
 

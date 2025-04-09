@@ -23,16 +23,17 @@ import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.ShaderDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.MultiDrawBatchDataHolder;
 import net.raphimc.thingl.util.font.Font;
+import net.raphimc.thingl.util.font.FontGlyph;
+import net.raphimc.thingl.util.font.GlyphBitmap;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.lwjgl.util.freetype.FreeType;
 
 public class SDFTextRenderer extends TextRenderer {
 
     public SDFTextRenderer(final Font... fonts) {
-        super(() -> ThinGL.programs().getSdfText(), FreeType.FT_RENDER_MODE_SDF, fonts);
+        super(() -> ThinGL.programs().getSdfText(), fonts);
     }
 
     @Override
@@ -59,6 +60,11 @@ public class SDFTextRenderer extends TextRenderer {
         }
 
         return this.renderString(positionMatrix, multiDrawBatchDataHolder, text, startIndex, endIndex, x, y, z, textColor.toABGR(), flags, regularStringDataIndex);
+    }
+
+    @Override
+    protected GlyphBitmap createGlyphBitmap(final FontGlyph fontGlyph) {
+        return fontGlyph.font().loadGlyphBitmap(fontGlyph.glyphIndex(), false, true);
     }
 
 }

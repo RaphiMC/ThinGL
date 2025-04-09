@@ -23,13 +23,14 @@ import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.ShaderDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.MultiDrawBatchDataHolder;
 import net.raphimc.thingl.util.font.Font;
+import net.raphimc.thingl.util.font.FontGlyph;
+import net.raphimc.thingl.util.font.GlyphBitmap;
 import org.joml.Matrix4f;
-import org.lwjgl.util.freetype.FreeType;
 
 public class BitmapTextRenderer extends TextRenderer {
 
     public BitmapTextRenderer(final Font... fonts) {
-        super(() -> ThinGL.programs().getBitmapText(), FreeType.FT_RENDER_MODE_NORMAL, fonts);
+        super(() -> ThinGL.programs().getBitmapText(), fonts);
     }
 
     @Override
@@ -76,6 +77,11 @@ public class BitmapTextRenderer extends TextRenderer {
                 }
             }
         }
+    }
+
+    @Override
+    protected GlyphBitmap createGlyphBitmap(final FontGlyph fontGlyph) {
+        return fontGlyph.font().loadGlyphBitmap(fontGlyph.glyphIndex(), true, false);
     }
 
 }

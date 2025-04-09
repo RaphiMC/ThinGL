@@ -83,7 +83,6 @@ public abstract class TextRenderer {
 
     protected final Font[] fonts;
     protected final Font primaryFont;
-    private final int freeTypeRenderMode;
     protected final DrawBatch textDrawBatch;
     private final List<StaticAtlasTexture> glyphAtlases = new ArrayList<>();
     private final Int2ObjectMap<AtlasGlyph> atlasGlyphs = new Int2ObjectOpenHashMap<>();
@@ -91,13 +90,12 @@ public abstract class TextRenderer {
     private float italicShearFactor = (float) Math.tan(Math.toRadians(14));
     protected float globalScale = 1F;
 
-    public TextRenderer(final Supplier<Program> program, final int freeTypeRenderMode, final Font... fonts) {
+    public TextRenderer(final Supplier<Program> program, final Font... fonts) {
         if (fonts.length == 0) {
             throw new IllegalArgumentException("At least one font must be provided");
         }
         this.fonts = fonts;
         this.primaryFont = fonts[0];
-        this.freeTypeRenderMode = freeTypeRenderMode;
 
         this.textDrawBatch = new DrawBatch(program, DrawMode.QUADS, BuiltinDrawBatches.POSITION_TEXTURE_LAYOUT, () -> {
             ThinGL.glStateTracker().push();
@@ -325,7 +323,7 @@ public abstract class TextRenderer {
 
     private AtlasGlyph createAtlasGlyph(final int codePoint) {
         final FontGlyph fontGlyph = this.getFontGlyph(codePoint);
-        final GlyphBitmap glyphBitmap = fontGlyph.font().loadGlyphBitmap(fontGlyph.glyphIndex(), this.freeTypeRenderMode);
+        final GlyphBitmap glyphBitmap = this.createGlyphBitmap(fontGlyph);
 
         if (glyphBitmap.pixels() == null) {
             return new AtlasGlyph(fontGlyph, -1, 0F, 0F, 0F, 0F, glyphBitmap.width(), glyphBitmap.height(), glyphBitmap.xOffset(), glyphBitmap.yOffset());
@@ -367,5 +365,7 @@ public abstract class TextRenderer {
         }
         return this.primaryFont.loadGlyphByCodePoint(codePoint);
     }
+
+    protected abstract GlyphBitmap createGlyphBitmap(final FontGlyph fontGlyph);
 
 }
