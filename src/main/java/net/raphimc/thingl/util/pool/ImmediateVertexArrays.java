@@ -45,7 +45,7 @@ public class ImmediateVertexArrays {
                 this.vertexArrayAccessTime.clear();
             }
             this.vertexArrayAccessTime.reference2LongEntrySet().removeIf(entry -> {
-                if (System.currentTimeMillis() - entry.getLongValue() > 60 * 1000) {
+                if (System.nanoTime() - entry.getLongValue() > 60_000_000_000L) {
                     if (this.vertexArrayCache.containsValue(entry.getKey())) {
                         this.vertexArrayCache.values().remove(entry.getKey());
                         entry.getKey().freeFully();
@@ -60,7 +60,7 @@ public class ImmediateVertexArrays {
     public VertexArray getVertexArray(final VertexDataLayout vertexDataLayout) {
         ThinGL.get().assertOnRenderThread();
         final VertexArray vertexArray = this.vertexArrayCache.computeIfAbsent(vertexDataLayout, this::createVertexArray);
-        this.vertexArrayAccessTime.put(vertexArray, System.currentTimeMillis());
+        this.vertexArrayAccessTime.put(vertexArray, System.nanoTime());
         return vertexArray;
     }
 

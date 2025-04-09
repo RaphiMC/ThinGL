@@ -44,7 +44,7 @@ public class BufferBuilderPool {
                 this.inUse.clear();
             }
             this.bufferBuilderAccessTime.reference2LongEntrySet().removeIf(entry -> {
-                if (System.currentTimeMillis() - entry.getLongValue() > 60 * 1000) {
+                if (System.nanoTime() - entry.getLongValue() > 60_000_000_000L) {
                     if (this.free.contains(entry.getKey())) {
                         this.free.remove(entry.getKey());
                         entry.getKey().free();
@@ -65,7 +65,7 @@ public class BufferBuilderPool {
             bufferBuilder = this.free.remove(0);
         }
         this.inUse.add(bufferBuilder);
-        this.bufferBuilderAccessTime.put(bufferBuilder, System.currentTimeMillis());
+        this.bufferBuilderAccessTime.put(bufferBuilder, System.nanoTime());
         return bufferBuilder;
     }
 

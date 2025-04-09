@@ -47,8 +47,8 @@ public class DebugMessageCallback {
         final MessageType type = MessageType.fromGlType(typeId);
         final MessageSeverity severity = MessageSeverity.fromGlSeverity(severityId);
 
-        final long currentTime = System.currentTimeMillis();
-        if (currentTime - LAST_MESSAGE_TIME.get() > 1000) {
+        final long currentTime = System.nanoTime();
+        if (currentTime - LAST_MESSAGE_TIME.get() > 1_000_000_000L) {
             MESSAGES_PER_SECOND.set(0);
         }
         MESSAGES_PER_SECOND.incrementAndGet();

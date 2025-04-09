@@ -44,7 +44,7 @@ public class FramebufferPool {
                 this.inUse.clear();
             }
             this.framebufferAccessTime.reference2LongEntrySet().removeIf(entry -> {
-                if (System.currentTimeMillis() - entry.getLongValue() > 60 * 1000) {
+                if (System.nanoTime() - entry.getLongValue() > 60_000_000_000L) {
                     if (this.free.contains(entry.getKey())) {
                         this.free.remove(entry.getKey());
                         entry.getKey().freeFully();
@@ -66,7 +66,7 @@ public class FramebufferPool {
             framebuffer.clear();
         }
         this.inUse.add(framebuffer);
-        this.framebufferAccessTime.put(framebuffer, System.currentTimeMillis());
+        this.framebufferAccessTime.put(framebuffer, System.nanoTime());
         final Texture2D colorAttachment = framebuffer.getColorAttachment();
         if (textureFilter != colorAttachment.getMinificationFilter() || colorAttachment.getMagnificationFilter() != colorAttachment.getMinificationFilter()) {
             colorAttachment.setFilter(textureFilter);
