@@ -45,6 +45,7 @@ public class Program extends GLContainerObject {
     private final Object2IntMap<String> shaderStorageBlockIndexCache = new Object2IntOpenHashMap<>();
 
     private int currentTextureUnit;
+    private int currentImageUnit;
     private int currentUniformBlockIndex;
     private int currentShaderStorageBufferIndex;
 
@@ -179,6 +180,23 @@ public class Program extends GLContainerObject {
         this.setUniform(name, textureUnits);
     }
 
+    public void setUniformImage(final String name, final Framebuffer framebuffer, final int access, final int format) {
+        if (framebuffer.getColorAttachment() instanceof AbstractTexture texture) {
+            this.setUniformImage(name, texture, access, format);
+        } else {
+            throw new IllegalArgumentException("Framebuffer color attachment is not a texture");
+        }
+    }
+
+    public void setUniformImage(final String name, final AbstractTexture texture, final int access, final int format) {
+        this.setUniformImage(name, texture.getGlId(), access, format);
+    }
+
+    public void setUniformImage(final String name, final int textureId, final int access, final int format) {
+        GL42C.glBindImageTexture(this.currentImageUnit, textureId, 0, false, 0, access, format);
+        this.setUniform(name, this.currentImageUnit++);
+    }
+
     public void setUniformBuffer(final String name, final AbstractBuffer buffer) {
         GL31C.glUniformBlockBinding(this.getGlId(), this.getUniformBlockIndex(name), this.currentUniformBlockIndex);
         if (buffer != null) {
@@ -199,6 +217,7 @@ public class Program extends GLContainerObject {
 
     public void bind() {
         this.currentTextureUnit = 0;
+        this.currentImageUnit = 0;
         this.currentUniformBlockIndex = 0;
         this.currentShaderStorageBufferIndex = 0;
         GL20C.glUseProgram(this.getGlId());
@@ -206,6 +225,7 @@ public class Program extends GLContainerObject {
 
     public void unbind() {
         this.currentTextureUnit = 0;
+        this.currentImageUnit = 0;
         this.currentUniformBlockIndex = 0;
         this.currentShaderStorageBufferIndex = 0;
         GL20C.glUseProgram(0);
