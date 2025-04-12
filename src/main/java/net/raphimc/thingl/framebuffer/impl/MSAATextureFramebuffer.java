@@ -33,7 +33,7 @@ public class MSAATextureFramebuffer extends ResizingFramebuffer {
         super((width, height) -> {
             return new MultisampleTexture2D(AbstractTexture.InternalFormat.RGBA8, width, height, returnSamples(samples));
         }, (width, height) -> {
-            return new MultisampleTexture2D(AbstractTexture.InternalFormat.DEPTH32_STENCIL8, width, height, returnSamples(samples));
+            return new MultisampleTexture2D(AbstractTexture.InternalFormat.DEPTH32F_STENCIL8, width, height, returnSamples(samples));
         });
         this.samples = returnSamples(samples);
         this.init();

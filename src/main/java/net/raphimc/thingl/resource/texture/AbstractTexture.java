@@ -129,7 +129,11 @@ public abstract class AbstractTexture extends GLObject implements FramebufferAtt
         RGB8(GL11C.GL_RGB8, "RGB8", 3),
         RG8(GL30C.GL_RG8, "RG8", 2),
         R8(GL30C.GL_R8, "R8", 1),
-        DEPTH32_STENCIL8(GL30C.GL_DEPTH32F_STENCIL8, "32-Bit Depth, 8-Bit Stencil", 5),
+        DEPTH32F(GL30C.GL_DEPTH_COMPONENT32F, "32-Bit Depth (Float)", 4),
+        DEPTH32(GL14C.GL_DEPTH_COMPONENT32, "32-Bit Depth", 4),
+        DEPTH24(GL14C.GL_DEPTH_COMPONENT24, "24-Bit Depth", 3),
+        DEPTH16(GL14C.GL_DEPTH_COMPONENT16, "16-Bit Depth", 2),
+        DEPTH32F_STENCIL8(GL30C.GL_DEPTH32F_STENCIL8, "32-Bit Depth (Float), 8-Bit Stencil", 5),
         DEPTH24_STENCIL8(GL30C.GL_DEPTH24_STENCIL8, "24-Bit Depth, 8-Bit Stencil", 4),
         RGBA_UNSIZED(GL11C.GL_RGBA, "RGBA", 4),
         ;

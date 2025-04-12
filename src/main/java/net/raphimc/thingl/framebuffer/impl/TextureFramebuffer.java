@@ -48,7 +48,7 @@ public class TextureFramebuffer extends ResizingFramebuffer {
             texture.setFilter(textureFilter);
             return texture;
         }, addDepthAttachment ? (width, height) -> {
-            final Texture2D texture = new Texture2D(AbstractTexture.InternalFormat.DEPTH32_STENCIL8, width, height);
+            final Texture2D texture = new Texture2D(AbstractTexture.InternalFormat.DEPTH32F_STENCIL8, width, height);
             texture.setFilter(textureFilter);
             GL45C.glTextureParameteri(texture.getGlId(), GL14C.GL_TEXTURE_COMPARE_MODE, GL11C.GL_NONE);
             return texture;

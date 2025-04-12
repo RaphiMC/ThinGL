@@ -39,7 +39,7 @@ public class FramebufferRenderer {
     public FramebufferRenderer(final int width, final int height, final int textureFilter) {
         this.colorAttachment = new Texture2D(Texture2D.InternalFormat.RGBA8, width, height);
         this.colorAttachment.setFilter(textureFilter);
-        final Texture2D depthStencilAttachment = new Texture2D(Texture2D.InternalFormat.DEPTH32_STENCIL8, width, height);
+        final Texture2D depthStencilAttachment = new Texture2D(Texture2D.InternalFormat.DEPTH32F_STENCIL8, width, height);
         depthStencilAttachment.setFilter(textureFilter);
         GL45C.glTextureParameteri(depthStencilAttachment.getGlId(), GL14C.GL_TEXTURE_COMPARE_MODE, GL11C.GL_NONE);
         this.framebuffer = new Framebuffer(this.colorAttachment, depthStencilAttachment);

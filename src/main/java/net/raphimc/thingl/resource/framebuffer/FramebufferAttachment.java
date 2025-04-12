@@ -37,6 +37,8 @@ public interface FramebufferAttachment {
         };
     }
 
+    int getGlType();
+
     int getGlId();
 
     int getWidth();
