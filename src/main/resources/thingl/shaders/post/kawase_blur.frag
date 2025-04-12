@@ -44,12 +44,10 @@ void main() {
 
 vec4 getPixel(vec2 pos) {
     if (shouldBlur(pos)) {
-        vec4 color = texture(u_Source, pos * multiplier);
-        if (color.a != 0.0) {
-            return vec4(color.rgb, 1.0);
-        }
+        return vec4(texture(u_Source, pos).rgb, 1.0);
+    } else {
+        return vec4(0.0);
     }
-    return vec4(0.0);
 }
 
 bool shouldBlur(vec2 pos) {
