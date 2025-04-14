@@ -21,6 +21,7 @@ import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.ImmediateMultiDrawBatchDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.MultiDrawBatchDataHolder;
+import net.raphimc.thingl.renderer.text.BSDFTextRenderer;
 import net.raphimc.thingl.renderer.text.BitmapTextRenderer;
 import net.raphimc.thingl.renderer.text.SDFTextRenderer;
 import net.raphimc.thingl.renderer.text.TextRenderer;
@@ -53,7 +54,7 @@ public class TextRenderingExample extends ExampleBase {
         // FreeTypeInstance.checkError(FreeType.FT_Select_Charmap(font.getFontFace(), FreeType.FT_ENCODING_MS_SYMBOL), "Failed to select charmap");
 
         this.bitmapTextRenderer = new BitmapTextRenderer(font);
-        this.sdfTextRenderer = new SDFTextRenderer(font);
+        this.sdfTextRenderer = new BSDFTextRenderer(font);
     }
 
     @Override
