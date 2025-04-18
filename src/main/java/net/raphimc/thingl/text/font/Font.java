@@ -69,20 +69,21 @@ public class Font {
             }
             this.size = size;
 
-            this.ascent = this.fontFace.size().metrics().ascender() / 64F;
-            this.descent = this.fontFace.size().metrics().descender() / 64F;
-            this.height = this.fontFace.size().metrics().height() / 64F;
-            this.underlinePosition = FreeType.FT_MulFix(this.fontFace.underline_position(), this.fontFace.size().metrics().y_scale()) / 64F;
-            this.underlineThickness = FreeType.FT_MulFix(this.fontFace.underline_thickness(), this.fontFace.size().metrics().y_scale()) / 64F;
+            final long yScale = this.fontFace.size().metrics().y_scale();
+            this.ascent = FreeType.FT_MulFix(this.fontFace.ascender(), yScale) / 64F;
+            this.descent = -FreeType.FT_MulFix(this.fontFace.descender(), yScale) / 64F;
+            this.height = FreeType.FT_MulFix(this.fontFace.height(), yScale) / 64F;
+            this.underlinePosition = -FreeType.FT_MulFix(this.fontFace.underline_position(), yScale) / 64F;
+            this.underlineThickness = FreeType.FT_MulFix(this.fontFace.underline_thickness(), yScale) / 64F;
             this.family = this.fontFace.family_nameString();
             this.style = this.fontFace.style_nameString();
 
             final TT_OS2 os2Table = TT_OS2.createSafe(FreeType.FT_Get_Sfnt_Table(this.fontFace, FreeType.FT_SFNT_OS2));
             if (os2Table != null) {
-                this.strikethroughPosition = FreeType.FT_MulFix(os2Table.yStrikeoutPosition(), this.fontFace.size().metrics().y_scale()) / 64F;
-                this.strikethroughThickness = FreeType.FT_MulFix(os2Table.yStrikeoutSize(), this.fontFace.size().metrics().y_scale()) / 64F;
+                this.strikethroughPosition = -FreeType.FT_MulFix(os2Table.yStrikeoutPosition(), yScale) / 64F;
+                this.strikethroughThickness = FreeType.FT_MulFix(os2Table.yStrikeoutSize(), yScale) / 64F;
             } else {
-                this.strikethroughPosition = this.size * 0.3F;
+                this.strikethroughPosition = this.size * -0.3F;
                 this.strikethroughThickness = this.underlineThickness;
             }
         } catch (Throwable e) {
@@ -203,7 +204,7 @@ public class Font {
         final float height = metrics.height() / 64F;
         final float xAdvance = metrics.horiAdvance() / 64F;
         final float bearingX = metrics.horiBearingX() / 64F;
-        final float bearingY = metrics.horiBearingY() / 64F;
+        final float bearingY = -metrics.horiBearingY() / 64F;
         return new Glyph(this, glyphIndex, width, height, xAdvance, bearingX, bearingY);
     }
 

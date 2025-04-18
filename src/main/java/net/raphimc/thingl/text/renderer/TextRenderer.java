@@ -166,7 +166,7 @@ public abstract class TextRenderer {
                 if ((styleFlags & TextSegment.STYLE_BOLD_BIT) != 0) {
                     halfLineThickness *= 1.5F;
                 }
-                final float lineY = y - font.getUnderlinePosition() * this.globalScale;
+                final float lineY = y + font.getUnderlinePosition() * this.globalScale;
                 Primitives.filledRectangle(positionMatrix, multiDrawBatchDataHolder, x + textSegment.extendedBounds().minX * this.globalScale, lineY - halfLineThickness, x + textSegment.extendedBounds().maxX * this.globalScale, lineY + halfLineThickness, z, textColor);
             }
             if ((styleFlags & TextSegment.STYLE_STRIKETHROUGH_BIT) != 0) {
@@ -174,7 +174,7 @@ public abstract class TextRenderer {
                 if ((styleFlags & TextSegment.STYLE_BOLD_BIT) != 0) {
                     lineThickness *= 1.5F;
                 }
-                final float lineY = y - font.getStrikethroughPosition() * this.globalScale;
+                final float lineY = y + font.getStrikethroughPosition() * this.globalScale;
                 Primitives.filledRectangle(positionMatrix, multiDrawBatchDataHolder, x + textSegment.extendedBounds().minX * this.globalScale, lineY, x + textSegment.extendedBounds().maxX * this.globalScale, lineY + lineThickness, z, textColor);
             }
         }

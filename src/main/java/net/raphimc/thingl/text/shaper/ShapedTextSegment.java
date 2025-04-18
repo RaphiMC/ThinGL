@@ -43,7 +43,7 @@ public record ShapedTextSegment(List<TextShaper.Glyph> glyphs, Color color, int 
         for (TextShaper.Glyph shapedGlyph : this.glyphs) {
             final Font.Glyph fontGlyph = shapedGlyph.fontGlyph();
             final float minX = shapedGlyph.x() + fontGlyph.bearingX();
-            final float minY = shapedGlyph.y() - fontGlyph.bearingY();
+            final float minY = shapedGlyph.y() + fontGlyph.bearingY();
             final float maxX = minX + fontGlyph.width();
             final float maxY = minY + fontGlyph.height();
             if (minX < this.bounds.minX) {
@@ -72,7 +72,7 @@ public record ShapedTextSegment(List<TextShaper.Glyph> glyphs, Color color, int 
             this.bounds.maxY++;
         }
         if ((this.styleFlags & TextSegment.STYLE_ITALIC_BIT) != 0) {
-            this.bounds.maxX += TextRenderer.ITALIC_SHEAR_FACTOR * this.glyphs.get(this.glyphs.size() - 1).fontGlyph().bearingY();
+            this.bounds.maxX += TextRenderer.ITALIC_SHEAR_FACTOR * -this.glyphs.get(this.glyphs.size() - 1).fontGlyph().bearingY();
         }
 
         this.extendedBounds.set(this.bounds);
