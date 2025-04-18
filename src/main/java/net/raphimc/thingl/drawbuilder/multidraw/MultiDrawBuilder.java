@@ -126,7 +126,6 @@ public class MultiDrawBuilder {
         }
         final int vertexAddress = (int) (address / this.drawBatch.vertexDataLayout().getSize());
         if (address % this.drawBatch.vertexDataLayout().getSize() != 0) {
-            System.out.println(alignedSize + " " + vertexBuffer.getSize() + " " + this.drawBatch.vertexDataLayout().getSize());
             throw new IllegalStateException("Vertex data is not aligned");
         }
         final long requiredSize = MathUtil.align(address + vertexBuffer.getSize(), MIN_RESIZE_AMOUNT);

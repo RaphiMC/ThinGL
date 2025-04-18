@@ -31,37 +31,37 @@ public class BufferBuilder {
 
     private static final int DEFAULT_INITIAL_SIZE = 64 * 1024;
 
-    private long baseAddress;
-    private long cursorAddress;
-    private int size;
     private final boolean isExternallyAllocated;
+    private long baseAddress;
+    private int size;
+    private long cursorAddress;
 
     public BufferBuilder() {
         this(DEFAULT_INITIAL_SIZE);
     }
 
     public BufferBuilder(final int initialSize) {
+        this.isExternallyAllocated = false;
         this.baseAddress = MemoryUtil.nmemAlloc(initialSize);
         if (this.baseAddress == 0) {
             throw new OutOfMemoryError("Failed to allocate memory of size: " + initialSize);
         }
-        this.cursorAddress = this.baseAddress;
         this.size = initialSize;
-        this.isExternallyAllocated = false;
+        this.cursorAddress = this.baseAddress;
     }
 
     public BufferBuilder(final MemoryStack memoryStack, final int size) {
-        this.baseAddress = memoryStack.nmalloc(size);
-        this.cursorAddress = this.baseAddress;
-        this.size = size;
         this.isExternallyAllocated = true;
+        this.baseAddress = memoryStack.nmalloc(size);
+        this.size = size;
+        this.cursorAddress = this.baseAddress;
     }
 
     public BufferBuilder(final ByteBuffer byteBuffer) {
-        this.baseAddress = MemoryUtil.memAddress0((Buffer) byteBuffer);
-        this.cursorAddress = this.baseAddress + byteBuffer.position();
-        this.size = byteBuffer.capacity();
         this.isExternallyAllocated = true;
+        this.baseAddress = MemoryUtil.memAddress0((Buffer) byteBuffer);
+        this.size = byteBuffer.capacity();
+        this.cursorAddress = this.baseAddress + byteBuffer.position();
     }
 
     public final BufferBuilder putByte(final byte b) {
@@ -204,14 +204,14 @@ public class BufferBuilder {
             MemoryUtil.nmemFree(this.baseAddress);
         }
         this.baseAddress = 0;
-        this.cursorAddress = 0;
         this.size = 0;
+        this.cursorAddress = 0;
     }
 
     public void ensureHasEnoughSpace(final int size) {
         if (this.baseAddress + this.size < this.cursorAddress + size) {
             if (!this.isExternallyAllocated) {
-                this.resize(MathUtil.align(this.size + Math.max(size, 512 * 1024), 8 * 1024));
+                this.resize(MathUtil.align(this.size + Math.max(size, this.size), 1024));
             } else {
                 throw new IllegalStateException("Buffer is full");
             }
@@ -222,20 +222,20 @@ public class BufferBuilder {
         return this.baseAddress;
     }
 
-    public void setCursorAddress(final long cursorAddress) {
-        if (cursorAddress < this.baseAddress || cursorAddress > this.baseAddress + this.size) {
-            throw new IllegalArgumentException("Cursor address is out of bounds");
-        }
-
-        this.cursorAddress = cursorAddress;
+    public int getSize() {
+        return this.size;
     }
 
     public long getCursorAddress() {
         return this.cursorAddress;
     }
 
-    public int getSize() {
-        return this.size;
+    public void setCursorAddress(final long cursorAddress) {
+        if (cursorAddress < this.baseAddress || cursorAddress > this.baseAddress + this.size) {
+            throw new IllegalArgumentException("Cursor address is out of bounds");
+        }
+
+        this.cursorAddress = cursorAddress;
     }
 
     public int getPosition() {
@@ -253,8 +253,8 @@ public class BufferBuilder {
             throw new OutOfMemoryError("Failed to allocate memory of size: " + newSize);
         }
         this.baseAddress = newAddress;
-        this.cursorAddress = this.baseAddress + position;
         this.size = newSize;
+        this.cursorAddress = this.baseAddress + position;
     }
 
 }

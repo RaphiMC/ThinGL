@@ -217,11 +217,12 @@ public class BufferRenderer {
             vertexArray.setIndexBuffer(null, null);
         }
 
-        final AbstractBuffer existingVertexBuffer = vertexArray.getVertexBuffers().get(0);
-        final AbstractBuffer newVertexBuffer = BufferUtil.uploadResizing(existingVertexBuffer, preparedBuffer.vertexBuffer());
-        if (existingVertexBuffer != newVertexBuffer) {
-            vertexArray.setVertexBuffer(0, newVertexBuffer, 0, vertexDataLayout.getSize());
+        final ByteBuffer vertexData = preparedBuffer.vertexBuffer();
+        final Buffer vertexBuffer = (Buffer) vertexArray.getVertexBuffers().get(0);
+        if (vertexBuffer.getSize() < vertexData.remaining()) {
+            vertexBuffer.setSize(vertexData.remaining());
         }
+        vertexBuffer.upload(0, vertexData);
 
         final ByteBuffer instanceData = preparedBuffer.instanceBuffer();
         if (instanceData != null) {

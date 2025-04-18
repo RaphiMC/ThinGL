@@ -28,7 +28,7 @@ import java.nio.ByteBuffer;
 
 public class BufferUtil {
 
-    public static final long DEFAULT_BUFFER_SIZE = 512 * 1024L;
+    public static final long DEFAULT_BUFFER_SIZE = 256 * 1024L;
 
     public static AbstractBuffer uploadResizing(AbstractBuffer abstractBuffer, final ByteBuffer data) {
         abstractBuffer = ensureSize(abstractBuffer, data.remaining());
@@ -36,7 +36,7 @@ public class BufferUtil {
         return abstractBuffer;
     }
 
-    public static AbstractBuffer resize(AbstractBuffer abstractBuffer, final long size) {
+    public static AbstractBuffer resize(final AbstractBuffer abstractBuffer, final long size) {
         if (abstractBuffer.getSize() >= size) {
             return abstractBuffer;
         }

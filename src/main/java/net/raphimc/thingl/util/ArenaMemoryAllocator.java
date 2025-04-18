@@ -63,7 +63,7 @@ public class ArenaMemoryAllocator {
         return -1;
     }
 
-    public void free(long ptr) {
+    public void free(final long ptr) {
         long segmentSize = this.allocationMap.remove(ptr);
         if (segmentSize == 0) {
             return;
