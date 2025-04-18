@@ -16,41 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.raphimc.thingl.util.font;
+package net.raphimc.thingl.text;
 
+import net.raphimc.thingl.ThinGL;
+import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.util.freetype.FreeType;
 
 import java.nio.ByteBuffer;
 
-public class FreeTypeInstance {
-
-    private static long INSTANCE = 0L;
-
-    public static long get() {
-        if (INSTANCE == 0L) {
-            try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-                final PointerBuffer instanceBuffer = memoryStack.mallocPointer(1);
-                checkError(FreeType.FT_Init_FreeType(instanceBuffer), "Failed to initialize FreeType library");
-                INSTANCE = instanceBuffer.get();
-
-                final ByteBuffer propertyBuffer = memoryStack.malloc(Integer.BYTES);
-                propertyBuffer.putInt(0, 3);
-                checkError(FreeType.FT_Property_Set(INSTANCE, "sdf", "spread", propertyBuffer), "Failed to set SDF spread property");
-                checkError(FreeType.FT_Property_Set(INSTANCE, "bsdf", "spread", propertyBuffer), "Failed to set BSDF spread property");
-            }
-        }
-
-        return INSTANCE;
-    }
-
-    public static void free() {
-        if (INSTANCE != 0L) {
-            checkError(FreeType.FT_Done_FreeType(INSTANCE), "Failed to free FreeType library");
-            INSTANCE = 0L;
-        }
-    }
+public class FreeTypeLibrary {
 
     public static void checkError(final int result, final String message, final int... allowedErrors) {
         if (result != FreeType.FT_Err_Ok) {
@@ -63,6 +39,32 @@ public class FreeTypeInstance {
             final String errorString = FreeType.FT_Error_String(result);
             throw new RuntimeException("FreeType error: " + message + " (" + (errorString != null ? errorString : result) + ")");
         }
+    }
+
+    private final long pointer;
+
+    @ApiStatus.Internal
+    public FreeTypeLibrary(final ThinGL thinGL) {
+        thinGL.getCapabilities().ensureFreeTypePresent();
+        try (MemoryStack memoryStack = MemoryStack.stackPush()) {
+            final PointerBuffer instanceBuffer = memoryStack.mallocPointer(1);
+            checkError(FreeType.FT_Init_FreeType(instanceBuffer), "Failed to initialize FreeType library");
+            this.pointer = instanceBuffer.get();
+
+            final ByteBuffer propertyBuffer = memoryStack.malloc(Integer.BYTES);
+            propertyBuffer.putInt(0, 3);
+            checkError(FreeType.FT_Property_Set(this.pointer, "sdf", "spread", propertyBuffer), "Failed to set SDF spread property");
+            checkError(FreeType.FT_Property_Set(this.pointer, "bsdf", "spread", propertyBuffer), "Failed to set BSDF spread property");
+        }
+    }
+
+    public long getPointer() {
+        return this.pointer;
+    }
+
+    @ApiStatus.Internal
+    public void free() {
+        checkError(FreeType.FT_Done_FreeType(this.pointer), "Failed to free FreeType library");
     }
 
 }

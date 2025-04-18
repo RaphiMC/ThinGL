@@ -1,21 +1,21 @@
 #version 430 core
 
-struct StringData {
+struct TextData {
     uint textColor;
 };
-struct CharData {
-    uint textureAndStringIndex;
+struct GlyphData {
+    uint textureAndTextIndex;
 };
 
 uniform mat4 u_ProjectionMatrix;
 uniform mat4 u_ViewMatrix;
 uniform mat4 u_ModelMatrix;
 
-layout (std430) restrict readonly buffer ssbo_StringData {
-    StringData stringDatas[];
+layout (std430) restrict readonly buffer ssbo_TextData {
+    TextData textDatas[];
 };
-layout (std430) restrict readonly buffer ssbo_CharData {
-    CharData charDatas[];
+layout (std430) restrict readonly buffer ssbo_GlyphData {
+    GlyphData glyphDatas[];
 };
 
 layout (location = 0) in vec3 i_Position;
@@ -27,10 +27,10 @@ flat out vec4 v_TextColor;
 void main() {
     gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * vec4(i_Position, 1.0);
 
-    CharData charData = charDatas[gl_VertexID / 4];
-    StringData stringData = stringDatas[charData.textureAndStringIndex & 0x7FFFFFF];
+    GlyphData glyphData = glyphDatas[gl_VertexID / 4];
+    TextData textData = textDatas[glyphData.textureAndTextIndex & 0x7FFFFFF];
 
     v_TexCoords = i_TexCoords;
-    v_TextureIndex = (charData.textureAndStringIndex >> 27) & 31;
-    v_TextColor = unpackUnorm4x8(stringData.textColor);
+    v_TextureIndex = (glyphData.textureAndTextIndex >> 27) & 31;
+    v_TextColor = unpackUnorm4x8(textData.textColor);
 }

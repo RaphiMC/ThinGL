@@ -16,20 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.raphimc.thingl.renderer.text;
+package net.raphimc.thingl.text.renderer;
 
-import net.raphimc.thingl.util.font.Font;
-import net.raphimc.thingl.util.font.FontGlyph;
-import net.raphimc.thingl.util.font.GlyphBitmap;
+import net.raphimc.thingl.text.font.Font;
 
 public class BSDFTextRenderer extends SDFTextRenderer {
 
-    public BSDFTextRenderer(final Font... fonts) {
-        super(fonts);
-    }
-
     @Override
-    protected GlyphBitmap createGlyphBitmap(final FontGlyph fontGlyph) {
+    protected Font.GlyphBitmap createGlyphBitmap(final Font.Glyph fontGlyph) {
         return fontGlyph.font().loadGlyphBitmap(fontGlyph.glyphIndex(), true, true);
     }
 

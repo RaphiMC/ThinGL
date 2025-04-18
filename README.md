@@ -12,7 +12,8 @@ Lightweight Java wrapper for many common OpenGL functions.
   - Post-processing, such as blur or object outlining
 - Text rendering
   - TrueType font support
-  - Bitmap and SDF text rendering
+  - Bitmap, SDF and BSDF text rendering
+  - Optional HarfBuzz integration for complex text
 - Powerful rendering abstraction
   - Draw call batching
   - Immediate mode rendering

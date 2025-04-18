@@ -19,13 +19,14 @@
 import base.ExampleBase;
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.drawbuilder.drawbatchdataholder.ImmediateMultiDrawBatchDataHolder;
-import net.raphimc.thingl.drawbuilder.drawbatchdataholder.MultiDrawBatchDataHolder;
-import net.raphimc.thingl.renderer.text.BSDFTextRenderer;
-import net.raphimc.thingl.renderer.text.BitmapTextRenderer;
-import net.raphimc.thingl.renderer.text.SDFTextRenderer;
-import net.raphimc.thingl.renderer.text.TextRenderer;
-import net.raphimc.thingl.util.font.Font;
+import net.raphimc.thingl.renderer.impl.RendererText;
+import net.raphimc.thingl.text.TextRun;
+import net.raphimc.thingl.text.TextSegment;
+import net.raphimc.thingl.text.font.Font;
+import net.raphimc.thingl.text.renderer.BSDFTextRenderer;
+import net.raphimc.thingl.text.renderer.BitmapTextRenderer;
+import net.raphimc.thingl.text.shaper.ShapedTextRun;
+import net.raphimc.thingl.text.shaper.impl.HarfBuzzTextShaper;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 
@@ -37,71 +38,77 @@ public class TextRenderingExample extends ExampleBase {
         new TextRenderingExample().run();
     }
 
-    private BitmapTextRenderer bitmapTextRenderer;
-    private SDFTextRenderer sdfTextRenderer;
+    private RendererText bitmapTextRenderer = new RendererText(new BitmapTextRenderer());
+    private RendererText sdfTextRenderer = new RendererText(new BSDFTextRenderer());
+    private Font robotoRegular;
+    private ShapedTextRun multiColoredText;
 
     @Override
     protected void init() {
-        final Font font;
         try {
             final byte[] fontData = TextRenderingExample.class.getResourceAsStream("/fonts/Roboto-Regular.ttf").readAllBytes();
-            font = new Font(fontData, 32);
+            this.robotoRegular = new Font(fontData, 32);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
         // Example to select a custom charmap to use for resolving unicode characters
-        // FreeTypeInstance.checkError(FreeType.FT_Select_Charmap(font.getFontFace(), FreeType.FT_ENCODING_MS_SYMBOL), "Failed to select charmap");
+        // FreeTypeLibrary.checkError(FreeType.FT_Select_Charmap(font.getFontFace(), FreeType.FT_ENCODING_MS_SYMBOL), "Failed to select charmap");
 
-        this.bitmapTextRenderer = new BitmapTextRenderer(font);
-        this.sdfTextRenderer = new BSDFTextRenderer(font);
+        // Text run with multiple differently styled segments
+        this.multiColoredText = new TextRun(robotoRegular, new TextSegment("Multi", Color.RED), new TextSegment("color ", Color.GREEN), new TextSegment("Text", Color.BLUE)).shape();
+        // Same as above, but using the add method instead of the constructor
+        this.multiColoredText = new TextRun(robotoRegular)
+                .add(new TextSegment("Multi", Color.RED))
+                .add(new TextSegment("color ", Color.GREEN))
+                .add(new TextSegment("Text", Color.BLUE)).shape();
+
+        // Optionally you can use HarfBuzz for better text shaping (Complex scripts, ligatures, kerning, ...)
+        TextRun.fromString(robotoRegular, "text here").shape(HarfBuzzTextShaper.INSTANCE);
     }
 
     @Override
     protected void render(final Matrix4fStack positionMatrix) {
-        final MultiDrawBatchDataHolder multiDrawBatchDataHolder = new ImmediateMultiDrawBatchDataHolder();
-
         positionMatrix.pushMatrix();
         { // Multi color text
             positionMatrix.translate(ThinGL.windowInterface().getFramebufferWidth() / 2F, 10, 0);
-            float xOffset = this.sdfTextRenderer.renderString(positionMatrix, multiDrawBatchDataHolder, "Multi", 0, 0, 0, Color.RED, 0, Color.TRANSPARENT);
-            xOffset += this.sdfTextRenderer.renderString(positionMatrix, multiDrawBatchDataHolder, "color ", xOffset, 0, 0, Color.GREEN, TextRenderer.INTERNAL_NO_BEARING_BIT, Color.TRANSPARENT);
-            this.sdfTextRenderer.renderString(positionMatrix, multiDrawBatchDataHolder, "Text", xOffset, 0, 0, Color.BLUE, TextRenderer.INTERNAL_NO_BEARING_BIT, Color.TRANSPARENT);
+            this.sdfTextRenderer.textRun(positionMatrix, this.multiColoredText, 0, 0);
         }
         { // Text outline
             positionMatrix.translate(0, 32, 0);
-            this.sdfTextRenderer.renderString(positionMatrix, multiDrawBatchDataHolder, "Outlined Text", 0, 0, 0, Color.WHITE, 0, Color.RED);
+            this.sdfTextRenderer.textRun(positionMatrix, new TextRun(robotoRegular, new TextSegment("Outlined Text", Color.WHITE, 0, Color.RED)), 0, 0);
         }
         { // Bold text
             positionMatrix.translate(0, 32, 0);
-            this.sdfTextRenderer.renderString(positionMatrix, multiDrawBatchDataHolder, "Bold Text", 0, 0, 0, Color.WHITE, TextRenderer.STYLE_BOLD_BIT, Color.TRANSPARENT);
+            this.sdfTextRenderer.textRun(positionMatrix, TextRun.fromString(robotoRegular, "Bold Text", Color.WHITE, TextSegment.STYLE_BOLD_BIT), 0, 0);
         }
         { // Shadowed text
             positionMatrix.translate(0, 32, 0);
-            this.sdfTextRenderer.renderString(positionMatrix, multiDrawBatchDataHolder, "Shadowed Text", 0, 0, 0, Color.WHITE, TextRenderer.STYLE_SHADOW_BIT, Color.TRANSPARENT);
+            this.sdfTextRenderer.textRun(positionMatrix, TextRun.fromString(robotoRegular, "Shadowed Text", Color.WHITE, TextSegment.STYLE_SHADOW_BIT), 0, 0);
         }
         { // Italic text
             positionMatrix.translate(0, 32, 0);
-            this.sdfTextRenderer.renderString(positionMatrix, multiDrawBatchDataHolder, "Italic Text", 0, 0, 0, Color.WHITE, TextRenderer.STYLE_ITALIC_BIT, Color.TRANSPARENT);
+            this.sdfTextRenderer.textRun(positionMatrix, TextRun.fromString(robotoRegular, "Italic Text", Color.WHITE, TextSegment.STYLE_ITALIC_BIT), 0, 0);
         }
         { // Underline text
             positionMatrix.translate(0, 32, 0);
-            this.sdfTextRenderer.renderString(positionMatrix, multiDrawBatchDataHolder, "Underline Text", 0, 0, 0, Color.WHITE, TextRenderer.STYLE_UNDERLINE_BIT, Color.TRANSPARENT);
+            this.sdfTextRenderer.textRun(positionMatrix, TextRun.fromString(robotoRegular, "Underlined Text", Color.WHITE, TextSegment.STYLE_UNDERLINE_BIT), 0, 0);
         }
         { // Strikethrough text
             positionMatrix.translate(0, 32, 0);
-            this.sdfTextRenderer.renderString(positionMatrix, multiDrawBatchDataHolder, "Strikethrough Text", 0, 0, 0, Color.WHITE, TextRenderer.STYLE_STRIKETHROUGH_BIT, Color.TRANSPARENT);
+            this.sdfTextRenderer.textRun(positionMatrix, TextRun.fromString(robotoRegular, "Strikethrough Text", Color.WHITE, TextSegment.STYLE_STRIKETHROUGH_BIT), 0, 0);
         }
         { // Multiple styles text
             positionMatrix.translate(0, 32, 0);
-            this.sdfTextRenderer.renderString(positionMatrix, multiDrawBatchDataHolder, "Multiple Styles", 0, 0, 0, Color.WHITE, TextRenderer.STYLE_SHADOW_BIT | TextRenderer.STYLE_BOLD_BIT | TextRenderer.STYLE_ITALIC_BIT, Color.BLUE);
+            final TextRun textRun = new TextRun(robotoRegular, new TextSegment("Multiple Styles", Color.WHITE, TextSegment.STYLE_SHADOW_BIT | TextSegment.STYLE_BOLD_BIT | TextSegment.STYLE_ITALIC_BIT, Color.BLUE));
+            this.sdfTextRenderer.textRun(positionMatrix, textRun, 0, 0);
         }
         positionMatrix.popMatrix();
 
         { // Bitmap text renderer
             positionMatrix.pushMatrix();
             this.animatedScale(positionMatrix);
-            this.bitmapTextRenderer.renderString(positionMatrix, multiDrawBatchDataHolder, "Bitmap Rendering!", 0, 0, 0, Color.WHITE);
+            this.bitmapTextRenderer.textRun(positionMatrix, TextRun.fromString(robotoRegular, "Bitmap Rendering!"), 0, 0);
             positionMatrix.popMatrix();
         }
 
@@ -110,12 +117,9 @@ public class TextRenderingExample extends ExampleBase {
         { // SDF text renderer
             positionMatrix.pushMatrix();
             this.animatedScale(positionMatrix);
-            this.sdfTextRenderer.renderString(positionMatrix, multiDrawBatchDataHolder, "SDF Rendering!", 0, 0, 0, Color.WHITE);
+            this.sdfTextRenderer.textRun(positionMatrix, TextRun.fromString(robotoRegular, "SDF Rendering!"), 0, 0);
             positionMatrix.popMatrix();
         }
-
-        multiDrawBatchDataHolder.draw();
-        multiDrawBatchDataHolder.free();
     }
 
     private void animatedScale(final Matrix4f positionMatrix) {

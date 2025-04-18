@@ -64,6 +64,10 @@ public abstract class Renderer {
         }
     }
 
+    public void free() {
+        this.immediateMultiDrawBatchDataHolder.free();
+    }
+
     public boolean isBuffering() {
         return this.targetMultiDrawBatchDataHolder != this.immediateMultiDrawBatchDataHolder;
     }

@@ -15,8 +15,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package net.raphimc.thingl.text.shaper;
 
-package net.raphimc.thingl.util.font;
+import net.raphimc.thingl.text.TextBuffer;
+import net.raphimc.thingl.text.TextRun;
+import net.raphimc.thingl.text.font.Font;
 
-public record FontGlyph(Font font, int glyphIndex, float width, float height, float advance, float bearingX, float bearingY) {
+import java.util.ArrayList;
+import java.util.List;
+
+public abstract class TextShaper {
+
+    public ShapedTextBuffer shape(final TextBuffer textBuffer) {
+        final List<ShapedTextRun> shapedTextRuns = new ArrayList<>(textBuffer.runs().size());
+        for (TextRun textRun : textBuffer.runs()) {
+            shapedTextRuns.add(this.shape(textRun));
+        }
+        return new ShapedTextBuffer(shapedTextRuns);
+    }
+
+    public abstract ShapedTextRun shape(final TextRun textRun);
+
+    public record Glyph(Font.Glyph fontGlyph, float x, float y) {
+    }
+
 }

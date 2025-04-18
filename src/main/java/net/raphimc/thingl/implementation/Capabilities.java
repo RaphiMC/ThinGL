@@ -26,12 +26,16 @@ import org.lwjgl.opengl.NVFramebufferMixedSamples;
 
 public class Capabilities {
 
+    private final boolean isFreeTypePresent;
+    private final boolean isHarfBuzzPresent;
     private final int maxSamples;
     private final boolean supportsNVFramebufferMixedSamples;
     private final int nvFramebufferMixedSamplesMaxRasterSamples;
 
     @ApiStatus.Internal
     public Capabilities(final ThinGL thinGL) {
+        this.isFreeTypePresent = isClassPresent("org.lwjgl.util.freetype.FreeType");
+        this.isHarfBuzzPresent = isClassPresent("org.lwjgl.util.harfbuzz.HarfBuzz");
         this.maxSamples = GL11C.glGetInteger(GL30C.GL_MAX_SAMPLES);
         this.supportsNVFramebufferMixedSamples = GL.getCapabilities().GL_NV_framebuffer_mixed_samples;
         if (this.supportsNVFramebufferMixedSamples) {
@@ -39,6 +43,26 @@ public class Capabilities {
         } else {
             this.nvFramebufferMixedSamplesMaxRasterSamples = 0;
         }
+    }
+
+    public void ensureFreeTypePresent() {
+        if (!this.isFreeTypePresent) {
+            throw new UnsupportedOperationException("FreeType is not present. Please add the LWJGL FreeType module to your project.");
+        }
+    }
+
+    public void ensureHarfBuzzPresent() {
+        if (!this.isHarfBuzzPresent) {
+            throw new UnsupportedOperationException("HarfBuzz is not present. Please add the LWJGL HarfBuzz module to your project.");
+        }
+    }
+
+    public boolean isFreeTypePresent() {
+        return this.isFreeTypePresent;
+    }
+
+    public boolean isHarfBuzzPresent() {
+        return this.isHarfBuzzPresent;
     }
 
     public int getMaxSamples() {
@@ -51,6 +75,15 @@ public class Capabilities {
 
     public int getNVFramebufferMixedSamplesMaxRasterSamples() {
         return this.nvFramebufferMixedSamplesMaxRasterSamples;
+    }
+
+    private static boolean isClassPresent(final String className) {
+        try {
+            Class.forName(className, false, Capabilities.class.getClassLoader());
+            return true;
+        } catch (Throwable e) {
+            return false;
+        }
     }
 
 }
