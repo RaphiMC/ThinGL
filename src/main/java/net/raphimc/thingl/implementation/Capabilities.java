@@ -28,6 +28,9 @@ public class Capabilities {
 
     private final boolean isFreeTypePresent;
     private final boolean isHarfBuzzPresent;
+    private final boolean isMeshOptimizerPresent;
+    private final boolean isParPresent;
+    private final boolean isEarcut4jPresent;
     private final int maxSamples;
     private final boolean supportsNVFramebufferMixedSamples;
     private final int nvFramebufferMixedSamplesMaxRasterSamples;
@@ -36,6 +39,9 @@ public class Capabilities {
     public Capabilities(final ThinGL thinGL) {
         this.isFreeTypePresent = isClassPresent("org.lwjgl.util.freetype.FreeType");
         this.isHarfBuzzPresent = isClassPresent("org.lwjgl.util.harfbuzz.HarfBuzz");
+        this.isMeshOptimizerPresent = isClassPresent("org.lwjgl.util.meshoptimizer.LibMeshOptimizer");
+        this.isParPresent = isClassPresent("org.lwjgl.util.par.LibPar");
+        this.isEarcut4jPresent = isClassPresent("earcut4j.Earcut");
         this.maxSamples = GL11C.glGetInteger(GL30C.GL_MAX_SAMPLES);
         this.supportsNVFramebufferMixedSamples = GL.getCapabilities().GL_NV_framebuffer_mixed_samples;
         if (this.supportsNVFramebufferMixedSamples) {
@@ -57,12 +63,42 @@ public class Capabilities {
         }
     }
 
+    public void ensureMeshOptimizerPresent() {
+        if (!this.isMeshOptimizerPresent) {
+            throw new UnsupportedOperationException("MeshOptimizer is not present. Please add the LWJGL MeshOptimizer module to your project.");
+        }
+    }
+
+    public void ensureParPresent() {
+        if (!this.isParPresent) {
+            throw new UnsupportedOperationException("Par is not present. Please add the LWJGL Par module to your project.");
+        }
+    }
+
+    public void ensureEarcut4jPresent() {
+        if (!this.isEarcut4jPresent) {
+            throw new UnsupportedOperationException("Earcut4j is not present. Please add the Earcut4j library to your project.");
+        }
+    }
+
     public boolean isFreeTypePresent() {
         return this.isFreeTypePresent;
     }
 
     public boolean isHarfBuzzPresent() {
         return this.isHarfBuzzPresent;
+    }
+
+    public boolean isMeshOptimizerPresent() {
+        return this.isMeshOptimizerPresent;
+    }
+
+    public boolean isParPresent() {
+        return this.isParPresent;
+    }
+
+    public boolean isEarcut4jPresent() {
+        return this.isEarcut4jPresent;
     }
 
     public int getMaxSamples() {

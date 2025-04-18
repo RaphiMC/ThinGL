@@ -17,6 +17,7 @@
  */
 package net.raphimc.thingl.text.shaper.impl;
 
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.text.TextRun;
 import net.raphimc.thingl.text.TextSegment;
 import net.raphimc.thingl.text.font.Font;
@@ -36,6 +37,7 @@ public class HarfBuzzTextShaper extends TextShaper {
 
     @Override
     public ShapedTextRun shape(final TextRun textRun) {
+        ThinGL.capabilities().ensureHarfBuzzPresent();
         final long hbBuffer = HarfBuzz.hb_buffer_create();
         if (!HarfBuzz.hb_buffer_allocation_successful(hbBuffer)) {
             throw new IllegalStateException("Failed to allocate buffer");

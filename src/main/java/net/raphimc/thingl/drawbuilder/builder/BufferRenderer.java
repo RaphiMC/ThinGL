@@ -97,6 +97,7 @@ public class BufferRenderer {
         }
 
         if (optimizeMesh && connectedPrimitiveIndices == null && drawBatch.drawMode().getGlMode() == GL11C.GL_TRIANGLES) {
+            ThinGL.capabilities().ensureMeshOptimizerPresent();
             if (indexBuffer != null && indexBuffer.first() != IndexType.UNSIGNED_INT) {
                 throw new IllegalStateException("Optimizing the mesh requires the index buffer to be of type UNSIGNED_INT");
             }

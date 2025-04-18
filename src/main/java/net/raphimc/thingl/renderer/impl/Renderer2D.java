@@ -322,6 +322,7 @@ public class Renderer2D extends Renderer {
     }
 
     public void connectedLine(final Matrix4f positionMatrix, final List<Vector2f> points, final float width, final Color color, final boolean closedLoop) {
+        ThinGL.capabilities().ensureParPresent();
         final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.INDEXED_COLORED_TRIANGLE);
         final IndexDataHolder indexDataHolder = this.targetMultiDrawBatchDataHolder.getIndexDataHolder(BuiltinDrawBatches.INDEXED_COLORED_TRIANGLE);
         final int abgrColor = color.toABGR();
@@ -358,6 +359,7 @@ public class Renderer2D extends Renderer {
     }
 
     public void filledPolygon(final Matrix4f positionMatrix, final List<Vector2f> points, final Color color) {
+        ThinGL.capabilities().ensureEarcut4jPresent();
         final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.INDEXED_COLORED_TRIANGLE);
         final IndexDataHolder indexDataHolder = this.targetMultiDrawBatchDataHolder.getIndexDataHolder(BuiltinDrawBatches.INDEXED_COLORED_TRIANGLE);
         final int abgrColor = color.toABGR();
