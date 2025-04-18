@@ -161,16 +161,20 @@ public abstract class TextRenderer {
         final int styleFlags = textSegment.styleFlags();
         if ((styleFlags & TextSegment.STYLE_UNDERLINE_BIT) != 0 || (styleFlags & TextSegment.STYLE_STRIKETHROUGH_BIT) != 0) {
             final int textColor = textSegment.color().toABGR();
-            float lineThickness = font.getLineThickness() * this.globalScale;
-            if ((styleFlags & TextSegment.STYLE_BOLD_BIT) != 0) {
-                lineThickness *= 1.5F;
-            }
             if ((styleFlags & TextSegment.STYLE_UNDERLINE_BIT) != 0) {
-                final float lineY = y + lineThickness;
-                Primitives.filledRectangle(positionMatrix, multiDrawBatchDataHolder, x + textSegment.extendedBounds().minX * this.globalScale, lineY, x + textSegment.extendedBounds().maxX * this.globalScale, lineY + lineThickness, z, textColor);
+                float halfLineThickness = (font.getUnderlineThickness() * this.globalScale) / 2F;
+                if ((styleFlags & TextSegment.STYLE_BOLD_BIT) != 0) {
+                    halfLineThickness *= 1.5F;
+                }
+                final float lineY = y - font.getUnderlinePosition() * this.globalScale;
+                Primitives.filledRectangle(positionMatrix, multiDrawBatchDataHolder, x + textSegment.extendedBounds().minX * this.globalScale, lineY - halfLineThickness, x + textSegment.extendedBounds().maxX * this.globalScale, lineY + halfLineThickness, z, textColor);
             }
             if ((styleFlags & TextSegment.STYLE_STRIKETHROUGH_BIT) != 0) {
-                final float lineY = y - font.getSize() * 0.3F * this.globalScale - lineThickness;
+                float lineThickness = font.getStrikethroughThickness() * this.globalScale;
+                if ((styleFlags & TextSegment.STYLE_BOLD_BIT) != 0) {
+                    lineThickness *= 1.5F;
+                }
+                final float lineY = y - font.getStrikethroughPosition() * this.globalScale;
                 Primitives.filledRectangle(positionMatrix, multiDrawBatchDataHolder, x + textSegment.extendedBounds().minX * this.globalScale, lineY, x + textSegment.extendedBounds().maxX * this.globalScale, lineY + lineThickness, z, textColor);
             }
         }

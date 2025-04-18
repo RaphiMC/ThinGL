@@ -40,7 +40,10 @@ public class Font {
     private final float ascent;
     private final float descent;
     private final float height;
-    private final float lineThickness;
+    private final float underlinePosition;
+    private final float underlineThickness;
+    private final float strikethroughPosition;
+    private final float strikethroughThickness;
     private final String family;
     private final String style;
     private final Int2ObjectMap<Glyph> indexToGlyph = new Int2ObjectOpenHashMap<>();
@@ -69,9 +72,19 @@ public class Font {
             this.ascent = this.fontFace.size().metrics().ascender() / 64F;
             this.descent = this.fontFace.size().metrics().descender() / 64F;
             this.height = this.fontFace.size().metrics().height() / 64F;
-            this.lineThickness = Math.max(this.size / 16F, 1F);
+            this.underlinePosition = FreeType.FT_MulFix(this.fontFace.underline_position(), this.fontFace.size().metrics().y_scale()) / 64F;
+            this.underlineThickness = FreeType.FT_MulFix(this.fontFace.underline_thickness(), this.fontFace.size().metrics().y_scale()) / 64F;
             this.family = this.fontFace.family_nameString();
             this.style = this.fontFace.style_nameString();
+
+            final TT_OS2 os2Table = TT_OS2.createSafe(FreeType.FT_Get_Sfnt_Table(this.fontFace, FreeType.FT_SFNT_OS2));
+            if (os2Table != null) {
+                this.strikethroughPosition = FreeType.FT_MulFix(os2Table.yStrikeoutPosition(), this.fontFace.size().metrics().y_scale()) / 64F;
+                this.strikethroughThickness = FreeType.FT_MulFix(os2Table.yStrikeoutSize(), this.fontFace.size().metrics().y_scale()) / 64F;
+            } else {
+                this.strikethroughPosition = this.size * 0.3F;
+                this.strikethroughThickness = this.underlineThickness;
+            }
         } catch (Throwable e) {
             this.free();
             throw e;
@@ -148,8 +161,20 @@ public class Font {
         return this.height;
     }
 
-    public float getLineThickness() {
-        return this.lineThickness;
+    public float getUnderlinePosition() {
+        return this.underlinePosition;
+    }
+
+    public float getUnderlineThickness() {
+        return this.underlineThickness;
+    }
+
+    public float getStrikethroughPosition() {
+        return this.strikethroughPosition;
+    }
+
+    public float getStrikethroughThickness() {
+        return this.strikethroughThickness;
     }
 
     public String getFamily() {
