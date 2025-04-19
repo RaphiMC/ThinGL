@@ -30,11 +30,12 @@ import java.nio.ByteBuffer;
 public class BufferBuilder {
 
     private static final int DEFAULT_INITIAL_SIZE = 64 * 1024;
+    private static final int GROW_ALIGNMENT = 1024;
 
     private final boolean isExternallyAllocated;
     private long baseAddress;
-    private int size;
     private long cursorAddress;
+    private long limitAddress;
 
     public BufferBuilder() {
         this(DEFAULT_INITIAL_SIZE);
@@ -46,61 +47,73 @@ public class BufferBuilder {
         if (this.baseAddress == 0) {
             throw new OutOfMemoryError("Failed to allocate memory of size: " + initialSize);
         }
-        this.size = initialSize;
         this.cursorAddress = this.baseAddress;
+        this.limitAddress = this.baseAddress + initialSize;
     }
 
     public BufferBuilder(final MemoryStack memoryStack, final int size) {
         this.isExternallyAllocated = true;
         this.baseAddress = memoryStack.nmalloc(size);
-        this.size = size;
         this.cursorAddress = this.baseAddress;
+        this.limitAddress = this.baseAddress + size;
     }
 
     public BufferBuilder(final ByteBuffer byteBuffer) {
         this.isExternallyAllocated = true;
         this.baseAddress = MemoryUtil.memAddress0((Buffer) byteBuffer);
-        this.size = byteBuffer.capacity();
         this.cursorAddress = this.baseAddress + byteBuffer.position();
+        this.limitAddress = this.baseAddress + byteBuffer.capacity();
     }
 
-    public final BufferBuilder putByte(final byte b) {
-        this.ensureHasEnoughSpace(1);
+    public BufferBuilder putByte(final byte b) {
+        if (this.limitAddress - this.cursorAddress < 1) {
+            this.ensureHasEnoughSpace(1);
+        }
         MemoryUtil.memPutByte(this.cursorAddress, b);
         this.cursorAddress++;
         return this;
     }
 
-    public final BufferBuilder putShort(final short s) {
-        this.ensureHasEnoughSpace(2);
+    public BufferBuilder putShort(final short s) {
+        if (this.limitAddress - this.cursorAddress < 2) {
+            this.ensureHasEnoughSpace(2);
+        }
         MemoryUtil.memPutShort(this.cursorAddress, s);
         this.cursorAddress += 2;
         return this;
     }
 
-    public final BufferBuilder putInt(final int i) {
-        this.ensureHasEnoughSpace(4);
+    public BufferBuilder putInt(final int i) {
+        if (this.limitAddress - this.cursorAddress < 4) {
+            this.ensureHasEnoughSpace(4);
+        }
         MemoryUtil.memPutInt(this.cursorAddress, i);
         this.cursorAddress += 4;
         return this;
     }
 
-    public final BufferBuilder putFloat(final float f) {
-        this.ensureHasEnoughSpace(4);
+    public BufferBuilder putFloat(final float f) {
+        if (this.limitAddress - this.cursorAddress < 4) {
+            this.ensureHasEnoughSpace(4);
+        }
         MemoryUtil.memPutFloat(this.cursorAddress, f);
         this.cursorAddress += 4;
         return this;
     }
 
-    public final BufferBuilder putDouble(final double d) {
-        this.ensureHasEnoughSpace(8);
+    public BufferBuilder putDouble(final double d) {
+        if (this.limitAddress - this.cursorAddress < 8) {
+            this.ensureHasEnoughSpace(8);
+        }
         MemoryUtil.memPutDouble(this.cursorAddress, d);
         this.cursorAddress += 8;
         return this;
     }
 
-    public final BufferBuilder putBytes(final byte... b) {
-        this.ensureHasEnoughSpace(b.length);
+    public BufferBuilder putBytes(final byte... b) {
+        if (this.limitAddress - this.cursorAddress < b.length) {
+            this.ensureHasEnoughSpace(b.length);
+        }
         for (byte v : b) {
             MemoryUtil.memPutByte(this.cursorAddress, v);
             this.cursorAddress++;
@@ -108,8 +121,10 @@ public class BufferBuilder {
         return this;
     }
 
-    public final BufferBuilder putShorts(final short... s) {
-        this.ensureHasEnoughSpace(s.length * 2);
+    public BufferBuilder putShorts(final short... s) {
+        if (this.limitAddress - this.cursorAddress < s.length * 2L) {
+            this.ensureHasEnoughSpace(s.length * 2);
+        }
         for (short v : s) {
             MemoryUtil.memPutShort(this.cursorAddress, v);
             this.cursorAddress += 2;
@@ -117,8 +132,10 @@ public class BufferBuilder {
         return this;
     }
 
-    public final BufferBuilder putInts(final int... i) {
-        this.ensureHasEnoughSpace(i.length * 4);
+    public BufferBuilder putInts(final int... i) {
+        if (this.limitAddress - this.cursorAddress < i.length * 4L) {
+            this.ensureHasEnoughSpace(i.length * 4);
+        }
         for (int v : i) {
             MemoryUtil.memPutInt(this.cursorAddress, v);
             this.cursorAddress += 4;
@@ -126,8 +143,10 @@ public class BufferBuilder {
         return this;
     }
 
-    public final BufferBuilder putFloats(final float... f) {
-        this.ensureHasEnoughSpace(f.length * 4);
+    public BufferBuilder putFloats(final float... f) {
+        if (this.limitAddress - this.cursorAddress < f.length * 4L) {
+            this.ensureHasEnoughSpace(f.length * 4);
+        }
         for (float v : f) {
             MemoryUtil.memPutFloat(this.cursorAddress, v);
             this.cursorAddress += 4;
@@ -135,8 +154,10 @@ public class BufferBuilder {
         return this;
     }
 
-    public final BufferBuilder putDoubles(final double... d) {
-        this.ensureHasEnoughSpace(d.length * 8);
+    public BufferBuilder putDoubles(final double... d) {
+        if (this.limitAddress - this.cursorAddress < d.length * 8L) {
+            this.ensureHasEnoughSpace(d.length * 8);
+        }
         for (double v : d) {
             MemoryUtil.memPutDouble(this.cursorAddress, v);
             this.cursorAddress += 8;
@@ -144,28 +165,32 @@ public class BufferBuilder {
         return this;
     }
 
-    public final BufferBuilder putHalfFloat(final float f) {
+    public BufferBuilder putHalfFloat(final float f) {
         return this.putShort(MathUtil.encodeHalfFloat(f));
     }
 
-    public final BufferBuilder putVec2f(final Vector2f vec2f) {
+    public BufferBuilder putVec2f(final Vector2f vec2f) {
         return this.putVec2f(vec2f.x, vec2f.y);
     }
 
-    public final BufferBuilder putVec2f(final float x, final float y) {
-        this.ensureHasEnoughSpace(8);
+    public BufferBuilder putVec2f(final float x, final float y) {
+        if (this.limitAddress - this.cursorAddress < 8) {
+            this.ensureHasEnoughSpace(8);
+        }
         MemoryUtil.memPutFloat(this.cursorAddress, x);
         MemoryUtil.memPutFloat(this.cursorAddress + 4, y);
         this.cursorAddress += 8;
         return this;
     }
 
-    public final BufferBuilder putVec3f(final Vector3f vec3f) {
+    public BufferBuilder putVec3f(final Vector3f vec3f) {
         return this.putVec3f(vec3f.x, vec3f.y, vec3f.z);
     }
 
-    public final BufferBuilder putVec3f(final float x, final float y, final float z) {
-        this.ensureHasEnoughSpace(12);
+    public BufferBuilder putVec3f(final float x, final float y, final float z) {
+        if (this.limitAddress - this.cursorAddress < 12) {
+            this.ensureHasEnoughSpace(12);
+        }
         MemoryUtil.memPutFloat(this.cursorAddress, x);
         MemoryUtil.memPutFloat(this.cursorAddress + 4, y);
         MemoryUtil.memPutFloat(this.cursorAddress + 8, z);
@@ -173,7 +198,7 @@ public class BufferBuilder {
         return this;
     }
 
-    public final BufferBuilder align(final int alignment) {
+    public BufferBuilder align(final int alignment) {
         final int position = this.getPosition();
         final int alignedPosition = MathUtil.align(position, alignment);
         final int paddingLength = alignedPosition - position;
@@ -182,15 +207,14 @@ public class BufferBuilder {
         return this;
     }
 
-    public final BufferBuilder skip(final int bytes) {
+    public BufferBuilder skip(final int bytes) {
         this.ensureHasEnoughSpace(bytes);
         this.cursorAddress += bytes;
         return this;
     }
 
     public ByteBuffer finish() {
-        final int position = this.getPosition();
-        final ByteBuffer byteBuffer = MemoryUtil.memByteBuffer(this.baseAddress, position);
+        final ByteBuffer byteBuffer = MemoryUtil.memByteBuffer(this.baseAddress, this.getPosition());
         this.reset();
         return byteBuffer;
     }
@@ -204,14 +228,15 @@ public class BufferBuilder {
             MemoryUtil.nmemFree(this.baseAddress);
         }
         this.baseAddress = 0;
-        this.size = 0;
         this.cursorAddress = 0;
+        this.limitAddress = 0;
     }
 
-    public void ensureHasEnoughSpace(final int size) {
-        if (this.baseAddress + this.size < this.cursorAddress + size) {
+    public void ensureHasEnoughSpace(final int amount) {
+        if (this.getRemaining() < amount) {
             if (!this.isExternallyAllocated) {
-                this.resize(MathUtil.align(this.size + Math.max(size, this.size), 1024));
+                final int oldSize = this.getSize();
+                this.resize(MathUtil.align(oldSize + Math.max(amount, oldSize), GROW_ALIGNMENT));
             } else {
                 throw new IllegalStateException("Buffer is full");
             }
@@ -222,24 +247,32 @@ public class BufferBuilder {
         return this.baseAddress;
     }
 
-    public int getSize() {
-        return this.size;
-    }
-
     public long getCursorAddress() {
         return this.cursorAddress;
     }
 
     public void setCursorAddress(final long cursorAddress) {
-        if (cursorAddress < this.baseAddress || cursorAddress > this.baseAddress + this.size) {
+        if (cursorAddress < this.baseAddress || cursorAddress >= this.limitAddress) {
             throw new IllegalArgumentException("Cursor address is out of bounds");
         }
 
         this.cursorAddress = cursorAddress;
     }
 
+    public long getLimitAddress() {
+        return this.limitAddress;
+    }
+
+    public int getSize() {
+        return (int) (this.limitAddress - this.baseAddress);
+    }
+
     public int getPosition() {
         return (int) (this.cursorAddress - this.baseAddress);
+    }
+
+    public int getRemaining() {
+        return (int) (this.limitAddress - this.cursorAddress);
     }
 
     private void resize(final int newSize) {
@@ -248,13 +281,13 @@ public class BufferBuilder {
         }
 
         final int position = this.getPosition();
-        final long newAddress = MemoryUtil.nmemRealloc(this.baseAddress, newSize);
-        if (newAddress == 0) {
+        final long newBaseAddress = MemoryUtil.nmemRealloc(this.baseAddress, newSize);
+        if (newBaseAddress == 0) {
             throw new OutOfMemoryError("Failed to allocate memory of size: " + newSize);
         }
-        this.baseAddress = newAddress;
-        this.size = newSize;
+        this.baseAddress = newBaseAddress;
         this.cursorAddress = this.baseAddress + position;
+        this.limitAddress = this.baseAddress + newSize;
     }
 
 }
