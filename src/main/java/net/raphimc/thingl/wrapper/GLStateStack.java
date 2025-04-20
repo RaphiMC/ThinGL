@@ -29,7 +29,7 @@ import org.lwjgl.opengl.GL14C;
 
 import java.util.Stack;
 
-public class GLStateTracker {
+public class GLStateStack {
 
     private final Stack<Int2BooleanMap> stateStack = new Stack<>();
     private final Stack<Int2IntMap> pixelStoreStack = new Stack<>();
@@ -40,35 +40,35 @@ public class GLStateTracker {
     private final Stack<Framebuffer> framebufferStack = new Stack<>();
 
     @ApiStatus.Internal
-    public GLStateTracker(final ThinGL thinGL) {
+    public GLStateStack(final ThinGL thinGL) {
         thinGL.addEndFrameCallback(() -> {
             if (!this.stateStack.isEmpty()) {
                 while (!this.stateStack.isEmpty()) this.pop();
-                ThinGL.LOGGER.warn("GLStateTracker state stack was not empty at the end of the frame!");
+                ThinGL.LOGGER.warn("GLStateStack state stack was not empty at the end of the frame!");
             }
             if (!this.pixelStoreStack.isEmpty()) {
                 while (!this.pixelStoreStack.isEmpty()) this.popPixelStore();
-                ThinGL.LOGGER.warn("GLStateTracker pixel store stack was not empty at the end of the frame!");
+                ThinGL.LOGGER.warn("GLStateStack pixel store stack was not empty at the end of the frame!");
             }
             if (!this.blendFuncStack.isEmpty()) {
                 while (!this.blendFuncStack.isEmpty()) this.popBlendFunc();
-                ThinGL.LOGGER.warn("GLStateTracker blend func stack was not empty at the end of the frame!");
+                ThinGL.LOGGER.warn("GLStateStack blend func stack was not empty at the end of the frame!");
             }
             if (!this.depthFuncStack.isEmpty()) {
                 while (!this.depthFuncStack.isEmpty()) this.popDepthFunc();
-                ThinGL.LOGGER.warn("GLStateTracker depth func stack was not empty at the end of the frame!");
+                ThinGL.LOGGER.warn("GLStateStack depth func stack was not empty at the end of the frame!");
             }
             if (!this.depthMaskStack.isEmpty()) {
                 while (!this.depthMaskStack.isEmpty()) this.popDepthMask();
-                ThinGL.LOGGER.warn("GLStateTracker depth mask stack was not empty at the end of the frame!");
+                ThinGL.LOGGER.warn("GLStateStack depth mask stack was not empty at the end of the frame!");
             }
             if (!this.viewportStack.isEmpty()) {
                 while (!this.viewportStack.isEmpty()) this.popViewport();
-                ThinGL.LOGGER.warn("GLStateTracker viewport stack was not empty at the end of the frame!");
+                ThinGL.LOGGER.warn("GLStateStack viewport stack was not empty at the end of the frame!");
             }
             if (!this.framebufferStack.isEmpty()) {
                 while (!this.framebufferStack.isEmpty()) this.popFramebuffer();
-                ThinGL.LOGGER.warn("GLStateTracker framebuffer stack was not empty at the end of the frame!");
+                ThinGL.LOGGER.warn("GLStateStack framebuffer stack was not empty at the end of the frame!");
             }
         });
     }

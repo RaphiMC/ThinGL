@@ -32,18 +32,18 @@ public class NvidiaAntiAliasing {
             throw new IllegalArgumentException("The number of samples must be a power of two");
         }
 
-        ThinGL.glStateTracker().push();
-        ThinGL.glStateTracker().disable(GL11C.GL_DEPTH_TEST);
-        ThinGL.glStateTracker().disable(GL11C.GL_STENCIL_TEST);
-        ThinGL.glStateTracker().enable(NVFramebufferMixedSamples.GL_RASTER_MULTISAMPLE_EXT);
-        ThinGL.glStateTracker().enable(NVFramebufferMixedSamples.GL_COVERAGE_MODULATION_TABLE_NV);
+        ThinGL.glStateStack().push();
+        ThinGL.glStateStack().disable(GL11C.GL_DEPTH_TEST);
+        ThinGL.glStateStack().disable(GL11C.GL_STENCIL_TEST);
+        ThinGL.glStateStack().enable(NVFramebufferMixedSamples.GL_RASTER_MULTISAMPLE_EXT);
+        ThinGL.glStateStack().enable(NVFramebufferMixedSamples.GL_COVERAGE_MODULATION_TABLE_NV);
         NVFramebufferMixedSamples.glCoverageModulationNV(GL11C.GL_ALPHA);
         NVFramebufferMixedSamples.glRasterSamplesEXT(Math.clamp(samples, 2, ThinGL.capabilities().getNVFramebufferMixedSamplesMaxRasterSamples()), true);
     }
 
     public static void end() {
         if (!ThinGL.capabilities().supportsNVFramebufferMixedSamples()) return;
-        ThinGL.glStateTracker().pop();
+        ThinGL.glStateStack().pop();
     }
 
 }

@@ -47,8 +47,8 @@ public class ScissorStack {
 
     public void pushOverwrite(final Matrix4f positionMatrix, final float x1, final float y1, final float x2, final float y2) {
         if (this.stack.isEmpty()) {
-            ThinGL.glStateTracker().push();
-            ThinGL.glStateTracker().enable(GL11C.GL_SCISSOR_TEST);
+            ThinGL.glStateStack().push();
+            ThinGL.glStateStack().enable(GL11C.GL_SCISSOR_TEST);
         }
 
         final Rectanglei rectangle = this.stack.push(RenderMathUtil.getScreenRect(positionMatrix, x1, y1, x2, y2));
@@ -72,7 +72,7 @@ public class ScissorStack {
     public void pop() {
         this.stack.pop();
         if (this.stack.isEmpty()) {
-            ThinGL.glStateTracker().pop();
+            ThinGL.glStateStack().pop();
         } else {
             final Rectanglei rectangle = this.stack.peek();
             GL11C.glScissor(rectangle.minX, rectangle.minY, rectangle.lengthX(), rectangle.lengthY());

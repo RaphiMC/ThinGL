@@ -36,7 +36,7 @@ import net.raphimc.thingl.util.pool.BufferBuilderPool;
 import net.raphimc.thingl.util.pool.BufferPool;
 import net.raphimc.thingl.util.pool.FramebufferPool;
 import net.raphimc.thingl.util.pool.ImmediateVertexArrays;
-import net.raphimc.thingl.wrapper.GLStateTracker;
+import net.raphimc.thingl.wrapper.GLStateStack;
 import net.raphimc.thingl.wrapper.ScissorStack;
 import net.raphimc.thingl.wrapper.StencilStack;
 import org.lwjgl.opengl.GL11C;
@@ -92,8 +92,8 @@ public class ThinGL {
         return get().getWorkarounds();
     }
 
-    public static GLStateTracker glStateTracker() {
-        return get().getGLStateTracker();
+    public static GLStateStack glStateStack() {
+        return get().getGLStateStack();
     }
 
     public static ScissorStack scissorStack() {
@@ -154,7 +154,7 @@ public class ThinGL {
     private final Capabilities capabilities;
     private final Workarounds workarounds;
 
-    private final GLStateTracker glStateTracker;
+    private final GLStateStack glStateStack;
     private final ScissorStack scissorStack;
     private final StencilStack stencilStack;
     private final Programs programs;
@@ -180,7 +180,7 @@ public class ThinGL {
         this.applicationInterface = applicationInterface.apply(this);
         this.capabilities = new Capabilities(this);
         this.workarounds = new Workarounds(this);
-        this.glStateTracker = new GLStateTracker(this);
+        this.glStateStack = new GLStateStack(this);
         this.scissorStack = new ScissorStack(this);
         this.stencilStack = new StencilStack(this);
         this.programs = new Programs(this);
@@ -307,8 +307,8 @@ public class ThinGL {
         return this.workarounds;
     }
 
-    public GLStateTracker getGLStateTracker() {
-        return this.glStateTracker;
+    public GLStateStack getGLStateStack() {
+        return this.glStateStack;
     }
 
     public ScissorStack getScissorStack() {

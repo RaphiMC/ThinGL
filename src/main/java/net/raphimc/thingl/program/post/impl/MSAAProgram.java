@@ -37,13 +37,13 @@ public class MSAAProgram extends PostProcessingProgram {
     }
 
     public void bindMask() {
-        ThinGL.glStateTracker().push();
-        ThinGL.glStateTracker().disable(GL11C.GL_DEPTH_TEST);
-        ThinGL.glStateTracker().disable(GL11C.GL_STENCIL_TEST);
-        ThinGL.glStateTracker().enable(GL13C.GL_MULTISAMPLE);
-        ThinGL.glStateTracker().pushBlendFunc();
+        ThinGL.glStateStack().push();
+        ThinGL.glStateStack().disable(GL11C.GL_DEPTH_TEST);
+        ThinGL.glStateStack().disable(GL11C.GL_STENCIL_TEST);
+        ThinGL.glStateStack().enable(GL13C.GL_MULTISAMPLE);
+        ThinGL.glStateStack().pushBlendFunc();
         Blending.premultipliedAlphaBlending();
-        ThinGL.glStateTracker().pushFramebuffer();
+        ThinGL.glStateStack().pushFramebuffer();
         if (this.maskFramebuffer == null) {
             this.maskFramebuffer = new MSAATextureFramebuffer(this.samples);
         }
@@ -51,9 +51,9 @@ public class MSAAProgram extends PostProcessingProgram {
     }
 
     public void unbindMask() {
-        ThinGL.glStateTracker().popFramebuffer();
-        ThinGL.glStateTracker().popBlendFunc();
-        ThinGL.glStateTracker().pop();
+        ThinGL.glStateStack().popFramebuffer();
+        ThinGL.glStateStack().popBlendFunc();
+        ThinGL.glStateStack().pop();
     }
 
     public void clearMask() {
@@ -70,10 +70,10 @@ public class MSAAProgram extends PostProcessingProgram {
 
     @Override
     protected void renderQuad0(final float x1, final float y1, final float x2, final float y2) {
-        ThinGL.glStateTracker().pushBlendFunc();
+        ThinGL.glStateStack().pushBlendFunc();
         Blending.additiveBlending();
         super.renderQuad0(x1, y1, x2, y2);
-        ThinGL.glStateTracker().popBlendFunc();
+        ThinGL.glStateStack().popBlendFunc();
     }
 
     @Override

@@ -46,7 +46,7 @@ public class FramebufferRenderer {
     }
 
     public void begin() {
-        ThinGL.glStateTracker().pushFramebuffer();
+        ThinGL.glStateStack().pushFramebuffer();
         this.framebuffer.clear();
         this.framebuffer.bind(true);
         ThinGL.applicationInterface().pushProjectionMatrix(new Matrix4f().setOrtho(0F, this.framebuffer.getWidth(), this.framebuffer.getHeight(), 0F, -5000F, 5000F));
@@ -56,7 +56,7 @@ public class FramebufferRenderer {
     public void end() {
         ThinGL.applicationInterface().popViewMatrix();
         ThinGL.applicationInterface().popProjectionMatrix();
-        ThinGL.glStateTracker().popFramebuffer(true);
+        ThinGL.glStateStack().popFramebuffer(true);
     }
 
     public Framebuffer getFramebuffer() {

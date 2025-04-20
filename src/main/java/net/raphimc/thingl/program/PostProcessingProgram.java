@@ -49,14 +49,14 @@ public class PostProcessingProgram extends Program {
 
     public final void renderQuad(final float x1, final float y1, final float x2, final float y2) {
         this.bind();
-        ThinGL.glStateTracker().push();
-        ThinGL.glStateTracker().enable(GL11C.GL_BLEND);
-        ThinGL.glStateTracker().disable(GL11C.GL_DEPTH_TEST);
-        ThinGL.glStateTracker().pushDepthMask();
+        ThinGL.glStateStack().push();
+        ThinGL.glStateStack().enable(GL11C.GL_BLEND);
+        ThinGL.glStateStack().disable(GL11C.GL_DEPTH_TEST);
+        ThinGL.glStateStack().pushDepthMask();
         GL11C.glDepthMask(false);
         this.renderQuad0(x1, y1, x2, y2);
-        ThinGL.glStateTracker().popDepthMask();
-        ThinGL.glStateTracker().pop();
+        ThinGL.glStateStack().popDepthMask();
+        ThinGL.glStateStack().pop();
         this.unbind();
     }
 

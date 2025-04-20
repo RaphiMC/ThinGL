@@ -41,8 +41,8 @@ public class StencilStack {
     public void push(final Mode mode) {
         if (this.stack.isEmpty()) {
             this.clear();
-            ThinGL.glStateTracker().push();
-            ThinGL.glStateTracker().enable(GL11C.GL_STENCIL_TEST);
+            ThinGL.glStateStack().push();
+            ThinGL.glStateStack().enable(GL11C.GL_STENCIL_TEST);
         }
         GL11C.glColorMask(false, false, false, false);
         this.stack.push(mode).begin(this.stack.size());
@@ -56,7 +56,7 @@ public class StencilStack {
     public void pop() {
         this.stack.pop();
         if (this.stack.isEmpty()) {
-            ThinGL.glStateTracker().pop();
+            ThinGL.glStateStack().pop();
             this.clear();
         } else {
             this.set();

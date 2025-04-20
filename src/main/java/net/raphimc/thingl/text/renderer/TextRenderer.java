@@ -62,14 +62,14 @@ public abstract class TextRenderer {
 
     public TextRenderer(final Supplier<Program> program) {
         this.textDrawBatch = new DrawBatch(program, DrawMode.QUADS, BuiltinDrawBatches.POSITION_TEXTURE_LAYOUT, () -> {
-            ThinGL.glStateTracker().push();
-            ThinGL.glStateTracker().enable(GL11C.GL_BLEND);
+            ThinGL.glStateStack().push();
+            ThinGL.glStateStack().enable(GL11C.GL_BLEND);
             final int[] textureIds = new int[this.glyphAtlases.size()];
             for (int i = 0; i < this.glyphAtlases.size(); i++) {
                 textureIds[i] = this.glyphAtlases.get(i).getGlId();
             }
             program.get().setUniformSamplerArray("u_Textures", textureIds);
-        }, () -> ThinGL.glStateTracker().pop());
+        }, () -> ThinGL.glStateStack().pop());
     }
 
     public void renderTextBuffer(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextBuffer textBuffer, float x, float y, final float z, final int flags) {

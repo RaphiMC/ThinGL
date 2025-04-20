@@ -36,12 +36,12 @@ public abstract class MaskablePostProcessingProgram extends PostProcessingProgra
     }
 
     public void bindMask() {
-        ThinGL.glStateTracker().push();
-        ThinGL.glStateTracker().disable(GL11C.GL_DEPTH_TEST);
-        ThinGL.glStateTracker().disable(GL11C.GL_STENCIL_TEST);
-        ThinGL.glStateTracker().pushBlendFunc();
+        ThinGL.glStateStack().push();
+        ThinGL.glStateStack().disable(GL11C.GL_DEPTH_TEST);
+        ThinGL.glStateStack().disable(GL11C.GL_STENCIL_TEST);
+        ThinGL.glStateStack().pushBlendFunc();
         Blending.premultipliedAlphaBlending();
-        ThinGL.glStateTracker().pushFramebuffer();
+        ThinGL.glStateStack().pushFramebuffer();
         if (this.maskFramebuffer == null) {
             this.maskFramebuffer = ThinGL.framebufferPool().borrowFramebuffer(GL11C.GL_LINEAR);
         }
@@ -49,9 +49,9 @@ public abstract class MaskablePostProcessingProgram extends PostProcessingProgra
     }
 
     public void unbindMask() {
-        ThinGL.glStateTracker().popFramebuffer();
-        ThinGL.glStateTracker().popBlendFunc();
-        ThinGL.glStateTracker().pop();
+        ThinGL.glStateStack().popFramebuffer();
+        ThinGL.glStateStack().popBlendFunc();
+        ThinGL.glStateStack().pop();
     }
 
     public void renderMask() {
@@ -59,10 +59,10 @@ public abstract class MaskablePostProcessingProgram extends PostProcessingProgra
     }
 
     public void renderMask(final Matrix4f positionMatrix) {
-        ThinGL.glStateTracker().pushBlendFunc();
+        ThinGL.glStateStack().pushBlendFunc();
         Blending.additiveBlending();
         this.maskFramebuffer.render(positionMatrix, 0, 0, this.maskFramebuffer.getWidth(), this.maskFramebuffer.getHeight());
-        ThinGL.glStateTracker().popBlendFunc();
+        ThinGL.glStateStack().popBlendFunc();
     }
 
     public void clearMask() {

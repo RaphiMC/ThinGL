@@ -153,13 +153,13 @@ public class Texture2D extends AbstractTexture {
             throw new IllegalArgumentException("Pixel buffer size does not match the specified dimensions");
         }
 
-        ThinGL.glStateTracker().pushPixelStore();
-        ThinGL.glStateTracker().pixelStore(GL11C.GL_UNPACK_ALIGNMENT, pixelFormat.getAlignment());
-        ThinGL.glStateTracker().pixelStore(GL11C.GL_UNPACK_SKIP_PIXELS, 0);
-        ThinGL.glStateTracker().pixelStore(GL11C.GL_UNPACK_SKIP_ROWS, 0);
-        ThinGL.glStateTracker().pixelStore(GL11C.GL_UNPACK_ROW_LENGTH, 0);
+        ThinGL.glStateStack().pushPixelStore();
+        ThinGL.glStateStack().pixelStore(GL11C.GL_UNPACK_ALIGNMENT, pixelFormat.getAlignment());
+        ThinGL.glStateStack().pixelStore(GL11C.GL_UNPACK_SKIP_PIXELS, 0);
+        ThinGL.glStateStack().pixelStore(GL11C.GL_UNPACK_SKIP_ROWS, 0);
+        ThinGL.glStateStack().pixelStore(GL11C.GL_UNPACK_ROW_LENGTH, 0);
         GL45C.glTextureSubImage2D(this.getGlId(), 0, x, y, width, height, pixelFormat.getGlFormat(), GL11C.GL_UNSIGNED_BYTE, pixelBuffer);
-        ThinGL.glStateTracker().popPixelStore();
+        ThinGL.glStateStack().popPixelStore();
     }
 
     public byte[] downloadPixelData(final int x, final int y, final int width, final int height, final PixelFormat pixelFormat) {
@@ -179,13 +179,13 @@ public class Texture2D extends AbstractTexture {
         }
 
         final ByteBuffer pixelBuffer = MemoryUtil.memAlloc(width * height * pixelFormat.getChannelCount());
-        ThinGL.glStateTracker().pushPixelStore();
-        ThinGL.glStateTracker().pixelStore(GL11C.GL_PACK_ALIGNMENT, pixelFormat.getAlignment());
-        ThinGL.glStateTracker().pixelStore(GL11C.GL_PACK_SKIP_PIXELS, 0);
-        ThinGL.glStateTracker().pixelStore(GL11C.GL_PACK_SKIP_ROWS, 0);
-        ThinGL.glStateTracker().pixelStore(GL11C.GL_PACK_ROW_LENGTH, 0);
+        ThinGL.glStateStack().pushPixelStore();
+        ThinGL.glStateStack().pixelStore(GL11C.GL_PACK_ALIGNMENT, pixelFormat.getAlignment());
+        ThinGL.glStateStack().pixelStore(GL11C.GL_PACK_SKIP_PIXELS, 0);
+        ThinGL.glStateStack().pixelStore(GL11C.GL_PACK_SKIP_ROWS, 0);
+        ThinGL.glStateStack().pixelStore(GL11C.GL_PACK_ROW_LENGTH, 0);
         GL45C.glGetTextureSubImage(this.getGlId(), 0, x, y, 0, width, height, 1, pixelFormat.getGlFormat(), GL11C.GL_UNSIGNED_BYTE, pixelBuffer);
-        ThinGL.glStateTracker().popPixelStore();
+        ThinGL.glStateStack().popPixelStore();
         return pixelBuffer;
     }
 

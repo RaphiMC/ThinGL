@@ -47,10 +47,10 @@ public class MultiPassPostProcessingProgram<S extends MaskablePostProcessingProg
             framebuffers[i] = ThinGL.framebufferPool().borrowFramebuffer(GL11C.GL_LINEAR);
         }
 
-        ThinGL.glStateTracker().push();
-        ThinGL.glStateTracker().disable(GL11C.GL_BLEND);
-        ThinGL.glStateTracker().disable(GL11C.GL_DEPTH_TEST);
-        ThinGL.glStateTracker().disable(GL11C.GL_STENCIL_TEST);
+        ThinGL.glStateStack().push();
+        ThinGL.glStateStack().disable(GL11C.GL_BLEND);
+        ThinGL.glStateStack().disable(GL11C.GL_DEPTH_TEST);
+        ThinGL.glStateStack().disable(GL11C.GL_STENCIL_TEST);
 
         this.setUniformSampler("u_Source", sourceFramebuffer);
         framebuffers[0].bind();
@@ -64,7 +64,7 @@ public class MultiPassPostProcessingProgram<S extends MaskablePostProcessingProg
             super.renderQuad0(x1, y1, x2, y2);
         }
 
-        ThinGL.glStateTracker().pop();
+        ThinGL.glStateStack().pop();
 
         this.setUniformSampler("u_Source", framebuffers[this.passes.length - 2]);
         sourceFramebuffer.bind();

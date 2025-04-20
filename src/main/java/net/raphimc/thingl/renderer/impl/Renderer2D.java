@@ -49,22 +49,22 @@ import java.util.function.IntFunction;
 public class Renderer2D extends Renderer {
 
     protected final IntFunction<DrawBatch> texturedQuad = CacheUtil.memoizeInt(textureId -> new DrawBatch(() -> ThinGL.programs().getPositionTexture(), DrawMode.QUADS, BuiltinDrawBatches.POSITION_TEXTURE_LAYOUT, () -> {
-        ThinGL.glStateTracker().push();
-        ThinGL.glStateTracker().enable(GL11C.GL_BLEND);
+        ThinGL.glStateStack().push();
+        ThinGL.glStateStack().enable(GL11C.GL_BLEND);
         ThinGL.programs().getPositionTexture().setUniformSampler("u_Texture", textureId);
-    }, () -> ThinGL.glStateTracker().pop()));
+    }, () -> ThinGL.glStateStack().pop()));
 
     protected final IntFunction<DrawBatch> coloredTexturedQuad = CacheUtil.memoizeInt(textureId -> new DrawBatch(() -> ThinGL.programs().getPositionColorTexture(), DrawMode.QUADS, BuiltinDrawBatches.POSITION_COLOR_TEXTURE_LAYOUT, () -> {
-        ThinGL.glStateTracker().push();
-        ThinGL.glStateTracker().enable(GL11C.GL_BLEND);
+        ThinGL.glStateStack().push();
+        ThinGL.glStateStack().enable(GL11C.GL_BLEND);
         ThinGL.programs().getPositionColorTexture().setUniformSampler("u_Texture", textureId);
-    }, () -> ThinGL.glStateTracker().pop()));
+    }, () -> ThinGL.glStateStack().pop()));
 
     protected final IntFunction<DrawBatch> colorizedTexturedQuad = CacheUtil.memoizeInt(textureId -> new DrawBatch(() -> ThinGL.programs().getColorizedTexture(), DrawMode.QUADS, BuiltinDrawBatches.POSITION_COLOR_TEXTURE_LAYOUT, () -> {
-        ThinGL.glStateTracker().push();
-        ThinGL.glStateTracker().enable(GL11C.GL_BLEND);
+        ThinGL.glStateStack().push();
+        ThinGL.glStateStack().enable(GL11C.GL_BLEND);
         ThinGL.programs().getColorizedTexture().setUniformSampler("u_Texture", textureId);
-    }, () -> ThinGL.glStateTracker().pop()));
+    }, () -> ThinGL.glStateStack().pop()));
 
     public void filledRectangle(final Matrix4f positionMatrix, final Rectangled rectangle, final Color color) {
         this.filledRectangle(positionMatrix, (float) rectangle.minX, (float) rectangle.minY, (float) rectangle.maxX, (float) rectangle.maxY, color);

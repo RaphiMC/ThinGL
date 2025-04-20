@@ -39,10 +39,10 @@ public class ColorTweakProgram extends SinglePassPostProcessingProgram<ColorTwea
 
     @Override
     protected void renderQuad0(final float x1, final float y1, final float x2, final float y2) {
-        ThinGL.glStateTracker().pushBlendFunc();
+        ThinGL.glStateStack().pushBlendFunc();
         Blending.additiveBlending();
         super.renderQuad0(x1, y1, x2, y2);
-        ThinGL.glStateTracker().popBlendFunc();
+        ThinGL.glStateStack().popBlendFunc();
     }
 
 }
