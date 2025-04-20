@@ -84,7 +84,7 @@ public class ImmediateVertexArrays {
     }
 
     private VertexArray createVertexArray(final VertexDataLayout vertexDataLayout) {
-        final Buffer vertexBuffer = new Buffer(BufferUtil.DEFAULT_BUFFER_SIZE, GL15C.GL_STREAM_DRAW);
+        final Buffer vertexBuffer = new Buffer(BufferUtil.DEFAULT_BUFFER_SIZE, GL15C.GL_DYNAMIC_DRAW);
         vertexBuffer.setDebugName("Immediate Vertex Buffer " + vertexBuffer.getGlId());
         final VertexArray vertexArray = new VertexArray();
         vertexArray.setDebugName("Immediate Vertex Array " + vertexArray.getGlId() + " (" + vertexDataLayout.getElements().length + " elements)");

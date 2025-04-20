@@ -59,7 +59,7 @@ public class BufferPool {
         ThinGL.get().assertOnRenderThread();
         final Buffer buffer;
         if (this.free.isEmpty()) {
-            buffer = new Buffer(BufferUtil.DEFAULT_BUFFER_SIZE, GL15C.GL_STREAM_DRAW);
+            buffer = new Buffer(BufferUtil.DEFAULT_BUFFER_SIZE, GL15C.GL_DYNAMIC_DRAW);
             buffer.setDebugName("Buffer Pool Buffer " + this.getSize());
         } else {
             buffer = this.free.remove(0);
