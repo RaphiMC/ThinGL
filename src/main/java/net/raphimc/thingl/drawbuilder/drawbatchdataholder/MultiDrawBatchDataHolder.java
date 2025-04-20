@@ -27,6 +27,8 @@ import net.raphimc.thingl.drawbuilder.databuilder.holder.VertexDataHolder;
 import net.raphimc.thingl.util.RenderMathUtil;
 import org.joml.Matrix4f;
 
+import java.util.Map;
+
 public abstract class MultiDrawBatchDataHolder {
 
     protected final DrawBatch[] firstOrderedDrawBatches;
@@ -76,6 +78,12 @@ public abstract class MultiDrawBatchDataHolder {
 
     public abstract void draw(final DrawBatch drawBatch, final Matrix4f modelMatrix);
 
+    public void free() {
+        this.drawBatches.values().forEach(DrawBatchDataHolder::free);
+        this.drawBatches.clear();
+        this.invalidateCache();
+    }
+
     public void replaceDrawBatch(final DrawBatch oldDrawBatch, final DrawBatch newDrawBatch) {
         if (oldDrawBatch == newDrawBatch) {
             return;
@@ -92,10 +100,10 @@ public abstract class MultiDrawBatchDataHolder {
         }
     }
 
-    public void free() {
-        this.drawBatches.values().forEach(DrawBatchDataHolder::free);
-        this.drawBatches.clear();
-        this.invalidateCache();
+    public void replaceDrawBatches(final Map<DrawBatch, DrawBatch> drawBatches) {
+        for (Map.Entry<DrawBatch, DrawBatch> entry : drawBatches.entrySet()) {
+            this.replaceDrawBatch(entry.getKey(), entry.getValue());
+        }
     }
 
     public boolean hasDrawBatches() {
