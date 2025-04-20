@@ -33,8 +33,8 @@ import net.raphimc.thingl.renderer.impl.RendererText;
 import net.raphimc.thingl.text.FreeTypeLibrary;
 import net.raphimc.thingl.text.renderer.BSDFTextRenderer;
 import net.raphimc.thingl.util.pool.BufferBuilderPool;
+import net.raphimc.thingl.util.pool.BufferPool;
 import net.raphimc.thingl.util.pool.FramebufferPool;
-import net.raphimc.thingl.util.pool.ImmediateBuffers;
 import net.raphimc.thingl.util.pool.ImmediateVertexArrays;
 import net.raphimc.thingl.wrapper.GLStateTracker;
 import net.raphimc.thingl.wrapper.ScissorStack;
@@ -128,16 +128,16 @@ public class ThinGL {
         return get().getBufferBuilderPool();
     }
 
+    public static BufferPool bufferPool() {
+        return get().getBufferPool();
+    }
+
     public static FramebufferPool framebufferPool() {
         return get().getFramebufferPool();
     }
 
     public static ImmediateVertexArrays immediateVertexArrays() {
         return get().getImmediateVertexArrays();
-    }
-
-    public static ImmediateBuffers immediateBuffers() {
-        return get().getImmediateBuffers();
     }
 
     public static QuadIndexBuffer quadIndexBuffer() {
@@ -164,9 +164,9 @@ public class ThinGL {
 
     private final ImmediateMultiDrawBatchDataHolder globalDrawBatch;
     private final BufferBuilderPool bufferBuilderPool;
+    private final BufferPool bufferPool;
     private final FramebufferPool framebufferPool;
     private final ImmediateVertexArrays immediateVertexArrays;
-    private final ImmediateBuffers immediateBuffers;
     private final QuadIndexBuffer quadIndexBuffer;
 
     private final FreeTypeLibrary freeTypeLibrary;
@@ -189,9 +189,9 @@ public class ThinGL {
         this.rendererText = new RendererText(new BSDFTextRenderer());
         this.globalDrawBatch = new ImmediateMultiDrawBatchDataHolder();
         this.bufferBuilderPool = new BufferBuilderPool(this);
+        this.bufferPool = new BufferPool(this);
         this.framebufferPool = new FramebufferPool(this);
         this.immediateVertexArrays = new ImmediateVertexArrays(this);
-        this.immediateBuffers = new ImmediateBuffers(this);
         this.quadIndexBuffer = new QuadIndexBuffer(this);
         if (this.capabilities.isFreeTypePresent()) {
             this.freeTypeLibrary = new FreeTypeLibrary(this);
@@ -275,9 +275,9 @@ public class ThinGL {
         this.rendererText.free();
         this.globalDrawBatch.free();
         this.bufferBuilderPool.free();
+        this.bufferPool.free();
         this.framebufferPool.free();
         this.immediateVertexArrays.free();
-        this.immediateBuffers.free();
         this.quadIndexBuffer.free();
         if (this.freeTypeLibrary != null) {
             this.freeTypeLibrary.free();
@@ -343,16 +343,16 @@ public class ThinGL {
         return this.bufferBuilderPool;
     }
 
+    public BufferPool getBufferPool() {
+        return this.bufferPool;
+    }
+
     public FramebufferPool getFramebufferPool() {
         return this.framebufferPool;
     }
 
     public ImmediateVertexArrays getImmediateVertexArrays() {
         return this.immediateVertexArrays;
-    }
-
-    public ImmediateBuffers getImmediateBuffers() {
-        return this.immediateBuffers;
     }
 
     public QuadIndexBuffer getQuadIndexBuffer() {

@@ -22,7 +22,6 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.raphimc.thingl.drawbuilder.builder.BufferBuilder;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.IndexDataHolder;
-import net.raphimc.thingl.drawbuilder.databuilder.holder.InstanceDataHolder;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.ShaderDataHolder;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.VertexDataHolder;
 
@@ -35,8 +34,8 @@ public class DrawBatchDataHolder {
     private final Supplier<BufferBuilder> bufferBuilderSupplier;
     private final Consumer<BufferBuilder> bufferBuilderDisposer;
     private VertexDataHolder vertexDataHolder;
+    private VertexDataHolder instanceVertexDataHolder;
     private IndexDataHolder indexDataHolder;
-    private InstanceDataHolder instanceDataHolder;
     private final Object2ObjectMap<String, ShaderDataHolder> shaderDataHolders = new Object2ObjectOpenHashMap<>();
 
     public DrawBatchDataHolder(final Supplier<BufferBuilder> bufferBuilderSupplier, final Consumer<BufferBuilder> bufferBuilderDisposer) {
@@ -48,14 +47,14 @@ public class DrawBatchDataHolder {
         if (this.vertexDataHolder != null) {
             this.bufferBuilderDisposer.accept(this.vertexDataHolder.getBufferBuilder());
         }
+        if (this.instanceVertexDataHolder != null) {
+            this.bufferBuilderDisposer.accept(this.instanceVertexDataHolder.getBufferBuilder());
+        }
         if (this.indexDataHolder != null) {
             this.bufferBuilderDisposer.accept(this.indexDataHolder.getBufferBuilder());
         }
-        if (this.instanceDataHolder != null) {
-            this.bufferBuilderDisposer.accept(this.instanceDataHolder.getBufferBuilder());
-        }
-        for (ShaderDataHolder bufferShaderDataHolder : this.shaderDataHolders.values()) {
-            this.bufferBuilderDisposer.accept(bufferShaderDataHolder.getBufferBuilder());
+        for (ShaderDataHolder shaderDataHolder : this.shaderDataHolders.values()) {
+            this.bufferBuilderDisposer.accept(shaderDataHolder.getBufferBuilder());
         }
     }
 
@@ -70,6 +69,17 @@ public class DrawBatchDataHolder {
         return this.vertexDataHolder;
     }
 
+    public boolean hasInstanceVertexDataHolder() {
+        return this.instanceVertexDataHolder != null;
+    }
+
+    public VertexDataHolder getInstanceVertexDataHolder() {
+        if (this.instanceVertexDataHolder == null) {
+            this.instanceVertexDataHolder = new VertexDataHolder(this.bufferBuilderSupplier.get());
+        }
+        return this.instanceVertexDataHolder;
+    }
+
     public boolean hasIndexDataHolder() {
         return this.indexDataHolder != null;
     }
@@ -78,19 +88,10 @@ public class DrawBatchDataHolder {
         if (this.indexDataHolder == null) {
             this.indexDataHolder = new IndexDataHolder(this.bufferBuilderSupplier.get());
         }
-        this.indexDataHolder.applyVertexOffset(this.vertexDataHolder);
-        return this.indexDataHolder;
-    }
-
-    public boolean hasInstanceDataHolder() {
-        return this.instanceDataHolder != null;
-    }
-
-    public InstanceDataHolder getInstanceDataHolder() {
-        if (this.instanceDataHolder == null) {
-            this.instanceDataHolder = new InstanceDataHolder(this.bufferBuilderSupplier.get());
+        if (this.vertexDataHolder != null) {
+            this.indexDataHolder.applyVertexOffset(this.vertexDataHolder);
         }
-        return this.instanceDataHolder;
+        return this.indexDataHolder;
     }
 
     public boolean hasShaderDataHolder() {

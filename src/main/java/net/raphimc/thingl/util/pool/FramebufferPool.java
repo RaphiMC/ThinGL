@@ -61,6 +61,7 @@ public class FramebufferPool {
         final TextureFramebuffer framebuffer;
         if (this.free.isEmpty()) {
             framebuffer = new TextureFramebuffer(textureFilter);
+            framebuffer.setDebugName("Framebuffer Pool Framebuffer " + this.getSize());
         } else {
             framebuffer = this.free.remove(0);
             framebuffer.clear();

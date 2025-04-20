@@ -42,7 +42,7 @@ public class MultiDrawRenderer {
     private final DrawBatch[] firstOrderedDrawBatches;
     private final DrawBatch[] lastOrderedDrawBatches;
     private final Reference2ObjectMap<DrawBatch, MultiDrawBuilder> drawBatches = new Reference2ObjectLinkedOpenHashMap<>();
-    private final AtomicInteger idCounter = new AtomicInteger();
+    private final AtomicInteger idGenerator = new AtomicInteger();
     private final Int2ObjectMap<Reference2IntMap<DrawBatch>> drawBatchBuffers = new Int2ObjectOpenHashMap<>();
 
     public MultiDrawRenderer() {
@@ -55,7 +55,7 @@ public class MultiDrawRenderer {
     }
 
     public int uploadDrawBatchBuffers(final PersistentMultiDrawBatchDataHolder multiDrawBatchDataHolder) {
-        final int id = this.idCounter.getAndIncrement();
+        final int id = this.idGenerator.getAndIncrement();
         final Reference2IntMap<DrawBatch> multiDrawIds = new Reference2IntOpenHashMap<>();
         for (Map.Entry<DrawBatch, BuiltBuffer> entry : multiDrawBatchDataHolder.getBuiltDrawBatches().entrySet()) {
             final MultiDrawBuilder multiDrawBuilder = this.drawBatches.computeIfAbsent(entry.getKey(), drawBatch -> new MultiDrawBuilder((DrawBatch) drawBatch));
@@ -81,7 +81,7 @@ public class MultiDrawRenderer {
         for (int id : this.drawBatchBuffers.keySet().toIntArray()) {
             this.removeDrawBatchBuffers(id);
         }
-        this.idCounter.set(0);
+        this.idGenerator.set(0);
     }
 
     public void addToRenderList(final int id) {
@@ -162,7 +162,7 @@ public class MultiDrawRenderer {
         final MultiDrawBuilder multiDrawBuilder = this.drawBatches.get(drawBatch);
         if (multiDrawBuilder != null) {
             multiDrawBuilder.getBuiltBuffer().shaderDataBuffers().put("ssbo_DrawData", drawDataBuffer);
-            BufferRenderer.render(multiDrawBuilder.getBuiltBuffer(), true, modelMatrix);
+            BufferRenderer.render(multiDrawBuilder.getBuiltBuffer(), modelMatrix);
             multiDrawBuilder.getBuiltBuffer().shaderDataBuffers().remove("ssbo_DrawData");
         }
     }

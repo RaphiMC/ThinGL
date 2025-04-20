@@ -58,6 +58,7 @@ public class ImmediateMultiDrawBatchDataHolder extends MultiDrawBatchDataHolder 
             this.invalidateCache();
             final BuiltBuffer builtBuffer = BufferRenderer.buildTemporaryBuffer(BufferRenderer.prepareBuffer(drawBatch, drawBatchDataHolder, false));
             BufferRenderer.render(builtBuffer, modelMatrix);
+            BufferRenderer.freeTemporaryBuffer(builtBuffer);
         }
     }
 

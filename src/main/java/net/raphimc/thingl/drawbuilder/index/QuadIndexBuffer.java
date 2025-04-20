@@ -63,11 +63,11 @@ public class QuadIndexBuffer {
         return bufferBuilder.finish();
     }
 
-    public AbstractBuffer getSharedGlBuffer() {
+    public AbstractBuffer getSharedBuffer() {
         return this.indexBuffer;
     }
 
-    public ByteBuffer getSharedByteBuffer() {
+    public ByteBuffer getSharedData() {
         return this.indexData;
     }
 

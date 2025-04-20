@@ -34,6 +34,7 @@ public class ImmediateVertexArrays {
 
     private final Reference2ObjectMap<VertexDataLayout, VertexArray> vertexArrayCache = new Reference2ObjectOpenHashMap<>();
     private final Reference2LongMap<VertexArray> vertexArrayAccessTime = new Reference2LongOpenHashMap<>();
+    private final VertexArray postProcessingVao;
 
     @ApiStatus.Internal
     public ImmediateVertexArrays(final ThinGL thinGL) {
@@ -55,6 +56,8 @@ public class ImmediateVertexArrays {
                 return false;
             });
         });
+        this.postProcessingVao = new VertexArray();
+        this.postProcessingVao.setDebugName("Post-Processing VAO");
     }
 
     public VertexArray getVertexArray(final VertexDataLayout vertexDataLayout) {
@@ -68,11 +71,16 @@ public class ImmediateVertexArrays {
         return this.vertexArrayCache.size();
     }
 
+    public VertexArray getPostProcessingVao() {
+        return this.postProcessingVao;
+    }
+
     @ApiStatus.Internal
     public void free() {
         for (VertexArray vertexArray : this.vertexArrayCache.values()) {
             vertexArray.freeFully();
         }
+        this.postProcessingVao.free();
     }
 
     private VertexArray createVertexArray(final VertexDataLayout vertexDataLayout) {

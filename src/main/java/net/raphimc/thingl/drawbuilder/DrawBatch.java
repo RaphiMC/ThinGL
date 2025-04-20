@@ -23,47 +23,12 @@ import net.raphimc.thingl.resource.program.Program;
 
 import java.util.function.Supplier;
 
-public record DrawBatch(Supplier<Program> program, Supplier<Program> instanceProgram, Supplier<Program> multiDrawProgram, DrawMode drawMode, VertexDataLayout vertexDataLayout, VertexDataLayout instanceDataLayout, Runnable setupAction, Runnable cleanupAction) {
+public record DrawBatch(Supplier<Program> program, DrawMode drawMode, VertexDataLayout vertexDataLayout, VertexDataLayout instanceVertexDataLayout, Runnable setupAction, Runnable cleanupAction) {
 
     public static final DrawBatch[] EMPTY_ARRAY = new DrawBatch[0];
 
     public DrawBatch(final Supplier<Program> program, final DrawMode drawMode, final VertexDataLayout vertexDataLayout, final Runnable setupAction, final Runnable cleanupAction) {
-        this(program, null, drawMode, vertexDataLayout, null, setupAction, cleanupAction);
-    }
-
-    public DrawBatch(final Supplier<Program> program, final Supplier<Program> instanceProgram, final DrawMode drawMode, final VertexDataLayout vertexDataLayout, final VertexDataLayout instanceDataLayout, final Runnable setupAction, final Runnable cleanupAction) {
-        this(program, instanceProgram, null, drawMode, vertexDataLayout, instanceDataLayout, setupAction, cleanupAction);
-    }
-
-    public DrawBatch(final Supplier<Program> program, final Supplier<Program> multiDrawProgram, final DrawMode drawMode, final VertexDataLayout vertexDataLayout, final Runnable setupAction, final Runnable cleanupAction) {
-        this(program, null, multiDrawProgram, drawMode, vertexDataLayout, null, setupAction, cleanupAction);
-    }
-
-    public Program getProgram(final boolean instancing, final boolean multiDraw) {
-        if (instancing) {
-            if (multiDraw) {
-                throw new IllegalArgumentException("Cannot use instancing and multi draw at the same time");
-            }
-            if (this.instanceProgram == null) {
-                return null;
-            }
-            return this.instanceProgram.get();
-        } else {
-            if (multiDraw) {
-                if (this.multiDrawProgram == null) {
-                    return null;
-                }
-                return this.multiDrawProgram.get();
-            }
-            if (this.program == null) {
-                return null;
-            }
-            return this.program.get();
-        }
-    }
-
-    public boolean supportsInstancing() {
-        return this.instanceProgram != null && this.instanceDataLayout != null;
+        this(program, drawMode, vertexDataLayout, null, setupAction, cleanupAction);
     }
 
 }

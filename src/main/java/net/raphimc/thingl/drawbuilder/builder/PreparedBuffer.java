@@ -18,24 +18,23 @@
 
 package net.raphimc.thingl.drawbuilder.builder;
 
-import it.unimi.dsi.fastutil.Pair;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.DrawBatch;
 import net.raphimc.thingl.drawbuilder.builder.command.DrawCommand;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.DrawBatchDataHolder;
-import net.raphimc.thingl.drawbuilder.index.IndexType;
+import net.raphimc.thingl.drawbuilder.index.IndexByteBuffer;
 import net.raphimc.thingl.util.BufferUtil;
 
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
 
-public record PreparedBuffer(DrawBatch drawBatch, DrawBatchDataHolder drawBatchDataHolder, ByteBuffer vertexBuffer, Pair<IndexType, ByteBuffer> indexBuffer, ByteBuffer instanceBuffer, Map<String, ByteBuffer> shaderDataBuffers, List<DrawCommand> drawCommands) {
+public record PreparedBuffer(DrawBatch drawBatch, DrawBatchDataHolder drawBatchDataHolder, ByteBuffer vertexBuffer, ByteBuffer instanceVertexBuffer, IndexByteBuffer indexBuffer, Map<String, ByteBuffer> shaderDataBuffers, List<DrawCommand> drawCommands) {
 
     public void free() {
         if (!this.drawBatchDataHolder.hasIndexDataHolder() && this.indexBuffer != null) {
-            final ByteBuffer indexByteBuffer = this.indexBuffer.second();
-            if (indexByteBuffer != ThinGL.quadIndexBuffer().getSharedByteBuffer()) {
+            final ByteBuffer indexByteBuffer = this.indexBuffer.buffer();
+            if (indexByteBuffer != ThinGL.quadIndexBuffer().getSharedData()) {
                 BufferUtil.memFree(indexByteBuffer);
             }
         }

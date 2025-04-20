@@ -18,7 +18,6 @@
 
 package net.raphimc.thingl.drawbuilder.builder;
 
-import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -30,13 +29,11 @@ import net.raphimc.thingl.drawbuilder.builder.command.DrawArraysCommand;
 import net.raphimc.thingl.drawbuilder.builder.command.DrawCommand;
 import net.raphimc.thingl.drawbuilder.builder.command.DrawElementsCommand;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.IndexDataHolder;
-import net.raphimc.thingl.drawbuilder.databuilder.holder.InstanceDataHolder;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.ShaderDataHolder;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.VertexDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.DrawBatchDataHolder;
-import net.raphimc.thingl.drawbuilder.index.IndexType;
+import net.raphimc.thingl.drawbuilder.index.IndexByteBuffer;
 import net.raphimc.thingl.drawbuilder.index.QuadIndexBuffer;
-import net.raphimc.thingl.drawbuilder.vertex.VertexDataLayout;
 import net.raphimc.thingl.program.RegularProgram;
 import net.raphimc.thingl.resource.buffer.AbstractBuffer;
 import net.raphimc.thingl.resource.buffer.Buffer;
@@ -64,49 +61,52 @@ public class BufferRenderer {
     public static PreparedBuffer prepareBuffer(final DrawBatch drawBatch, final DrawBatchDataHolder drawBatchDataHolder, final boolean optimizeMesh) {
         final VertexDataHolder vertexDataHolder = drawBatchDataHolder.getVertexDataHolder();
         final BufferBuilder vertexBufferBuilder = vertexDataHolder.getBufferBuilder();
+        final int vertexCount = vertexDataHolder.getVertexCount();
         final IntList connectedPrimitiveIndices = vertexDataHolder.getConnectedPrimitiveIndices();
 
-        if (vertexDataHolder.getVertexCount() == 0 && vertexBufferBuilder.getPosition() != 0) {
+        if (vertexCount == 0 && vertexBufferBuilder.getPosition() != 0) {
             throw new IllegalStateException("Trying to build a buffer with no vertices but the buffer builder is not empty. Did you forget to call endVertex()?");
         }
 
-        int totalVertexCount = vertexDataHolder.getVertexCount();
-        Pair<IndexType, ByteBuffer> indexBuffer = null;
-        if (drawBatchDataHolder.hasIndexDataHolder()) {
-            if (!drawBatch.drawMode().usesConnectedPrimitives()) {
+        int totalVertexCount = vertexCount;
+        IndexByteBuffer indexBuffer = null;
+        if (drawBatch.drawMode().isIndexed()) {
+            if (drawBatchDataHolder.hasIndexDataHolder()) {
                 final IndexDataHolder indexDataHolder = drawBatchDataHolder.getIndexDataHolder();
                 final BufferBuilder indexBufferBuilder = indexDataHolder.getBufferBuilder();
                 if (indexDataHolder.getIndexCount() == 0 && indexBufferBuilder.getPosition() != 0) {
                     throw new IllegalStateException("Trying to build a buffer with no indices but the buffer builder is not empty");
                 }
 
-                indexBuffer = Pair.of(IndexType.UNSIGNED_INT, indexBufferBuilder.finish());
+                indexBuffer = new IndexByteBuffer(GL11C.GL_UNSIGNED_INT, indexBufferBuilder.finish());
                 totalVertexCount = indexDataHolder.getIndexCount();
+            } else if (drawBatch.drawMode() == DrawMode.QUADS) {
+                final int quadCount = vertexCount / QuadIndexBuffer.QUAD_VERTEX_COUNT;
+                if (optimizeMesh) {
+                    indexBuffer = new IndexByteBuffer(GL11C.GL_UNSIGNED_INT, ThinGL.quadIndexBuffer().createIndexData(quadCount));
+                } else {
+                    ThinGL.quadIndexBuffer().ensureSize(quadCount);
+                    indexBuffer = new IndexByteBuffer(GL11C.GL_UNSIGNED_INT, ThinGL.quadIndexBuffer().getSharedData());
+                }
+                totalVertexCount = quadCount * QuadIndexBuffer.QUAD_INDEX_COUNT;
             } else {
-                throw new IllegalStateException("Draw mode does not support indexed drawing but index data was provided");
+                throw new IllegalStateException("Draw mode uses indexed drawing but no index data was provided");
             }
-        } else if (drawBatch.drawMode() == DrawMode.QUADS) {
-            final int quadCount = vertexDataHolder.getVertexCount() / QuadIndexBuffer.QUAD_VERTEX_COUNT;
-            if (optimizeMesh) {
-                indexBuffer = Pair.of(IndexType.UNSIGNED_INT, ThinGL.quadIndexBuffer().createIndexData(quadCount));
-            } else {
-                ThinGL.quadIndexBuffer().ensureSize(quadCount);
-                indexBuffer = Pair.of(IndexType.UNSIGNED_INT, ThinGL.quadIndexBuffer().getSharedByteBuffer());
-            }
-            totalVertexCount = quadCount * QuadIndexBuffer.QUAD_INDEX_COUNT;
+        } else if (drawBatchDataHolder.hasIndexDataHolder()) {
+            throw new IllegalStateException("Draw mode does not use indexed drawing but index data was provided");
         }
 
         if (optimizeMesh && connectedPrimitiveIndices == null && drawBatch.drawMode().getGlMode() == GL11C.GL_TRIANGLES) {
             ThinGL.capabilities().ensureMeshOptimizerPresent();
-            if (indexBuffer != null && indexBuffer.first() != IndexType.UNSIGNED_INT) {
-                throw new IllegalStateException("Optimizing the mesh requires the index buffer to be of type UNSIGNED_INT");
+            if (indexBuffer != null && indexBuffer.type() != GL11C.GL_UNSIGNED_INT) {
+                throw new IllegalStateException("Optimizing the mesh requires the index buffer to be of type GL_UNSIGNED_INT");
             }
             final int vertexSize = drawBatch.vertexDataLayout().getSize();
             final ByteBuffer originalVertexBuffer = vertexBufferBuilder.finish();
-            final IntBuffer originalIndexBuffer = indexBuffer != null ? indexBuffer.second().asIntBuffer() : null;
+            final IntBuffer originalIndexBuffer = indexBuffer != null ? indexBuffer.buffer().asIntBuffer() : null;
 
-            final IntBuffer remapTable = MemoryUtil.memAllocInt(vertexDataHolder.getVertexCount());
-            final int uniqueVertexCount = (int) MeshOptimizer.meshopt_generateVertexRemap(remapTable, originalIndexBuffer, totalVertexCount, originalVertexBuffer, vertexDataHolder.getVertexCount(), vertexSize);
+            final IntBuffer remapTable = MemoryUtil.memAllocInt(vertexCount);
+            final int uniqueVertexCount = (int) MeshOptimizer.meshopt_generateVertexRemap(remapTable, originalIndexBuffer, totalVertexCount, originalVertexBuffer, vertexCount, vertexSize);
             if (uniqueVertexCount > totalVertexCount) {
                 throw new IllegalStateException("Optimized mesh contains more vertices than the original mesh");
             }
@@ -115,7 +115,7 @@ public class BufferRenderer {
             final ByteBuffer newVertexBuffer = MemoryUtil.memAlloc(uniqueVertexCount * vertexSize);
             final IntBuffer newIndexBufferInt = newIndexBuffer.asIntBuffer();
             MeshOptimizer.meshopt_remapIndexBuffer(newIndexBufferInt, originalIndexBuffer, totalVertexCount, remapTable);
-            MeshOptimizer.meshopt_remapVertexBuffer(newVertexBuffer, originalVertexBuffer, vertexDataHolder.getVertexCount(), vertexSize, remapTable);
+            MeshOptimizer.meshopt_remapVertexBuffer(newVertexBuffer, originalVertexBuffer, vertexCount, vertexSize, remapTable);
             BufferUtil.memFree(remapTable);
 
             MeshOptimizer.meshopt_optimizeVertexCache(newIndexBufferInt, newIndexBufferInt, uniqueVertexCount);
@@ -131,28 +131,30 @@ public class BufferRenderer {
             BufferUtil.memFree(newVertexBuffer);
 
             if (indexBuffer != null) {
-                MemoryUtil.memCopy(newIndexBuffer, indexBuffer.second());
+                MemoryUtil.memCopy(newIndexBuffer, indexBuffer.buffer());
                 BufferUtil.memFree(newIndexBuffer);
             } else {
-                indexBuffer = Pair.of(IndexType.UNSIGNED_INT, newIndexBuffer);
+                indexBuffer = new IndexByteBuffer(GL11C.GL_UNSIGNED_INT, newIndexBuffer);
             }
         }
 
         int instanceCount = 1;
-        ByteBuffer instanceBuffer = null;
-        if (drawBatchDataHolder.hasInstanceDataHolder()) {
-            if (drawBatch.supportsInstancing()) {
-                final InstanceDataHolder instanceDataHolder = drawBatchDataHolder.getInstanceDataHolder();
-                final BufferBuilder instanceBufferBuilder = instanceDataHolder.getBufferBuilder();
-                if (instanceDataHolder.getInstanceCount() == 0 && instanceBufferBuilder.getPosition() != 0) {
-                    throw new IllegalStateException("Trying to build a buffer with no instances but the buffer builder is not empty. Did you forget to call endInstance()?");
+        ByteBuffer instanceVertexBuffer = null;
+        if (drawBatch.instanceVertexDataLayout() != null) {
+            if (drawBatchDataHolder.hasInstanceVertexDataHolder()) {
+                final VertexDataHolder instanceVertexDataHolder = drawBatchDataHolder.getInstanceVertexDataHolder();
+                final BufferBuilder instanceVertexBufferBuilder = instanceVertexDataHolder.getBufferBuilder();
+                if (instanceVertexDataHolder.getVertexCount() == 0 && instanceVertexBufferBuilder.getPosition() != 0) {
+                    throw new IllegalStateException("Trying to build a buffer with no instances but the buffer builder is not empty. Did you forget to call endVertex()?");
                 }
 
-                instanceBuffer = instanceBufferBuilder.finish();
-                instanceCount = instanceDataHolder.getInstanceCount();
+                instanceVertexBuffer = instanceVertexBufferBuilder.finish();
+                instanceCount = instanceVertexDataHolder.getVertexCount();
             } else {
-                throw new IllegalStateException("Draw mode does not support instancing but instance data was provided");
+                throw new IllegalStateException("Draw mode uses instancing but no instance data was provided");
             }
+        } else if (drawBatchDataHolder.hasInstanceVertexDataHolder()) {
+            throw new IllegalStateException("Draw batch does not use instancing but instance data was provided");
         }
 
         final Object2ObjectMap<String, ByteBuffer> shaderDataBuffers = new Object2ObjectOpenHashMap<>();
@@ -193,28 +195,25 @@ public class BufferRenderer {
             }
         }
 
-        return new PreparedBuffer(drawBatch, drawBatchDataHolder, vertexBufferBuilder.finish(), indexBuffer, instanceBuffer, shaderDataBuffers, drawCommands);
+        return new PreparedBuffer(drawBatch, drawBatchDataHolder, vertexBufferBuilder.finish(), instanceVertexBuffer, indexBuffer, shaderDataBuffers, drawCommands);
     }
 
     public static BuiltBuffer buildTemporaryBuffer(final PreparedBuffer preparedBuffer) {
         final DrawBatch drawBatch = preparedBuffer.drawBatch();
-        final VertexDataLayout vertexDataLayout = drawBatch.vertexDataLayout();
-        final VertexArray vertexArray = ThinGL.immediateVertexArrays().getVertexArray(vertexDataLayout);
+        final VertexArray vertexArray = ThinGL.immediateVertexArrays().getVertexArray(drawBatch.vertexDataLayout());
 
         if (preparedBuffer.indexBuffer() != null) {
-            final ByteBuffer indexData = preparedBuffer.indexBuffer().second();
-            if (indexData == ThinGL.quadIndexBuffer().getSharedByteBuffer()) {
-                vertexArray.setIndexBuffer(preparedBuffer.indexBuffer().first(), ThinGL.quadIndexBuffer().getSharedGlBuffer());
+            final ByteBuffer indexData = preparedBuffer.indexBuffer().buffer();
+            if (indexData == ThinGL.quadIndexBuffer().getSharedData()) {
+                vertexArray.setIndexBuffer(preparedBuffer.indexBuffer().type(), ThinGL.quadIndexBuffer().getSharedBuffer());
             } else {
-                final Buffer indexBuffer = ThinGL.immediateBuffers().getIndexBuffer();
+                final Buffer indexBuffer = ThinGL.bufferPool().borrowBuffer();
                 if (indexBuffer.getSize() < indexData.remaining()) {
                     indexBuffer.setSize(indexData.remaining());
                 }
                 indexBuffer.upload(0, indexData);
-                vertexArray.setIndexBuffer(preparedBuffer.indexBuffer().first(), indexBuffer);
+                vertexArray.setIndexBuffer(preparedBuffer.indexBuffer().type(), indexBuffer);
             }
-        } else if (vertexArray.getIndexBuffer() != null) {
-            vertexArray.setIndexBuffer(null, null);
         }
 
         final ByteBuffer vertexData = preparedBuffer.vertexBuffer();
@@ -224,35 +223,26 @@ public class BufferRenderer {
         }
         vertexBuffer.upload(0, vertexData);
 
-        final ByteBuffer instanceData = preparedBuffer.instanceBuffer();
-        if (instanceData != null) {
-            final Buffer instanceBuffer = ThinGL.immediateBuffers().getInstanceBuffer();
-            if (instanceBuffer.getSize() < instanceData.remaining()) {
-                instanceBuffer.setSize(instanceData.remaining());
+        final ByteBuffer instanceVertexData = preparedBuffer.instanceVertexBuffer();
+        if (instanceVertexData != null) {
+            final Buffer instanceVertexBuffer = ThinGL.bufferPool().borrowBuffer();
+            if (instanceVertexBuffer.getSize() < instanceVertexData.remaining()) {
+                instanceVertexBuffer.setSize(instanceVertexData.remaining());
             }
-            instanceBuffer.upload(0, instanceData);
-            vertexArray.setVertexBuffer(1, instanceBuffer, 0, drawBatch.instanceDataLayout().getSize());
-            vertexArray.configureVertexDataLayout(1, vertexDataLayout.getElements().length, drawBatch.instanceDataLayout(), 1);
-        } else if (vertexArray.getVertexBuffers().containsKey(1)) {
-            vertexArray.setVertexBuffer(1, null, 0, 0);
-            int vertexAttribIndex = vertexDataLayout.getElements().length;
-            while (GL45C.glGetVertexArrayIndexedi(vertexArray.getGlId(), vertexAttribIndex, GL45C.GL_VERTEX_ATTRIB_ARRAY_ENABLED) == GL11C.GL_TRUE) {
-                GL45C.glDisableVertexArrayAttrib(vertexArray.getGlId(), vertexAttribIndex);
-                vertexAttribIndex++;
-            }
+            instanceVertexBuffer.upload(0, instanceVertexData);
+            vertexArray.setVertexBuffer(1, instanceVertexBuffer, 0, drawBatch.instanceVertexDataLayout().getSize());
+            vertexArray.configureVertexDataLayout(1, drawBatch.vertexDataLayout().getElements().length, drawBatch.instanceVertexDataLayout(), 1);
         }
 
         final Object2ObjectMap<String, AbstractBuffer> shaderDataBuffers = new Object2ObjectOpenHashMap<>();
-        int ssboPoolIndex = 0;
         for (Map.Entry<String, ByteBuffer> entry : preparedBuffer.shaderDataBuffers().entrySet()) {
             final ByteBuffer ssboData = entry.getValue();
-            final Buffer ssboBuffer = ThinGL.immediateBuffers().getSSBOBuffer(ssboPoolIndex);
+            final Buffer ssboBuffer = ThinGL.bufferPool().borrowBuffer();
             if (ssboBuffer.getSize() < ssboData.remaining()) {
                 ssboBuffer.setSize(ssboData.remaining());
             }
             ssboBuffer.upload(0, ssboData);
             shaderDataBuffers.put(entry.getKey(), ssboBuffer);
-            ssboPoolIndex++;
         }
 
         Buffer commandBuffer = null;
@@ -263,7 +253,7 @@ public class BufferRenderer {
                 drawCommand.write(commandBufferBuilder);
             }
             final ByteBuffer commandData = commandBufferBuilder.finish();
-            commandBuffer = ThinGL.immediateBuffers().getCommandBuffer();
+            commandBuffer = ThinGL.bufferPool().borrowBuffer();
             if (commandBuffer.getSize() < commandData.remaining()) {
                 commandBuffer.setSize(commandData.remaining());
             }
@@ -272,32 +262,58 @@ public class BufferRenderer {
         }
 
         preparedBuffer.free();
-        return new BuiltBuffer(drawBatch, vertexArray, shaderDataBuffers, commandBuffer, preparedBuffer.drawCommands());
+        return new BuiltBuffer(preparedBuffer.drawBatch(), vertexArray, shaderDataBuffers, commandBuffer, preparedBuffer.drawCommands());
+    }
+
+    public static void freeTemporaryBuffer(final BuiltBuffer builtBuffer) {
+        final VertexArray vertexArray = builtBuffer.vertexArray();
+        if (vertexArray.getIndexBuffer() != null) {
+            if (vertexArray.getIndexBuffer() != ThinGL.quadIndexBuffer().getSharedBuffer()) {
+                ThinGL.bufferPool().returnBuffer((Buffer) vertexArray.getIndexBuffer());
+            }
+            vertexArray.setIndexBuffer(0, null);
+        }
+
+        if (vertexArray.getVertexBuffers().containsKey(1)) {
+            ThinGL.bufferPool().returnBuffer((Buffer) vertexArray.getVertexBuffers().get(1));
+            vertexArray.setVertexBuffer(1, null, 0, 0);
+            int vertexAttribIndex = builtBuffer.drawBatch().vertexDataLayout().getElements().length;
+            while (GL45C.glGetVertexArrayIndexedi(vertexArray.getGlId(), vertexAttribIndex, GL45C.GL_VERTEX_ATTRIB_ARRAY_ENABLED) == GL11C.GL_TRUE) {
+                GL45C.glDisableVertexArrayAttrib(vertexArray.getGlId(), vertexAttribIndex);
+                vertexAttribIndex++;
+            }
+        }
+
+        for (AbstractBuffer buffer : builtBuffer.shaderDataBuffers().values()) {
+            ThinGL.bufferPool().returnBuffer((Buffer) buffer);
+        }
+        if (builtBuffer.commandBuffer() != null) {
+            ThinGL.bufferPool().returnBuffer((Buffer) builtBuffer.commandBuffer());
+        }
     }
 
     public static BuiltBuffer buildPersistentBuffer(final PreparedBuffer preparedBuffer) {
         final DrawBatch drawBatch = preparedBuffer.drawBatch();
-        final VertexDataLayout vertexDataLayout = drawBatch.vertexDataLayout();
         final VertexArray vertexArray = new VertexArray();
 
         if (preparedBuffer.indexBuffer() != null) {
-            final ByteBuffer indexByteBuffer = preparedBuffer.indexBuffer().second();
-            if (indexByteBuffer == ThinGL.quadIndexBuffer().getSharedByteBuffer()) {
-                vertexArray.setIndexBuffer(preparedBuffer.indexBuffer().first(), ThinGL.quadIndexBuffer().getSharedGlBuffer());
+            final ByteBuffer indexData = preparedBuffer.indexBuffer().buffer();
+            if (indexData == ThinGL.quadIndexBuffer().getSharedData()) {
+                vertexArray.setIndexBuffer(preparedBuffer.indexBuffer().type(), ThinGL.quadIndexBuffer().getSharedBuffer());
             } else {
-                final AbstractBuffer indexBuffer = new ImmutableBuffer(indexByteBuffer, 0);
-                vertexArray.setIndexBuffer(preparedBuffer.indexBuffer().first(), indexBuffer);
+                final AbstractBuffer indexBuffer = new ImmutableBuffer(indexData, 0);
+                vertexArray.setIndexBuffer(preparedBuffer.indexBuffer().type(), indexBuffer);
             }
         }
 
         final AbstractBuffer vertexBuffer = new ImmutableBuffer(preparedBuffer.vertexBuffer(), 0);
-        vertexArray.setVertexBuffer(0, vertexBuffer, 0, vertexDataLayout.getSize());
-        vertexArray.configureVertexDataLayout(0, 0, vertexDataLayout, 0);
+        vertexArray.setVertexBuffer(0, vertexBuffer, 0, drawBatch.vertexDataLayout().getSize());
+        vertexArray.configureVertexDataLayout(0, 0, drawBatch.vertexDataLayout(), 0);
 
-        if (preparedBuffer.instanceBuffer() != null) {
-            final AbstractBuffer instanceBuffer = new ImmutableBuffer(preparedBuffer.instanceBuffer(), 0);
-            vertexArray.setVertexBuffer(1, instanceBuffer, 0, drawBatch.instanceDataLayout().getSize());
-            vertexArray.configureVertexDataLayout(1, vertexDataLayout.getElements().length, drawBatch.instanceDataLayout(), 1);
+        if (preparedBuffer.instanceVertexBuffer() != null) {
+            final AbstractBuffer instanceBuffer = new ImmutableBuffer(preparedBuffer.instanceVertexBuffer(), 0);
+            vertexArray.setVertexBuffer(1, instanceBuffer, 0, drawBatch.instanceVertexDataLayout().getSize());
+            vertexArray.configureVertexDataLayout(1, drawBatch.vertexDataLayout().getElements().length, drawBatch.instanceVertexDataLayout(), 1);
         }
 
         final Object2ObjectMap<String, AbstractBuffer> shaderDataBuffers = new Object2ObjectOpenHashMap<>();
@@ -317,14 +333,10 @@ public class BufferRenderer {
         }
 
         preparedBuffer.free();
-        return new BuiltBuffer(drawBatch, vertexArray, shaderDataBuffers, commandBuffer, preparedBuffer.drawCommands());
+        return new BuiltBuffer(preparedBuffer.drawBatch(), vertexArray, shaderDataBuffers, commandBuffer, preparedBuffer.drawCommands());
     }
 
     public static void render(final BuiltBuffer builtBuffer, final Matrix4f modelMatrix) {
-        render(builtBuffer, false, modelMatrix);
-    }
-
-    public static void render(final BuiltBuffer builtBuffer, final boolean useMultiDrawProgram, final Matrix4f modelMatrix) {
         final DrawBatch drawBatch = builtBuffer.drawBatch();
         final DrawMode drawMode = drawBatch.drawMode();
         final VertexArray vertexArray = builtBuffer.vertexArray();
@@ -335,7 +347,7 @@ public class BufferRenderer {
 
         drawBatch.setupAction().run();
 
-        final Program program = drawBatch.getProgram(vertexArray.getVertexBuffers().containsKey(1), useMultiDrawProgram);
+        final Program program = drawBatch.program().get();
         if (program != null) {
             program.bind();
             if (program instanceof RegularProgram) {

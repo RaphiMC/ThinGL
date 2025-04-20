@@ -22,7 +22,6 @@ import it.unimi.dsi.fastutil.objects.Reference2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import net.raphimc.thingl.drawbuilder.DrawBatch;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.IndexDataHolder;
-import net.raphimc.thingl.drawbuilder.databuilder.holder.InstanceDataHolder;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.ShaderDataHolder;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.VertexDataHolder;
 import net.raphimc.thingl.util.RenderMathUtil;
@@ -57,12 +56,12 @@ public abstract class MultiDrawBatchDataHolder {
         return this.getDrawBatchDataHolder(drawBatch).getVertexDataHolder();
     }
 
-    public IndexDataHolder getIndexDataHolder(final DrawBatch drawBatch) {
-        return this.getDrawBatchDataHolder(drawBatch).getIndexDataHolder();
+    public VertexDataHolder getInstanceVertexDataHolder(final DrawBatch drawBatch) {
+        return this.getDrawBatchDataHolder(drawBatch).getInstanceVertexDataHolder();
     }
 
-    public InstanceDataHolder getInstanceDataHolder(final DrawBatch drawBatch) {
-        return this.getDrawBatchDataHolder(drawBatch).getInstanceDataHolder();
+    public IndexDataHolder getIndexDataHolder(final DrawBatch drawBatch) {
+        return this.getDrawBatchDataHolder(drawBatch).getIndexDataHolder();
     }
 
     public ShaderDataHolder getShaderDataHolder(final DrawBatch drawBatch, final String name) {
@@ -76,6 +75,22 @@ public abstract class MultiDrawBatchDataHolder {
     public abstract void draw(final Matrix4f modelMatrix);
 
     public abstract void draw(final DrawBatch drawBatch, final Matrix4f modelMatrix);
+
+    public void replaceDrawBatch(final DrawBatch oldDrawBatch, final DrawBatch newDrawBatch) {
+        if (oldDrawBatch == newDrawBatch) {
+            return;
+        }
+        if (oldDrawBatch.drawMode() != newDrawBatch.drawMode()) {
+            throw new IllegalArgumentException("Cannot replace draw batch because the draw mode is different");
+        }
+        if (oldDrawBatch.vertexDataLayout() != newDrawBatch.vertexDataLayout()) {
+            throw new IllegalArgumentException("Cannot replace draw batch because the vertex data layout is different");
+        }
+        if (this.drawBatches.containsKey(oldDrawBatch)) {
+            this.drawBatches.put(newDrawBatch, this.drawBatches.remove(oldDrawBatch));
+            this.invalidateCache();
+        }
+    }
 
     public void free() {
         this.drawBatches.values().forEach(DrawBatchDataHolder::free);

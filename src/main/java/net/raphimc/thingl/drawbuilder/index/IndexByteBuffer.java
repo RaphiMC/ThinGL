@@ -15,26 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package net.raphimc.thingl.drawbuilder.index;
 
-package net.raphimc.thingl.drawbuilder.databuilder.holder;
+import java.nio.ByteBuffer;
 
-import net.raphimc.thingl.drawbuilder.builder.BufferBuilder;
-import net.raphimc.thingl.drawbuilder.databuilder.writer.BufferVertexDataWriter;
-
-public class InstanceDataHolder extends BufferVertexDataWriter<InstanceDataHolder> {
-
-    private int instanceCount = 0;
-
-    public InstanceDataHolder(final BufferBuilder bufferBuilder) {
-        super(bufferBuilder);
-    }
-
-    public void endInstance() {
-        this.instanceCount++;
-    }
-
-    public int getInstanceCount() {
-        return this.instanceCount;
-    }
-
+public record IndexByteBuffer(int type, ByteBuffer buffer) {
 }

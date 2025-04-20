@@ -25,7 +25,6 @@ import net.raphimc.thingl.drawbuilder.builder.BufferBuilder;
 import net.raphimc.thingl.drawbuilder.builder.BuiltBuffer;
 import net.raphimc.thingl.drawbuilder.builder.command.DrawCommand;
 import net.raphimc.thingl.drawbuilder.builder.command.DrawElementsCommand;
-import net.raphimc.thingl.drawbuilder.index.IndexType;
 import net.raphimc.thingl.resource.buffer.AbstractBuffer;
 import net.raphimc.thingl.resource.buffer.Buffer;
 import net.raphimc.thingl.resource.buffer.ImmutableBuffer;
@@ -33,6 +32,7 @@ import net.raphimc.thingl.resource.vertexarray.VertexArray;
 import net.raphimc.thingl.util.ArenaMemoryAllocator;
 import net.raphimc.thingl.util.BufferUtil;
 import net.raphimc.thingl.util.MathUtil;
+import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL15C;
 import org.lwjgl.opengl.GL42C;
 import org.lwjgl.opengl.GL45C;
@@ -50,11 +50,12 @@ public class MultiDrawBuilder {
 
     private final DrawBatch drawBatch;
     private final ArenaMemoryAllocator vertexAllocator;
+    private AbstractBuffer vertexBuffer;
     private final ArenaMemoryAllocator indexAllocator;
     private AbstractBuffer indexBuffer;
     private final Buffer commandBuffer;
     private final VertexArray vertexArray;
-    private final AtomicInteger idCounter = new AtomicInteger();
+    private final AtomicInteger idGenerator = new AtomicInteger();
     private final Int2LongMap storedVertexBuffers = new Int2LongOpenHashMap(); // id -> vertex address
     private final Int2LongMap storedIndexBuffers = new Int2LongOpenHashMap(); // id -> index address
     private final Int2ObjectMap<List<DrawCommand>> bufferDrawCommands = new Int2ObjectOpenHashMap<>(); // id -> draw commands
@@ -64,12 +65,20 @@ public class MultiDrawBuilder {
     public MultiDrawBuilder(final DrawBatch drawBatch) {
         this.drawBatch = drawBatch;
         this.vertexAllocator = new ArenaMemoryAllocator(0, MAX_BUFFER_SIZE);
-        this.indexAllocator = new ArenaMemoryAllocator(0, MAX_BUFFER_SIZE);
-        this.indexBuffer = new ImmutableBuffer(BufferUtil.DEFAULT_BUFFER_SIZE, 0);
+        this.vertexBuffer = new ImmutableBuffer(BufferUtil.DEFAULT_BUFFER_SIZE, 0);
+        if (drawBatch.drawMode().isIndexed()) {
+            this.indexAllocator = new ArenaMemoryAllocator(0, MAX_BUFFER_SIZE);
+            this.indexBuffer = new ImmutableBuffer(BufferUtil.DEFAULT_BUFFER_SIZE, 0);
+        } else {
+            this.indexAllocator = null;
+        }
         this.commandBuffer = new Buffer(DrawCommand.SIZE * 512L, GL15C.GL_DYNAMIC_DRAW);
         this.vertexArray = new VertexArray();
-        this.vertexArray.setVertexBuffer(0, new ImmutableBuffer(BufferUtil.DEFAULT_BUFFER_SIZE, 0), 0, drawBatch.vertexDataLayout().getSize());
+        this.vertexArray.setVertexBuffer(0, this.vertexBuffer, 0, drawBatch.vertexDataLayout().getSize());
         this.vertexArray.configureVertexDataLayout(0, 0, drawBatch.vertexDataLayout(), 0);
+        if (this.indexBuffer != null) {
+            this.vertexArray.setIndexBuffer(GL11C.GL_UNSIGNED_INT, this.indexBuffer);
+        }
         this.rebuildCommandBuffer();
     }
 
@@ -87,16 +96,16 @@ public class MultiDrawBuilder {
             throw new IllegalArgumentException("BuiltBuffer has shader data buffers");
         }
 
-        final int id = this.idCounter.getAndIncrement();
+        final int id = this.idGenerator.getAndIncrement();
 
         final AbstractBuffer indexBuffer = vertexArray.getIndexBuffer();
         if (indexBuffer != null) {
-            if (vertexArray.getIndexType() != IndexType.UNSIGNED_INT) {
+            if (vertexArray.getIndexType() != GL11C.GL_UNSIGNED_INT) {
                 throw new IllegalArgumentException("BuiltBuffer has unsupported index type");
             }
 
             long indexBufferSize = indexBuffer.getSize();
-            if (indexBuffer == ThinGL.quadIndexBuffer().getSharedGlBuffer()) {
+            if (indexBuffer == ThinGL.quadIndexBuffer().getSharedBuffer()) {
                 final DrawElementsCommand drawCommand = (DrawElementsCommand) drawCommands.get(0);
                 indexBufferSize = (long) drawCommand.vertexCount() * Integer.BYTES;
             }
@@ -113,6 +122,7 @@ public class MultiDrawBuilder {
             final long requiredSize = MathUtil.align(address + indexBufferSize, MIN_RESIZE_AMOUNT);
             if (this.indexBuffer.getSize() < requiredSize) {
                 this.indexBuffer = BufferUtil.resize(this.indexBuffer, requiredSize);
+                this.vertexArray.setIndexBuffer(GL11C.GL_UNSIGNED_INT, this.indexBuffer);
             }
             GL45C.glCopyNamedBufferSubData(indexBuffer.getGlId(), this.indexBuffer.getGlId(), 0, address, indexBufferSize);
             drawCommands.replaceAll(drawCommand -> ((DrawElementsCommand) drawCommand).withIndexOffset(indexAddress));
@@ -129,8 +139,9 @@ public class MultiDrawBuilder {
             throw new IllegalStateException("Vertex data is not aligned");
         }
         final long requiredSize = MathUtil.align(address + vertexBuffer.getSize(), MIN_RESIZE_AMOUNT);
-        if (this.vertexArray.getVertexBuffers().get(0).getSize() < requiredSize) {
-            this.vertexArray.setVertexBuffer(0, BufferUtil.resize(this.vertexArray.getVertexBuffers().get(0), requiredSize), 0, this.drawBatch.vertexDataLayout().getSize());
+        if (this.vertexBuffer.getSize() < requiredSize) {
+            this.vertexBuffer = BufferUtil.resize(this.vertexBuffer, requiredSize);
+            this.vertexArray.setVertexBuffer(0, this.vertexBuffer, 0, this.drawBatch.vertexDataLayout().getSize());
         }
         GL45C.glCopyNamedBufferSubData(vertexBuffer.getGlId(), this.vertexArray.getVertexBuffers().get(0).getGlId(), 0, address, vertexBuffer.getSize());
         drawCommands.replaceAll(drawCommand -> drawCommand.withVertexOffset(vertexAddress));
@@ -159,7 +170,7 @@ public class MultiDrawBuilder {
         for (int id : this.storedVertexBuffers.keySet().toIntArray()) {
             this.removeBuffer(id);
         }
-        this.idCounter.set(0);
+        this.idGenerator.set(0);
     }
 
     public void addToRenderList(final int id) {
@@ -187,12 +198,7 @@ public class MultiDrawBuilder {
         }
         final BufferBuilder commandBufferBuilder = ThinGL.bufferBuilderPool().borrowBufferBuilder();
         commandBufferBuilder.ensureHasEnoughSpace(drawCommands.size() * DrawCommand.SIZE);
-        this.vertexArray.setIndexBuffer(null, null);
         for (DrawCommand drawCommand : drawCommands) {
-            if (drawCommand instanceof DrawElementsCommand && this.vertexArray.getIndexBuffer() == null) {
-                this.vertexArray.setIndexBuffer(IndexType.UNSIGNED_INT, this.indexBuffer);
-            }
-
             drawCommand.write(commandBufferBuilder);
         }
         final ByteBuffer commandData = commandBufferBuilder.finish();
@@ -206,7 +212,6 @@ public class MultiDrawBuilder {
 
     public void free() {
         this.builtBuffer.free();
-        this.indexBuffer.free();
     }
 
     public ArenaMemoryAllocator getVertexAllocator() {

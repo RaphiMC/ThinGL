@@ -67,7 +67,7 @@ public class PostProcessingProgram extends Program {
 
     protected void renderQuad0(final float x1, final float y1, final float x2, final float y2) {
         this.setUniform("u_Quad", x1, y1, x2, y2);
-        ThinGL.immediateBuffers().getPostProcessingVao().drawArrays(DrawMode.TRIANGLES, 6, 0);
+        ThinGL.immediateVertexArrays().getPostProcessingVao().drawArrays(DrawMode.TRIANGLES, 6, 0);
     }
 
 }

@@ -22,14 +22,16 @@ import org.lwjgl.opengl.GL11C;
 
 public enum DrawMode {
 
-    POINTS(GL11C.GL_POINTS, "Points", false),
-    LINES(GL11C.GL_LINES, "Lines", false),
-    LINE_STRIP(GL11C.GL_LINE_STRIP, "Line Strip", true),
-    LINE_LOOP(GL11C.GL_LINE_LOOP, "Line Loop", true),
-    TRIANGLES(GL11C.GL_TRIANGLES, "Triangles", false),
-    TRIANGLE_STRIP(GL11C.GL_TRIANGLE_STRIP, "Triangle Strip", true),
-    TRIANGLE_FAN(GL11C.GL_TRIANGLE_FAN, "Triangle Fan", true),
-    QUADS(GL11C.GL_TRIANGLES, "Quads", false),
+    POINTS(GL11C.GL_POINTS, "Points", false, false),
+    LINES(GL11C.GL_LINES, "Lines", false, false),
+    LINE_STRIP(GL11C.GL_LINE_STRIP, "Line Strip", true, false),
+    LINE_LOOP(GL11C.GL_LINE_LOOP, "Line Loop", true, false),
+    TRIANGLES(GL11C.GL_TRIANGLES, "Triangles", false, false),
+    TRIANGLE_STRIP(GL11C.GL_TRIANGLE_STRIP, "Triangle Strip", true, false),
+    TRIANGLE_FAN(GL11C.GL_TRIANGLE_FAN, "Triangle Fan", true, false),
+    QUADS(GL11C.GL_TRIANGLES, "Quads", false, true),
+    INDEXED_LINES(GL11C.GL_LINES, "Indexed Lines", false, true),
+    INDEXED_TRIANGLES(GL11C.GL_TRIANGLES, "Indexed Triangles", false, true),
     ;
 
     public static DrawMode fromGlMode(final int glMode) {
@@ -45,11 +47,13 @@ public enum DrawMode {
     private final int glMode;
     private final String displayName;
     private final boolean connectedPrimitives;
+    private final boolean indexed;
 
-    DrawMode(final int glMode, final String displayName, final boolean connectedPrimitives) {
+    DrawMode(final int glMode, final String displayName, final boolean connectedPrimitives, final boolean indexed) {
         this.glMode = glMode;
         this.displayName = displayName;
         this.connectedPrimitives = connectedPrimitives;
+        this.indexed = indexed;
     }
 
     public int getGlMode() {
@@ -62,6 +66,10 @@ public enum DrawMode {
 
     public boolean usesConnectedPrimitives() {
         return this.connectedPrimitives;
+    }
+
+    public boolean isIndexed() {
+        return this.indexed;
     }
 
 }

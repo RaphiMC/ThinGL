@@ -30,8 +30,8 @@ public record BuiltBuffer(DrawBatch drawBatch, VertexArray vertexArray, Map<Stri
 
     public void free() {
         this.vertexArray.freeFully();
-        for (Map.Entry<String, AbstractBuffer> entry : this.shaderDataBuffers.entrySet()) {
-            entry.getValue().free();
+        for (AbstractBuffer buffer : this.shaderDataBuffers.values()) {
+            buffer.free();
         }
         if (this.commandBuffer != null) {
             this.commandBuffer.free();
