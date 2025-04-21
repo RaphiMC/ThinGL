@@ -248,7 +248,7 @@ public class BufferRenderer {
         Buffer commandBuffer = null;
         if (preparedBuffer.drawCommands().size() > 1) {
             final BufferBuilder commandBufferBuilder = ThinGL.bufferBuilderPool().borrowBufferBuilder();
-            commandBufferBuilder.ensureHasEnoughSpace(preparedBuffer.drawCommands().size() * DrawCommand.SIZE);
+            commandBufferBuilder.ensureHasEnoughSpace(preparedBuffer.drawCommands().size() * DrawCommand.BYTES);
             for (DrawCommand drawCommand : preparedBuffer.drawCommands()) {
                 drawCommand.write(commandBufferBuilder);
             }
@@ -324,7 +324,7 @@ public class BufferRenderer {
         AbstractBuffer commandBuffer = null;
         if (preparedBuffer.drawCommands().size() > 1) {
             final BufferBuilder commandBufferBuilder = ThinGL.bufferBuilderPool().borrowBufferBuilder();
-            commandBufferBuilder.ensureHasEnoughSpace(preparedBuffer.drawCommands().size() * DrawCommand.SIZE);
+            commandBufferBuilder.ensureHasEnoughSpace(preparedBuffer.drawCommands().size() * DrawCommand.BYTES);
             for (DrawCommand drawCommand : preparedBuffer.drawCommands()) {
                 drawCommand.write(commandBufferBuilder);
             }

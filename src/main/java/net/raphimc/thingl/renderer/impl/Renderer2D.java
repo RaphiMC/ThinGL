@@ -333,7 +333,7 @@ public class Renderer2D extends Renderer {
 
             final BufferBuilder positionsBuilder = new BufferBuilder(memoryStack, points.size() * Float.BYTES * 2);
             for (Vector2f point : points) {
-                positionsBuilder.putVec2f(point);
+                positionsBuilder.putVector2f(point);
             }
 
             final ParSLSpineList lineList = ParSLSpineList.malloc(memoryStack).set(new ParSLPosition.Buffer(positionsBuilder.finish()), memoryStack.shorts((short) points.size()), closedLoop);

@@ -22,7 +22,7 @@ import net.raphimc.thingl.drawbuilder.builder.BufferBuilder;
 
 public interface DrawCommand {
 
-    int SIZE = 20;
+    int BYTES = DrawElementsCommand.BYTES;
 
     DrawCommand withVertexOffset(final int vertexOffset);
 

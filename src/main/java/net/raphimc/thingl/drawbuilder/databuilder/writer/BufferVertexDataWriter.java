@@ -40,7 +40,7 @@ public abstract class BufferVertexDataWriter<T extends BufferVertexDataWriter<T>
     }
 
     public T position(final float x, final float y, final float z) {
-        this.bufferBuilder.putVec3f(x, y, z);
+        this.bufferBuilder.putVector3f(x, y, z);
         return (T) this;
     }
 

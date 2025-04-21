@@ -72,7 +72,7 @@ public class MultiDrawBuilder {
         } else {
             this.indexAllocator = null;
         }
-        this.commandBuffer = new Buffer(DrawCommand.SIZE * 512L, GL15C.GL_DYNAMIC_DRAW);
+        this.commandBuffer = new Buffer(DrawCommand.BYTES * 512L, GL15C.GL_DYNAMIC_DRAW);
         this.vertexArray = new VertexArray();
         this.vertexArray.setVertexBuffer(0, this.vertexBuffer, 0, drawBatch.vertexDataLayout().getSize());
         this.vertexArray.configureVertexDataLayout(0, 0, drawBatch.vertexDataLayout(), 0);
@@ -197,7 +197,7 @@ public class MultiDrawBuilder {
             drawCommands.addAll(this.bufferDrawCommands.get(id));
         }
         final BufferBuilder commandBufferBuilder = ThinGL.bufferBuilderPool().borrowBufferBuilder();
-        commandBufferBuilder.ensureHasEnoughSpace(drawCommands.size() * DrawCommand.SIZE);
+        commandBufferBuilder.ensureHasEnoughSpace(drawCommands.size() * DrawCommand.BYTES);
         for (DrawCommand drawCommand : drawCommands) {
             drawCommand.write(commandBufferBuilder);
         }

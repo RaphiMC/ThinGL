@@ -22,6 +22,8 @@ import net.raphimc.thingl.drawbuilder.builder.BufferBuilder;
 
 public record DrawElementsCommand(int vertexCount, int instanceCount, int firstIndex, int baseVertex, int baseInstance) implements DrawCommand {
 
+    public static final int BYTES = 20;
+
     public DrawElementsCommand(final int vertexCount, final int instanceCount) {
         this(vertexCount, instanceCount, 0, 0, 0);
     }

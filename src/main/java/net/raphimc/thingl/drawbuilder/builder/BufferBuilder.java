@@ -59,6 +59,9 @@ public class BufferBuilder {
     }
 
     public BufferBuilder(final ByteBuffer byteBuffer) {
+        if (!byteBuffer.isDirect()) {
+            throw new IllegalArgumentException("ByteBuffer must be direct");
+        }
         this.isExternallyAllocated = true;
         this.baseAddress = MemoryUtil.memAddress0((Buffer) byteBuffer);
         this.cursorAddress = this.baseAddress + byteBuffer.position();
@@ -110,70 +113,15 @@ public class BufferBuilder {
         return this;
     }
 
-    public BufferBuilder putBytes(final byte... b) {
-        if (this.limitAddress - this.cursorAddress < b.length) {
-            this.ensureHasEnoughSpace(b.length);
-        }
-        for (byte v : b) {
-            MemoryUtil.memPutByte(this.cursorAddress, v);
-            this.cursorAddress++;
-        }
-        return this;
-    }
-
-    public BufferBuilder putShorts(final short... s) {
-        if (this.limitAddress - this.cursorAddress < s.length * 2L) {
-            this.ensureHasEnoughSpace(s.length * 2);
-        }
-        for (short v : s) {
-            MemoryUtil.memPutShort(this.cursorAddress, v);
-            this.cursorAddress += 2;
-        }
-        return this;
-    }
-
-    public BufferBuilder putInts(final int... i) {
-        if (this.limitAddress - this.cursorAddress < i.length * 4L) {
-            this.ensureHasEnoughSpace(i.length * 4);
-        }
-        for (int v : i) {
-            MemoryUtil.memPutInt(this.cursorAddress, v);
-            this.cursorAddress += 4;
-        }
-        return this;
-    }
-
-    public BufferBuilder putFloats(final float... f) {
-        if (this.limitAddress - this.cursorAddress < f.length * 4L) {
-            this.ensureHasEnoughSpace(f.length * 4);
-        }
-        for (float v : f) {
-            MemoryUtil.memPutFloat(this.cursorAddress, v);
-            this.cursorAddress += 4;
-        }
-        return this;
-    }
-
-    public BufferBuilder putDoubles(final double... d) {
-        if (this.limitAddress - this.cursorAddress < d.length * 8L) {
-            this.ensureHasEnoughSpace(d.length * 8);
-        }
-        for (double v : d) {
-            MemoryUtil.memPutDouble(this.cursorAddress, v);
-            this.cursorAddress += 8;
-        }
-        return this;
-    }
-
     public BufferBuilder putHalfFloat(final float f) {
         return this.putShort(MathUtil.encodeHalfFloat(f));
     }
 
-    public BufferBuilder putVec2f(final Vector2f vec2f) {
-        return this.putVec2f(vec2f.x, vec2f.y);
+    public BufferBuilder putVector2f(final Vector2f vector) {
+        return this.putVector2f(vector.x, vector.y);
     }
 
-    public BufferBuilder putVec2f(final float x, final float y) {
+    public BufferBuilder putVector2f(final float x, final float y) {
         if (this.limitAddress - this.cursorAddress < 8) {
             this.ensureHasEnoughSpace(8);
         }
@@ -183,11 +131,11 @@ public class BufferBuilder {
         return this;
     }
 
-    public BufferBuilder putVec3f(final Vector3f vec3f) {
-        return this.putVec3f(vec3f.x, vec3f.y, vec3f.z);
+    public BufferBuilder putVector3f(final Vector3f vector) {
+        return this.putVector3f(vector.x, vector.y, vector.z);
     }
 
-    public BufferBuilder putVec3f(final float x, final float y, final float z) {
+    public BufferBuilder putVector3f(final float x, final float y, final float z) {
         if (this.limitAddress - this.cursorAddress < 12) {
             this.ensureHasEnoughSpace(12);
         }
@@ -201,10 +149,7 @@ public class BufferBuilder {
     public BufferBuilder align(final int alignment) {
         final int position = this.getPosition();
         final int alignedPosition = MathUtil.align(position, alignment);
-        final int paddingLength = alignedPosition - position;
-        this.ensureHasEnoughSpace(paddingLength);
-        this.cursorAddress += paddingLength;
-        return this;
+        return this.skip(alignedPosition - position);
     }
 
     public BufferBuilder skip(final int bytes) {
@@ -232,11 +177,11 @@ public class BufferBuilder {
         this.limitAddress = 0;
     }
 
-    public void ensureHasEnoughSpace(final int amount) {
-        if (this.getRemaining() < amount) {
+    public void ensureHasEnoughSpace(final int bytes) {
+        if (this.getRemaining() < bytes) {
             if (!this.isExternallyAllocated) {
                 final int oldSize = this.getSize();
-                this.resize(MathUtil.align(oldSize + Math.max(amount, oldSize), GROW_ALIGNMENT));
+                this.resize(MathUtil.align(oldSize + Math.max(bytes, oldSize), GROW_ALIGNMENT));
             } else {
                 throw new IllegalStateException("Buffer is full");
             }
