@@ -17,7 +17,6 @@
  */
 package net.raphimc.thingl.implementation;
 
-import net.raphimc.thingl.ThinGL;
 import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
@@ -27,12 +26,11 @@ public class GLFWWindowInterface extends WindowInterface {
     private final long windowHandle;
     private final GLFWFramebufferSizeCallback originalFramebufferSizeCallback;
 
-    public GLFWWindowInterface(final ThinGL thinGL) {
-        this(thinGL, GLFW.glfwGetCurrentContext());
+    public GLFWWindowInterface() {
+        this(GLFW.glfwGetCurrentContext());
     }
 
-    public GLFWWindowInterface(final ThinGL thinGL, final long windowHandle) {
-        super(thinGL);
+    public GLFWWindowInterface(final long windowHandle) {
         this.windowHandle = windowHandle;
 
         final int[] framebufferWidth = new int[1];

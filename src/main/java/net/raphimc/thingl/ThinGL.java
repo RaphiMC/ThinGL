@@ -46,6 +46,7 @@ import org.lwjgl.util.freetype.FreeType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class ThinGL {
 
@@ -174,9 +175,13 @@ public class ThinGL {
     private final List<Runnable> endFrameCallbacks = new ArrayList<>();
     private final List<Runnable> endFrameActions = new ArrayList<>();
 
-    public ThinGL(final Function<ThinGL, ApplicationInterface> applicationInterface, final Function<ThinGL, WindowInterface> windowInterface) {
+    public ThinGL(final Function<ThinGL, ApplicationInterface> applicationInterface, final Supplier<WindowInterface> windowInterface) {
+        this(applicationInterface, windowInterface.get());
+    }
+
+    public ThinGL(final Function<ThinGL, ApplicationInterface> applicationInterface, final WindowInterface windowInterface) {
         this.renderThread = Thread.currentThread();
-        this.windowInterface = windowInterface.apply(this);
+        this.windowInterface = windowInterface;
         this.applicationInterface = applicationInterface.apply(this);
         this.capabilities = new Capabilities(this);
         this.workarounds = new Workarounds(this);

@@ -26,13 +26,11 @@ import java.util.function.BiConsumer;
 
 public abstract class WindowInterface {
 
-    protected final ThinGL thinGL;
     private final List<BiConsumer<Integer, Integer>> framebufferResizeCallbacks = new ArrayList<>();
     private int framebufferWidth;
     private int framebufferHeight;
 
-    public WindowInterface(final ThinGL thinGL) {
-        this.thinGL = thinGL;
+    public WindowInterface() {
         this.addFramebufferResizeCallback((width, height) -> {
             this.framebufferWidth = width;
             this.framebufferHeight = height;
@@ -63,16 +61,14 @@ public abstract class WindowInterface {
     @ApiStatus.Internal
     public abstract void free();
 
-    protected final void callFramebufferResizeCallbacks(final int width, final int height) {
-        this.thinGL.runOnRenderThread(() -> {
-            for (BiConsumer<Integer, Integer> callback : this.framebufferResizeCallbacks) {
-                try {
-                    callback.accept(width, height);
-                } catch (Throwable e) {
-                    ThinGL.LOGGER.error("Exception while invoking framebuffer resize callback", e);
-                }
+    protected synchronized void callFramebufferResizeCallbacks(final int width, final int height) {
+        for (BiConsumer<Integer, Integer> callback : this.framebufferResizeCallbacks) {
+            try {
+                callback.accept(width, height);
+            } catch (Throwable e) {
+                ThinGL.LOGGER.error("Exception while invoking framebuffer resize callback", e);
             }
-        });
+        }
     }
 
 }
