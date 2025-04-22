@@ -31,24 +31,24 @@ public class ShaderDataHolder extends BufferDataWriter<ShaderDataHolder> {
     }
 
     @Override
-    public ShaderDataHolder rawInt(final int i) {
+    public ShaderDataHolder putInt(final int i) {
         this.alignment = Math.max(this.alignment, Integer.BYTES);
         this.structSize += Integer.BYTES;
-        return super.rawInt(i);
+        return super.putInt(i);
     }
 
     @Override
-    public ShaderDataHolder rawFloat(final float f) {
+    public ShaderDataHolder putFloat(final float f) {
         this.alignment = Math.max(this.alignment, Float.BYTES);
         this.structSize += Float.BYTES;
-        return super.rawFloat(f);
+        return super.putFloat(f);
     }
 
     @Override
-    public ShaderDataHolder rawDouble(final double d) {
+    public ShaderDataHolder putDouble(final double d) {
         this.alignment = Math.max(this.alignment, Double.BYTES);
         this.structSize += Double.BYTES;
-        return super.rawDouble(d);
+        return super.putDouble(d);
     }
 
     public void end() {

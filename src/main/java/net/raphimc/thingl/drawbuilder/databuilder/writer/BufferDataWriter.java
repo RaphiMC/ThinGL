@@ -18,7 +18,11 @@
 
 package net.raphimc.thingl.drawbuilder.databuilder.writer;
 
+import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.drawbuilder.builder.BufferBuilder;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
+import org.joml.Vector3f;
 
 public abstract class BufferDataWriter<T extends BufferDataWriter<T>> extends BufferWriter<T> {
 
@@ -26,17 +30,43 @@ public abstract class BufferDataWriter<T extends BufferDataWriter<T>> extends Bu
         super(bufferBuilder);
     }
 
-    public T rawInt(final int i) {
+    public T putVector3f(final Matrix4f positionMatrix, final float x, final float y, final float z) {
+        if ((positionMatrix.properties() & Matrix4fc.PROPERTY_IDENTITY) != 0) {
+            return this.putVector3f(x, y, z);
+        } else {
+            final Vector3f vector3f = positionMatrix.transformPosition(new Vector3f(x, y, z));
+            return this.putVector3f(vector3f.x, vector3f.y, vector3f.z);
+        }
+    }
+
+    public T putVector3f(final float x, final float y, final float z) {
+        this.bufferBuilder.putVector3f(x, y, z);
+        return (T) this;
+    }
+
+    public T putColor(final int r, final int g, final int b, final int a) {
+        return this.putColor(a << 24 | b << 16 | g << 8 | r);
+    }
+
+    public T putColor(final Color color) {
+        return this.putColor(color.toABGR());
+    }
+
+    public T putColor(final int abgrColor) {
+        return this.putInt(abgrColor);
+    }
+
+    public T putInt(final int i) {
         this.bufferBuilder.putInt(i);
         return (T) this;
     }
 
-    public T rawFloat(final float f) {
+    public T putFloat(final float f) {
         this.bufferBuilder.putFloat(f);
         return (T) this;
     }
 
-    public T rawDouble(final double d) {
+    public T putDouble(final double d) {
         this.bufferBuilder.putDouble(d);
         return (T) this;
     }

@@ -343,7 +343,7 @@ public class Renderer2D extends Renderer {
             final ParSLPosition.Buffer verticesBuffer = mesh.positions();
             for (int i = 0; i < vertexCount; i++) {
                 final ParSLPosition position = verticesBuffer.get(i);
-                vertexDataHolder.position(positionMatrix, position.x(), position.y(), 0F).color(abgrColor).endVertex();
+                vertexDataHolder.putVector3f(positionMatrix, position.x(), position.y(), 0F).putColor(abgrColor).endVertex();
             }
 
             final int triangleCount = mesh.num_triangles();
@@ -369,7 +369,7 @@ public class Renderer2D extends Renderer {
             final Vector2f point = points.get(i);
             data[i * 2] = point.x;
             data[i * 2 + 1] = point.y;
-            vertexDataHolder.position(positionMatrix, point.x, point.y, 0F).color(abgrColor).endVertex();
+            vertexDataHolder.putVector3f(positionMatrix, point.x, point.y, 0F).putColor(abgrColor).endVertex();
         }
         final List<Integer> indices = Earcut.earcut(data);
         for (int index : indices) {
@@ -398,10 +398,10 @@ public class Renderer2D extends Renderer {
     }
 
     private void texture(final Matrix4f positionMatrix, final VertexDataHolder vertexDataHolder, final float x, final float y, final float width, final float height, final float u, final float v, final float uWidth, final float vHeight) {
-        vertexDataHolder.position(positionMatrix, x, y + height, 0F).texture(u, v + vHeight).endVertex();
-        vertexDataHolder.position(positionMatrix, x + width, y + height, 0F).texture(u + uWidth, v + vHeight).endVertex();
-        vertexDataHolder.position(positionMatrix, x + width, y, 0F).texture(u + uWidth, v).endVertex();
-        vertexDataHolder.position(positionMatrix, x, y, 0F).texture(u, v).endVertex();
+        vertexDataHolder.putVector3f(positionMatrix, x, y + height, 0F).putTextureCoords(u, v + vHeight).endVertex();
+        vertexDataHolder.putVector3f(positionMatrix, x + width, y + height, 0F).putTextureCoords(u + uWidth, v + vHeight).endVertex();
+        vertexDataHolder.putVector3f(positionMatrix, x + width, y, 0F).putTextureCoords(u + uWidth, v).endVertex();
+        vertexDataHolder.putVector3f(positionMatrix, x, y, 0F).putTextureCoords(u, v).endVertex();
     }
 
     public void coloredTexture(final Matrix4f positionMatrix, final int id, final float x, final float y, final float width, final float height, final Color color) {
@@ -423,10 +423,10 @@ public class Renderer2D extends Renderer {
     }
 
     private void coloredTexture(final Matrix4f positionMatrix, final VertexDataHolder vertexDataHolder, final float x, final float y, final float width, final float height, final float u, final float v, final float uWidth, final float vHeight, final Color color) {
-        vertexDataHolder.position(positionMatrix, x, y + height, 0F).color(color).texture(u, v + vHeight).endVertex();
-        vertexDataHolder.position(positionMatrix, x + width, y + height, 0F).color(color).texture(u + uWidth, v + vHeight).endVertex();
-        vertexDataHolder.position(positionMatrix, x + width, y, 0F).color(color).texture(u + uWidth, v).endVertex();
-        vertexDataHolder.position(positionMatrix, x, y, 0F).color(color).texture(u, v).endVertex();
+        vertexDataHolder.putVector3f(positionMatrix, x, y + height, 0F).putColor(color).putTextureCoords(u, v + vHeight).endVertex();
+        vertexDataHolder.putVector3f(positionMatrix, x + width, y + height, 0F).putColor(color).putTextureCoords(u + uWidth, v + vHeight).endVertex();
+        vertexDataHolder.putVector3f(positionMatrix, x + width, y, 0F).putColor(color).putTextureCoords(u + uWidth, v).endVertex();
+        vertexDataHolder.putVector3f(positionMatrix, x, y, 0F).putColor(color).putTextureCoords(u, v).endVertex();
     }
 
     public void colorizedTexture(final Matrix4f positionMatrix, final int id, final float x, final float y, final float width, final float height, final Color color) {

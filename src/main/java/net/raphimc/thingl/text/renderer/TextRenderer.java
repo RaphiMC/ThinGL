@@ -193,12 +193,12 @@ public abstract class TextRenderer {
             bottomOffset = ITALIC_SHEAR_FACTOR * (y2 - y);
         }
 
-        glyphDataHolder.rawInt((glyph.atlasIndex() << 27) | textDataIndex).end();
+        glyphDataHolder.putInt((glyph.atlasIndex() << 27) | textDataIndex).end();
 
-        vertexDataHolder.position(positionMatrix, x1 - bottomOffset, y2, z).texture(glyph.u1(), glyph.v2()).endVertex();
-        vertexDataHolder.position(positionMatrix, x2 - bottomOffset, y2, z).texture(glyph.u2(), glyph.v2()).endVertex();
-        vertexDataHolder.position(positionMatrix, x2 + topOffset, y1, z).texture(glyph.u2(), glyph.v1()).endVertex();
-        vertexDataHolder.position(positionMatrix, x1 + topOffset, y1, z).texture(glyph.u1(), glyph.v1()).endVertex();
+        vertexDataHolder.putVector3f(positionMatrix, x1 - bottomOffset, y2, z).putTextureCoords(glyph.u1(), glyph.v2()).endVertex();
+        vertexDataHolder.putVector3f(positionMatrix, x2 - bottomOffset, y2, z).putTextureCoords(glyph.u2(), glyph.v2()).endVertex();
+        vertexDataHolder.putVector3f(positionMatrix, x2 + topOffset, y1, z).putTextureCoords(glyph.u2(), glyph.v1()).endVertex();
+        vertexDataHolder.putVector3f(positionMatrix, x1 + topOffset, y1, z).putTextureCoords(glyph.u1(), glyph.v1()).endVertex();
     }
 
     private AtlasGlyph getAtlasGlyph(final Font.Glyph fontGlyph) {

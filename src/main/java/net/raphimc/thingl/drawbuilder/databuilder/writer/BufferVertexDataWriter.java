@@ -18,11 +18,7 @@
 
 package net.raphimc.thingl.drawbuilder.databuilder.writer;
 
-import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.drawbuilder.builder.BufferBuilder;
-import org.joml.Matrix4f;
-import org.joml.Matrix4fc;
-import org.joml.Vector3f;
 
 public abstract class BufferVertexDataWriter<T extends BufferVertexDataWriter<T>> extends BufferDataWriter<T> {
 
@@ -30,63 +26,22 @@ public abstract class BufferVertexDataWriter<T extends BufferVertexDataWriter<T>
         super(bufferBuilder);
     }
 
-    public T position(final Matrix4f positionMatrix, final float x, final float y, final float z) {
-        if ((positionMatrix.properties() & Matrix4fc.PROPERTY_IDENTITY) != 0) {
-            return this.position(x, y, z);
-        } else {
-            final Vector3f vector3f = positionMatrix.transformPosition(new Vector3f(x, y, z));
-            return this.position(vector3f.x, vector3f.y, vector3f.z);
-        }
-    }
-
-    public T position(final float x, final float y, final float z) {
-        this.bufferBuilder.putVector3f(x, y, z);
-        return (T) this;
-    }
-
-    public T halfPosition(final Matrix4f positionMatrix, final float x, final float y, final float z) {
-        if ((positionMatrix.properties() & Matrix4fc.PROPERTY_IDENTITY) != 0) {
-            return this.halfPosition(x, y, z);
-        } else {
-            final Vector3f vector3f = positionMatrix.transformPosition(new Vector3f(x, y, z));
-            return this.halfPosition(vector3f.x, vector3f.y, vector3f.z);
-        }
-    }
-
-    public T halfPosition(final float x, final float y, final float z) {
-        this.bufferBuilder.putHalfFloat(x).putHalfFloat(y).putHalfFloat(z);
-        return (T) this;
-    }
-
-    public T color(final int r, final int g, final int b, final int a) {
-        return this.color(a << 24 | b << 16 | g << 8 | r);
-    }
-
-    public T color(final Color color) {
-        return this.color(color.toABGR());
-    }
-
-    public T color(final int abgrColor) {
-        this.bufferBuilder.putInt(abgrColor);
-        return (T) this;
-    }
-
-    public T texture(final float u, final float v) {
+    public T putTextureCoords(final float u, final float v) {
         this.bufferBuilder.putFloat(u).putFloat(v);
         return (T) this;
     }
 
-    public T rawByte(final byte b) {
+    public T putByte(final byte b) {
         this.bufferBuilder.putByte(b);
         return (T) this;
     }
 
-    public T rawShort(final short s) {
+    public T putShort(final short s) {
         this.bufferBuilder.putShort(s);
         return (T) this;
     }
 
-    public T rawHalfFloat(final float f) {
+    public T putHalfFloat(final float f) {
         this.bufferBuilder.putHalfFloat(f);
         return (T) this;
     }

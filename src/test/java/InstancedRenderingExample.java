@@ -46,9 +46,9 @@ public class InstancedRenderingExample extends ExampleBase {
         // Get the vertex data holder for the instance vertex data
         final VertexDataHolder vertexDataHolder = ThinGL.renderer2D().getTargetMultiDrawBatchDataHolder().getInstanceVertexDataHolder(BuiltinDrawBatches.INSTANCED_COLORED_QUAD);
         // Each "vertex" is an instance of the object we want to draw
-        vertexDataHolder.position(0, 0, 0).color(Color.RED).endVertex();
-        vertexDataHolder.position(150, 0, 0).color(Color.GREEN).endVertex();
-        vertexDataHolder.position(300, 0, 0).color(Color.BLUE).endVertex();
+        vertexDataHolder.putVector3f(positionMatrix, 0, 0, 0).putColor(Color.RED).endVertex();
+        vertexDataHolder.putVector3f(positionMatrix, 150, 0, 0).putColor(Color.GREEN).endVertex();
+        vertexDataHolder.putVector3f(positionMatrix, 300, 0, 0).putColor(Color.BLUE).endVertex();
 
         ThinGL.renderer2D().endBuffering().draw();
     }

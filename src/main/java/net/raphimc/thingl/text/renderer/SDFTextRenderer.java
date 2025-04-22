@@ -47,7 +47,7 @@ public class SDFTextRenderer extends TextRenderer {
         final float maxScale = Math.max(Math.max(scale.x, scale.y), scale.z);
         final float smoothing = 1F / maxScale / 10F;
 
-        final int regularTextDataIndex = textDataHolder.rawInt(textSegment.color().toABGR()).rawInt(textSegment.outlineColor().toABGR()).rawInt(textSegment.styleFlags()).rawFloat(smoothing).endAndGetArrayIndex();
+        final int regularTextDataIndex = textDataHolder.putColor(textSegment.color()).putColor(textSegment.outlineColor()).putInt(textSegment.styleFlags()).putFloat(smoothing).endAndGetArrayIndex();
         this.renderTextSegment(positionMatrix, multiDrawBatchDataHolder, textSegment, x, y, z, regularTextDataIndex);
     }
 

@@ -21,6 +21,7 @@ package net.raphimc.thingl.drawbuilder.builder;
 import net.raphimc.thingl.util.MathUtil;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
@@ -143,6 +144,22 @@ public class BufferBuilder {
         MemoryUtil.memPutFloat(this.cursorAddress + 4, y);
         MemoryUtil.memPutFloat(this.cursorAddress + 8, z);
         this.cursorAddress += 12;
+        return this;
+    }
+
+    public BufferBuilder putVector4f(final Vector4f vector) {
+        return this.putVector4f(vector.x, vector.y, vector.z, vector.w);
+    }
+
+    public BufferBuilder putVector4f(final float x, final float y, final float z, final float w) {
+        if (this.limitAddress - this.cursorAddress < 16) {
+            this.ensureHasEnoughSpace(16);
+        }
+        MemoryUtil.memPutFloat(this.cursorAddress, x);
+        MemoryUtil.memPutFloat(this.cursorAddress + 4, y);
+        MemoryUtil.memPutFloat(this.cursorAddress + 8, z);
+        MemoryUtil.memPutFloat(this.cursorAddress + 12, w);
+        this.cursorAddress += 16;
         return this;
     }
 
