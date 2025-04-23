@@ -17,6 +17,7 @@
  */
 package net.raphimc.thingl.implementation;
 
+import net.lenni0451.commons.threading.ThreadUtils;
 import net.raphimc.thingl.ThinGL;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -48,6 +49,12 @@ public abstract class WindowInterface {
         if (!this.framebufferResizeCallbacks.remove(callback)) {
             throw new RuntimeException("Framebuffer resize callback not registered");
         }
+    }
+
+    public void responsiveSleep(final float millis) {
+        final long ms = (long) millis;
+        final long ns = (long) ((millis - ms) * 1_000_000);
+        ThreadUtils.hybridSleep(ms, ns);
     }
 
     public int getFramebufferWidth() {

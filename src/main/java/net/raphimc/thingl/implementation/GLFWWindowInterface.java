@@ -41,6 +41,14 @@ public class GLFWWindowInterface extends WindowInterface {
         this.originalFramebufferSizeCallback = GLFW.glfwSetFramebufferSizeCallback(windowHandle, this::onSetFramebufferSize);
     }
 
+    @Override
+    public void responsiveSleep(final float millis) {
+        final double endTime = GLFW.glfwGetTime() + millis / 1_000;
+        for (double time = GLFW.glfwGetTime(); time < endTime; time = GLFW.glfwGetTime()) {
+            GLFW.glfwWaitEventsTimeout(endTime - time);
+        }
+    }
+
     public long getWindowHandle() {
         return this.windowHandle;
     }

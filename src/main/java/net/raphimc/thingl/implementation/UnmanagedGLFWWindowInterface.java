@@ -17,6 +17,7 @@
  */
 package net.raphimc.thingl.implementation;
 
+import net.lenni0451.commons.threading.ThreadUtils;
 import net.raphimc.thingl.ThinGL;
 
 public class UnmanagedGLFWWindowInterface extends GLFWWindowInterface {
@@ -29,11 +30,13 @@ public class UnmanagedGLFWWindowInterface extends GLFWWindowInterface {
     }
 
     @Override
-    protected void callFramebufferResizeCallbacks(final int width, final int height) {
-        if (ThinGL.isInitialized()) {
-            ThinGL.get().runOnRenderThread(() -> super.callFramebufferResizeCallbacks(width, height));
+    public void responsiveSleep(final float millis) {
+        if (Thread.currentThread() == this.windowThread) {
+            super.responsiveSleep(millis);
         } else {
-            super.callFramebufferResizeCallbacks(width, height);
+            final long ms = (long) millis;
+            final long ns = (long) ((millis - ms) * 1_000_000);
+            ThreadUtils.hybridSleep(ms, ns);
         }
     }
 
@@ -45,6 +48,15 @@ public class UnmanagedGLFWWindowInterface extends GLFWWindowInterface {
     public void free() {
         if (Thread.currentThread() == this.windowThread) {
             super.free();
+        }
+    }
+
+    @Override
+    protected void callFramebufferResizeCallbacks(final int width, final int height) {
+        if (ThinGL.isInitialized()) {
+            ThinGL.get().runOnRenderThread(() -> super.callFramebufferResizeCallbacks(width, height));
+        } else {
+            super.callFramebufferResizeCallbacks(width, height);
         }
     }
 

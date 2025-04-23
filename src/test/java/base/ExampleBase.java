@@ -85,6 +85,7 @@ public abstract class ExampleBase implements Runnable {
             GLFW.glfwSwapBuffers(window);
             GLFW.glfwPollEvents();
             ThinGL.get().onEndFrame(); // Let ThinGL know that the current frame is done and the next frame can start
+            // FPSLimiter.limitFPS(30); // Example to limit the FPS to 30 FPS
         }
 
         ThinGL.get().free(); // Destroy the ThinGL instance and free all resources
