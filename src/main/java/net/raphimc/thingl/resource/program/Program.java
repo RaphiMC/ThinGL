@@ -32,7 +32,6 @@ import org.joml.Matrix4f;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryStack;
 
-import java.nio.FloatBuffer;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -140,17 +139,17 @@ public class Program extends GLContainerObject {
 
     public void setUniform(final String name, final Matrix3f matrix) {
         try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-            final FloatBuffer buffer = memoryStack.mallocFloat(3 * 3);
-            matrix.get(buffer);
-            GL41C.glProgramUniformMatrix3fv(this.getGlId(), this.getUniformLocation(name), false, buffer);
+            final long address = memoryStack.nmalloc(Float.BYTES * 3 * 3);
+            matrix.getToAddress(address);
+            GL41C.nglProgramUniformMatrix3fv(this.getGlId(), this.getUniformLocation(name), 1, false, address);
         }
     }
 
     public void setUniform(final String name, final Matrix4f matrix) {
         try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-            final FloatBuffer buffer = memoryStack.mallocFloat(4 * 4);
-            matrix.get(buffer);
-            GL41C.glProgramUniformMatrix4fv(this.getGlId(), this.getUniformLocation(name), false, buffer);
+            final long address = memoryStack.nmalloc(Float.BYTES * 4 * 4);
+            matrix.getToAddress(address);
+            GL41C.nglProgramUniformMatrix4fv(this.getGlId(), this.getUniformLocation(name), 1, false, address);
         }
     }
 
