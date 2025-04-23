@@ -349,7 +349,7 @@ public class Renderer2D extends Renderer {
             final int triangleCount = mesh.num_triangles();
             final IntBuffer indicesBuffer = mesh.triangle_indices(triangleCount * 3);
             for (int i = 0; i < indicesBuffer.capacity(); i++) {
-                indexDataHolder.rawIndex(indicesBuffer.get(i));
+                indexDataHolder.putIndex(indicesBuffer.get(i));
             }
 
             ParStreamlines.parsl_destroy_context(ctx);
@@ -373,7 +373,7 @@ public class Renderer2D extends Renderer {
         }
         final List<Integer> indices = Earcut.earcut(data);
         for (int index : indices) {
-            indexDataHolder.rawIndex(index);
+            indexDataHolder.putIndex(index);
         }
 
         this.drawIfNotBuffering();

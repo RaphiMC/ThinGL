@@ -19,15 +19,15 @@
 package net.raphimc.thingl.drawbuilder.builder;
 
 import net.raphimc.thingl.util.MathUtil;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import org.joml.*;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
+import java.lang.Math;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
+@SuppressWarnings("PointlessArithmeticExpression")
 public class BufferBuilder {
 
     private static final int DEFAULT_INITIAL_SIZE = 64 * 1024;
@@ -70,47 +70,47 @@ public class BufferBuilder {
     }
 
     public BufferBuilder putByte(final byte b) {
-        if (this.limitAddress - this.cursorAddress < 1) {
-            this.ensureHasEnoughSpace(1);
+        if (this.limitAddress - this.cursorAddress < Byte.BYTES) {
+            this.ensureHasEnoughSpace(Byte.BYTES);
         }
         MemoryUtil.memPutByte(this.cursorAddress, b);
-        this.cursorAddress++;
+        this.cursorAddress += Byte.BYTES;
         return this;
     }
 
     public BufferBuilder putShort(final short s) {
-        if (this.limitAddress - this.cursorAddress < 2) {
-            this.ensureHasEnoughSpace(2);
+        if (this.limitAddress - this.cursorAddress < Short.BYTES) {
+            this.ensureHasEnoughSpace(Short.BYTES);
         }
         MemoryUtil.memPutShort(this.cursorAddress, s);
-        this.cursorAddress += 2;
+        this.cursorAddress += Short.BYTES;
         return this;
     }
 
     public BufferBuilder putInt(final int i) {
-        if (this.limitAddress - this.cursorAddress < 4) {
-            this.ensureHasEnoughSpace(4);
+        if (this.limitAddress - this.cursorAddress < Integer.BYTES) {
+            this.ensureHasEnoughSpace(Integer.BYTES);
         }
         MemoryUtil.memPutInt(this.cursorAddress, i);
-        this.cursorAddress += 4;
+        this.cursorAddress += Integer.BYTES;
         return this;
     }
 
     public BufferBuilder putFloat(final float f) {
-        if (this.limitAddress - this.cursorAddress < 4) {
-            this.ensureHasEnoughSpace(4);
+        if (this.limitAddress - this.cursorAddress < Float.BYTES) {
+            this.ensureHasEnoughSpace(Float.BYTES);
         }
         MemoryUtil.memPutFloat(this.cursorAddress, f);
-        this.cursorAddress += 4;
+        this.cursorAddress += Float.BYTES;
         return this;
     }
 
     public BufferBuilder putDouble(final double d) {
-        if (this.limitAddress - this.cursorAddress < 8) {
-            this.ensureHasEnoughSpace(8);
+        if (this.limitAddress - this.cursorAddress < Double.BYTES) {
+            this.ensureHasEnoughSpace(Double.BYTES);
         }
         MemoryUtil.memPutDouble(this.cursorAddress, d);
-        this.cursorAddress += 8;
+        this.cursorAddress += Double.BYTES;
         return this;
     }
 
@@ -118,17 +118,62 @@ public class BufferBuilder {
         return this.putShort(MathUtil.encodeHalfFloat(f));
     }
 
+    public BufferBuilder putVector2i(final Vector2i vector) {
+        return this.putVector2i(vector.x, vector.y);
+    }
+
+    public BufferBuilder putVector2i(final int x, final int y) {
+        if (this.limitAddress - this.cursorAddress < Integer.BYTES * 2) {
+            this.ensureHasEnoughSpace(Integer.BYTES * 2);
+        }
+        MemoryUtil.memPutInt(this.cursorAddress + Integer.BYTES * 0, x);
+        MemoryUtil.memPutInt(this.cursorAddress + Integer.BYTES * 1, y);
+        this.cursorAddress += Integer.BYTES * 2;
+        return this;
+    }
+
+    public BufferBuilder putVector3i(final Vector3i vector) {
+        return this.putVector3i(vector.x, vector.y, vector.z);
+    }
+
+    public BufferBuilder putVector3i(final int x, final int y, final int z) {
+        if (this.limitAddress - this.cursorAddress < Integer.BYTES * 3) {
+            this.ensureHasEnoughSpace(Integer.BYTES * 3);
+        }
+        MemoryUtil.memPutInt(this.cursorAddress + Integer.BYTES * 0, x);
+        MemoryUtil.memPutInt(this.cursorAddress + Integer.BYTES * 1, y);
+        MemoryUtil.memPutInt(this.cursorAddress + Integer.BYTES * 2, z);
+        this.cursorAddress += Integer.BYTES * 3;
+        return this;
+    }
+
+    public BufferBuilder putVector4i(final Vector4i vector) {
+        return this.putVector4i(vector.x, vector.y, vector.z, vector.w);
+    }
+
+    public BufferBuilder putVector4i(final int x, final int y, final int z, final int w) {
+        if (this.limitAddress - this.cursorAddress < Integer.BYTES * 4) {
+            this.ensureHasEnoughSpace(Integer.BYTES * 4);
+        }
+        MemoryUtil.memPutInt(this.cursorAddress + Integer.BYTES * 0, x);
+        MemoryUtil.memPutInt(this.cursorAddress + Integer.BYTES * 1, y);
+        MemoryUtil.memPutInt(this.cursorAddress + Integer.BYTES * 2, z);
+        MemoryUtil.memPutInt(this.cursorAddress + Integer.BYTES * 3, w);
+        this.cursorAddress += Integer.BYTES * 4;
+        return this;
+    }
+
     public BufferBuilder putVector2f(final Vector2f vector) {
         return this.putVector2f(vector.x, vector.y);
     }
 
     public BufferBuilder putVector2f(final float x, final float y) {
-        if (this.limitAddress - this.cursorAddress < 8) {
-            this.ensureHasEnoughSpace(8);
+        if (this.limitAddress - this.cursorAddress < Float.BYTES * 2) {
+            this.ensureHasEnoughSpace(Float.BYTES * 2);
         }
-        MemoryUtil.memPutFloat(this.cursorAddress, x);
-        MemoryUtil.memPutFloat(this.cursorAddress + 4, y);
-        this.cursorAddress += 8;
+        MemoryUtil.memPutFloat(this.cursorAddress + Float.BYTES * 0, x);
+        MemoryUtil.memPutFloat(this.cursorAddress + Float.BYTES * 1, y);
+        this.cursorAddress += Float.BYTES * 2;
         return this;
     }
 
@@ -137,13 +182,13 @@ public class BufferBuilder {
     }
 
     public BufferBuilder putVector3f(final float x, final float y, final float z) {
-        if (this.limitAddress - this.cursorAddress < 12) {
-            this.ensureHasEnoughSpace(12);
+        if (this.limitAddress - this.cursorAddress < Float.BYTES * 3) {
+            this.ensureHasEnoughSpace(Float.BYTES * 3);
         }
-        MemoryUtil.memPutFloat(this.cursorAddress, x);
-        MemoryUtil.memPutFloat(this.cursorAddress + 4, y);
-        MemoryUtil.memPutFloat(this.cursorAddress + 8, z);
-        this.cursorAddress += 12;
+        MemoryUtil.memPutFloat(this.cursorAddress + Float.BYTES * 0, x);
+        MemoryUtil.memPutFloat(this.cursorAddress + Float.BYTES * 1, y);
+        MemoryUtil.memPutFloat(this.cursorAddress + Float.BYTES * 2, z);
+        this.cursorAddress += Float.BYTES * 3;
         return this;
     }
 
@@ -152,14 +197,95 @@ public class BufferBuilder {
     }
 
     public BufferBuilder putVector4f(final float x, final float y, final float z, final float w) {
-        if (this.limitAddress - this.cursorAddress < 16) {
-            this.ensureHasEnoughSpace(16);
+        if (this.limitAddress - this.cursorAddress < Float.BYTES * 4) {
+            this.ensureHasEnoughSpace(Float.BYTES * 4);
         }
-        MemoryUtil.memPutFloat(this.cursorAddress, x);
-        MemoryUtil.memPutFloat(this.cursorAddress + 4, y);
-        MemoryUtil.memPutFloat(this.cursorAddress + 8, z);
-        MemoryUtil.memPutFloat(this.cursorAddress + 12, w);
-        this.cursorAddress += 16;
+        MemoryUtil.memPutFloat(this.cursorAddress + Float.BYTES * 0, x);
+        MemoryUtil.memPutFloat(this.cursorAddress + Float.BYTES * 1, y);
+        MemoryUtil.memPutFloat(this.cursorAddress + Float.BYTES * 2, z);
+        MemoryUtil.memPutFloat(this.cursorAddress + Float.BYTES * 3, w);
+        this.cursorAddress += Float.BYTES * 4;
+        return this;
+    }
+
+    public BufferBuilder putVector2d(final Vector2d vector) {
+        return this.putVector2d(vector.x, vector.y);
+    }
+
+    public BufferBuilder putVector2d(final double x, final double y) {
+        if (this.limitAddress - this.cursorAddress < Double.BYTES * 2) {
+            this.ensureHasEnoughSpace(Double.BYTES * 2);
+        }
+        MemoryUtil.memPutDouble(this.cursorAddress + Double.BYTES * 0, x);
+        MemoryUtil.memPutDouble(this.cursorAddress + Double.BYTES * 1, y);
+        this.cursorAddress += Double.BYTES * 2;
+        return this;
+    }
+
+    public BufferBuilder putVector3d(final Vector3d vector) {
+        return this.putVector3d(vector.x, vector.y, vector.z);
+    }
+
+    public BufferBuilder putVector3d(final double x, final double y, final double z) {
+        if (this.limitAddress - this.cursorAddress < Double.BYTES * 3) {
+            this.ensureHasEnoughSpace(Double.BYTES * 3);
+        }
+        MemoryUtil.memPutDouble(this.cursorAddress + Double.BYTES * 0, x);
+        MemoryUtil.memPutDouble(this.cursorAddress + Double.BYTES * 1, y);
+        MemoryUtil.memPutDouble(this.cursorAddress + Double.BYTES * 2, z);
+        this.cursorAddress += Double.BYTES * 3;
+        return this;
+    }
+
+    public BufferBuilder putVector4d(final Vector4d vector) {
+        return this.putVector4d(vector.x, vector.y, vector.z, vector.w);
+    }
+
+    public BufferBuilder putVector4d(final double x, final double y, final double z, final double w) {
+        if (this.limitAddress - this.cursorAddress < Double.BYTES * 4) {
+            this.ensureHasEnoughSpace(Double.BYTES * 4);
+        }
+        MemoryUtil.memPutDouble(this.cursorAddress + Double.BYTES * 0, x);
+        MemoryUtil.memPutDouble(this.cursorAddress + Double.BYTES * 1, y);
+        MemoryUtil.memPutDouble(this.cursorAddress + Double.BYTES * 2, z);
+        MemoryUtil.memPutDouble(this.cursorAddress + Double.BYTES * 3, w);
+        this.cursorAddress += Double.BYTES * 4;
+        return this;
+    }
+
+    public BufferBuilder putMatrix3f(final Matrix3f matrix) {
+        if (this.limitAddress - this.cursorAddress < Float.BYTES * 3 * 3) {
+            this.ensureHasEnoughSpace(Float.BYTES * 3 * 3);
+        }
+        matrix.getToAddress(this.cursorAddress);
+        this.cursorAddress += Float.BYTES * 3 * 3;
+        return this;
+    }
+
+    public BufferBuilder putMatrix4f(final Matrix4f matrix) {
+        if (this.limitAddress - this.cursorAddress < Float.BYTES * 4 * 4) {
+            this.ensureHasEnoughSpace(Float.BYTES * 4 * 4);
+        }
+        matrix.getToAddress(this.cursorAddress);
+        this.cursorAddress += Float.BYTES * 4 * 4;
+        return this;
+    }
+
+    public BufferBuilder putMatrix3d(final Matrix3d matrix) {
+        if (this.limitAddress - this.cursorAddress < Double.BYTES * 3 * 3) {
+            this.ensureHasEnoughSpace(Double.BYTES * 3 * 3);
+        }
+        matrix.getToAddress(this.cursorAddress);
+        this.cursorAddress += Double.BYTES * 3 * 3;
+        return this;
+    }
+
+    public BufferBuilder putMatrix4d(final Matrix4d matrix) {
+        if (this.limitAddress - this.cursorAddress < Double.BYTES * 4 * 4) {
+            this.ensureHasEnoughSpace(Double.BYTES * 4 * 4);
+        }
+        matrix.getToAddress(this.cursorAddress);
+        this.cursorAddress += Double.BYTES * 4 * 4;
         return this;
     }
 

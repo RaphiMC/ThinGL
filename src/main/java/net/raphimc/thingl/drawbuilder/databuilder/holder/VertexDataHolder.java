@@ -21,15 +21,35 @@ package net.raphimc.thingl.drawbuilder.databuilder.holder;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.raphimc.thingl.drawbuilder.builder.BufferBuilder;
-import net.raphimc.thingl.drawbuilder.databuilder.writer.BufferVertexDataWriter;
+import net.raphimc.thingl.drawbuilder.databuilder.writer.BufferDataWriter;
 
-public class VertexDataHolder extends BufferVertexDataWriter<VertexDataHolder> {
+public class VertexDataHolder extends BufferDataWriter<VertexDataHolder> {
 
     private int vertexCount;
     private IntList connectedPrimitiveIndices;
 
     public VertexDataHolder(final BufferBuilder bufferBuilder) {
         super(bufferBuilder);
+    }
+
+    public VertexDataHolder putByte(final byte b) {
+        this.bufferBuilder.putByte(b);
+        return this;
+    }
+
+    public VertexDataHolder putShort(final short s) {
+        this.bufferBuilder.putShort(s);
+        return this;
+    }
+
+    public VertexDataHolder putHalfFloat(final float f) {
+        this.bufferBuilder.putHalfFloat(f);
+        return this;
+    }
+
+    public VertexDataHolder putTextureCoords(final float u, final float v) {
+        this.bufferBuilder.putFloat(u).putFloat(v);
+        return this;
     }
 
     public void endVertex() {

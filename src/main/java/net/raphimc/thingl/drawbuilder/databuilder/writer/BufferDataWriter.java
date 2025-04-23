@@ -20,40 +20,14 @@ package net.raphimc.thingl.drawbuilder.databuilder.writer;
 
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.drawbuilder.builder.BufferBuilder;
+import org.joml.Math;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
-import org.joml.Vector3f;
 
 public abstract class BufferDataWriter<T extends BufferDataWriter<T>> extends BufferWriter<T> {
 
     public BufferDataWriter(final BufferBuilder bufferBuilder) {
         super(bufferBuilder);
-    }
-
-    public T putVector3f(final Matrix4f positionMatrix, final float x, final float y, final float z) {
-        if ((positionMatrix.properties() & Matrix4fc.PROPERTY_IDENTITY) != 0) {
-            return this.putVector3f(x, y, z);
-        } else {
-            final Vector3f vector3f = positionMatrix.transformPosition(new Vector3f(x, y, z));
-            return this.putVector3f(vector3f.x, vector3f.y, vector3f.z);
-        }
-    }
-
-    public T putVector3f(final float x, final float y, final float z) {
-        this.bufferBuilder.putVector3f(x, y, z);
-        return (T) this;
-    }
-
-    public T putColor(final int r, final int g, final int b, final int a) {
-        return this.putColor(a << 24 | b << 16 | g << 8 | r);
-    }
-
-    public T putColor(final Color color) {
-        return this.putColor(color.toABGR());
-    }
-
-    public T putColor(final int abgrColor) {
-        return this.putInt(abgrColor);
     }
 
     public T putInt(final int i) {
@@ -69,6 +43,78 @@ public abstract class BufferDataWriter<T extends BufferDataWriter<T>> extends Bu
     public T putDouble(final double d) {
         this.bufferBuilder.putDouble(d);
         return (T) this;
+    }
+
+    public T putVector2i(final int x, final int y) {
+        this.bufferBuilder.putVector2i(x, y);
+        return (T) this;
+    }
+
+    public T putVector3i(final int x, final int y, final int z) {
+        this.bufferBuilder.putVector3i(x, y, z);
+        return (T) this;
+    }
+
+    public T putVector4i(final int x, final int y, final int z, final int w) {
+        this.bufferBuilder.putVector4i(x, y, z, w);
+        return (T) this;
+    }
+
+    public T putVector2f(final float x, final float y) {
+        this.bufferBuilder.putVector2f(x, y);
+        return (T) this;
+    }
+
+    public T putVector3f(final float x, final float y, final float z) {
+        this.bufferBuilder.putVector3f(x, y, z);
+        return (T) this;
+    }
+
+    public T putVector4f(final float x, final float y, final float z, final float w) {
+        this.bufferBuilder.putVector4f(x, y, z, w);
+        return (T) this;
+    }
+
+    public T putVector2d(final double x, final double y) {
+        this.bufferBuilder.putVector2d(x, y);
+        return (T) this;
+    }
+
+    public T putVector3d(final double x, final double y, final double z) {
+        this.bufferBuilder.putVector3d(x, y, z);
+        return (T) this;
+    }
+
+    public T putVector4d(final double x, final double y, final double z, final double w) {
+        this.bufferBuilder.putVector4d(x, y, z, w);
+        return (T) this;
+    }
+
+    public T putVector3f(final Matrix4f positionMatrix, final float x, final float y, final float z) {
+        // Code from Vector3f#mulPosition
+        if ((positionMatrix.properties() & Matrix4fc.PROPERTY_IDENTITY) != 0) {
+            return this.putVector3f(x, y, z);
+        } else if ((positionMatrix.properties() & Matrix4fc.PROPERTY_TRANSLATION) != 0) {
+            return this.putVector3f(x + positionMatrix.m30(), y + positionMatrix.m31(), z + positionMatrix.m32());
+        } else {
+            return this.putVector3f(
+                    Math.fma(positionMatrix.m00(), x, Math.fma(positionMatrix.m10(), y, Math.fma(positionMatrix.m20(), z, positionMatrix.m30()))),
+                    Math.fma(positionMatrix.m01(), x, Math.fma(positionMatrix.m11(), y, Math.fma(positionMatrix.m21(), z, positionMatrix.m31()))),
+                    Math.fma(positionMatrix.m02(), x, Math.fma(positionMatrix.m12(), y, Math.fma(positionMatrix.m22(), z, positionMatrix.m32())))
+            );
+        }
+    }
+
+    public T putColor(final int r, final int g, final int b, final int a) {
+        return this.putColor(a << 24 | b << 16 | g << 8 | r);
+    }
+
+    public T putColor(final Color color) {
+        return this.putColor(color.toABGR());
+    }
+
+    public T putColor(final int abgrColor) {
+        return this.putInt(abgrColor);
     }
 
 }

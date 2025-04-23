@@ -54,6 +54,7 @@ public class MathUtil {
 
     /**
      * Encodes a float value into a half precision float (IEEE-754 fp16) value.
+     *
      * @param v The float value to encode
      * @return The encoded half precision float
      */
@@ -72,6 +73,7 @@ public class MathUtil {
 
     /**
      * Decodes a half precision float (IEEE-754 fp16) value into a float value.
+     *
      * @param v The half precision float to decode
      * @return The decoded float value
      */

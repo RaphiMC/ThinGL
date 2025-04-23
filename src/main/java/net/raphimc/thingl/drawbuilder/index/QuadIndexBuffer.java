@@ -58,7 +58,7 @@ public class QuadIndexBuffer {
         final BufferBuilder bufferBuilder = new BufferBuilder(quadCount * QUAD_INDEX_COUNT * Integer.BYTES);
         final IndexDataHolder indexDataHolder = new IndexDataHolder(bufferBuilder);
         for (int i = 0; i < quadCount; i++) {
-            indexDataHolder.quad();
+            indexDataHolder.putQuad();
         }
         return bufferBuilder.finish();
     }

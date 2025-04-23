@@ -74,7 +74,7 @@ public class GLStateStack {
     }
 
     public void push() {
-        this.stateStack.push(new Int2BooleanOpenHashMap());
+        this.stateStack.push(new Int2BooleanOpenHashMap(6));
     }
 
     public void enable(final int capability) {
@@ -103,7 +103,7 @@ public class GLStateStack {
     }
 
     public void pushPixelStore() {
-        this.pixelStoreStack.push(new Int2IntOpenHashMap());
+        this.pixelStoreStack.push(new Int2IntOpenHashMap(6));
     }
 
     public void pixelStore(final int parameter, final int value) {
