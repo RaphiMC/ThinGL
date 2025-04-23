@@ -23,10 +23,6 @@ public class MultithreadedGLFWWindowInterface extends GLFWWindowInterface {
 
     private final Thread windowThread;
 
-    public MultithreadedGLFWWindowInterface() {
-        this.windowThread = Thread.currentThread();
-    }
-
     public MultithreadedGLFWWindowInterface(final long windowHandle) {
         super(windowHandle);
         this.windowThread = Thread.currentThread();
