@@ -19,11 +19,11 @@ package net.raphimc.thingl.implementation;
 
 import net.raphimc.thingl.ThinGL;
 
-public class MultithreadedGLFWWindowInterface extends GLFWWindowInterface {
+public class UnmanagedGLFWWindowInterface extends GLFWWindowInterface {
 
     private final Thread windowThread;
 
-    public MultithreadedGLFWWindowInterface(final long windowHandle) {
+    public UnmanagedGLFWWindowInterface(final long windowHandle) {
         super(windowHandle);
         this.windowThread = Thread.currentThread();
     }
