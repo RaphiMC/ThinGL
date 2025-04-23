@@ -71,6 +71,7 @@ public abstract class ExampleBase implements Runnable {
         final Matrix4fStack positionMatrix = new Matrix4fStack(8);
 
         while (!GLFW.glfwWindowShouldClose(window)) {
+            ThinGL.get().onStartFrame(); // Let ThinGL know that the current frame is starting
             mainFramebuffer.bind(true); // Bind the main framebuffer
             mainFramebuffer.clear(); // Clear the main framebuffer
 
@@ -80,9 +81,10 @@ public abstract class ExampleBase implements Runnable {
 
             mainFramebuffer.unbind();
             mainFramebuffer.blitTo(WindowFramebuffer.INSTANCE, true, false, false); // Blit the main framebuffer to the window framebuffer
-            ThinGL.get().onEndFrame(); // Let ThinGL know that the current frame is done rendering
+            ThinGL.get().onFinishFrame(); // Let ThinGL know that the current frame is done rendering and ready to be presented
             GLFW.glfwSwapBuffers(window);
             GLFW.glfwPollEvents();
+            ThinGL.get().onEndFrame(); // Let ThinGL know that the current frame is done and the next frame can start
         }
 
         ThinGL.get().free(); // Destroy the ThinGL instance and free all resources

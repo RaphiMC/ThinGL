@@ -34,7 +34,7 @@ public class BufferBuilderPool {
 
     @ApiStatus.Internal
     public BufferBuilderPool(final ThinGL thinGL) {
-        thinGL.addEndFrameCallback(() -> {
+        thinGL.addFinishFrameCallback(() -> {
             if (!this.inUse.isEmpty()) {
                 ThinGL.LOGGER.warn(this.inUse.size() + " BufferBuilder(s) were not returned to the pool. Forcibly reclaiming them.");
                 for (BufferBuilder bufferBuilder : this.inUse) {

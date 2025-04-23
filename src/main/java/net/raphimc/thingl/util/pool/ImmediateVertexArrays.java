@@ -38,7 +38,7 @@ public class ImmediateVertexArrays {
 
     @ApiStatus.Internal
     public ImmediateVertexArrays(final ThinGL thinGL) {
-        thinGL.addEndFrameCallback(() -> {
+        thinGL.addFinishFrameCallback(() -> {
             if (this.vertexArrayCache.size() > 64) {
                 ThinGL.LOGGER.warn("ImmediateVertexArrays cache has grown to " + this.vertexArrayCache.size() + " entries. Clearing the cache to prevent memory starvation.");
                 this.vertexArrayCache.values().forEach(VertexArray::freeFully);

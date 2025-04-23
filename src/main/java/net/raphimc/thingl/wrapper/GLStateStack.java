@@ -41,7 +41,7 @@ public class GLStateStack {
 
     @ApiStatus.Internal
     public GLStateStack(final ThinGL thinGL) {
-        thinGL.addEndFrameCallback(() -> {
+        thinGL.addFinishFrameCallback(() -> {
             if (!this.stateStack.isEmpty()) {
                 while (!this.stateStack.isEmpty()) this.pop();
                 ThinGL.LOGGER.warn("GLStateStack state stack was not empty at the end of the frame!");

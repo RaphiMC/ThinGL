@@ -37,7 +37,7 @@ public class FramebufferPool {
 
     @ApiStatus.Internal
     public FramebufferPool(final ThinGL thinGL) {
-        thinGL.addEndFrameCallback(() -> {
+        thinGL.addFinishFrameCallback(() -> {
             if (!this.inUse.isEmpty()) {
                 ThinGL.LOGGER.warn(this.inUse.size() + " Framebuffer(s) were not returned to the pool. Forcibly reclaiming them.");
                 this.free.addAll(this.inUse);

@@ -30,7 +30,7 @@ public class StencilStack {
 
     @ApiStatus.Internal
     public StencilStack(final ThinGL thinGL) {
-        thinGL.addEndFrameCallback(() -> {
+        thinGL.addFinishFrameCallback(() -> {
             if (!this.stack.isEmpty()) {
                 while (!this.stack.isEmpty()) this.pop();
                 ThinGL.LOGGER.warn("StencilStack was not empty at the end of the frame!");

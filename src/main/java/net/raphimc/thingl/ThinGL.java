@@ -172,8 +172,15 @@ public class ThinGL {
 
     private final FreeTypeLibrary freeTypeLibrary;
 
-    private final List<Runnable> endFrameCallbacks = new ArrayList<>();
-    private final List<Runnable> endFrameActions = new ArrayList<>();
+    private final List<Runnable> finishFrameCallbacks = new ArrayList<>();
+    private final List<Runnable> finishFrameActions = new ArrayList<>();
+
+    private long frameStartTime = System.nanoTime();
+    private float frameTime = 0F;
+    private float fullFrameTime = 0F;
+    private long lastFpsUpdateTime = System.nanoTime();
+    private int fpsCounter = 0;
+    private int fps = 0;
 
     public ThinGL(final Function<ThinGL, ApplicationInterface> applicationInterface, final Supplier<WindowInterface> windowInterface) {
         this(applicationInterface, windowInterface.get());
@@ -207,7 +214,7 @@ public class ThinGL {
             this.freeTypeLibrary = null;
         }
 
-        this.addEndFrameCallback(() -> {
+        this.addFinishFrameCallback(() -> {
             if (this.globalDrawBatch.hasDrawBatches()) {
                 this.globalDrawBatch.free();
                 ThinGL.LOGGER.warn("Global draw batch was not empty at the end of the frame!");
@@ -220,34 +227,51 @@ public class ThinGL {
         LOGGER.info("Initialized ThinGL " + VERSION + " on " + gpuModel + " (" + gpuVendor + ") with OpenGL " + glVersion);
     }
 
-    public synchronized void onEndFrame() {
-        for (Runnable action : this.endFrameActions) {
+    public synchronized void onStartFrame() {
+        this.frameStartTime = System.nanoTime();
+    }
+
+    public synchronized void onFinishFrame() {
+        for (Runnable action : this.finishFrameActions) {
             try {
                 action.run();
             } catch (Throwable e) {
-                LOGGER.error("Exception while invoking end frame action", e);
+                LOGGER.error("Exception while invoking finish frame action", e);
             }
         }
-        this.endFrameActions.clear();
-        for (Runnable callback : this.endFrameCallbacks) {
+        this.finishFrameActions.clear();
+        for (Runnable callback : this.finishFrameCallbacks) {
             try {
                 callback.run();
             } catch (Throwable e) {
-                LOGGER.error("Exception while invoking end frame callback", e);
+                LOGGER.error("Exception while invoking finish frame callback", e);
             }
         }
-    }
 
-    public synchronized void addEndFrameCallback(final Runnable callback) {
-        if (this.endFrameCallbacks.contains(callback)) {
-            throw new RuntimeException("End frame callback already registered");
+        final long currentTime = System.nanoTime();
+        this.frameTime = (currentTime - this.frameStartTime) / 1_000_000F;
+        this.fpsCounter++;
+        if (currentTime - this.lastFpsUpdateTime >= 1_000_000_000L) {
+            this.lastFpsUpdateTime = currentTime;
+            this.fps = this.fpsCounter;
+            this.fpsCounter = 0;
         }
-        this.endFrameCallbacks.add(callback);
     }
 
-    public synchronized void removeEndFrameCallback(final Runnable callback) {
-        if (!this.endFrameCallbacks.remove(callback)) {
-            throw new RuntimeException("End frame callback not registered");
+    public synchronized void onEndFrame() {
+        this.fullFrameTime = (System.nanoTime() - this.frameStartTime) / 1_000_000F;
+    }
+
+    public synchronized void addFinishFrameCallback(final Runnable callback) {
+        if (this.finishFrameCallbacks.contains(callback)) {
+            throw new RuntimeException("Finish frame callback already registered");
+        }
+        this.finishFrameCallbacks.add(callback);
+    }
+
+    public synchronized void removeFinishFrameCallback(final Runnable callback) {
+        if (!this.finishFrameCallbacks.remove(callback)) {
+            throw new RuntimeException("Finish frame callback not registered");
         }
     }
 
@@ -256,7 +280,7 @@ public class ThinGL {
             action.run();
         } else {
             synchronized (this) {
-                this.endFrameActions.add(action);
+                this.finishFrameActions.add(action);
             }
         }
     }
@@ -269,6 +293,18 @@ public class ThinGL {
 
     public boolean isOnRenderThread() {
         return Thread.currentThread() == this.renderThread;
+    }
+
+    public float getFrameTime() {
+        return this.frameTime;
+    }
+
+    public float getFullFrameTime() {
+        return this.fullFrameTime;
+    }
+
+    public int getFPS() {
+        return this.fps;
     }
 
     public void free() {
