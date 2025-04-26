@@ -28,17 +28,17 @@ public class KawaseBlurProgram extends MultiPassPostProcessingProgram<KawaseBlur
 
     public KawaseBlurProgram(final Shader vertexShader, final Shader fragmentShader) {
         super(vertexShader, fragmentShader, s -> {
-            s.setUniform("u_Pass", 0);
-            s.setUniform("u_Offset", s.offset);
+            s.setUniformInt("u_Pass", 0);
+            s.setUniformFloat("u_Offset", s.offset);
         }, s -> {
-            s.setUniform("u_Pass", 1);
-            s.setUniform("u_Offset", s.offset);
+            s.setUniformInt("u_Pass", 1);
+            s.setUniformFloat("u_Offset", s.offset);
         }, s -> {
-            s.setUniform("u_Pass", 2);
-            s.setUniform("u_Offset", s.offset);
+            s.setUniformInt("u_Pass", 2);
+            s.setUniformFloat("u_Offset", s.offset);
         }, s -> {
-            s.setUniform("u_Pass", 3);
-            s.setUniform("u_Offset", s.offset);
+            s.setUniformInt("u_Pass", 3);
+            s.setUniformFloat("u_Offset", s.offset);
         });
     }
 

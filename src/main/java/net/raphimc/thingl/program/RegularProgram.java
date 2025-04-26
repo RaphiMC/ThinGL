@@ -41,11 +41,11 @@ public class RegularProgram extends Program {
     public void bind() {
         super.bind();
         final Framebuffer currentFramebuffer = ThinGL.applicationInterface().getCurrentFramebuffer();
-        this.setUniform("u_ProjectionMatrix", ThinGL.applicationInterface().getProjectionMatrix());
-        this.setUniform("u_ViewMatrix", ThinGL.applicationInterface().getViewMatrix());
-        this.setUniform("u_ModelMatrix", RenderMathUtil.getIdentityMatrix());
-        this.setUniform("u_Viewport", currentFramebuffer.getWidth(), currentFramebuffer.getHeight());
-        this.setUniform("u_ColorModifier", Color.WHITE);
+        this.setUniformMatrix4f("u_ProjectionMatrix", ThinGL.applicationInterface().getProjectionMatrix());
+        this.setUniformMatrix4f("u_ViewMatrix", ThinGL.applicationInterface().getViewMatrix());
+        this.setUniformMatrix4f("u_ModelMatrix", RenderMathUtil.getIdentityMatrix());
+        this.setUniformVector2f("u_Viewport", currentFramebuffer.getWidth(), currentFramebuffer.getHeight());
+        this.setUniformVector4f("u_ColorModifier", Color.WHITE);
     }
 
 }

@@ -30,7 +30,7 @@ public class GeometryProgram extends RegularProgram {
     @Override
     public void bind() {
         super.bind();
-        this.setUniform("u_ScaleFactor", ThinGL.applicationInterface().get2DScaleFactor().x);
+        this.setUniformFloat("u_ScaleFactor", ThinGL.applicationInterface().get2DScaleFactor().x);
     }
 
 }

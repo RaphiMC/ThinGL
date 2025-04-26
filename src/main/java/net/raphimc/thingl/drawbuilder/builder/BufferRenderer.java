@@ -352,10 +352,10 @@ public class BufferRenderer {
             program.bind();
             if (program instanceof RegularProgram) {
                 if ((modelMatrix.properties() & Matrix4fc.PROPERTY_IDENTITY) == 0) {
-                    program.setUniform("u_ModelMatrix", modelMatrix);
+                    program.setUniformMatrix4f("u_ModelMatrix", modelMatrix);
                 }
                 if (COLOR_MODIFIER != null) {
-                    program.setUniform("u_ColorModifier", COLOR_MODIFIER);
+                    program.setUniformVector4f("u_ColorModifier", COLOR_MODIFIER);
                 }
                 for (Map.Entry<String, AbstractBuffer> entry : builtBuffer.shaderDataBuffers().entrySet()) {
                     program.setShaderStorageBuffer(entry.getKey(), entry.getValue());

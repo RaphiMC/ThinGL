@@ -29,7 +29,7 @@ public class ColorTweakProgram extends SinglePassPostProcessingProgram<ColorTwea
 
     public ColorTweakProgram(final Shader vertexShader, final Shader fragmentShader) {
         super(vertexShader, fragmentShader, s -> {
-            s.setUniform("u_Color", s.color.getRed() / 255F, s.color.getGreen() / 255F, s.color.getBlue() / 255F, s.color.getAlpha() / 255F);
+            s.setUniformVector4f("u_Color", s.color);
         });
     }
 

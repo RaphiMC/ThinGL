@@ -27,13 +27,13 @@ public class GaussianBlurProgram extends MultiPassPostProcessingProgram<Gaussian
 
     public GaussianBlurProgram(final Shader vertexShader, final Shader fragmentShader) {
         super(vertexShader, fragmentShader, s -> {
-            s.setUniform("u_FinalPass", false);
-            s.setUniform("u_Radius", s.radius);
-            s.setUniform("u_Sigma", s.sigma);
+            s.setUniformBoolean("u_FinalPass", false);
+            s.setUniformInt("u_Radius", s.radius);
+            s.setUniformFloat("u_Sigma", s.sigma);
         }, s -> {
-            s.setUniform("u_FinalPass", true);
-            s.setUniform("u_Radius", s.radius);
-            s.setUniform("u_Sigma", s.sigma);
+            s.setUniformBoolean("u_FinalPass", true);
+            s.setUniformInt("u_Radius", s.radius);
+            s.setUniformFloat("u_Sigma", s.sigma);
         });
     }
 

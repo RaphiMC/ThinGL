@@ -37,9 +37,9 @@ public class PostProcessingProgram extends Program {
     public void bind() {
         super.bind();
         final Framebuffer currentFramebuffer = ThinGL.applicationInterface().getCurrentFramebuffer();
-        this.setUniform("u_ProjectionMatrix", new Matrix4f().setOrtho(0F, currentFramebuffer.getWidth(), currentFramebuffer.getHeight(), 0F, -5000F, 5000F));
-        this.setUniform("u_Viewport", currentFramebuffer.getWidth(), currentFramebuffer.getHeight());
-        this.setUniform("u_Quad", 0F, 0F, currentFramebuffer.getWidth(), currentFramebuffer.getHeight());
+        this.setUniformMatrix4f("u_ProjectionMatrix", new Matrix4f().setOrtho(0F, currentFramebuffer.getWidth(), currentFramebuffer.getHeight(), 0F, -5000F, 5000F));
+        this.setUniformVector2f("u_Viewport", currentFramebuffer.getWidth(), currentFramebuffer.getHeight());
+        this.setUniformVector4f("u_Quad", 0F, 0F, currentFramebuffer.getWidth(), currentFramebuffer.getHeight());
     }
 
     public final void renderScaledQuad(final float x1, final float y1, final float x2, final float y2) {
@@ -66,7 +66,7 @@ public class PostProcessingProgram extends Program {
     }
 
     protected void renderQuad0(final float x1, final float y1, final float x2, final float y2) {
-        this.setUniform("u_Quad", x1, y1, x2, y2);
+        this.setUniformVector4f("u_Quad", x1, y1, x2, y2);
         ThinGL.immediateVertexArrays().getPostProcessingVao().drawArrays(DrawMode.TRIANGLES, 6, 0);
     }
 

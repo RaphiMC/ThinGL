@@ -105,39 +105,39 @@ public class Program extends GLContainerObject {
         }
     }
 
-    public void setUniform(final String name, final boolean v) {
+    public void setUniformBoolean(final String name, final boolean v) {
         GL41C.glProgramUniform1i(this.getGlId(), this.getUniformLocation(name), v ? GL11C.GL_TRUE : GL11C.GL_FALSE);
     }
 
-    public void setUniform(final String name, final int v) {
+    public void setUniformInt(final String name, final int v) {
         GL41C.glProgramUniform1i(this.getGlId(), this.getUniformLocation(name), v);
     }
 
-    public void setUniform(final String name, final int... v) {
+    public void setUniformIntArray(final String name, final int... v) {
         GL41C.glProgramUniform1iv(this.getGlId(), this.getUniformLocation(name), v);
     }
 
-    public void setUniform(final String name, final float v) {
+    public void setUniformFloat(final String name, final float v) {
         GL41C.glProgramUniform1f(this.getGlId(), this.getUniformLocation(name), v);
     }
 
-    public void setUniform(final String name, final float v1, final float v2) {
+    public void setUniformVector2f(final String name, final float v1, final float v2) {
         GL41C.glProgramUniform2f(this.getGlId(), this.getUniformLocation(name), v1, v2);
     }
 
-    public void setUniform(final String name, final float v1, final float v2, final float v3) {
+    public void setUniformVector3f(final String name, final float v1, final float v2, final float v3) {
         GL41C.glProgramUniform3f(this.getGlId(), this.getUniformLocation(name), v1, v2, v3);
     }
 
-    public void setUniform(final String name, final float v1, final float v2, final float v3, final float v4) {
+    public void setUniformVector4f(final String name, final float v1, final float v2, final float v3, final float v4) {
         GL41C.glProgramUniform4f(this.getGlId(), this.getUniformLocation(name), v1, v2, v3, v4);
     }
 
-    public void setUniform(final String name, final Color color) {
-        this.setUniform(name, color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, color.getAlpha() / 255F);
+    public void setUniformVector4f(final String name, final Color color) {
+        this.setUniformVector4f(name, color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, color.getAlpha() / 255F);
     }
 
-    public void setUniform(final String name, final Matrix3f matrix) {
+    public void setUniformMatrix3f(final String name, final Matrix3f matrix) {
         try (MemoryStack memoryStack = MemoryStack.stackPush()) {
             final long address = memoryStack.nmalloc(Float.BYTES * 3 * 3);
             matrix.getToAddress(address);
@@ -145,7 +145,7 @@ public class Program extends GLContainerObject {
         }
     }
 
-    public void setUniform(final String name, final Matrix4f matrix) {
+    public void setUniformMatrix4f(final String name, final Matrix4f matrix) {
         try (MemoryStack memoryStack = MemoryStack.stackPush()) {
             final long address = memoryStack.nmalloc(Float.BYTES * 4 * 4);
             matrix.getToAddress(address);
@@ -167,7 +167,7 @@ public class Program extends GLContainerObject {
 
     public void setUniformSampler(final String name, final int textureId) {
         GL45C.glBindTextureUnit(this.currentTextureUnit, textureId);
-        this.setUniform(name, this.currentTextureUnit++);
+        this.setUniformInt(name, this.currentTextureUnit++);
     }
 
     public void setUniformSamplerArray(final String name, final int... textureIds) {
@@ -176,7 +176,7 @@ public class Program extends GLContainerObject {
             GL45C.glBindTextureUnit(this.currentTextureUnit + i, textureIds[i]);
             textureUnits[i] = this.currentTextureUnit + i;
         }
-        this.setUniform(name, textureUnits);
+        this.setUniformIntArray(name, textureUnits);
     }
 
     public void setUniformImage(final String name, final Framebuffer framebuffer, final int access, final int format) {
@@ -193,7 +193,7 @@ public class Program extends GLContainerObject {
 
     public void setUniformImage(final String name, final int textureId, final int access, final int format) {
         GL42C.glBindImageTexture(this.currentImageUnit, textureId, 0, false, 0, access, format);
-        this.setUniform(name, this.currentImageUnit++);
+        this.setUniformInt(name, this.currentImageUnit++);
     }
 
     public void setUniformBuffer(final String name, final AbstractBuffer buffer) {

@@ -33,11 +33,11 @@ public class RainbowColorProgram extends SinglePassPostProcessingProgram<Rainbow
 
     public RainbowColorProgram(final Shader vertexShader, final Shader fragmentShader) {
         super(vertexShader, fragmentShader, s -> {
-            s.setUniform("u_Time", (System.currentTimeMillis() - s.startTime) / 1_000F);
-            s.setUniform("u_SpeedDivider", (float) s.speedDivider);
-            s.setUniform("u_RainbowDivider", (float) s.rainbowDivider);
-            s.setUniform("u_Offset", s.offset / 1000F);
-            s.setUniform("u_Direction", s.direction.x, s.direction.y);
+            s.setUniformFloat("u_Time", (System.currentTimeMillis() - s.startTime) / 1_000F);
+            s.setUniformFloat("u_SpeedDivider", (float) s.speedDivider);
+            s.setUniformFloat("u_RainbowDivider", (float) s.rainbowDivider);
+            s.setUniformFloat("u_Offset", s.offset / 1000F);
+            s.setUniformVector2f("u_Direction", s.direction.x, s.direction.y);
         });
     }
 

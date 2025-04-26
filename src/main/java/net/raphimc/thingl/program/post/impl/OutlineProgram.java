@@ -33,13 +33,13 @@ public class OutlineProgram extends MultiPassPostProcessingProgram<OutlineProgra
 
     public OutlineProgram(final Shader vertexShader, final Shader fragmentShader) {
         super(vertexShader, fragmentShader, s -> {
-            s.setUniform("u_FinalPass", false);
-            s.setUniform("u_StyleFlags", s.styleFlags);
-            s.setUniform("u_Width", s.width);
+            s.setUniformBoolean("u_FinalPass", false);
+            s.setUniformInt("u_StyleFlags", s.styleFlags);
+            s.setUniformInt("u_Width", s.width);
         }, s -> {
-            s.setUniform("u_FinalPass", true);
-            s.setUniform("u_StyleFlags", s.styleFlags);
-            s.setUniform("u_Width", s.width);
+            s.setUniformBoolean("u_FinalPass", true);
+            s.setUniformInt("u_StyleFlags", s.styleFlags);
+            s.setUniformInt("u_Width", s.width);
         });
     }
 
