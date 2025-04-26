@@ -28,17 +28,17 @@ import net.raphimc.thingl.util.BufferUtil;
 import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.opengl.GL15C;
 
-public class BufferPool {
+public class GpuBufferPool {
 
     private final ReferenceList<Buffer> free = new ReferenceArrayList<>();
     private final ReferenceList<Buffer> inUse = new ReferenceArrayList<>();
     private final Reference2LongMap<Buffer> bufferAccessTime = new Reference2LongOpenHashMap<>();
 
     @ApiStatus.Internal
-    public BufferPool(final ThinGL thinGL) {
+    public GpuBufferPool(final ThinGL thinGL) {
         thinGL.addFinishFrameCallback(() -> {
             if (!this.inUse.isEmpty()) {
-                ThinGL.LOGGER.warn(this.inUse.size() + " Buffer(s) were not returned to the pool. Forcibly reclaiming them.");
+                ThinGL.LOGGER.warn(this.inUse.size() + " GPU Buffer(s) were not returned to the pool. Forcibly reclaiming them.");
                 this.free.addAll(this.inUse);
                 this.inUse.clear();
             }

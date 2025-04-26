@@ -33,8 +33,8 @@ import net.raphimc.thingl.renderer.impl.RendererText;
 import net.raphimc.thingl.text.FreeTypeLibrary;
 import net.raphimc.thingl.text.renderer.BSDFTextRenderer;
 import net.raphimc.thingl.util.pool.BufferBuilderPool;
-import net.raphimc.thingl.util.pool.BufferPool;
 import net.raphimc.thingl.util.pool.FramebufferPool;
+import net.raphimc.thingl.util.pool.GpuBufferPool;
 import net.raphimc.thingl.util.pool.ImmediateVertexArrays;
 import net.raphimc.thingl.wrapper.GLStateStack;
 import net.raphimc.thingl.wrapper.ScissorStack;
@@ -129,8 +129,8 @@ public class ThinGL {
         return get().getBufferBuilderPool();
     }
 
-    public static BufferPool bufferPool() {
-        return get().getBufferPool();
+    public static GpuBufferPool gpuBufferPool() {
+        return get().getGpuBufferPool();
     }
 
     public static FramebufferPool framebufferPool() {
@@ -165,7 +165,7 @@ public class ThinGL {
 
     private final ImmediateMultiDrawBatchDataHolder globalDrawBatch;
     private final BufferBuilderPool bufferBuilderPool;
-    private final BufferPool bufferPool;
+    private final GpuBufferPool gpuBufferPool;
     private final FramebufferPool framebufferPool;
     private final ImmediateVertexArrays immediateVertexArrays;
     private final QuadIndexBuffer quadIndexBuffer;
@@ -201,7 +201,7 @@ public class ThinGL {
         this.rendererText = new RendererText(new BSDFTextRenderer());
         this.globalDrawBatch = new ImmediateMultiDrawBatchDataHolder();
         this.bufferBuilderPool = new BufferBuilderPool(this);
-        this.bufferPool = new BufferPool(this);
+        this.gpuBufferPool = new GpuBufferPool(this);
         this.framebufferPool = new FramebufferPool(this);
         this.immediateVertexArrays = new ImmediateVertexArrays(this);
         this.quadIndexBuffer = new QuadIndexBuffer(this);
@@ -316,7 +316,7 @@ public class ThinGL {
         this.rendererText.free();
         this.globalDrawBatch.free();
         this.bufferBuilderPool.free();
-        this.bufferPool.free();
+        this.gpuBufferPool.free();
         this.framebufferPool.free();
         this.immediateVertexArrays.free();
         this.quadIndexBuffer.free();
@@ -384,8 +384,8 @@ public class ThinGL {
         return this.bufferBuilderPool;
     }
 
-    public BufferPool getBufferPool() {
-        return this.bufferPool;
+    public GpuBufferPool getGpuBufferPool() {
+        return this.gpuBufferPool;
     }
 
     public FramebufferPool getFramebufferPool() {

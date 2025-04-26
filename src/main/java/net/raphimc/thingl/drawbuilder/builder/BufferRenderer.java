@@ -207,7 +207,7 @@ public class BufferRenderer {
             if (indexData == ThinGL.quadIndexBuffer().getSharedData()) {
                 vertexArray.setIndexBuffer(preparedBuffer.indexBuffer().type(), ThinGL.quadIndexBuffer().getSharedBuffer());
             } else {
-                final Buffer indexBuffer = ThinGL.bufferPool().borrowBuffer();
+                final Buffer indexBuffer = ThinGL.gpuBufferPool().borrowBuffer();
                 if (indexBuffer.getSize() < indexData.remaining()) {
                     indexBuffer.setSize(indexData.remaining());
                 }
@@ -225,7 +225,7 @@ public class BufferRenderer {
 
         final ByteBuffer instanceVertexData = preparedBuffer.instanceVertexBuffer();
         if (instanceVertexData != null) {
-            final Buffer instanceVertexBuffer = ThinGL.bufferPool().borrowBuffer();
+            final Buffer instanceVertexBuffer = ThinGL.gpuBufferPool().borrowBuffer();
             if (instanceVertexBuffer.getSize() < instanceVertexData.remaining()) {
                 instanceVertexBuffer.setSize(instanceVertexData.remaining());
             }
@@ -237,7 +237,7 @@ public class BufferRenderer {
         final Object2ObjectMap<String, AbstractBuffer> shaderDataBuffers = new Object2ObjectOpenHashMap<>();
         for (Map.Entry<String, ByteBuffer> entry : preparedBuffer.shaderDataBuffers().entrySet()) {
             final ByteBuffer ssboData = entry.getValue();
-            final Buffer ssboBuffer = ThinGL.bufferPool().borrowBuffer();
+            final Buffer ssboBuffer = ThinGL.gpuBufferPool().borrowBuffer();
             if (ssboBuffer.getSize() < ssboData.remaining()) {
                 ssboBuffer.setSize(ssboData.remaining());
             }
@@ -253,7 +253,7 @@ public class BufferRenderer {
                 drawCommand.write(commandBufferBuilder);
             }
             final ByteBuffer commandData = commandBufferBuilder.finish();
-            commandBuffer = ThinGL.bufferPool().borrowBuffer();
+            commandBuffer = ThinGL.gpuBufferPool().borrowBuffer();
             if (commandBuffer.getSize() < commandData.remaining()) {
                 commandBuffer.setSize(commandData.remaining());
             }
@@ -269,13 +269,13 @@ public class BufferRenderer {
         final VertexArray vertexArray = builtBuffer.vertexArray();
         if (vertexArray.getIndexBuffer() != null) {
             if (vertexArray.getIndexBuffer() != ThinGL.quadIndexBuffer().getSharedBuffer()) {
-                ThinGL.bufferPool().returnBuffer((Buffer) vertexArray.getIndexBuffer());
+                ThinGL.gpuBufferPool().returnBuffer((Buffer) vertexArray.getIndexBuffer());
             }
             vertexArray.setIndexBuffer(0, null);
         }
 
         if (vertexArray.getVertexBuffers().containsKey(1)) {
-            ThinGL.bufferPool().returnBuffer((Buffer) vertexArray.getVertexBuffers().get(1));
+            ThinGL.gpuBufferPool().returnBuffer((Buffer) vertexArray.getVertexBuffers().get(1));
             vertexArray.setVertexBuffer(1, null, 0, 0);
             int vertexAttribIndex = builtBuffer.drawBatch().vertexDataLayout().getElements().length;
             while (GL45C.glGetVertexArrayIndexedi(vertexArray.getGlId(), vertexAttribIndex, GL45C.GL_VERTEX_ATTRIB_ARRAY_ENABLED) == GL11C.GL_TRUE) {
@@ -285,10 +285,10 @@ public class BufferRenderer {
         }
 
         for (AbstractBuffer buffer : builtBuffer.shaderDataBuffers().values()) {
-            ThinGL.bufferPool().returnBuffer((Buffer) buffer);
+            ThinGL.gpuBufferPool().returnBuffer((Buffer) buffer);
         }
         if (builtBuffer.commandBuffer() != null) {
-            ThinGL.bufferPool().returnBuffer((Buffer) builtBuffer.commandBuffer());
+            ThinGL.gpuBufferPool().returnBuffer((Buffer) builtBuffer.commandBuffer());
         }
     }
 
