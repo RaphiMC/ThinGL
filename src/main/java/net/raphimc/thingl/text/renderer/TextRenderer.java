@@ -25,6 +25,7 @@ import net.raphimc.thingl.drawbuilder.BuiltinDrawBatches;
 import net.raphimc.thingl.drawbuilder.DrawBatch;
 import net.raphimc.thingl.drawbuilder.DrawMode;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.ShaderDataHolder;
+import net.raphimc.thingl.drawbuilder.databuilder.holder.Std430ShaderDataHolder;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.VertexDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.DrawBatchDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.MultiDrawBatchDataHolder;
@@ -144,7 +145,7 @@ public abstract class TextRenderer {
     protected void renderTextSegment(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextSegment textSegment, final float x, final float y, final float z, final int textDataIndex) {
         final DrawBatchDataHolder drawBatchDataHolder = multiDrawBatchDataHolder.getDrawBatchDataHolder(this.textDrawBatch);
         final VertexDataHolder vertexDataHolder = drawBatchDataHolder.getVertexDataHolder();
-        final ShaderDataHolder glyphDataHolder = drawBatchDataHolder.getShaderDataHolder("ssbo_GlyphData");
+        final ShaderDataHolder glyphDataHolder = drawBatchDataHolder.getShaderDataHolder("ssbo_GlyphData", Std430ShaderDataHolder.SUPPLIER).ensureInTopLevelArray();
 
         for (TextShaper.Glyph shapedGlyph : textSegment.glyphs()) {
             final Font.Glyph fontGlyph = shapedGlyph.fontGlyph();
@@ -193,7 +194,7 @@ public abstract class TextRenderer {
             bottomOffset = ITALIC_SHEAR_FACTOR * (y2 - y);
         }
 
-        glyphDataHolder.putInt((glyph.atlasIndex() << 27) | textDataIndex).end();
+        glyphDataHolder.ensureInTopLevelArray().beginStruct(Integer.BYTES).putInt((glyph.atlasIndex() << 27) | textDataIndex).endStruct();
 
         vertexDataHolder.putVector3f(positionMatrix, x1 - bottomOffset, y2, z).putTextureCoords(glyph.u1(), glyph.v2()).endVertex();
         vertexDataHolder.putVector3f(positionMatrix, x2 - bottomOffset, y2, z).putTextureCoords(glyph.u2(), glyph.v2()).endVertex();

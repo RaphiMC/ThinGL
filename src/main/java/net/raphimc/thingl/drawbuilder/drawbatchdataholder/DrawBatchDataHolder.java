@@ -27,6 +27,7 @@ import net.raphimc.thingl.drawbuilder.databuilder.holder.VertexDataHolder;
 
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class DrawBatchDataHolder {
@@ -94,12 +95,12 @@ public class DrawBatchDataHolder {
         return this.indexDataHolder;
     }
 
-    public boolean hasShaderDataHolder() {
-        return !this.shaderDataHolders.isEmpty();
+    public boolean hasShaderDataHolder(final String name) {
+        return this.shaderDataHolders.containsKey(name);
     }
 
-    public ShaderDataHolder getShaderDataHolder(final String name) {
-        return this.shaderDataHolders.computeIfAbsent(name, key -> new ShaderDataHolder(this.bufferBuilderSupplier.get()));
+    public ShaderDataHolder getShaderDataHolder(final String name, final Function<BufferBuilder, ? extends ShaderDataHolder> shaderDataHolderSupplier) {
+        return this.shaderDataHolders.computeIfAbsent(name, key -> shaderDataHolderSupplier.apply(this.bufferBuilderSupplier.get()));
     }
 
     public Map<String, ShaderDataHolder> getShaderDataHolders() {

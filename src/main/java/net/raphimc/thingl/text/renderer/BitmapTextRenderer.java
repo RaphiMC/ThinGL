@@ -20,6 +20,7 @@ package net.raphimc.thingl.text.renderer;
 
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.ShaderDataHolder;
+import net.raphimc.thingl.drawbuilder.databuilder.holder.Std430ShaderDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.MultiDrawBatchDataHolder;
 import net.raphimc.thingl.text.TextSegment;
 import net.raphimc.thingl.text.font.Font;
@@ -34,19 +35,19 @@ public class BitmapTextRenderer extends TextRenderer {
 
     @Override
     protected void renderTextSegment(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextSegment textSegment, final float x, final float y, float z) {
-        final ShaderDataHolder textDataHolder = multiDrawBatchDataHolder.getShaderDataHolder(this.getTextDrawBatch(), "ssbo_TextData");
-        final int regularTextDataIndex = textDataHolder.putColor(textSegment.color()).endAndGetArrayIndex();
+        final ShaderDataHolder textDataHolder = multiDrawBatchDataHolder.getShaderDataHolder(this.getTextDrawBatch(), "ssbo_TextData", Std430ShaderDataHolder.SUPPLIER).ensureInTopLevelArray();
+        final int regularTextDataIndex = textDataHolder.beginStruct(Integer.BYTES).putColor(textSegment.color()).endStructAndGetTopLevelArrayIndex();
 
         if ((textSegment.styleFlags() & TextSegment.STYLE_BOLD_BIT) != 0) {
             if (textSegment.outlineColor().getAlpha() == 0) {
                 this.renderTextSegmentOutline(positionMatrix, multiDrawBatchDataHolder, textSegment, x, y, z, regularTextDataIndex);
             } else {
                 // bold and outline isn't supported at the same time (yet). Use SDFTextRenderer/BSDFTextRenderer for that.
-                final int outlineTextDataIndex = textDataHolder.putColor(textSegment.outlineColor()).endAndGetArrayIndex();
+                final int outlineTextDataIndex = textDataHolder.beginStruct(Integer.BYTES).putColor(textSegment.outlineColor()).endStructAndGetTopLevelArrayIndex();
                 this.renderTextSegmentOutline(positionMatrix, multiDrawBatchDataHolder, textSegment, x, y, z, outlineTextDataIndex);
             }
         } else if (textSegment.outlineColor().getAlpha() != 0) {
-            final int outlineTextDataIndex = textDataHolder.putColor(textSegment.outlineColor()).endAndGetArrayIndex();
+            final int outlineTextDataIndex = textDataHolder.beginStruct(Integer.BYTES).putColor(textSegment.outlineColor()).endStructAndGetTopLevelArrayIndex();
             this.renderTextSegmentOutline(positionMatrix, multiDrawBatchDataHolder, textSegment, x, y, z, outlineTextDataIndex);
         }
 

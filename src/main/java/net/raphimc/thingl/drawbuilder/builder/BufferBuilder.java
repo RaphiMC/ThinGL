@@ -296,8 +296,10 @@ public class BufferBuilder {
     }
 
     public BufferBuilder skip(final int bytes) {
-        this.ensureHasEnoughSpace(bytes);
-        this.cursorAddress += bytes;
+        if (bytes != 0) {
+            this.ensureHasEnoughSpace(bytes);
+            this.cursorAddress += bytes;
+        }
         return this;
     }
 

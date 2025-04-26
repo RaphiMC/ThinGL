@@ -20,6 +20,7 @@ package net.raphimc.thingl.text.renderer;
 
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.ShaderDataHolder;
+import net.raphimc.thingl.drawbuilder.databuilder.holder.Std430ShaderDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.MultiDrawBatchDataHolder;
 import net.raphimc.thingl.text.font.Font;
 import net.raphimc.thingl.text.shaper.ShapedTextSegment;
@@ -36,7 +37,7 @@ public class SDFTextRenderer extends TextRenderer {
 
     @Override
     protected void renderTextSegment(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextSegment textSegment, final float x, final float y, final float z) {
-        final ShaderDataHolder textDataHolder = multiDrawBatchDataHolder.getShaderDataHolder(this.getTextDrawBatch(), "ssbo_TextData");
+        final ShaderDataHolder textDataHolder = multiDrawBatchDataHolder.getShaderDataHolder(this.getTextDrawBatch(), "ssbo_TextData", Std430ShaderDataHolder.SUPPLIER).ensureInTopLevelArray();
 
         final Vector3f scale = positionMatrix.getScale(new Vector3f());
         if ((ThinGL.applicationInterface().getProjectionMatrix().properties() & Matrix4fc.PROPERTY_AFFINE) != 0) { // If orthographic projection
@@ -47,7 +48,7 @@ public class SDFTextRenderer extends TextRenderer {
         final float maxScale = Math.max(Math.max(scale.x, scale.y), scale.z);
         final float smoothing = 1F / maxScale / 10F;
 
-        final int regularTextDataIndex = textDataHolder.putColor(textSegment.color()).putColor(textSegment.outlineColor()).putInt(textSegment.styleFlags()).putFloat(smoothing).endAndGetArrayIndex();
+        final int regularTextDataIndex = textDataHolder.beginStruct(Integer.BYTES).putColor(textSegment.color()).putColor(textSegment.outlineColor()).putInt(textSegment.styleFlags()).putFloat(smoothing).endStructAndGetTopLevelArrayIndex();
         this.renderTextSegment(positionMatrix, multiDrawBatchDataHolder, textSegment, x, y, z, regularTextDataIndex);
     }
 

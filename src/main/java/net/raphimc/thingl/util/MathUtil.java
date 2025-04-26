@@ -18,13 +18,11 @@
 
 package net.raphimc.thingl.util;
 
-import org.joml.Math;
-
 public class MathUtil {
 
-    public static final float PI = (float) Math.PI;
-    public static final float TAU = PI * 2F;
-    public static final float HALF_PI = PI / 2F;
+    public static final float PI = org.joml.Math.PI_f;
+    public static final float TAU = org.joml.Math.PI_TIMES_2_f;
+    public static final float HALF_PI = org.joml.Math.PI_OVER_2_f;
 
     public static int align(final int value, final int alignment) {
         // return (value + alignment - 1) & -alignment; // Fast POT alignment

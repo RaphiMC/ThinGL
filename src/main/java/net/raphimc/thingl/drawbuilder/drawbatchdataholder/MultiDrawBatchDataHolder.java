@@ -21,6 +21,7 @@ package net.raphimc.thingl.drawbuilder.drawbatchdataholder;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import net.raphimc.thingl.drawbuilder.DrawBatch;
+import net.raphimc.thingl.drawbuilder.builder.BufferBuilder;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.IndexDataHolder;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.ShaderDataHolder;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.VertexDataHolder;
@@ -28,6 +29,7 @@ import net.raphimc.thingl.util.RenderMathUtil;
 import org.joml.Matrix4f;
 
 import java.util.Map;
+import java.util.function.Function;
 
 public abstract class MultiDrawBatchDataHolder {
 
@@ -66,8 +68,8 @@ public abstract class MultiDrawBatchDataHolder {
         return this.getDrawBatchDataHolder(drawBatch).getIndexDataHolder();
     }
 
-    public ShaderDataHolder getShaderDataHolder(final DrawBatch drawBatch, final String name) {
-        return this.getDrawBatchDataHolder(drawBatch).getShaderDataHolder(name);
+    public ShaderDataHolder getShaderDataHolder(final DrawBatch drawBatch, final String name, final Function<BufferBuilder, ? extends ShaderDataHolder> shaderDataHolderSupplier) {
+        return this.getDrawBatchDataHolder(drawBatch).getShaderDataHolder(name, shaderDataHolderSupplier);
     }
 
     public void draw() {
