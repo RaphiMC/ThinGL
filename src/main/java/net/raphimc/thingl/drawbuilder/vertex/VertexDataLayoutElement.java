@@ -18,18 +18,34 @@
 
 package net.raphimc.thingl.drawbuilder.vertex;
 
-public record VertexDataLayoutElement(DataType type, int count, boolean normalized, boolean isInteger, int padding) {
+public record VertexDataLayoutElement(DataType dataType, int count, TargetDataType targetDataType, int padding) {
+
+    public VertexDataLayoutElement {
+        switch (dataType.getTargetDataType()) {
+            case INT -> {
+                if (targetDataType != TargetDataType.INT && targetDataType != TargetDataType.FLOAT && targetDataType != TargetDataType.FLOAT_NORMALIZED) {
+                    throw new IllegalArgumentException("Invalid target data type for INT data type: " + targetDataType);
+                }
+            }
+            case FLOAT -> {
+                if (targetDataType != TargetDataType.FLOAT) {
+                    throw new IllegalArgumentException("Invalid target data type for FLOAT data type: " + targetDataType);
+                }
+            }
+            case DOUBLE -> {
+                if (targetDataType != TargetDataType.DOUBLE && targetDataType != TargetDataType.FLOAT) {
+                    throw new IllegalArgumentException("Invalid target data type for DOUBLE data type: " + targetDataType);
+                }
+            }
+        }
+    }
 
     public VertexDataLayoutElement(final DataType type, final int count) {
-        this(type, count, false, type.isInteger());
+        this(type, count, type.getTargetDataType());
     }
 
-    public VertexDataLayoutElement(final DataType type, final int count, final boolean normalized) {
-        this(type, count, normalized, type.isInteger() && !normalized);
-    }
-
-    public VertexDataLayoutElement(final DataType type, final int count, final boolean normalized, final boolean isInteger) {
-        this(type, count, normalized, isInteger, 0);
+    public VertexDataLayoutElement(final DataType type, final int count, final TargetDataType targetDataType) {
+        this(type, count, targetDataType, 0);
     }
 
 }

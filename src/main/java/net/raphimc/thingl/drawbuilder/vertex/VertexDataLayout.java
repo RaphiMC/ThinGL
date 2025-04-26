@@ -29,7 +29,7 @@ public class VertexDataLayout {
         int size = 0;
         int unpaddedSize = 0;
         for (VertexDataLayoutElement element : elements) {
-            final int exactSize = element.count() * element.type().getSize();
+            final int exactSize = element.count() * element.dataType().getSize();
             size += exactSize + element.padding();
             unpaddedSize += exactSize;
         }

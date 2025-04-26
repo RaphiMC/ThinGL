@@ -20,6 +20,7 @@ package net.raphimc.thingl.drawbuilder;
 
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.vertex.DataType;
+import net.raphimc.thingl.drawbuilder.vertex.TargetDataType;
 import net.raphimc.thingl.drawbuilder.vertex.VertexDataLayout;
 import net.raphimc.thingl.drawbuilder.vertex.VertexDataLayoutElement;
 import org.lwjgl.opengl.GL11C;
@@ -36,7 +37,7 @@ public class BuiltinDrawBatches {
     // === Vertex Data Layout Elements ===
 
     public static final VertexDataLayoutElement POSITION_ELEMENT = new VertexDataLayoutElement(DataType.FLOAT, 3);
-    public static final VertexDataLayoutElement COLOR_ELEMENT = new VertexDataLayoutElement(DataType.UNSIGNED_BYTE, 4, true);
+    public static final VertexDataLayoutElement COLOR_ELEMENT = new VertexDataLayoutElement(DataType.UNSIGNED_BYTE, 4, TargetDataType.FLOAT_NORMALIZED);
     public static final VertexDataLayoutElement TEXTURE_ELEMENT = new VertexDataLayoutElement(DataType.FLOAT, 2);
 
     // === Vertex Data Layouts ===

@@ -20,17 +20,20 @@ package net.raphimc.thingl.drawbuilder.vertex;
 
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL30C;
+import org.lwjgl.opengl.GL41C;
 
 public enum DataType {
 
-    BYTE(GL11C.GL_BYTE, "Byte", Byte.BYTES, true),
-    UNSIGNED_BYTE(GL11C.GL_UNSIGNED_BYTE, "Unsigned Byte", Byte.BYTES, true),
-    SHORT(GL11C.GL_SHORT, "Short", Short.BYTES, true),
-    UNSIGNED_SHORT(GL11C.GL_UNSIGNED_SHORT, "Unsigned Short", Short.BYTES, true),
-    INT(GL11C.GL_INT, "Int", Integer.BYTES, true),
-    UNSIGNED_INT(GL11C.GL_UNSIGNED_INT, "Unsigned Int", Integer.BYTES, true),
-    FLOAT(GL11C.GL_FLOAT, "Float", Float.BYTES, false),
-    HALF_FLOAT(GL30C.GL_HALF_FLOAT, "Half Float", Short.BYTES, false),
+    BYTE(GL11C.GL_BYTE, "Byte", Byte.BYTES, TargetDataType.INT),
+    UNSIGNED_BYTE(GL11C.GL_UNSIGNED_BYTE, "Unsigned Byte", Byte.BYTES, TargetDataType.INT),
+    SHORT(GL11C.GL_SHORT, "Short", Short.BYTES, TargetDataType.INT),
+    UNSIGNED_SHORT(GL11C.GL_UNSIGNED_SHORT, "Unsigned Short", Short.BYTES, TargetDataType.INT),
+    INT(GL11C.GL_INT, "Int", Integer.BYTES, TargetDataType.INT),
+    UNSIGNED_INT(GL11C.GL_UNSIGNED_INT, "Unsigned Int", Integer.BYTES, TargetDataType.INT),
+    HALF_FLOAT(GL30C.GL_HALF_FLOAT, "Half Float", Short.BYTES, TargetDataType.FLOAT),
+    FIXED_FLOAT(GL41C.GL_FIXED, "Fixed Float", Float.BYTES, TargetDataType.FLOAT),
+    FLOAT(GL11C.GL_FLOAT, "Float", Float.BYTES, TargetDataType.FLOAT),
+    DOUBLE(GL11C.GL_DOUBLE, "Double", Double.BYTES, TargetDataType.DOUBLE),
     ;
 
     public static DataType fromGlType(final int glType) {
@@ -46,13 +49,13 @@ public enum DataType {
     private final int glType;
     private final String displayName;
     private final int size;
-    private final boolean isInteger;
+    private final TargetDataType targetDataType;
 
-    DataType(final int glType, final String displayName, final int size, final boolean isInteger) {
+    DataType(final int glType, final String displayName, final int size, final TargetDataType targetDataType) {
         this.glType = glType;
         this.displayName = displayName;
         this.size = size;
-        this.isInteger = isInteger;
+        this.targetDataType = targetDataType;
     }
 
     public int getGlType() {
@@ -67,8 +70,8 @@ public enum DataType {
         return this.size;
     }
 
-    public boolean isInteger() {
-        return this.isInteger;
+    public TargetDataType getTargetDataType() {
+        return this.targetDataType;
     }
 
 }

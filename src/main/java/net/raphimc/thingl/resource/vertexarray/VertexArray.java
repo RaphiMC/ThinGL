@@ -80,14 +80,15 @@ public class VertexArray extends GLContainerObject {
         int relativeOffset = 0;
         for (int i = 0; i < vertexDataLayout.getElements().length; i++) {
             final VertexDataLayoutElement element = vertexDataLayout.getElements()[i];
-            if (element.isInteger()) {
-                GL45C.glVertexArrayAttribIFormat(this.getGlId(), i + attribOffset, element.count(), element.type().getGlType(), relativeOffset);
-            } else {
-                GL45C.glVertexArrayAttribFormat(this.getGlId(), i + attribOffset, element.count(), element.type().getGlType(), element.normalized(), relativeOffset);
+            switch (element.targetDataType()) {
+                case INT -> GL45C.glVertexArrayAttribIFormat(this.getGlId(), i + attribOffset, element.count(), element.dataType().getGlType(), relativeOffset);
+                case FLOAT -> GL45C.glVertexArrayAttribFormat(this.getGlId(), i + attribOffset, element.count(), element.dataType().getGlType(), false, relativeOffset);
+                case FLOAT_NORMALIZED -> GL45C.glVertexArrayAttribFormat(this.getGlId(), i + attribOffset, element.count(), element.dataType().getGlType(), true, relativeOffset);
+                case DOUBLE -> GL45C.glVertexArrayAttribLFormat(this.getGlId(), i + attribOffset, element.count(), element.dataType().getGlType(), relativeOffset);
             }
             GL45C.glVertexArrayAttribBinding(this.getGlId(), i + attribOffset, bindingIndex);
             GL45C.glEnableVertexArrayAttrib(this.getGlId(), i + attribOffset);
-            relativeOffset += element.count() * element.type().getSize() + element.padding();
+            relativeOffset += element.count() * element.dataType().getSize() + element.padding();
         }
         GL45C.glVertexArrayBindingDivisor(this.getGlId(), bindingIndex, divisor);
     }
