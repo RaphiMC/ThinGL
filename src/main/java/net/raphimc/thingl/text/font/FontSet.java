@@ -36,12 +36,27 @@ public class FontSet {
         this.addFont(mainFont, predicate);
     }
 
+    public FontSet(final List<Font> fonts) {
+        if (fonts.isEmpty()) {
+            throw new IllegalArgumentException("Font list must contain at least one font");
+        }
+        this.mainFont = fonts.get(0);
+        this.addFonts(fonts);
+    }
+
     public FontSet addFont(final Font font) {
         return this.addFont(font, GlyphPredicate.all());
     }
 
     public FontSet addFont(final Font font, final GlyphPredicate predicate) {
         this.fonts.add(Pair.of(font, predicate));
+        return this;
+    }
+
+    public FontSet addFonts(final Iterable<Font> fonts) {
+        for (Font font : fonts) {
+            this.addFont(font);
+        }
         return this;
     }
 
