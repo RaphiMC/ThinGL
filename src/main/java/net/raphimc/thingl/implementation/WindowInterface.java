@@ -69,6 +69,9 @@ public abstract class WindowInterface {
     public abstract void free();
 
     protected synchronized void callFramebufferResizeCallbacks(final int width, final int height) {
+        if (width <= 0 || height <= 0) {
+            return;
+        }
         for (BiConsumer<Integer, Integer> callback : this.framebufferResizeCallbacks) {
             try {
                 callback.accept(width, height);
