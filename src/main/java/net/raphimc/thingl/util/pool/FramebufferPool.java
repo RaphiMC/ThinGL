@@ -68,7 +68,7 @@ public class FramebufferPool {
         }
         this.inUse.add(framebuffer);
         this.framebufferAccessTime.put(framebuffer, System.nanoTime());
-        final Texture2D colorAttachment = framebuffer.getColorAttachment();
+        final Texture2D colorAttachment = framebuffer.getColorAttachment(0);
         if (textureFilter != colorAttachment.getMinificationFilter() || colorAttachment.getMagnificationFilter() != colorAttachment.getMinificationFilter()) {
             colorAttachment.setFilter(textureFilter);
         }

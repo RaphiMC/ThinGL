@@ -34,9 +34,9 @@ public class Framebuffer extends GLContainerObject {
 
     private final float[] clearColor = new float[4];
 
-    protected FramebufferAttachment colorAttachment;
-    protected FramebufferAttachment depthAttachment;
-    protected FramebufferAttachment stencilAttachment;
+    private final FramebufferAttachment[] colorAttachments = new FramebufferAttachment[this.getMaxSupportedColorAttachmentCount()];
+    private FramebufferAttachment depthAttachment;
+    private FramebufferAttachment stencilAttachment;
 
     public Framebuffer(final FramebufferAttachment colorAttachment) {
         this(colorAttachment, null, null);
@@ -86,7 +86,9 @@ public class Framebuffer extends GLContainerObject {
 
     @Override
     public void refreshCachedData() {
-        this.colorAttachment = FramebufferAttachment.fromGlId(this.getGlId(), GL30C.GL_COLOR_ATTACHMENT0);
+        for (int i = 0; i < this.colorAttachments.length; i++) {
+            this.colorAttachments[i] = FramebufferAttachment.fromGlId(this.getGlId(), GL30C.GL_COLOR_ATTACHMENT0 + i);
+        }
         this.depthAttachment = FramebufferAttachment.fromGlId(this.getGlId(), GL30C.GL_DEPTH_ATTACHMENT);
         this.stencilAttachment = FramebufferAttachment.fromGlId(this.getGlId(), GL30C.GL_STENCIL_ATTACHMENT);
     }
@@ -161,9 +163,11 @@ public class Framebuffer extends GLContainerObject {
 
     @Override
     protected void freeContainingObjects() {
-        if (this.colorAttachment != null) {
-            this.colorAttachment.free();
-            this.colorAttachment = null;
+        for (int i = 0; i < this.colorAttachments.length; i++) {
+            if (this.colorAttachments[i] != null) {
+                this.colorAttachments[i].free();
+                this.colorAttachments[i] = null;
+            }
         }
         if (this.depthAttachment != null) {
             this.depthAttachment.free();
@@ -187,8 +191,12 @@ public class Framebuffer extends GLContainerObject {
         this.clearColor[3] = a;
     }
 
-    public FramebufferAttachment getColorAttachment() {
-        return this.colorAttachment;
+    public FramebufferAttachment getColorAttachment(final int index) {
+        if (index >= 0 && index < this.colorAttachments.length) {
+            return this.colorAttachments[index];
+        } else {
+            return null;
+        }
     }
 
     public FramebufferAttachment getDepthAttachment() {
@@ -199,32 +207,46 @@ public class Framebuffer extends GLContainerObject {
         return this.stencilAttachment;
     }
 
-    public FramebufferAttachment getAttachment(final int attachmentType) {
-        return switch (attachmentType) {
-            case GL30C.GL_COLOR_ATTACHMENT0 -> this.colorAttachment;
-            case GL30C.GL_DEPTH_ATTACHMENT -> this.depthAttachment;
-            case GL30C.GL_STENCIL_ATTACHMENT -> this.stencilAttachment;
-            case GL30C.GL_DEPTH_STENCIL_ATTACHMENT -> Objects.equals(this.depthAttachment, this.stencilAttachment) ? this.depthAttachment : null;
-            default -> throw new IllegalArgumentException("Invalid attachment type: " + attachmentType);
-        };
+    public FramebufferAttachment getAttachment(final int type) {
+        if (type >= GL30C.GL_COLOR_ATTACHMENT0 && type <= GL30C.GL_COLOR_ATTACHMENT31) {
+            if (type - GL30C.GL_COLOR_ATTACHMENT0 < this.colorAttachments.length) {
+                return this.colorAttachments[type - GL30C.GL_COLOR_ATTACHMENT0];
+            } else {
+                return null;
+            }
+        } else {
+            return switch (type) {
+                case GL30C.GL_DEPTH_ATTACHMENT -> this.depthAttachment;
+                case GL30C.GL_STENCIL_ATTACHMENT -> this.stencilAttachment;
+                case GL30C.GL_DEPTH_STENCIL_ATTACHMENT -> Objects.equals(this.depthAttachment, this.stencilAttachment) ? this.depthAttachment : null;
+                default -> throw new IllegalArgumentException("Invalid attachment type: " + type);
+            };
+        }
     }
 
-    public void setAttachment(final int attachmentType, final FramebufferAttachment attachment) {
-        switch (attachmentType) {
-            case GL30C.GL_COLOR_ATTACHMENT0 -> this.colorAttachment = attachment;
-            case GL30C.GL_DEPTH_ATTACHMENT -> this.depthAttachment = attachment;
-            case GL30C.GL_STENCIL_ATTACHMENT -> this.stencilAttachment = attachment;
-            case GL30C.GL_DEPTH_STENCIL_ATTACHMENT -> {
-                this.depthAttachment = attachment;
-                this.stencilAttachment = attachment;
+    public void setAttachment(final int type, final FramebufferAttachment attachment) {
+        if (type >= GL30C.GL_COLOR_ATTACHMENT0 && type <= GL30C.GL_COLOR_ATTACHMENT31) {
+            if (type - GL30C.GL_COLOR_ATTACHMENT0 < this.colorAttachments.length) {
+                this.colorAttachments[type - GL30C.GL_COLOR_ATTACHMENT0] = attachment;
+            } else {
+                throw new IllegalArgumentException("Invalid color attachment index: " + (type - GL30C.GL_COLOR_ATTACHMENT0));
             }
-            default -> throw new IllegalArgumentException("Invalid attachment type: " + attachmentType);
+        } else {
+            switch (type) {
+                case GL30C.GL_DEPTH_ATTACHMENT -> this.depthAttachment = attachment;
+                case GL30C.GL_STENCIL_ATTACHMENT -> this.stencilAttachment = attachment;
+                case GL30C.GL_DEPTH_STENCIL_ATTACHMENT -> {
+                    this.depthAttachment = attachment;
+                    this.stencilAttachment = attachment;
+                }
+                default -> throw new IllegalArgumentException("Invalid attachment type: " + type);
+            }
         }
 
         if (attachment instanceof AbstractTexture) {
-            GL45C.glNamedFramebufferTexture(this.getGlId(), attachmentType, attachment.getGlId(), 0);
+            GL45C.glNamedFramebufferTexture(this.getGlId(), type, attachment.getGlId(), 0);
         } else if (attachment instanceof AbstractRenderBuffer) {
-            GL45C.glNamedFramebufferRenderbuffer(this.getGlId(), attachmentType, GL30C.GL_RENDERBUFFER, attachment.getGlId());
+            GL45C.glNamedFramebufferRenderbuffer(this.getGlId(), type, GL30C.GL_RENDERBUFFER, attachment.getGlId());
         } else {
             throw new IllegalArgumentException("Invalid attachment class: " + attachment.getClass().getName());
         }
@@ -239,8 +261,8 @@ public class Framebuffer extends GLContainerObject {
     }
 
     private FramebufferAttachment getAnyNonNullAttachment() {
-        if (this.colorAttachment != null) {
-            return this.colorAttachment;
+        if (this.colorAttachments[0] != null) {
+            return this.colorAttachments[0];
         }
         if (this.depthAttachment != null) {
             return this.depthAttachment;
@@ -248,7 +270,16 @@ public class Framebuffer extends GLContainerObject {
         if (this.stencilAttachment != null) {
             return this.stencilAttachment;
         }
+        for (FramebufferAttachment colorAttachment : this.colorAttachments) {
+            if (colorAttachment != null) {
+                return colorAttachment;
+            }
+        }
         throw new IllegalStateException("No attachments");
+    }
+
+    protected int getMaxSupportedColorAttachmentCount() {
+        return ThinGL.capabilities().getMaxColorAttachments();
     }
 
 }

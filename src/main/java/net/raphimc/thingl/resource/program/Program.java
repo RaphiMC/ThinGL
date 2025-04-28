@@ -154,7 +154,7 @@ public class Program extends GLContainerObject {
     }
 
     public void setUniformSampler(final String name, final Framebuffer framebuffer) {
-        if (framebuffer.getColorAttachment() instanceof AbstractTexture texture) {
+        if (framebuffer.getColorAttachment(0) instanceof AbstractTexture texture) {
             this.setUniformSampler(name, texture);
         } else {
             throw new IllegalArgumentException("Framebuffer color attachment is not a texture");
@@ -180,7 +180,7 @@ public class Program extends GLContainerObject {
     }
 
     public void setUniformImage(final String name, final Framebuffer framebuffer, final int access, final int format) {
-        if (framebuffer.getColorAttachment() instanceof AbstractTexture texture) {
+        if (framebuffer.getColorAttachment(0) instanceof AbstractTexture texture) {
             this.setUniformImage(name, texture, access, format);
         } else {
             throw new IllegalArgumentException("Framebuffer color attachment is not a texture");

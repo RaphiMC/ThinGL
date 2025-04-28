@@ -56,7 +56,7 @@ public class WindowFramebuffer extends Framebuffer {
     }
 
     @Override
-    public void setAttachment(final int attachmentType, final FramebufferAttachment attachment) {
+    public void setAttachment(final int type, final FramebufferAttachment attachment) {
         throw new UnsupportedOperationException("Cannot set attachments on the window framebuffer");
     }
 
@@ -68,6 +68,11 @@ public class WindowFramebuffer extends Framebuffer {
     @Override
     public int getHeight() {
         return ThinGL.windowInterface().getFramebufferHeight();
+    }
+
+    @Override
+    protected int getMaxSupportedColorAttachmentCount() {
+        return 0;
     }
 
 }
