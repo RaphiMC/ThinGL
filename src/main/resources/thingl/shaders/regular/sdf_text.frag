@@ -1,5 +1,5 @@
 #version 400 core
-#define STYLE_BOLD_BIT 2
+#define STYLE_BOLD_BIT uint(2)
 
 const float regularThreshold = 128.0 / 255.0;
 const float regularBoldThreshold = 64.0 / 255.0;
