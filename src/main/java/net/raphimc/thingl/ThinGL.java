@@ -51,7 +51,7 @@ import java.util.function.Supplier;
 public class ThinGL {
 
     public static final String VERSION = "${version}";
-    public static final String IMPL_VERSION = "${impl_version}";
+    public static final String IMPL_VERSION = "${impl_version}+${commit_hash}";
     public static Logger LOGGER = new LazyInitLogger(() -> new Slf4jLogger("ThinGL"));
 
     private static ThinGL INSTANCE;
@@ -224,7 +224,7 @@ public class ThinGL {
         final String gpuVendor = GL11C.glGetString(GL11C.GL_VENDOR);
         final String gpuModel = GL11C.glGetString(GL11C.GL_RENDERER);
         final String glVersion = GL11C.glGetString(GL11C.GL_VERSION);
-        LOGGER.info("Initialized ThinGL " + VERSION + " on " + gpuModel + " (" + gpuVendor + ") with OpenGL " + glVersion);
+        LOGGER.info("Initialized ThinGL " + IMPL_VERSION + " on " + gpuModel + " (" + gpuVendor + ") with OpenGL " + glVersion);
     }
 
     public synchronized void onStartFrame() {

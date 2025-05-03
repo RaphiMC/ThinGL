@@ -1,0 +1,32 @@
+plugins {
+    id "base.publishing-conventions"
+    id "base.lenni0451-maven-publishing"
+}
+
+publishing {
+    publications {
+        mavenJava {
+            pom {
+                name = "ThinGL"
+                description = "Lightweight Java wrapper for many common OpenGL functions"
+                url = "https://github.com/RaphiMC/ThinGL"
+                licenses {
+                    license {
+                        name = "LGPL-3.0 License"
+                        url = "https://github.com/RaphiMC/ThinGL/blob/main/LICENSE"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "RK_01"
+                    }
+                }
+                scm {
+                    connection = "scm:git:git://github.com/RaphiMC/ThinGL.git"
+                    developerConnection = "scm:git:ssh://github.com/RaphiMC/ThinGL.git"
+                    url = "https://github.com/RaphiMC/ThinGL.git"
+                }
+            }
+        }
+    }
+}
