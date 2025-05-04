@@ -51,7 +51,7 @@ import java.util.function.Supplier;
 public class ThinGL {
 
     public static final String VERSION = "${version}";
-    public static final String IMPL_VERSION = "${impl_version}+${commit_hash}";
+    public static final String IMPL_VERSION = "${version}+${commit_hash}";
     public static Logger LOGGER = new LazyInitLogger(() -> new Slf4jLogger("ThinGL"));
 
     private static ThinGL INSTANCE;
