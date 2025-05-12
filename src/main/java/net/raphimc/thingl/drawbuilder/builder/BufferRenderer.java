@@ -107,10 +107,6 @@ public class BufferRenderer {
 
             final IntBuffer remapTable = MemoryUtil.memAllocInt(vertexCount);
             final int uniqueVertexCount = (int) MeshOptimizer.meshopt_generateVertexRemap(remapTable, originalIndexBuffer, totalVertexCount, originalVertexBuffer, vertexCount, vertexSize);
-            if (uniqueVertexCount > totalVertexCount) {
-                throw new IllegalStateException("Optimized mesh contains more vertices than the original mesh");
-            }
-
             final ByteBuffer newIndexBuffer = MemoryUtil.memAlloc(totalVertexCount * Integer.BYTES);
             final ByteBuffer newVertexBuffer = MemoryUtil.memAlloc(uniqueVertexCount * vertexSize);
             final IntBuffer newIndexBufferInt = newIndexBuffer.asIntBuffer();
@@ -126,6 +122,7 @@ public class BufferRenderer {
             }
 
             vertexBufferBuilder.reset();
+            vertexBufferBuilder.ensureHasEnoughSpace(newVertexBuffer.remaining());
             MemoryUtil.memCopy(MemoryUtil.memAddress(newVertexBuffer), vertexBufferBuilder.getCursorAddress(), newVertexBuffer.remaining());
             vertexBufferBuilder.setCursorAddress(vertexBufferBuilder.getCursorAddress() + newVertexBuffer.remaining());
             BufferUtil.memFree(newVertexBuffer);

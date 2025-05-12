@@ -342,7 +342,7 @@ public class BufferBuilder {
     }
 
     public void setCursorAddress(final long cursorAddress) {
-        if (cursorAddress < this.baseAddress || cursorAddress >= this.limitAddress) {
+        if (cursorAddress < this.baseAddress || cursorAddress > this.limitAddress) {
             throw new IllegalArgumentException("Cursor address is out of bounds");
         }
 
