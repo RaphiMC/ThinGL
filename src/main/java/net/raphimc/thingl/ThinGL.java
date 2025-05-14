@@ -32,6 +32,7 @@ import net.raphimc.thingl.renderer.impl.Renderer3D;
 import net.raphimc.thingl.renderer.impl.RendererText;
 import net.raphimc.thingl.text.FreeTypeLibrary;
 import net.raphimc.thingl.text.renderer.BSDFTextRenderer;
+import net.raphimc.thingl.util.SyncManager;
 import net.raphimc.thingl.util.pool.BufferBuilderPool;
 import net.raphimc.thingl.util.pool.FramebufferPool;
 import net.raphimc.thingl.util.pool.GpuBufferPool;
@@ -145,6 +146,10 @@ public class ThinGL {
         return get().getQuadIndexBuffer();
     }
 
+    public static SyncManager syncManager() {
+        return get().getSyncManager();
+    }
+
     public static FreeTypeLibrary freeTypeLibrary() {
         return get().getFreeTypeLibrary();
     }
@@ -169,6 +174,7 @@ public class ThinGL {
     private final FramebufferPool framebufferPool;
     private final ImmediateVertexArrays immediateVertexArrays;
     private final QuadIndexBuffer quadIndexBuffer;
+    private final SyncManager syncManager;
 
     private final FreeTypeLibrary freeTypeLibrary;
 
@@ -205,6 +211,7 @@ public class ThinGL {
         this.framebufferPool = new FramebufferPool(this);
         this.immediateVertexArrays = new ImmediateVertexArrays(this);
         this.quadIndexBuffer = new QuadIndexBuffer(this);
+        this.syncManager = new SyncManager(this);
         if (this.capabilities.isFreeTypePresent()) {
             this.freeTypeLibrary = new FreeTypeLibrary(this);
             if (this.capabilities.isHarfBuzzPresent()) {
@@ -398,6 +405,10 @@ public class ThinGL {
 
     public QuadIndexBuffer getQuadIndexBuffer() {
         return this.quadIndexBuffer;
+    }
+
+    public SyncManager getSyncManager() {
+        return this.syncManager;
     }
 
     public FreeTypeLibrary getFreeTypeLibrary() {
