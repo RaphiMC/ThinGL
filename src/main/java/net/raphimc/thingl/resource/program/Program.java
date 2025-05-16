@@ -171,12 +171,13 @@ public class Program extends GLContainerObject {
     }
 
     public void setUniformSamplerArray(final String name, final int... textureIds) {
+        GL44C.glBindTextures(this.currentTextureUnit, textureIds);
         final int[] textureUnits = new int[textureIds.length];
         for (int i = 0; i < textureIds.length; i++) {
-            GL45C.glBindTextureUnit(this.currentTextureUnit + i, textureIds[i]);
             textureUnits[i] = this.currentTextureUnit + i;
         }
         this.setUniformIntArray(name, textureUnits);
+        this.currentTextureUnit += textureIds.length;
     }
 
     public void setUniformImage(final String name, final Framebuffer framebuffer, final int access, final int format) {
