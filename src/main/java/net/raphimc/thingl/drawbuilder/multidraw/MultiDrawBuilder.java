@@ -95,6 +95,11 @@ public class MultiDrawBuilder {
         if (!builtBuffer.shaderDataBuffers().isEmpty()) {
             throw new IllegalArgumentException("BuiltBuffer has shader data buffers");
         }
+        for (DrawCommand drawCommand : drawCommands) {
+            if (drawCommand.instanceCount() != 1 || drawCommand.baseInstance() != 0) {
+                throw new IllegalArgumentException("BuiltBuffer has instanced draw commands");
+            }
+        }
 
         final int id = this.idGenerator.getAndIncrement();
 

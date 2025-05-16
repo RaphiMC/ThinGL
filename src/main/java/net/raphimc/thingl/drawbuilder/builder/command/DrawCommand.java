@@ -28,4 +28,10 @@ public interface DrawCommand {
 
     void write(final BufferBuilder bufferBuilder);
 
+    int vertexCount();
+
+    int instanceCount();
+
+    int baseInstance();
+
 }
