@@ -26,7 +26,7 @@ dependencies {
         exclude group: "org.joml", module: "joml"
     }
     api "it.unimi.dsi:fastutil:8.5.15"
-    api "org.slf4j:slf4j-api:2.0.16"
+    api "org.slf4j:slf4j-api:2.0.17"
     api "net.lenni0451.commons:core:1.7.1-SNAPSHOT"
     api "net.lenni0451.commons:logging:1.7.0"
 
