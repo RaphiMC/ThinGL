@@ -220,7 +220,10 @@ public class Program extends GLContainerObject {
         this.currentImageUnit = 0;
         this.currentUniformBlockIndex = 0;
         this.currentShaderStorageBufferIndex = 0;
-        GL20C.glUseProgram(this.getGlId());
+        if (ThinGL.applicationInterface().needsPreviousProgramRestored()) {
+            ThinGL.glStateStack().pushProgram();
+        }
+        ThinGL.glStateManager().setProgram(this.getGlId());
     }
 
     public void unbind() {
@@ -228,8 +231,9 @@ public class Program extends GLContainerObject {
         this.currentImageUnit = 0;
         this.currentUniformBlockIndex = 0;
         this.currentShaderStorageBufferIndex = 0;
-        GL20C.glUseProgram(0);
-        ThinGL.applicationInterface().onProgramUnbind();
+        if (ThinGL.applicationInterface().needsPreviousProgramRestored()) {
+            ThinGL.glStateStack().popProgram();
+        }
     }
 
     @Override

@@ -127,7 +127,7 @@ public class Framebuffer extends GLContainerObject {
         GL30C.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, this.getGlId());
         ThinGL.applicationInterface().setCurrentFramebuffer(this);
         if (setViewport) {
-            GL11C.glViewport(0, 0, this.getWidth(), this.getHeight());
+            ThinGL.glStateManager().setViewport(0, 0, this.getWidth(), this.getHeight());
         }
     }
 

@@ -62,10 +62,10 @@ public abstract class ExampleBase implements Runnable {
         ThinGL.setInstance(new ThinGL(ExampleThinGLImplementation::new, GLFWWindowInterface::new)); // Init ThinGL
         DebugMessageCallback.install(true); // Enable synchronous debug messages to ensure stack traces are correct (Only use this for debugging!)
 
-        GL11C.glEnable(GL11C.GL_BLEND);
+        ThinGL.glStateManager().enable(GL11C.GL_BLEND);
         Blending.standardBlending();
-        GL11C.glDisable(GL11C.GL_DEPTH_TEST);
-        GL11C.glDepthFunc(GL11C.GL_LEQUAL);
+        ThinGL.glStateManager().disable(GL11C.GL_DEPTH_TEST);
+        ThinGL.glStateManager().setDepthFunc(GL11C.GL_LEQUAL);
         this.init(); // Initialize the example
         final TextureFramebuffer mainFramebuffer = new TextureFramebuffer(); // Create the main framebuffer
         final Matrix4fStack positionMatrix = new Matrix4fStack(8);

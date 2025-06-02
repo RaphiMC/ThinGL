@@ -18,6 +18,7 @@
 
 package net.raphimc.thingl.implementation;
 
+import net.raphimc.thingl.ThinGL;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL43C;
 import org.lwjgl.opengl.GLUtil;
@@ -52,7 +53,7 @@ public class DebugMessageCallback {
             }
         });
         if (appendStackTrace) {
-            GL11C.glEnable(GL43C.GL_DEBUG_OUTPUT_SYNCHRONOUS);
+            ThinGL.glStateManager().enable(GL43C.GL_DEBUG_OUTPUT_SYNCHRONOUS);
         }
         GL43C.glDebugMessageControl(GL11C.GL_DONT_CARE, GL11C.GL_DONT_CARE, GL11C.GL_DONT_CARE, (int[]) null, true);
         GL43C.glDebugMessageControl(GL11C.GL_DONT_CARE, GL11C.GL_DONT_CARE, GL43C.GL_DEBUG_SEVERITY_NOTIFICATION, (int[]) null, false);

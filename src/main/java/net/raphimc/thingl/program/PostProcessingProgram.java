@@ -53,7 +53,7 @@ public class PostProcessingProgram extends Program {
         ThinGL.glStateStack().enable(GL11C.GL_BLEND);
         ThinGL.glStateStack().disable(GL11C.GL_DEPTH_TEST);
         ThinGL.glStateStack().pushDepthMask();
-        GL11C.glDepthMask(false);
+        ThinGL.glStateManager().setDepthMask(false);
         this.renderQuad0(x1, y1, x2, y2);
         ThinGL.glStateStack().popDepthMask();
         ThinGL.glStateStack().pop();

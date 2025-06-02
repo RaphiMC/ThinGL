@@ -22,33 +22,32 @@ import it.unimi.dsi.fastutil.booleans.BooleanArrayList;
 import it.unimi.dsi.fastutil.booleans.BooleanStack;
 import it.unimi.dsi.fastutil.ints.*;
 import net.raphimc.thingl.ThinGL;
+import net.raphimc.thingl.implementation.GLStateManager;
 import net.raphimc.thingl.resource.framebuffer.Framebuffer;
 import org.jetbrains.annotations.ApiStatus;
-import org.lwjgl.opengl.GL11C;
-import org.lwjgl.opengl.GL14C;
 
 import java.util.Stack;
 
 public class GLStateStack {
 
-    private final Stack<Int2BooleanMap> stateStack = new Stack<>();
-    private final Stack<Int2IntMap> pixelStoreStack = new Stack<>();
-    private final Stack<BlendFunc> blendFuncStack = new Stack<>();
+    private final Stack<Int2BooleanMap> capabilitiesStack = new Stack<>();
+    private final Stack<GLStateManager.BlendFunc> blendFuncStack = new Stack<>();
     private final IntStack depthFuncStack = new IntArrayList();
+    private final Stack<GLStateManager.ColorMask> colorMaskStack = new Stack<>();
     private final BooleanStack depthMaskStack = new BooleanArrayList();
-    private final Stack<int[]> viewportStack = new Stack<>();
+    private final Stack<GLStateManager.Scissor> scissorStack = new Stack<>();
+    private final Stack<GLStateManager.Viewport> viewportStack = new Stack<>();
+    private final Stack<Int2IntMap> pixelStoresStack = new Stack<>();
     private final Stack<Framebuffer> framebufferStack = new Stack<>();
+    private final IntStack programStack = new IntArrayList();
+    private final IntStack vertexArrayStack = new IntArrayList();
 
     @ApiStatus.Internal
     public GLStateStack(final ThinGL thinGL) {
         thinGL.addFinishFrameCallback(() -> {
-            if (!this.stateStack.isEmpty()) {
-                while (!this.stateStack.isEmpty()) this.pop();
-                ThinGL.LOGGER.warn("GLStateStack state stack was not empty at the end of the frame!");
-            }
-            if (!this.pixelStoreStack.isEmpty()) {
-                while (!this.pixelStoreStack.isEmpty()) this.popPixelStore();
-                ThinGL.LOGGER.warn("GLStateStack pixel store stack was not empty at the end of the frame!");
+            if (!this.capabilitiesStack.isEmpty()) {
+                while (!this.capabilitiesStack.isEmpty()) this.pop();
+                ThinGL.LOGGER.warn("GLStateStack capabilities stack was not empty at the end of the frame!");
             }
             if (!this.blendFuncStack.isEmpty()) {
                 while (!this.blendFuncStack.isEmpty()) this.popBlendFunc();
@@ -58,23 +57,43 @@ public class GLStateStack {
                 while (!this.depthFuncStack.isEmpty()) this.popDepthFunc();
                 ThinGL.LOGGER.warn("GLStateStack depth func stack was not empty at the end of the frame!");
             }
+            if (!this.colorMaskStack.isEmpty()) {
+                while (!this.colorMaskStack.isEmpty()) this.colorMaskStack.pop();
+                ThinGL.LOGGER.warn("GLStateStack color mask stack was not empty at the end of the frame!");
+            }
             if (!this.depthMaskStack.isEmpty()) {
                 while (!this.depthMaskStack.isEmpty()) this.popDepthMask();
                 ThinGL.LOGGER.warn("GLStateStack depth mask stack was not empty at the end of the frame!");
+            }
+            if (!this.scissorStack.isEmpty()) {
+                while (!this.scissorStack.isEmpty()) this.scissorStack.pop();
+                ThinGL.LOGGER.warn("GLStateStack scissor stack was not empty at the end of the frame!");
             }
             if (!this.viewportStack.isEmpty()) {
                 while (!this.viewportStack.isEmpty()) this.popViewport();
                 ThinGL.LOGGER.warn("GLStateStack viewport stack was not empty at the end of the frame!");
             }
+            if (!this.pixelStoresStack.isEmpty()) {
+                while (!this.pixelStoresStack.isEmpty()) this.popPixelStore();
+                ThinGL.LOGGER.warn("GLStateStack pixel stores stack was not empty at the end of the frame!");
+            }
             if (!this.framebufferStack.isEmpty()) {
                 while (!this.framebufferStack.isEmpty()) this.popFramebuffer();
                 ThinGL.LOGGER.warn("GLStateStack framebuffer stack was not empty at the end of the frame!");
+            }
+            if (!this.programStack.isEmpty()) {
+                while (!this.programStack.isEmpty()) this.popProgram();
+                ThinGL.LOGGER.warn("GLStateStack program stack was not empty at the end of the frame!");
+            }
+            if (!this.vertexArrayStack.isEmpty()) {
+                while (!this.vertexArrayStack.isEmpty()) this.vertexArrayStack.pop();
+                ThinGL.LOGGER.warn("GLStateStack vertex array stack was not empty at the end of the frame!");
             }
         });
     }
 
     public void push() {
-        this.stateStack.push(new Int2BooleanOpenHashMap(6));
+        this.capabilitiesStack.push(new Int2BooleanOpenHashMap(6));
     }
 
     public void enable(final int capability) {
@@ -86,75 +105,89 @@ public class GLStateStack {
     }
 
     private void set(final int capability, final boolean state) {
-        final boolean currentState = GL11C.glIsEnabled(capability);
-        if (currentState == state) return;
-
-        this.stateStack.peek().put(capability, currentState);
-        if (state) GL11C.glEnable(capability);
-        else GL11C.glDisable(capability);
-    }
-
-    public void pop() {
-        final Int2BooleanMap states = this.stateStack.pop();
-        for (Int2BooleanMap.Entry entry : states.int2BooleanEntrySet()) {
-            if (entry.getBooleanValue()) GL11C.glEnable(entry.getIntKey());
-            else GL11C.glDisable(entry.getIntKey());
+        final boolean currentState = ThinGL.glStateManager().getCapability(capability);
+        if (currentState != state) {
+            this.capabilitiesStack.peek().put(capability, currentState);
+            ThinGL.glStateManager().setCapability(capability, state);
         }
     }
 
-    public void pushPixelStore() {
-        this.pixelStoreStack.push(new Int2IntOpenHashMap(6));
-    }
-
-    public void pixelStore(final int parameter, final int value) {
-        final int currentValue = GL11C.glGetInteger(parameter);
-        if (currentValue == value) return;
-
-        this.pixelStoreStack.peek().put(parameter, currentValue);
-        GL11C.glPixelStorei(parameter, value);
-    }
-
-    public void popPixelStore() {
-        final Int2IntMap pixelStores = this.pixelStoreStack.pop();
-        for (Int2IntMap.Entry entry : pixelStores.int2IntEntrySet()) {
-            GL11C.glPixelStorei(entry.getIntKey(), entry.getIntValue());
+    public void pop() {
+        final Int2BooleanMap capabilities = this.capabilitiesStack.pop();
+        for (Int2BooleanMap.Entry entry : capabilities.int2BooleanEntrySet()) {
+            ThinGL.glStateManager().setCapability(entry.getIntKey(), entry.getBooleanValue());
         }
     }
 
     public void pushBlendFunc() {
-        this.blendFuncStack.push(new BlendFunc());
+        this.blendFuncStack.push(ThinGL.glStateManager().getBlendFunc());
     }
 
     public void popBlendFunc() {
-        final BlendFunc blendFunc = this.blendFuncStack.pop();
-        GL14C.glBlendFuncSeparate(blendFunc.GL_BLEND_SRC_RGB, blendFunc.GL_BLEND_DST_RGB, blendFunc.GL_BLEND_SRC_ALPHA, blendFunc.GL_BLEND_DST_ALPHA);
+        final GLStateManager.BlendFunc blendFunc = this.blendFuncStack.pop();
+        ThinGL.glStateManager().setBlendFunc(blendFunc.srcRGB(), blendFunc.dstRGB(), blendFunc.srcAlpha(), blendFunc.dstAlpha());
     }
 
     public void pushDepthFunc() {
-        this.depthFuncStack.push(GL11C.glGetInteger(GL11C.GL_DEPTH_FUNC));
+        this.depthFuncStack.push(ThinGL.glStateManager().getDepthFunc());
     }
 
     public void popDepthFunc() {
-        GL11C.glDepthFunc(this.depthFuncStack.popInt());
+        ThinGL.glStateManager().setDepthFunc(this.depthFuncStack.popInt());
+    }
+
+    public void pushColorMask() {
+        this.colorMaskStack.push(ThinGL.glStateManager().getColorMask());
+    }
+
+    public void popColorMask() {
+        final GLStateManager.ColorMask colorMask = this.colorMaskStack.pop();
+        ThinGL.glStateManager().setColorMask(colorMask.red(), colorMask.green(), colorMask.blue(), colorMask.alpha());
     }
 
     public void pushDepthMask() {
-        this.depthMaskStack.push(GL11C.glGetBoolean(GL11C.GL_DEPTH_WRITEMASK));
+        this.depthMaskStack.push(ThinGL.glStateManager().getDepthMask());
     }
 
     public void popDepthMask() {
-        GL11C.glDepthMask(this.depthMaskStack.popBoolean());
+        ThinGL.glStateManager().setDepthMask(this.depthMaskStack.popBoolean());
+    }
+
+    public void pushScissor() {
+        this.scissorStack.push(ThinGL.glStateManager().getScissor());
+    }
+
+    public void popScissor() {
+        final GLStateManager.Scissor scissor = this.scissorStack.pop();
+        ThinGL.glStateManager().setScissor(scissor.x(), scissor.y(), scissor.width(), scissor.height());
     }
 
     public void pushViewport() {
-        final int[] viewport = new int[4];
-        GL11C.glGetIntegerv(GL11C.GL_VIEWPORT, viewport);
-        this.viewportStack.push(viewport);
+        this.viewportStack.push(ThinGL.glStateManager().getViewport());
     }
 
     public void popViewport() {
-        final int[] viewport = this.viewportStack.pop();
-        GL11C.glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+        final GLStateManager.Viewport viewport = this.viewportStack.pop();
+        ThinGL.glStateManager().setViewport(viewport.x(), viewport.y(), viewport.width(), viewport.height());
+    }
+
+    public void pushPixelStore() {
+        this.pixelStoresStack.push(new Int2IntOpenHashMap(6));
+    }
+
+    public void pixelStore(final int parameter, final int value) {
+        final int currentValue = ThinGL.glStateManager().getPixelStore(parameter);
+        if (currentValue != value) {
+            this.pixelStoresStack.peek().put(parameter, currentValue);
+            ThinGL.glStateManager().setPixelStore(parameter, value);
+        }
+    }
+
+    public void popPixelStore() {
+        final Int2IntMap pixelStores = this.pixelStoresStack.pop();
+        for (Int2IntMap.Entry entry : pixelStores.int2IntEntrySet()) {
+            ThinGL.glStateManager().setPixelStore(entry.getIntKey(), entry.getIntValue());
+        }
     }
 
     public void pushFramebuffer() {
@@ -171,11 +204,20 @@ public class GLStateStack {
         framebuffer.bind(setViewport);
     }
 
+    public void pushProgram() {
+        this.programStack.push(ThinGL.glStateManager().getProgram());
+    }
 
-    private record BlendFunc(int GL_BLEND_SRC_RGB, int GL_BLEND_SRC_ALPHA, int GL_BLEND_DST_RGB, int GL_BLEND_DST_ALPHA) {
-        private BlendFunc() {
-            this(GL11C.glGetInteger(GL14C.GL_BLEND_SRC_RGB), GL11C.glGetInteger(GL14C.GL_BLEND_SRC_ALPHA), GL11C.glGetInteger(GL14C.GL_BLEND_DST_RGB), GL11C.glGetInteger(GL14C.GL_BLEND_DST_ALPHA));
-        }
+    public void popProgram() {
+        ThinGL.glStateManager().setProgram(this.programStack.popInt());
+    }
+
+    public void pushVertexArray() {
+        this.vertexArrayStack.push(ThinGL.glStateManager().getVertexArray());
+    }
+
+    public void popVertexArray() {
+        ThinGL.glStateManager().setVertexArray(this.vertexArrayStack.popInt());
     }
 
 }

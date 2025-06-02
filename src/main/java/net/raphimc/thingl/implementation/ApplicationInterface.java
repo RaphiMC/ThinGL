@@ -61,7 +61,12 @@ public abstract class ApplicationInterface {
         return scale;
     }
 
-    public void onProgramUnbind() {
+    public boolean needsPreviousProgramRestored() {
+        return false;
+    }
+
+    public boolean needsPreviousVertexArrayRestored() {
+        return false;
     }
 
 }

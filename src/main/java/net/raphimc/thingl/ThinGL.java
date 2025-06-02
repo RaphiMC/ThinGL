@@ -22,10 +22,7 @@ import net.lenni0451.commons.logging.impl.Slf4jLogger;
 import net.lenni0451.commons.logging.special.LazyInitLogger;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.ImmediateMultiDrawBatchDataHolder;
 import net.raphimc.thingl.drawbuilder.index.QuadIndexBuffer;
-import net.raphimc.thingl.implementation.ApplicationInterface;
-import net.raphimc.thingl.implementation.Capabilities;
-import net.raphimc.thingl.implementation.WindowInterface;
-import net.raphimc.thingl.implementation.Workarounds;
+import net.raphimc.thingl.implementation.*;
 import net.raphimc.thingl.program.Programs;
 import net.raphimc.thingl.renderer.impl.Renderer2D;
 import net.raphimc.thingl.renderer.impl.Renderer3D;
@@ -84,6 +81,10 @@ public class ThinGL {
 
     public static ApplicationInterface applicationInterface() {
         return get().getApplicationInterface();
+    }
+
+    public static GLStateManager glStateManager() {
+        return get().getGLStateManager();
     }
 
     public static Capabilities capabilities() {
@@ -157,6 +158,7 @@ public class ThinGL {
     private final Thread renderThread;
     private final WindowInterface windowInterface;
     private final ApplicationInterface applicationInterface;
+    private final GLStateManager glStateManager;
     private final Capabilities capabilities;
     private final Workarounds workarounds;
 
@@ -196,6 +198,7 @@ public class ThinGL {
         this.renderThread = Thread.currentThread();
         this.windowInterface = windowInterface;
         this.applicationInterface = applicationInterface.apply(this);
+        this.glStateManager = new TrackingGLStateManager(this);
         this.capabilities = new Capabilities(this);
         this.workarounds = new Workarounds(this);
         this.glStateStack = new GLStateStack(this);
@@ -345,6 +348,10 @@ public class ThinGL {
 
     public ApplicationInterface getApplicationInterface() {
         return this.applicationInterface;
+    }
+
+    public GLStateManager getGLStateManager() {
+        return this.glStateManager;
     }
 
     public Capabilities getCapabilities() {

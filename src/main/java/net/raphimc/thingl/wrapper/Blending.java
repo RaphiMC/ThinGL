@@ -17,21 +17,21 @@
  */
 package net.raphimc.thingl.wrapper;
 
+import net.raphimc.thingl.ThinGL;
 import org.lwjgl.opengl.GL11C;
-import org.lwjgl.opengl.GL14C;
 
 public class Blending {
 
     public static void standardBlending() {
-        GL11C.glBlendFunc(GL11C.GL_SRC_ALPHA, GL11C.GL_ONE_MINUS_SRC_ALPHA);
+        ThinGL.glStateManager().setBlendFunc(GL11C.GL_SRC_ALPHA, GL11C.GL_ONE_MINUS_SRC_ALPHA);
     }
 
     public static void premultipliedAlphaBlending() {
-        GL14C.glBlendFuncSeparate(GL11C.GL_SRC_ALPHA, GL11C.GL_ONE_MINUS_SRC_ALPHA, GL11C.GL_ONE, GL11C.GL_ONE_MINUS_SRC_ALPHA);
+        ThinGL.glStateManager().setBlendFunc(GL11C.GL_SRC_ALPHA, GL11C.GL_ONE_MINUS_SRC_ALPHA, GL11C.GL_ONE, GL11C.GL_ONE_MINUS_SRC_ALPHA);
     }
 
     public static void additiveBlending() {
-        GL11C.glBlendFunc(GL11C.GL_ONE, GL11C.GL_ONE_MINUS_SRC_ALPHA);
+        ThinGL.glStateManager().setBlendFunc(GL11C.GL_ONE, GL11C.GL_ONE_MINUS_SRC_ALPHA);
     }
 
 }

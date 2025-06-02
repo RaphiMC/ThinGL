@@ -21,10 +21,13 @@ package net.raphimc.thingl.wrapper;
 import net.raphimc.thingl.ThinGL;
 import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL30C;
 
 import java.util.Stack;
 
 public class StencilStack {
+
+    private static final int[] STENCIL_CLEAR_VALUE = {0};
 
     private final Stack<Mode> stack = new Stack<>();
 
@@ -43,19 +46,21 @@ public class StencilStack {
             this.clear();
             ThinGL.glStateStack().push();
             ThinGL.glStateStack().enable(GL11C.GL_STENCIL_TEST);
+            ThinGL.glStateStack().pushColorMask();
         }
-        GL11C.glColorMask(false, false, false, false);
+        ThinGL.glStateManager().setColorMask(false, false, false, false);
         this.stack.push(mode).begin(this.stack.size());
     }
 
     public void set() {
-        GL11C.glColorMask(true, true, true, true);
+        ThinGL.glStateManager().setColorMask(true, true, true, true);
         this.stack.peek().end(this.stack.size());
     }
 
     public void pop() {
         this.stack.pop();
         if (this.stack.isEmpty()) {
+            ThinGL.glStateStack().popColorMask();
             ThinGL.glStateStack().pop();
             this.clear();
         } else {
@@ -64,8 +69,7 @@ public class StencilStack {
     }
 
     private void clear() {
-        GL11C.glClearStencil(0);
-        GL11C.glClear(GL11C.GL_STENCIL_BUFFER_BIT);
+        GL30C.glClearBufferiv(GL11C.GL_STENCIL, 0, STENCIL_CLEAR_VALUE);
     }
 
     public enum Mode {
