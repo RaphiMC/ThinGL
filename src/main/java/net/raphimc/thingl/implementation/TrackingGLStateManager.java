@@ -33,6 +33,8 @@ public class TrackingGLStateManager extends GLStateManager {
     private Boolean depthMask;
     private Scissor scissor;
     private Viewport viewport;
+    private Integer logicOp;
+    private PolygonOffset polygonOffset;
     private final Int2IntMap pixelStores = new Int2IntOpenHashMap();
     private Integer program;
     private Integer vertexArray;
@@ -205,6 +207,53 @@ public class TrackingGLStateManager extends GLStateManager {
 
     public void clearViewportCache() {
         this.viewport = null;
+    }
+
+    @Override
+    public int getLogicOp() {
+        if (this.logicOp != null) {
+            return this.logicOp;
+        } else {
+            final int logicOp = super.getLogicOp();
+            this.logicOp = logicOp;
+            return logicOp;
+        }
+    }
+
+    @Override
+    public void setLogicOp(final int op) {
+        if (this.getLogicOp() != op) {
+            this.logicOp = op;
+            super.setLogicOp(op);
+        }
+    }
+
+    public void clearLogicOpCache() {
+        this.logicOp = null;
+    }
+
+    @Override
+    public PolygonOffset getPolygonOffset() {
+        if (this.polygonOffset != null) {
+            return this.polygonOffset;
+        } else {
+            final PolygonOffset polygonOffset = super.getPolygonOffset();
+            this.polygonOffset = polygonOffset;
+            return polygonOffset;
+        }
+    }
+
+    @Override
+    public void setPolygonOffset(final float factor, final float units) {
+        final PolygonOffset currentPolygonOffset = this.getPolygonOffset();
+        if (currentPolygonOffset.factor() != factor || currentPolygonOffset.units() != units) {
+            this.polygonOffset = new PolygonOffset(factor, units);
+            super.setPolygonOffset(factor, units);
+        }
+    }
+
+    public void clearPolygonOffsetCache() {
+        this.polygonOffset = null;
     }
 
     @Override

@@ -37,6 +37,8 @@ public class GLStateStack {
     private final BooleanStack depthMaskStack = new BooleanArrayList();
     private final Stack<GLStateManager.Scissor> scissorStack = new Stack<>();
     private final Stack<GLStateManager.Viewport> viewportStack = new Stack<>();
+    private final IntStack logicOpStack = new IntArrayList();
+    private final Stack<GLStateManager.PolygonOffset> polygonOffsetStack = new Stack<>();
     private final Stack<Int2IntMap> pixelStoresStack = new Stack<>();
     private final Stack<Framebuffer> framebufferStack = new Stack<>();
     private final IntStack programStack = new IntArrayList();
@@ -72,6 +74,14 @@ public class GLStateStack {
             if (!this.viewportStack.isEmpty()) {
                 while (!this.viewportStack.isEmpty()) this.popViewport();
                 ThinGL.LOGGER.warn("GLStateStack viewport stack was not empty at the end of the frame!");
+            }
+            if (!this.logicOpStack.isEmpty()) {
+                while (!this.logicOpStack.isEmpty()) this.logicOpStack.pop();
+                ThinGL.LOGGER.warn("GLStateStack logic op stack was not empty at the end of the frame!");
+            }
+            if (!this.polygonOffsetStack.isEmpty()) {
+                while (!this.polygonOffsetStack.isEmpty()) this.polygonOffsetStack.pop();
+                ThinGL.LOGGER.warn("GLStateStack polygon offset stack was not empty at the end of the frame!");
             }
             if (!this.pixelStoresStack.isEmpty()) {
                 while (!this.pixelStoresStack.isEmpty()) this.popPixelStore();
@@ -169,6 +179,23 @@ public class GLStateStack {
     public void popViewport() {
         final GLStateManager.Viewport viewport = this.viewportStack.pop();
         ThinGL.glStateManager().setViewport(viewport.x(), viewport.y(), viewport.width(), viewport.height());
+    }
+
+    public void pushLogicOp() {
+        this.logicOpStack.push(ThinGL.glStateManager().getLogicOp());
+    }
+
+    public void popLogicOp() {
+        ThinGL.glStateManager().setLogicOp(this.logicOpStack.popInt());
+    }
+
+    public void pushPolygonOffset() {
+        this.polygonOffsetStack.push(ThinGL.glStateManager().getPolygonOffset());
+    }
+
+    public void popPolygonOffset() {
+        final GLStateManager.PolygonOffset polygonOffset = this.polygonOffsetStack.pop();
+        ThinGL.glStateManager().setPolygonOffset(polygonOffset.factor(), polygonOffset.units());
     }
 
     public void pushPixelStore() {

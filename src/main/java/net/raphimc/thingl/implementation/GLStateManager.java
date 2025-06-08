@@ -116,6 +116,25 @@ public class GLStateManager {
         GL11C.glViewport(x, y, width, height);
     }
 
+    public int getLogicOp() {
+        return GL11C.glGetInteger(GL11C.GL_LOGIC_OP_MODE);
+    }
+
+    public void setLogicOp(final int op) {
+        GL11C.glLogicOp(op);
+    }
+
+    public PolygonOffset getPolygonOffset() {
+        return new PolygonOffset(
+                GL11C.glGetFloat(GL11C.GL_POLYGON_OFFSET_FACTOR),
+                GL11C.glGetFloat(GL11C.GL_POLYGON_OFFSET_UNITS)
+        );
+    }
+
+    public void setPolygonOffset(final float factor, final float units) {
+        GL11C.glPolygonOffset(factor, units);
+    }
+
     public int getPixelStore(final int parameter) {
         return GL11C.glGetInteger(parameter);
     }
@@ -150,6 +169,9 @@ public class GLStateManager {
     }
 
     public record Viewport(int x, int y, int width, int height) {
+    }
+
+    public record PolygonOffset(float factor, float units) {
     }
 
 }
