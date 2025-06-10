@@ -9,7 +9,7 @@ layout (location = 1) in vec2 i_TexCoords;
 out vec2 v_TexCoords;
 
 void main() {
-    gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * vec4(i_Position, 1.0);
+    gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * vec4(i_Position, 1);
 
     v_TexCoords = i_TexCoords;
 }

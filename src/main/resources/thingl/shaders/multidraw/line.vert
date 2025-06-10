@@ -17,9 +17,9 @@ out float v_LineWidth;
 
 void main() {
     if (positionOffsets.length() == 0) {
-        gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * vec4(i_Position, 1.0);
+        gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * vec4(i_Position, 1);
     } else {
-        gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * vec4(i_Position + positionOffsets[gl_DrawIDARB], 1.0);
+        gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * vec4(i_Position + positionOffsets[gl_DrawIDARB], 1);
     }
 
     v_Color = i_Color;

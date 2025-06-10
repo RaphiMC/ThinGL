@@ -34,7 +34,7 @@ flat out uint v_StyleFlags;
 out float v_PerspectiveScale;
 
 void main() {
-    vec4 worldPosition = u_ViewMatrix * u_ModelMatrix * vec4(i_Position, 1.0);
+    vec4 worldPosition = u_ViewMatrix * u_ModelMatrix * vec4(i_Position, 1);
     gl_Position = u_ProjectionMatrix * worldPosition;
 
     GlyphData glyphData = glyphDatas[gl_VertexID / 4];
@@ -48,7 +48,7 @@ void main() {
     v_StyleFlags = textData.styleFlags;
 
     float distanceToCamera = length(worldPosition.xyz);
-    float fov = 2.0 * atan(1.0 / u_ProjectionMatrix[1][1]) * 180.0 / M_PI;
-    float viewHeight = 2.0 * distanceToCamera * tan(radians(fov * 0.5));
+    float fov = 2 * atan(1 / u_ProjectionMatrix[1][1]) * 180 / M_PI;
+    float viewHeight = 2 * distanceToCamera * tan(radians(fov * 0.5));
     v_PerspectiveScale = viewHeight / u_Viewport.y;
 }

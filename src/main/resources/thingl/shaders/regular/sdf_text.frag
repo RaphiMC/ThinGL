@@ -20,7 +20,7 @@ out vec4 o_Color;
 
 void main() {
     float smoothing = v_Smoothing;
-    if (gl_FragCoord.w != 1.0) { /* If not 2D */
+    if (gl_FragCoord.w != 1) { /* If not 2D */
         smoothing *= v_PerspectiveScale;
     }
 
@@ -34,17 +34,17 @@ void main() {
     }
 
     float dist = texture(u_Textures[v_TextureIndex], v_TexCoords).r;
-    float alpha = smoothstep(max(0.0, threshold - smoothing), min(1.0, threshold + smoothing), dist);
+    float alpha = smoothstep(max(0, threshold - smoothing), min(1, threshold + smoothing), dist);
     o_Color = vec4(v_TextColor.rgb, v_TextColor.a * alpha);
 
     if (v_OutlineColor.a != 0) {
         o_Color = mix(v_OutlineColor, v_TextColor, alpha);
-        float outlineAlpha = smoothstep(max(0.0, outlineThreshold - smoothing), min(1.0, outlineThreshold + smoothing), dist);
+        float outlineAlpha = smoothstep(max(0, outlineThreshold - smoothing), min(1, outlineThreshold + smoothing), dist);
         o_Color = vec4(o_Color.rgb, o_Color.a * outlineAlpha);
     }
 
     o_Color *= u_ColorModifier;
-    if (o_Color.a == 0.0) {
+    if (o_Color.a == 0) {
         discard;
     }
 }

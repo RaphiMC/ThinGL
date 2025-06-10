@@ -11,7 +11,7 @@ layout (location = 3) in vec4 i_InstanceColor;
 out vec4 v_Color;
 
 void main() {
-    gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * vec4(i_Position + i_InstancePosition, 1.0);
+    gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * vec4(i_Position + i_InstancePosition, 1);
 
     v_Color = i_Color * i_InstanceColor;
 }

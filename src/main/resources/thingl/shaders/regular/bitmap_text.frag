@@ -11,7 +11,7 @@ out vec4 o_Color;
 void main() {
     float intensity = texture(u_Textures[v_TextureIndex], v_TexCoords).r;
     o_Color = vec4(v_TextColor.rgb, v_TextColor.a * intensity) * u_ColorModifier;
-    if (o_Color.a == 0.0) {
+    if (o_Color.a == 0) {
         discard;
     }
 }
