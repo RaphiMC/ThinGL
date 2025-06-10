@@ -24,11 +24,9 @@ public class OutlineProgram extends MultiPassPostProcessingProgram<OutlineProgra
 
     public static final int STYLE_OUTER_BIT = 1 << 0;
     public static final int STYLE_INNER_BIT = 1 << 1;
-    public static final int STYLE_ROUNDED_BIT = 1 << 2;
+    public static final int STYLE_SHARP_CORNERS_BIT = 1 << 2;
 
-    public static final int STYLE_OUTER_ROUNDED_BITS = STYLE_OUTER_BIT | STYLE_ROUNDED_BIT;
-
-    private int styleFlags = STYLE_OUTER_ROUNDED_BITS;
+    private int styleFlags = STYLE_OUTER_BIT;
     private int width = 1;
 
     public OutlineProgram(final Shader vertexShader, final Shader fragmentShader) {

@@ -33,7 +33,7 @@ public class ObjectOutliningExample extends ExampleBase {
         ThinGL.programs().getOutline().bindMask();
         this.renderScene(positionMatrix);
         ThinGL.programs().getOutline().unbindMask();
-        ThinGL.programs().getOutline().configureParameters(OutlineProgram.STYLE_OUTER_ROUNDED_BITS, 1); // Configure the outline
+        ThinGL.programs().getOutline().configureParameters(OutlineProgram.STYLE_OUTER_BIT, 1); // Configure the outline
         ThinGL.programs().getOutline().renderFullscreenQuad();
         ThinGL.programs().getOutline().clearMask();
 

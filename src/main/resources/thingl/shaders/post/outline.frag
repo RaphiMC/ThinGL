@@ -1,7 +1,7 @@
 #version 330 core
 #define STYLE_OUTER_BIT 1
 #define STYLE_INNER_BIT 2
-#define STYLE_ROUNDED_BIT 4
+#define STYLE_SHARP_CORNERS_BIT 4
 
 uniform sampler2D u_Source;
 uniform sampler2D u_Mask;
@@ -55,42 +55,52 @@ void main() {
             }
         }
     } else { /* y axis combining pass */
-        int xyDistance = 0;
         vec3 color = vec3(0.0);
+        float xyDistance = 0.0;
         vec4 currentPixel = texture(u_Source, v_VpTexCoords);
         if ((u_StyleFlags & STYLE_OUTER_BIT) != 0 && (currentPixel.a == 0.0 || decodeDistance(currentPixel.a) > 0)) {
             for (int i = -u_Width; i <= u_Width; i++) {
                 vec4 maskPixel = texture(u_Source, v_VpTexCoords + vec2(0, i) * v_VpPixelSize);
-                int dist = abs(i);
                 int xDist = decodeDistance(maskPixel.a);
+                int yDist = abs(i);
+                float xyDist = float(yDist);
                 if (xDist > 0) {
-                    dist = int(round(sqrt(float(dist * dist + xDist * xDist))));
+                    xyDist = sqrt(float(xDist * xDist + yDist * yDist));
                 }
-                if (maskPixel.a != 0.0 && (dist < xyDistance || xyDistance == 0)) {
+                if (maskPixel.a != 0.0 && (xyDist < xyDistance || xyDistance == 0)) {
                     color = maskPixel.rgb;
-                    xyDistance = dist;
+                    xyDistance = xyDist;
                 }
             }
         }
         if ((u_StyleFlags & STYLE_INNER_BIT) != 0 && currentPixel.a != 0.0) {
             for (int i = -u_Width; i <= u_Width; i++) {
                 vec4 maskPixel = texture(u_Source, v_VpTexCoords + vec2(0, i) * v_VpPixelSize);
-                int dist = abs(i);
                 int xDist = decodeDistance(maskPixel.a);
+                int yDist = -abs(i);
+                float xyDist = float(yDist);
                 if (xDist < 0) {
-                    dist = int(round(sqrt(float(dist * dist + xDist * xDist))));
+                    xyDist = -sqrt(float(xDist * xDist + yDist * yDist));
                     maskPixel.a = 0.0; // Allow the condition below to be true
                 }
-                dist = -dist;
-                if (maskPixel.a == 0.0 && (dist > xyDistance || xyDistance == 0)) {
+                if (maskPixel.a == 0.0 && (xyDist > xyDistance || xyDistance == 0.0)) {
                     color = currentPixel.rgb;
-                    xyDistance = dist;
+                    xyDistance = xyDist;
                 }
             }
         }
 
-        if (xyDistance != 0 && ((xyDistance >= -u_Width && xyDistance <= u_Width) || (u_StyleFlags & STYLE_ROUNDED_BIT) == 0)) {
-            o_Color = vec4(color, 1.0);
+        if (xyDistance != 0.0) {
+            if ((u_StyleFlags & STYLE_SHARP_CORNERS_BIT) == 0) {
+                float alpha = clamp(1.0 - (abs(xyDistance) - u_Width), 0.0, 1.0);
+                if (alpha > 0.0) {
+                    o_Color = vec4(color, alpha);
+                } else {
+                    discard;
+                }
+            } else {
+                o_Color = vec4(color, 1.0);
+            }
         } else {
             discard;
         }
