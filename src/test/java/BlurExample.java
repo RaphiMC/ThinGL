@@ -16,25 +16,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import base.ExampleBase;
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
+import net.raphimc.thingl.implementation.application.StandaloneApplicationRunner;
 import net.raphimc.thingl.resource.texture.AbstractTexture;
 import net.raphimc.thingl.resource.texture.Texture2D;
 import org.joml.Matrix4fStack;
 
 import java.io.IOException;
 
-public class BlurExample extends ExampleBase {
+public class BlurExample extends StandaloneApplicationRunner {
 
     public static void main(String[] args) {
-        new BlurExample().run();
+        new BlurExample().launch();
+    }
+
+    public BlurExample() {
+        super(new Configuration().setWindowTitle("ThinGL Example - Blur").setDebugMode(true));
     }
 
     private Texture2D image;
 
     @Override
     protected void init() {
+        super.init();
         try {
             final byte[] imageData = BlurExample.class.getResourceAsStream("/images/triangles-1430105_640.png").readAllBytes();
             this.image = new Texture2D(AbstractTexture.InternalFormat.RGBA8, imageData);

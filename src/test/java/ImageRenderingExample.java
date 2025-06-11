@@ -16,24 +16,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import base.ExampleBase;
 import net.raphimc.thingl.ThinGL;
+import net.raphimc.thingl.implementation.application.StandaloneApplicationRunner;
 import net.raphimc.thingl.resource.texture.AbstractTexture;
 import net.raphimc.thingl.resource.texture.Texture2D;
 import org.joml.Matrix4fStack;
 
 import java.io.IOException;
 
-public class ImageRenderingExample extends ExampleBase {
+public class ImageRenderingExample extends StandaloneApplicationRunner {
 
     public static void main(String[] args) {
-        new ImageRenderingExample().run();
+        new ImageRenderingExample().launch();
+    }
+
+    public ImageRenderingExample() {
+        super(new Configuration().setWindowTitle("ThinGL Example - Image rendering").setDebugMode(true));
     }
 
     private Texture2D image;
 
     @Override
     protected void init() {
+        super.init();
         try {
             final byte[] imageData = ImageRenderingExample.class.getResourceAsStream("/images/triangles-1430105_640.png").readAllBytes();
             this.image = new Texture2D(AbstractTexture.InternalFormat.RGBA8, imageData);

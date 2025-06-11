@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.thingl.implementation;
+package net.raphimc.thingl.implementation.application;
 
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.framebuffer.impl.WindowFramebuffer;
@@ -31,6 +31,8 @@ public class StandaloneApplicationInterface extends ApplicationInterface {
 
     public StandaloneApplicationInterface(final ThinGL thinGL) {
         super(thinGL);
+        thinGL.getWindowInterface().addFramebufferResizeCallback(this::createProjectionMatrix);
+        this.createProjectionMatrix(thinGL.getWindowInterface().getFramebufferWidth(), thinGL.getWindowInterface().getFramebufferHeight());
     }
 
     @Override
@@ -71,6 +73,10 @@ public class StandaloneApplicationInterface extends ApplicationInterface {
     @Override
     public void setCurrentFramebuffer(final Framebuffer framebuffer) {
         this.framebuffer = framebuffer;
+    }
+
+    protected void createProjectionMatrix(final int width, final int height) {
+        this.projectionMatrixStack.setOrtho(0F, width, height, 0F, -1000F, 1000F);
     }
 
 }

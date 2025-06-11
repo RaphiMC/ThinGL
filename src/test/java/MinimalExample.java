@@ -16,15 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import base.ExampleBase;
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
+import net.raphimc.thingl.implementation.application.StandaloneApplicationRunner;
 import org.joml.Matrix4fStack;
 
-public class MinimalExample extends ExampleBase {
+public class MinimalExample extends StandaloneApplicationRunner {
 
     public static void main(String[] args) {
-        new MinimalExample().run();
+        new MinimalExample().launch();
+    }
+
+    public MinimalExample() {
+        super(new Configuration().setWindowTitle("ThinGL Example - Minimal Example").setDebugMode(true));
     }
 
     @Override

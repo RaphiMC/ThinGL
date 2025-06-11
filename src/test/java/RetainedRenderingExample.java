@@ -16,23 +16,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import base.ExampleBase;
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.PersistentMultiDrawBatchDataHolder;
+import net.raphimc.thingl.implementation.application.StandaloneApplicationRunner;
 import net.raphimc.thingl.util.RenderMathUtil;
 import org.joml.Matrix4fStack;
 
-public class RetainedRenderingExample extends ExampleBase {
+public class RetainedRenderingExample extends StandaloneApplicationRunner {
 
     public static void main(String[] args) {
-        new RetainedRenderingExample().run();
+        new RetainedRenderingExample().launch();
+    }
+
+    public RetainedRenderingExample() {
+        super(new Configuration().setWindowTitle("ThinGL Example - Retained rendering").setDebugMode(true));
     }
 
     private final PersistentMultiDrawBatchDataHolder persistentDrawBatch = new PersistentMultiDrawBatchDataHolder();
 
     @Override
     protected void init() {
+        super.init();
         ThinGL.renderer2D().beginBuffering(persistentDrawBatch); // Renderer2D now renders everything into drawBatch
         for (int i = 0; i < 10; i++) {
             final int x = i * 10;

@@ -22,7 +22,6 @@ import it.unimi.dsi.fastutil.booleans.BooleanArrayList;
 import it.unimi.dsi.fastutil.booleans.BooleanStack;
 import it.unimi.dsi.fastutil.ints.*;
 import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.implementation.GLStateManager;
 import net.raphimc.thingl.resource.framebuffer.Framebuffer;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -60,7 +59,7 @@ public class GLStateStack {
                 ThinGL.LOGGER.warn("GLStateStack depth func stack was not empty at the end of the frame!");
             }
             if (!this.colorMaskStack.isEmpty()) {
-                while (!this.colorMaskStack.isEmpty()) this.colorMaskStack.pop();
+                while (!this.colorMaskStack.isEmpty()) this.popColorMask();
                 ThinGL.LOGGER.warn("GLStateStack color mask stack was not empty at the end of the frame!");
             }
             if (!this.depthMaskStack.isEmpty()) {
@@ -68,7 +67,7 @@ public class GLStateStack {
                 ThinGL.LOGGER.warn("GLStateStack depth mask stack was not empty at the end of the frame!");
             }
             if (!this.scissorStack.isEmpty()) {
-                while (!this.scissorStack.isEmpty()) this.scissorStack.pop();
+                while (!this.scissorStack.isEmpty()) this.popScissor();
                 ThinGL.LOGGER.warn("GLStateStack scissor stack was not empty at the end of the frame!");
             }
             if (!this.viewportStack.isEmpty()) {
@@ -76,11 +75,11 @@ public class GLStateStack {
                 ThinGL.LOGGER.warn("GLStateStack viewport stack was not empty at the end of the frame!");
             }
             if (!this.logicOpStack.isEmpty()) {
-                while (!this.logicOpStack.isEmpty()) this.logicOpStack.pop();
+                while (!this.logicOpStack.isEmpty()) this.popLogicOp();
                 ThinGL.LOGGER.warn("GLStateStack logic op stack was not empty at the end of the frame!");
             }
             if (!this.polygonOffsetStack.isEmpty()) {
-                while (!this.polygonOffsetStack.isEmpty()) this.polygonOffsetStack.pop();
+                while (!this.polygonOffsetStack.isEmpty()) this.popPolygonOffset();
                 ThinGL.LOGGER.warn("GLStateStack polygon offset stack was not empty at the end of the frame!");
             }
             if (!this.pixelStoresStack.isEmpty()) {
@@ -96,7 +95,7 @@ public class GLStateStack {
                 ThinGL.LOGGER.warn("GLStateStack program stack was not empty at the end of the frame!");
             }
             if (!this.vertexArrayStack.isEmpty()) {
-                while (!this.vertexArrayStack.isEmpty()) this.vertexArrayStack.pop();
+                while (!this.vertexArrayStack.isEmpty()) this.popVertexArray();
                 ThinGL.LOGGER.warn("GLStateStack vertex array stack was not empty at the end of the frame!");
             }
         });

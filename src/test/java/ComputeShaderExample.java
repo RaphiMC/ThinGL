@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import base.ExampleBase;
 import net.raphimc.thingl.drawbuilder.builder.BufferBuilder;
+import net.raphimc.thingl.implementation.application.StandaloneApplicationRunner;
 import net.raphimc.thingl.resource.buffer.AbstractBuffer;
 import net.raphimc.thingl.resource.buffer.ImmutableBuffer;
 import net.raphimc.thingl.resource.program.Program;
@@ -30,7 +30,7 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
 
-public class ComputeShaderExample extends ExampleBase {
+public class ComputeShaderExample extends StandaloneApplicationRunner {
 
     private static final int COUNT = 10;
     private static final String SHADER_SOURCE = """
@@ -48,11 +48,16 @@ public class ComputeShaderExample extends ExampleBase {
             """;
 
     public static void main(String[] args) {
-        new ComputeShaderExample().run();
+        new ComputeShaderExample().launch();
+    }
+
+    public ComputeShaderExample() {
+        super(new Configuration().setWindowTitle("ThinGL Example - Compute Shader").setDebugMode(true));
     }
 
     @Override
     protected void init() {
+        super.init();
         final Shader computeShader = new Shader(Shader.Type.COMPUTE, SHADER_SOURCE);
         final Program computeProgram = new Program(computeShader);
 

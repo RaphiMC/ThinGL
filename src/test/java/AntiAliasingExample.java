@@ -16,15 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import base.ExampleBase;
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
+import net.raphimc.thingl.implementation.application.StandaloneApplicationRunner;
 import org.joml.Matrix4fStack;
 
-public class AntiAliasingExample extends ExampleBase {
+public class AntiAliasingExample extends StandaloneApplicationRunner {
 
     public static void main(String[] args) {
-        new AntiAliasingExample().run();
+        new AntiAliasingExample().launch();
+    }
+
+    public AntiAliasingExample() {
+        super(new Configuration().setWindowTitle("ThinGL Example - AntiAliasing").setDebugMode(true));
     }
 
     @Override

@@ -16,16 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import base.ExampleBase;
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
+import net.raphimc.thingl.implementation.application.StandaloneApplicationRunner;
 import net.raphimc.thingl.program.post.impl.OutlineProgram;
 import org.joml.Matrix4fStack;
 
-public class ObjectOutliningExample extends ExampleBase {
+public class ObjectOutliningExample extends StandaloneApplicationRunner {
 
     public static void main(String[] args) {
-        new ObjectOutliningExample().run();
+        new ObjectOutliningExample().launch();
+    }
+
+    public ObjectOutliningExample() {
+        super(new Configuration().setWindowTitle("ThinGL Example - Object outlining").setDebugMode(true));
     }
 
     @Override

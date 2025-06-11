@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import base.ExampleBase;
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
+import net.raphimc.thingl.implementation.application.StandaloneApplicationRunner;
 import net.raphimc.thingl.renderer.impl.RendererText;
 import net.raphimc.thingl.text.TextRun;
 import net.raphimc.thingl.text.TextSegment;
@@ -32,10 +32,14 @@ import org.joml.Matrix4fStack;
 
 import java.io.IOException;
 
-public class TextRenderingExample extends ExampleBase {
+public class TextRenderingExample extends StandaloneApplicationRunner {
 
     public static void main(String[] args) {
-        new TextRenderingExample().run();
+        new TextRenderingExample().launch();
+    }
+
+    public TextRenderingExample() {
+        super(new Configuration().setWindowTitle("ThinGL Example - Text rendering").setDebugMode(true));
     }
 
     private RendererText bitmapTextRenderer = new RendererText(new BitmapTextRenderer());
@@ -45,6 +49,7 @@ public class TextRenderingExample extends ExampleBase {
 
     @Override
     protected void init() {
+        super.init();
         try {
             final byte[] fontData = TextRenderingExample.class.getResourceAsStream("/fonts/Roboto-Regular.ttf").readAllBytes();
             this.robotoRegular = new Font(fontData, 32);

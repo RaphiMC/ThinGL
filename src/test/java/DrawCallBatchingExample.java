@@ -16,17 +16,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import base.ExampleBase;
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.ImmediateMultiDrawBatchDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.MultiDrawBatchDataHolder;
+import net.raphimc.thingl.implementation.application.StandaloneApplicationRunner;
 import org.joml.Matrix4fStack;
 
-public class DrawCallBatchingExample extends ExampleBase {
+public class DrawCallBatchingExample extends StandaloneApplicationRunner {
 
     public static void main(String[] args) {
-        new DrawCallBatchingExample().run();
+        new DrawCallBatchingExample().launch();
+    }
+
+    public DrawCallBatchingExample() {
+        super(new Configuration().setWindowTitle("ThinGL Example - Draw call batching").setDebugMode(true));
     }
 
     @Override

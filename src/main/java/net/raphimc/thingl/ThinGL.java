@@ -18,11 +18,13 @@
 package net.raphimc.thingl;
 
 import net.lenni0451.commons.logging.Logger;
-import net.lenni0451.commons.logging.impl.Slf4jLogger;
-import net.lenni0451.commons.logging.special.LazyInitLogger;
+import net.lenni0451.commons.logging.LoggerFactory;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.ImmediateMultiDrawBatchDataHolder;
 import net.raphimc.thingl.drawbuilder.index.QuadIndexBuffer;
-import net.raphimc.thingl.implementation.*;
+import net.raphimc.thingl.implementation.Capabilities;
+import net.raphimc.thingl.implementation.Workarounds;
+import net.raphimc.thingl.implementation.application.ApplicationInterface;
+import net.raphimc.thingl.implementation.window.WindowInterface;
 import net.raphimc.thingl.program.Programs;
 import net.raphimc.thingl.renderer.impl.Renderer2D;
 import net.raphimc.thingl.renderer.impl.Renderer3D;
@@ -34,9 +36,7 @@ import net.raphimc.thingl.util.pool.BufferBuilderPool;
 import net.raphimc.thingl.util.pool.FramebufferPool;
 import net.raphimc.thingl.util.pool.GpuBufferPool;
 import net.raphimc.thingl.util.pool.ImmediateVertexArrays;
-import net.raphimc.thingl.wrapper.GLStateStack;
-import net.raphimc.thingl.wrapper.ScissorStack;
-import net.raphimc.thingl.wrapper.StencilStack;
+import net.raphimc.thingl.wrapper.*;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.system.Configuration;
 import org.lwjgl.util.freetype.FreeType;
@@ -50,7 +50,7 @@ public class ThinGL {
 
     public static final String VERSION = "${version}";
     public static final String IMPL_VERSION = "${version}+${commit_hash}";
-    public static Logger LOGGER = new LazyInitLogger(() -> new Slf4jLogger("ThinGL"));
+    public static final Logger LOGGER = LoggerFactory.getLogger("ThinGL");
 
     private static ThinGL INSTANCE;
 
