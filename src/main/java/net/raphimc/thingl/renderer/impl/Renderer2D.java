@@ -196,7 +196,7 @@ public class Renderer2D extends Renderer {
             Primitives._outlinedCircle(positionMatrix, vertexDataHolder, xtl + radius, ybr - radius, 0F, outerRadius, width, 180, 270, abgrColor);
             Primitives._outlinedCircle(positionMatrix, vertexDataHolder, xbr - radius, ybr - radius, 0F, outerRadius, width, 90, 180, abgrColor);
             Primitives._outlinedCircle(positionMatrix, vertexDataHolder, xbr - radius, ytl + radius, 0F, outerRadius, width, 0, 90, abgrColor);
-            vertexDataHolder.putVector3f(positionMatrix, xtl + radius, ytl + width, 0F).putColor(abgrColor).endVertex();
+            vertexDataHolder.putVector3f(positionMatrix, xtl + radius, ytl, 0F).putColor(abgrColor).endVertex();
             vertexDataHolder.putVector3f(positionMatrix, xtl + radius, ytl - width, 0F).putColor(abgrColor).endVertex();
             vertexDataHolder.endConnectedPrimitive();
         }
