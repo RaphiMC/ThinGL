@@ -26,24 +26,28 @@ public class OutlineProgram extends MultiPassPostProcessingProgram<OutlineProgra
     public static final int STYLE_INNER_BIT = 1 << 1;
     public static final int STYLE_SHARP_CORNERS_BIT = 1 << 2;
 
-    private int styleFlags = STYLE_OUTER_BIT;
     private int width = 1;
+    private int styleFlags = STYLE_OUTER_BIT;
 
     public OutlineProgram(final Shader vertexShader, final Shader fragmentShader) {
         super(vertexShader, fragmentShader, s -> {
             s.setUniformBoolean("u_FinalPass", false);
-            s.setUniformInt("u_StyleFlags", s.styleFlags);
             s.setUniformInt("u_Width", s.width);
+            s.setUniformInt("u_StyleFlags", s.styleFlags);
         }, s -> {
             s.setUniformBoolean("u_FinalPass", true);
-            s.setUniformInt("u_StyleFlags", s.styleFlags);
             s.setUniformInt("u_Width", s.width);
+            s.setUniformInt("u_StyleFlags", s.styleFlags);
         });
     }
 
-    public void configureParameters(final int styleFlags, final int width) {
-        this.styleFlags = styleFlags;
+    public void configureParameters(final int width) {
+        this.configureParameters(width, STYLE_OUTER_BIT);
+    }
+
+    public void configureParameters(final int width, final int styleFlags) {
         this.width = width;
+        this.styleFlags = styleFlags;
     }
 
 }

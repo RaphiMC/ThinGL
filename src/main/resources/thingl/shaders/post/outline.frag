@@ -6,8 +6,8 @@
 uniform sampler2D u_Source;
 uniform sampler2D u_Mask;
 uniform bool u_FinalPass;
-uniform int u_StyleFlags;
 uniform int u_Width;
+uniform int u_StyleFlags;
 
 in vec2 v_VpPixelSize;
 in vec2 v_VpTexCoords;

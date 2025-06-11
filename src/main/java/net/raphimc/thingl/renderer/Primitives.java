@@ -18,6 +18,7 @@
 
 package net.raphimc.thingl.renderer;
 
+import net.lenni0451.commons.math.MathUtils;
 import net.raphimc.thingl.drawbuilder.BuiltinDrawBatches;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.VertexDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.MultiDrawBatchDataHolder;
@@ -220,7 +221,7 @@ public class Primitives {
     }
 
     public static void outlinedCircle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float radius, final float w, final float degStart, final float degEnd, final int c) {
-        outlinedCircle(positionMatrix, multiDrawBatchDataHolder, x, y, 0F, w, radius, degStart, degEnd, c);
+        outlinedCircle(positionMatrix, multiDrawBatchDataHolder, x, y, 0F, radius, w, degStart, degEnd, c);
     }
 
     public static void outlinedCircle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float z, final float radius, final float w, final float degStart, final float degEnd, final int c) {
@@ -337,13 +338,13 @@ public class Primitives {
 
     public static void _outlinedCircle(final Matrix4f positionMatrix, final VertexDataHolder vertexDataHolder, final float x, final float y, final float z, final float radius, final float w, final float degStart, final float degEnd, final int c) {
         _circle(radius, degStart, degEnd, (xc, yc) -> {
-            vertexDataHolder.putVector3f(positionMatrix, x + xc, y + yc, z).putColor(c).endVertex();
+            vertexDataHolder.putVector3f(positionMatrix, x + (xc / radius * (radius - w / 2F)), y + (yc / radius * (radius - w / 2F)), z).putColor(c).endVertex();
             vertexDataHolder.putVector3f(positionMatrix, x + (xc / radius * (radius + w / 2F)), y + (yc / radius * (radius + w / 2F)), z).putColor(c).endVertex();
         });
     }
 
     public static void _circle(final float radius, final float degStart, final float degEnd, final BiConsumer<Float, Float> valueConsumer) {
-        final float stepSize = (float) Math.max(1D, Math.toDegrees(Math.acos(1 - (1 / radius))));
+        final float stepSize = MathUtils.clamp(180F / (MathUtil.PI * radius), 2F, 20F);
 
         for (float angle = degEnd; angle >= degStart; angle -= stepSize) {
             final float rad = Math.toRadians(angle) - MathUtil.HALF_PI;

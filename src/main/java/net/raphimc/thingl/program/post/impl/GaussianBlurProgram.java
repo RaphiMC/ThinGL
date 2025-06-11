@@ -38,8 +38,7 @@ public class GaussianBlurProgram extends MultiPassPostProcessingProgram<Gaussian
     }
 
     public void configureParameters(final int strength) {
-        this.radius = strength;
-        this.sigma = strength;
+        this.configureParameters(strength, strength);
     }
 
     public void configureParameters(final int radius, final float sigma) {
