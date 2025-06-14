@@ -1,11 +1,10 @@
 #version 430 core
-#define M_PI 3.14159265359
 
 struct TextData {
+    uint fontSize;
     uint textColor;
     uint outlineColor;
     uint styleFlags;
-    float smoothing;
 };
 struct GlyphData {
     uint textureAndTextIndex;
@@ -27,28 +26,21 @@ layout (location = 0) in vec3 i_Position;
 layout (location = 1) in vec2 i_TexCoords;
 out vec2 v_TexCoords;
 flat out uint v_TextureIndex;
+flat out uint v_FontSize;
 flat out vec4 v_TextColor;
 flat out vec4 v_OutlineColor;
-flat out float v_Smoothing;
 flat out uint v_StyleFlags;
-out float v_PerspectiveScale;
 
 void main() {
-    vec4 worldPosition = u_ViewMatrix * u_ModelMatrix * vec4(i_Position, 1);
-    gl_Position = u_ProjectionMatrix * worldPosition;
+    gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * vec4(i_Position, 1);
 
     GlyphData glyphData = glyphDatas[gl_VertexID / 4];
     TextData textData = textDatas[glyphData.textureAndTextIndex & uint(0x7FFFFFF)];
 
     v_TexCoords = i_TexCoords;
     v_TextureIndex = (glyphData.textureAndTextIndex >> 27) & uint(31);
+    v_FontSize = textData.fontSize;
     v_TextColor = unpackUnorm4x8(textData.textColor);
     v_OutlineColor = unpackUnorm4x8(textData.outlineColor);
-    v_Smoothing = textData.smoothing;
     v_StyleFlags = textData.styleFlags;
-
-    float distanceToCamera = length(worldPosition.xyz);
-    float fov = 2 * atan(1 / u_ProjectionMatrix[1][1]) * 180 / M_PI;
-    float viewHeight = 2 * distanceToCamera * tan(radians(fov * 0.5));
-    v_PerspectiveScale = viewHeight / u_Viewport.y;
 }

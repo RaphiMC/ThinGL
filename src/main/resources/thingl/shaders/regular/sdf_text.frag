@@ -1,46 +1,42 @@
 #version 400 core
+#define DF_PX_RANGE 6
 #define STYLE_BOLD_BIT uint(2)
-
-const float regularThreshold = 128.0 / 255.0;
-const float regularBoldThreshold = 64.0 / 255.0;
-const float outlineThreshold = 32.0 / 255.0;
-const float outlineBoldThreshold = 96.0 / 255.0;
 
 uniform vec4 u_ColorModifier;
 uniform sampler2D u_Textures[32];
 
 in vec2 v_TexCoords;
 flat in uint v_TextureIndex;
+flat in uint v_FontSize;
 flat in vec4 v_TextColor;
 flat in vec4 v_OutlineColor;
-flat in float v_Smoothing;
 flat in uint v_StyleFlags;
-in float v_PerspectiveScale;
 out vec4 o_Color;
 
 void main() {
-    float smoothing = v_Smoothing;
-    if (gl_FragCoord.w != 1) { /* If not 2D */
-        smoothing *= v_PerspectiveScale;
-    }
-
-    float threshold = regularThreshold;
-    if ((v_StyleFlags & STYLE_BOLD_BIT) != 0) {
-        if (v_OutlineColor.a != 0) {
-            threshold = outlineBoldThreshold;
-        } else {
-            threshold = regularBoldThreshold;
-        }
-    }
-
     float dist = texture(u_Textures[v_TextureIndex], v_TexCoords).r;
-    float alpha = smoothstep(max(0, threshold - smoothing), min(1, threshold + smoothing), dist);
-    o_Color = vec4(v_TextColor.rgb, v_TextColor.a * alpha);
+    if ((v_StyleFlags & STYLE_BOLD_BIT) == 0 && v_OutlineColor.a == 0) { // High quality text rendering
+        vec2 unitRange = vec2(DF_PX_RANGE) / vec2(textureSize(u_Textures[v_TextureIndex], 0));
+        vec2 screenTexSize = vec2(1) / fwidth(v_TexCoords);
+        float screenPxRange = max(dot(unitRange, screenTexSize), 1);
+        float screenPxDistance = screenPxRange * (dist - 0.5);
+        float alpha = clamp(screenPxDistance + 0.5, 0, 1);
+        o_Color = vec4(v_TextColor.rgb, v_TextColor.a * alpha);
+    } else { // Regular text rendering
+        float width = fwidth(dist);
+        float center = 0.5;
+        if ((v_StyleFlags & STYLE_BOLD_BIT) != 0) {
+            center = clamp(center - v_FontSize / 40.0 / 10.0, 0.05, 0.5);
+        }
+        float alpha = smoothstep(max(center - width, 0), min(center + width, 1), dist);
+        o_Color = vec4(v_TextColor.rgb, v_TextColor.a * alpha);
 
-    if (v_OutlineColor.a != 0) {
-        o_Color = mix(v_OutlineColor, v_TextColor, alpha);
-        float outlineAlpha = smoothstep(max(0, outlineThreshold - smoothing), min(1, outlineThreshold + smoothing), dist);
-        o_Color = vec4(o_Color.rgb, o_Color.a * outlineAlpha);
+        if (v_OutlineColor.a != 0) {
+            o_Color = mix(v_OutlineColor, v_TextColor, alpha);
+            float outlineCenter = clamp(center - v_FontSize / 32.0 / 10.0, 0.05, 0.5);
+            float outlineAlpha = smoothstep(max(outlineCenter - width, 0), min(outlineCenter + width, 1), dist);
+            o_Color = vec4(o_Color.rgb, o_Color.a * outlineAlpha);
+        }
     }
 
     o_Color *= u_ColorModifier;

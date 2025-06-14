@@ -25,11 +25,10 @@ import net.raphimc.thingl.drawbuilder.drawbatchdataholder.MultiDrawBatchDataHold
 import net.raphimc.thingl.text.font.Font;
 import net.raphimc.thingl.text.shaper.ShapedTextSegment;
 import org.joml.Matrix4f;
-import org.joml.Matrix4fc;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
 
 public class SDFTextRenderer extends TextRenderer {
+
+    public static final int DF_PX_RANGE = 6;
 
     public SDFTextRenderer() {
         super(() -> ThinGL.programs().getSdfText());
@@ -38,18 +37,9 @@ public class SDFTextRenderer extends TextRenderer {
     @Override
     protected void renderTextSegment(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextSegment textSegment, final float x, final float y, final float z) {
         final ShaderDataHolder textDataHolder = multiDrawBatchDataHolder.getShaderDataHolder(this.getTextDrawBatch(), "ssbo_TextData", Std430ShaderDataHolder.SUPPLIER).ensureInTopLevelArray();
-
-        final Vector3f scale = positionMatrix.getScale(new Vector3f());
-        if ((ThinGL.applicationInterface().getProjectionMatrix().properties() & Matrix4fc.PROPERTY_AFFINE) != 0) { // If orthographic projection
-            final Vector2f scaleFactor = ThinGL.applicationInterface().get2DScaleFactor();
-            scale.mul(scaleFactor.x, scaleFactor.y, 0F);
-        }
-        scale.mul(this.getGlobalScale());
-        final float maxScale = Math.max(Math.max(scale.x, scale.y), scale.z);
-        final float smoothing = 1F / maxScale / 10F;
-
-        final int regularTextDataIndex = textDataHolder.beginStruct(Integer.BYTES).putColor(textSegment.color()).putColor(textSegment.outlineColor()).putInt(textSegment.styleFlags()).putFloat(smoothing).endStructAndGetTopLevelArrayIndex();
-        this.renderTextSegment(positionMatrix, multiDrawBatchDataHolder, textSegment, x, y, z, regularTextDataIndex);
+        final int fontSize = textSegment.glyphs().get(0).fontGlyph().font().getSize();
+        final int textDataIndex = textDataHolder.beginStruct(Integer.BYTES).putInt(fontSize).putColor(textSegment.color()).putColor(textSegment.outlineColor()).putInt(textSegment.styleFlags()).endStructAndGetTopLevelArrayIndex();
+        this.renderTextSegment(positionMatrix, multiDrawBatchDataHolder, textSegment, x, y, z, textDataIndex);
     }
 
     @Override

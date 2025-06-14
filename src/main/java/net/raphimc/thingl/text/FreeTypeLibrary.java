@@ -19,6 +19,7 @@
 package net.raphimc.thingl.text;
 
 import net.raphimc.thingl.ThinGL;
+import net.raphimc.thingl.text.renderer.SDFTextRenderer;
 import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
@@ -52,7 +53,7 @@ public class FreeTypeLibrary {
             this.pointer = instanceBuffer.get();
 
             final ByteBuffer propertyBuffer = memoryStack.malloc(Integer.BYTES);
-            propertyBuffer.putInt(0, 3);
+            propertyBuffer.putInt(0, SDFTextRenderer.DF_PX_RANGE);
             checkError(FreeType.FT_Property_Set(this.pointer, "sdf", "spread", propertyBuffer), "Failed to set SDF spread property");
             checkError(FreeType.FT_Property_Set(this.pointer, "bsdf", "spread", propertyBuffer), "Failed to set BSDF spread property");
         }
