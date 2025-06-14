@@ -42,6 +42,7 @@ public class TextRenderingExample extends StandaloneApplicationRunner {
         super(new Configuration().setWindowTitle("ThinGL Example - Text rendering").setDebugMode(true));
     }
 
+    // Instead of creating a new RendererText instance, you can use ThinGL.rendererText() to get the default text renderer (Currently BSDF).
     private RendererText bitmapTextRenderer = new RendererText(new BitmapTextRenderer());
     private RendererText sdfTextRenderer = new RendererText(new BSDFTextRenderer());
     private Font robotoRegular;
