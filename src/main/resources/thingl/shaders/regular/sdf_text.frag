@@ -1,6 +1,6 @@
 #version 400 core
 #define DF_PX_RANGE 6
-#define STYLE_BOLD_BIT uint(2)
+#define STYLE_BOLD_BIT 2u
 
 uniform vec4 u_ColorModifier;
 uniform sampler2D u_Textures[32];

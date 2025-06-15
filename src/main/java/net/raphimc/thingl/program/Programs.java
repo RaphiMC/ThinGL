@@ -22,6 +22,7 @@ import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.program.post.impl.*;
 import net.raphimc.thingl.resource.program.Program;
 import net.raphimc.thingl.resource.shader.Shader;
+import net.raphimc.thingl.util.GlSlPreprocessor;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.io.IOException;
@@ -210,13 +211,18 @@ public class Programs {
     }
 
     protected Shader getShader(final String name, final Shader.Type type) {
+        return this.getShader(name, type, Map.of());
+    }
+
+    protected Shader getShader(final String name, final Shader.Type type, final Map<String, Object> defines) {
         return this.shaders.computeIfAbsent(name + "." + type.getFileExtension(), path -> {
             try {
                 final InputStream stream = this.getClass().getClassLoader().getResourceAsStream("thingl/shaders/" + path);
                 if (stream == null) {
                     throw new IOException("Shader " + name + " not found");
                 }
-                final String source = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+                String source = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+                source = GlSlPreprocessor.addDefines(source, defines);
                 final Shader shader = new Shader(type, source);
                 shader.setDebugName(name);
                 return shader;

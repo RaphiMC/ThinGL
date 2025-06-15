@@ -28,9 +28,9 @@ void main() {
     gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * vec4(i_Position, 1);
 
     GlyphData glyphData = glyphDatas[gl_VertexID / 4];
-    TextData textData = textDatas[glyphData.textureAndTextIndex & uint(0x7FFFFFF)];
+    TextData textData = textDatas[glyphData.textureAndTextIndex & 0x7FFFFFFu];
 
     v_TexCoords = i_TexCoords;
-    v_TextureIndex = (glyphData.textureAndTextIndex >> 27) & uint(31);
+    v_TextureIndex = (glyphData.textureAndTextIndex >> 27) & 31u;
     v_TextColor = unpackUnorm4x8(textData.textColor);
 }
