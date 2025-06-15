@@ -44,6 +44,7 @@ public class Font {
     private final float underlineThickness;
     private final float strikethroughPosition;
     private final float strikethroughThickness;
+    private final String postscriptName;
     private final String family;
     private final String style;
     private final Int2ObjectMap<Glyph> indexToGlyph = new Int2ObjectOpenHashMap<>();
@@ -75,6 +76,7 @@ public class Font {
             this.height = FreeType.FT_MulFix(this.fontFace.height(), yScale) / 64F;
             this.underlinePosition = -FreeType.FT_MulFix(this.fontFace.underline_position(), yScale) / 64F;
             this.underlineThickness = FreeType.FT_MulFix(this.fontFace.underline_thickness(), yScale) / 64F;
+            this.postscriptName = FreeType.FT_Get_Postscript_Name(this.fontFace);
             this.family = this.fontFace.family_nameString();
             this.style = this.fontFace.style_nameString();
 
@@ -176,6 +178,10 @@ public class Font {
 
     public float getStrikethroughThickness() {
         return this.strikethroughThickness;
+    }
+
+    public String getPostscriptName() {
+        return this.postscriptName;
     }
 
     public String getFamily() {
