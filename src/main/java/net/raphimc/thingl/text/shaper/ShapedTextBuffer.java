@@ -38,6 +38,8 @@ public record ShapedTextBuffer(List<ShapedTextRun> runs, Rectanglef bounds) {
         float x = 0F;
         float y = 0F;
         for (ShapedTextRun run : this.runs) {
+            x += run.xOffset();
+            y += run.yOffset();
             this.bounds.union(run.bounds().translate(x, y, new Rectanglef()));
             x += run.nextRunX();
             y += run.nextRunY();

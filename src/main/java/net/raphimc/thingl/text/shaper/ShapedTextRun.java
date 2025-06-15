@@ -22,10 +22,10 @@ import org.joml.primitives.Rectanglef;
 
 import java.util.List;
 
-public record ShapedTextRun(Font font, List<ShapedTextSegment> segments, Rectanglef bounds, float nextRunX, float nextRunY) {
+public record ShapedTextRun(Font font, List<ShapedTextSegment> segments, Rectanglef bounds, float xOffset, float yOffset, float nextRunX, float nextRunY) {
 
-    public ShapedTextRun(final Font font, final List<ShapedTextSegment> segments, final float nextRunX, final float nextRunY) {
-        this(font, segments, new Rectanglef(), nextRunX, nextRunY);
+    public ShapedTextRun(final Font font, final List<ShapedTextSegment> segments, final float xOffset, final float yOffset, final float nextRunX, final float nextRunY) {
+        this(font, segments, new Rectanglef(), xOffset, yOffset, nextRunX, nextRunY);
         this.calculateBounds();
     }
 

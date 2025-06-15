@@ -33,8 +33,8 @@ public class BasicTextShaper extends TextShaper {
 
     @Override
     public ShapedTextRun shape(final TextRun textRun) {
-        float x = textRun.xOffset();
-        final float y = textRun.yOffset();
+        float x = 0F;
+        final float y = 0F;
         final List<ShapedTextSegment> shapedTextSegments = new ArrayList<>(textRun.segments().size());
         for (TextSegment textSegment : textRun.segments()) {
             final String text = textSegment.text();
@@ -50,7 +50,7 @@ public class BasicTextShaper extends TextShaper {
             }
             shapedTextSegments.add(new ShapedTextSegment(glyphs, textSegment.color(), textSegment.styleFlags(), textSegment.outlineColor(), textSegment.xVisualOffset(), textSegment.yVisualOffset()));
         }
-        return new ShapedTextRun(textRun.font(), shapedTextSegments, x, y);
+        return new ShapedTextRun(textRun.font(), shapedTextSegments, textRun.xOffset(), textRun.yOffset(), x, y);
     }
 
 }

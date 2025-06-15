@@ -73,8 +73,8 @@ public class HarfBuzzTextShaper extends TextShaper {
         for (TextSegment textSegment : textRun.segments()) {
             shapedTextSegments.add(new ShapedTextSegment(new ArrayList<>(textSegment.text().length()), textSegment.color(), textSegment.styleFlags(), textSegment.outlineColor(), textSegment.xVisualOffset(), textSegment.yVisualOffset()));
         }
-        float x = textRun.xOffset();
-        float y = textRun.yOffset();
+        float x = 0F;
+        float y = 0F;
         for (int i = 0; i < length; i++) {
             final hb_glyph_info_t info = infos.get(i);
             final hb_glyph_position_t position = positions.get(i);
@@ -88,7 +88,7 @@ public class HarfBuzzTextShaper extends TextShaper {
         }
 
         HarfBuzz.hb_buffer_destroy(hbBuffer);
-        return new ShapedTextRun(textRun.font(), shapedTextSegments, x, y);
+        return new ShapedTextRun(textRun.font(), shapedTextSegments, textRun.xOffset(), textRun.yOffset(), x, y);
     }
 
 }

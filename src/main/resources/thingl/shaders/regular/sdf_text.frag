@@ -26,7 +26,7 @@ void main() {
         float width = fwidth(dist);
         float center = 0.5;
         if ((v_StyleFlags & STYLE_BOLD_BIT) != 0) {
-            center = clamp(center - v_FontSize / 40.0 / 10.0, 0.05, 0.5);
+            center = clamp(center - v_FontSize / 64.0 / 10.0, 0.05, 0.5);
         }
         float alpha = smoothstep(max(center - width, 0), min(center + width, 1), dist);
         o_Color = vec4(v_TextColor.rgb, v_TextColor.a * alpha);

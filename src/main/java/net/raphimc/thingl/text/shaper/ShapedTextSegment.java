@@ -66,10 +66,11 @@ public record ShapedTextSegment(List<TextShaper.Glyph> glyphs, Color color, int 
             this.bounds.maxY += shadowOffset;
         }
         if ((this.styleFlags & TextSegment.STYLE_BOLD_BIT) != 0 || this.outlineColor.getAlpha() > 0) {
-            this.bounds.minX--;
-            this.bounds.minY--;
-            this.bounds.maxX++;
-            this.bounds.maxY++;
+            final float boldOffset = this.glyphs.get(0).fontGlyph().font().getSize() / TextRenderer.BOLD_OFFSET_DIVIDER;
+            this.bounds.minX -= boldOffset;
+            this.bounds.minY -= boldOffset;
+            this.bounds.maxX += boldOffset;
+            this.bounds.maxY += boldOffset;
         }
         if ((this.styleFlags & TextSegment.STYLE_ITALIC_BIT) != 0) {
             this.bounds.maxX += TextRenderer.ITALIC_SHEAR_FACTOR * -this.glyphs.get(this.glyphs.size() - 1).fontGlyph().bearingY();

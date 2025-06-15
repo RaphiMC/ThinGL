@@ -20,6 +20,7 @@ package net.raphimc.thingl.text.renderer;
 
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
+import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.BuiltinDrawBatches;
 import net.raphimc.thingl.drawbuilder.DrawBatch;
@@ -53,6 +54,7 @@ public abstract class TextRenderer {
     public static final int FLAG_NO_BEARING_BIT = 1 << 17;
     public static final float ITALIC_SHEAR_FACTOR = (float) Math.tan(Math.toRadians(14)); // 14 degrees
     public static final float SHADOW_OFFSET_FACTOR = 0.075F;
+    public static final float BOLD_OFFSET_DIVIDER = 64F;
 
     private static final int ATLAS_SIZE = 1024;
 
@@ -111,6 +113,8 @@ public abstract class TextRenderer {
 
     protected void renderTextBuffer(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextBuffer textBuffer, float x, float y, final float z) {
         for (ShapedTextRun textRun : textBuffer.runs()) {
+            x += textRun.xOffset() * this.globalScale;
+            y += textRun.yOffset() * this.globalScale;
             this.renderTextRun(positionMatrix, multiDrawBatchDataHolder, textRun, x, y, z, textBuffer.runs().get(0).font());
             x += textRun.nextRunX() * this.globalScale;
             y += textRun.nextRunY() * this.globalScale;
@@ -126,7 +130,11 @@ public abstract class TextRenderer {
             final float yOffset = textSegment.yVisualOffset() * this.globalScale;
 
             if ((textSegment.styleFlags() & TextSegment.STYLE_SHADOW_BIT) != 0) {
-                final ShapedTextSegment shadowTextSegment = new ShapedTextSegment(textSegment.glyphs(), textSegment.color().multiply(0.25F), textSegment.styleFlags() & ~TextSegment.STYLE_STRIKETHROUGH_BIT, textSegment.outlineColor(), textSegment.xVisualOffset(), textSegment.yVisualOffset(), textSegment.bounds(), textSegment.extendedBounds());
+                int shadowSegmentStyleFlags = textSegment.styleFlags() & ~TextSegment.STYLE_STRIKETHROUGH_BIT;
+                if (textSegment.outlineColor().getAlpha() > 0) {
+                    shadowSegmentStyleFlags |= TextSegment.STYLE_BOLD_BIT;
+                }
+                final ShapedTextSegment shadowTextSegment = new ShapedTextSegment(textSegment.glyphs(), textSegment.color().multiply(0.25F), shadowSegmentStyleFlags, Color.TRANSPARENT, textSegment.xVisualOffset(), textSegment.yVisualOffset(), textSegment.bounds(), textSegment.extendedBounds());
                 final ShapedTextSegment nonShadowTextSegment = new ShapedTextSegment(textSegment.glyphs(), textSegment.color(), textSegment.styleFlags() & ~TextSegment.STYLE_SHADOW_BIT, textSegment.outlineColor(), textSegment.xVisualOffset(), textSegment.yVisualOffset(), textSegment.bounds(), textSegment.extendedBounds());
                 final float shadowOffset = SHADOW_OFFSET_FACTOR * textRun.font().getSize() * this.globalScale;
                 this.renderTextSegment(positionMatrix, multiDrawBatchDataHolder, shadowTextSegment, x + xOffset + shadowOffset, y + yOffset + shadowOffset, z);
