@@ -70,19 +70,35 @@ public class Renderer2D extends Renderer {
     }, () -> ThinGL.glStateStack().pop()));
 
     public void filledRectangle(final Matrix4f positionMatrix, final Rectangled rectangle, final Color color) {
-        this.filledRectangle(positionMatrix, (float) rectangle.minX, (float) rectangle.minY, (float) rectangle.maxX, (float) rectangle.maxY, color);
+        this.filledRectangle(positionMatrix, rectangle, color, color, color, color);
+    }
+
+    public void filledRectangle(final Matrix4f positionMatrix, final Rectangled rectangle, final Color cbl, final Color cbr, final Color ctr, final Color ctl) {
+        this.filledRectangle(positionMatrix, (float) rectangle.minX, (float) rectangle.minY, (float) rectangle.maxX, (float) rectangle.maxY, cbl, cbr, ctr, ctl);
     }
 
     public void filledRectangle(final Matrix4f positionMatrix, final Rectanglef rectangle, final Color color) {
-        this.filledRectangle(positionMatrix, rectangle.minX, rectangle.minY, rectangle.maxX, rectangle.maxY, color);
+        this.filledRectangle(positionMatrix, rectangle, color, color, color, color);
+    }
+
+    public void filledRectangle(final Matrix4f positionMatrix, final Rectanglef rectangle, final Color cbl, final Color cbr, final Color ctr, final Color ctl) {
+        this.filledRectangle(positionMatrix, rectangle.minX, rectangle.minY, rectangle.maxX, rectangle.maxY, cbl, cbr, ctr, ctl);
     }
 
     public void filledRectangle(final Matrix4f positionMatrix, final Rectanglei rectangle, final Color color) {
-        this.filledRectangle(positionMatrix, rectangle.minX, rectangle.minY, rectangle.maxX, rectangle.maxY, color);
+        this.filledRectangle(positionMatrix, rectangle, color, color, color, color);
+    }
+
+    public void filledRectangle(final Matrix4f positionMatrix, final Rectanglei rectangle, final Color cbl, final Color cbr, final Color ctr, final Color ctl) {
+        this.filledRectangle(positionMatrix, rectangle.minX, rectangle.minY, rectangle.maxX, rectangle.maxY, cbl, cbr, ctr, ctl);
     }
 
     public void filledRectangle(final Matrix4f positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr, final Color color) {
-        Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, xtl, ytl, xbr, ybr, color.toABGR());
+        this.filledRectangle(positionMatrix, xtl, ytl, xbr, ybr, color, color, color, color);
+    }
+
+    public void filledRectangle(final Matrix4f positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr, final Color cbl, final Color cbr, final Color ctr, final Color ctl) {
+        Primitives.filledRectangle(positionMatrix, this.targetMultiDrawBatchDataHolder, xtl, ytl, xbr, ybr, cbl.toABGR(), cbr.toABGR(), ctr.toABGR(), ctl.toABGR());
         this.drawIfNotBuffering();
     }
 
@@ -245,19 +261,35 @@ public class Renderer2D extends Renderer {
     }
 
     public void filledTriangle(final Matrix4f positionMatrix, final TriangleD triangle, final Color color) {
-        this.filledTriangle(positionMatrix, (float) triangle.getX1(), (float) triangle.getY1(), (float) triangle.getX2(), (float) triangle.getY2(), (float) triangle.getX3(), (float) triangle.getY3(), color);
+        this.filledTriangle(positionMatrix, triangle, color, color, color);
+    }
+
+    public void filledTriangle(final Matrix4f positionMatrix, final TriangleD triangle, final Color cl, final Color cm, final Color cr) {
+        this.filledTriangle(positionMatrix, (float) triangle.getX1(), (float) triangle.getY1(), (float) triangle.getX2(), (float) triangle.getY2(), (float) triangle.getX3(), (float) triangle.getY3(), cl, cm, cr);
     }
 
     public void filledTriangle(final Matrix4f positionMatrix, final TriangleF triangle, final Color color) {
-        this.filledTriangle(positionMatrix, triangle.getX1(), triangle.getY1(), triangle.getX2(), triangle.getY2(), triangle.getX3(), triangle.getY3(), color);
+        this.filledTriangle(positionMatrix, triangle, color, color, color);
+    }
+
+    public void filledTriangle(final Matrix4f positionMatrix, final TriangleF triangle, final Color cl, final Color cm, final Color cr) {
+        this.filledTriangle(positionMatrix, triangle.getX1(), triangle.getY1(), triangle.getX2(), triangle.getY2(), triangle.getX3(), triangle.getY3(), cl, cm, cr);
     }
 
     public void filledTriangle(final Matrix4f positionMatrix, final TriangleI triangle, final Color color) {
-        this.filledTriangle(positionMatrix, triangle.getX1(), triangle.getY1(), triangle.getX2(), triangle.getY2(), triangle.getX3(), triangle.getY3(), color);
+        this.filledTriangle(positionMatrix, triangle, color, color, color);
+    }
+
+    public void filledTriangle(final Matrix4f positionMatrix, final TriangleI triangle, final Color cl, final Color cm, final Color cr) {
+        this.filledTriangle(positionMatrix, triangle.getX1(), triangle.getY1(), triangle.getX2(), triangle.getY2(), triangle.getX3(), triangle.getY3(), cl, cm, cr);
     }
 
     public void filledTriangle(final Matrix4f positionMatrix, final float xl, final float yl, final float xm, final float ym, final float xr, final float yr, final Color color) {
-        Primitives.filledTriangle(positionMatrix, this.targetMultiDrawBatchDataHolder, xl, yl, xm, ym, xr, yr, color.toABGR());
+        this.filledTriangle(positionMatrix, xl, yl, xm, ym, xr, yr, color, color, color);
+    }
+
+    public void filledTriangle(final Matrix4f positionMatrix, final float xl, final float yl, final float xm, final float ym, final float xr, final float yr, final Color cl, final Color cm, final Color cr) {
+        Primitives.filledTriangle(positionMatrix, this.targetMultiDrawBatchDataHolder, xl, yl, xm, ym, xr, yr, cl.toABGR(), cm.toABGR(), cr.toABGR());
         this.drawIfNotBuffering();
     }
 
