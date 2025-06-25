@@ -113,6 +113,7 @@ public abstract class StandaloneApplicationRunner {
         Blending.standardBlending();
         ThinGL.glStateManager().enable(GL11C.GL_DEPTH_TEST);
         ThinGL.glStateManager().setDepthFunc(GL11C.GL_LEQUAL);
+        ThinGL.glStateManager().enable(GL11C.GL_CULL_FACE);
         this.mainFramebuffer = new TextureFramebuffer();
     }
 
