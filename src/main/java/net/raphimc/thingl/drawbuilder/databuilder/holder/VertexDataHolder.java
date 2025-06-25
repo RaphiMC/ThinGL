@@ -47,7 +47,7 @@ public class VertexDataHolder extends BufferDataWriter<VertexDataHolder> {
         return this;
     }
 
-    public VertexDataHolder putTextureCoords(final float u, final float v) {
+    public VertexDataHolder putTextureCoord(final float u, final float v) {
         this.bufferBuilder.putFloat(u).putFloat(v);
         return this;
     }

@@ -562,10 +562,10 @@ public class Renderer2D extends Renderer {
     }
 
     private void texture(final Matrix4f positionMatrix, final VertexDataHolder vertexDataHolder, final float x, final float y, final float width, final float height, final float u, final float v, final float uWidth, final float vHeight) {
-        vertexDataHolder.putVector3f(positionMatrix, x, y + height, 0F).putTextureCoords(u, v + vHeight).endVertex();
-        vertexDataHolder.putVector3f(positionMatrix, x + width, y + height, 0F).putTextureCoords(u + uWidth, v + vHeight).endVertex();
-        vertexDataHolder.putVector3f(positionMatrix, x + width, y, 0F).putTextureCoords(u + uWidth, v).endVertex();
-        vertexDataHolder.putVector3f(positionMatrix, x, y, 0F).putTextureCoords(u, v).endVertex();
+        vertexDataHolder.putVector3f(positionMatrix, x, y + height, 0F).putTextureCoord(u, v + vHeight).endVertex();
+        vertexDataHolder.putVector3f(positionMatrix, x + width, y + height, 0F).putTextureCoord(u + uWidth, v + vHeight).endVertex();
+        vertexDataHolder.putVector3f(positionMatrix, x + width, y, 0F).putTextureCoord(u + uWidth, v).endVertex();
+        vertexDataHolder.putVector3f(positionMatrix, x, y, 0F).putTextureCoord(u, v).endVertex();
     }
 
     public void coloredTexture(final Matrix4f positionMatrix, final int id, final float x, final float y, final float width, final float height, final Color color) {
@@ -587,10 +587,10 @@ public class Renderer2D extends Renderer {
     }
 
     private void coloredTexture(final Matrix4f positionMatrix, final VertexDataHolder vertexDataHolder, final float x, final float y, final float width, final float height, final float u, final float v, final float uWidth, final float vHeight, final Color color) {
-        vertexDataHolder.putVector3f(positionMatrix, x, y + height, 0F).putColor(color).putTextureCoords(u, v + vHeight).endVertex();
-        vertexDataHolder.putVector3f(positionMatrix, x + width, y + height, 0F).putColor(color).putTextureCoords(u + uWidth, v + vHeight).endVertex();
-        vertexDataHolder.putVector3f(positionMatrix, x + width, y, 0F).putColor(color).putTextureCoords(u + uWidth, v).endVertex();
-        vertexDataHolder.putVector3f(positionMatrix, x, y, 0F).putColor(color).putTextureCoords(u, v).endVertex();
+        vertexDataHolder.putVector3f(positionMatrix, x, y + height, 0F).putColor(color).putTextureCoord(u, v + vHeight).endVertex();
+        vertexDataHolder.putVector3f(positionMatrix, x + width, y + height, 0F).putColor(color).putTextureCoord(u + uWidth, v + vHeight).endVertex();
+        vertexDataHolder.putVector3f(positionMatrix, x + width, y, 0F).putColor(color).putTextureCoord(u + uWidth, v).endVertex();
+        vertexDataHolder.putVector3f(positionMatrix, x, y, 0F).putColor(color).putTextureCoord(u, v).endVertex();
     }
 
     public void colorizedTexture(final Matrix4f positionMatrix, final int id, final float x, final float y, final float width, final float height, final Color color) {

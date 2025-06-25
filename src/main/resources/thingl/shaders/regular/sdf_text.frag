@@ -5,7 +5,7 @@
 uniform vec4 u_ColorModifier;
 uniform sampler2D u_Textures[32];
 
-in vec2 v_TexCoords;
+in vec2 v_TexCoord;
 flat in uint v_TextureIndex;
 flat in uint v_FontSize;
 flat in vec4 v_TextColor;
@@ -14,10 +14,10 @@ flat in uint v_StyleFlags;
 out vec4 o_Color;
 
 void main() {
-    float dist = texture(u_Textures[v_TextureIndex], v_TexCoords).r;
+    float dist = texture(u_Textures[v_TextureIndex], v_TexCoord).r;
     if ((v_StyleFlags & STYLE_BOLD_BIT) == 0 && v_OutlineColor.a == 0) { // High quality text rendering
         vec2 unitRange = vec2(DF_PX_RANGE) / vec2(textureSize(u_Textures[v_TextureIndex], 0));
-        vec2 screenTexSize = vec2(1) / fwidth(v_TexCoords);
+        vec2 screenTexSize = vec2(1) / fwidth(v_TexCoord);
         float screenPxRange = max(dot(unitRange, screenTexSize), 1);
         float screenPxDistance = screenPxRange * (dist - 0.5);
         float alpha = clamp(screenPxDistance + 0.5, 0, 1);

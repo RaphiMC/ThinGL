@@ -8,7 +8,7 @@ uniform int u_Radius;
 uniform float u_Sigma;
 
 in vec2 v_VpPixelSize;
-in vec2 v_VpTexCoords;
+in vec2 v_VpTexCoord;
 out vec4 o_Color;
 
 float normalization = 1 / (u_Sigma * sqrt(2 * M_PI));
@@ -19,15 +19,15 @@ bool shouldBlur(vec2 pos);
 float gaussian(float x);
 
 void main() {
-    if (shouldBlur(v_VpTexCoords)) {
+    if (shouldBlur(v_VpTexCoord)) {
         vec4 colorSum = vec4(0);
         if (!u_FinalPass) { /* x axis pass */
             for (int i = -u_Radius; i <= u_Radius; i++) {
-                colorSum += getPixel(v_VpTexCoords + vec2(i, 0) * v_VpPixelSize) * gaussian(i);
+                colorSum += getPixel(v_VpTexCoord + vec2(i, 0) * v_VpPixelSize) * gaussian(i);
             }
         } else { /* y axis pass */
             for (int i = -u_Radius; i <= u_Radius; i++) {
-                colorSum += getPixel(v_VpTexCoords + vec2(0, i) * v_VpPixelSize) * gaussian(i);
+                colorSum += getPixel(v_VpTexCoord + vec2(0, i) * v_VpPixelSize) * gaussian(i);
             }
         }
         o_Color = colorSum / colorSum.a;

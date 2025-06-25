@@ -2,11 +2,11 @@
 
 uniform sampler2DMS u_Mask;
 
-in vec2 v_VpTexCoords;
+in vec2 v_VpTexCoord;
 out vec4 o_Color;
 
 void main() {
-    ivec2 texPos = ivec2(v_VpTexCoords * textureSize(u_Mask));
+    ivec2 texPos = ivec2(v_VpTexCoord * textureSize(u_Mask));
     int samples = textureSamples(u_Mask);
 
     vec4 colorSum = vec4(0);

@@ -204,10 +204,10 @@ public abstract class TextRenderer {
 
         glyphDataHolder.ensureInTopLevelArray().beginStruct(Integer.BYTES).putInt((glyph.atlasIndex() << 27) | textDataIndex).endStruct();
 
-        vertexDataHolder.putVector3f(positionMatrix, x1 - bottomOffset, y2, z).putTextureCoords(glyph.u1(), glyph.v2()).endVertex();
-        vertexDataHolder.putVector3f(positionMatrix, x2 - bottomOffset, y2, z).putTextureCoords(glyph.u2(), glyph.v2()).endVertex();
-        vertexDataHolder.putVector3f(positionMatrix, x2 + topOffset, y1, z).putTextureCoords(glyph.u2(), glyph.v1()).endVertex();
-        vertexDataHolder.putVector3f(positionMatrix, x1 + topOffset, y1, z).putTextureCoords(glyph.u1(), glyph.v1()).endVertex();
+        vertexDataHolder.putVector3f(positionMatrix, x1 - bottomOffset, y2, z).putTextureCoord(glyph.u1(), glyph.v2()).endVertex();
+        vertexDataHolder.putVector3f(positionMatrix, x2 - bottomOffset, y2, z).putTextureCoord(glyph.u2(), glyph.v2()).endVertex();
+        vertexDataHolder.putVector3f(positionMatrix, x2 + topOffset, y1, z).putTextureCoord(glyph.u2(), glyph.v1()).endVertex();
+        vertexDataHolder.putVector3f(positionMatrix, x1 + topOffset, y1, z).putTextureCoord(glyph.u1(), glyph.v1()).endVertex();
     }
 
     private AtlasGlyph getAtlasGlyph(final Font.Glyph fontGlyph) {

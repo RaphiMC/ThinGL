@@ -19,8 +19,8 @@ layout (std430) restrict readonly buffer ssbo_GlyphData {
 };
 
 layout (location = 0) in vec3 i_Position;
-layout (location = 1) in vec2 i_TexCoords;
-out vec2 v_TexCoords;
+layout (location = 1) in vec2 i_TexCoord;
+out vec2 v_TexCoord;
 flat out uint v_TextureIndex;
 flat out vec4 v_TextColor;
 
@@ -30,7 +30,7 @@ void main() {
     GlyphData glyphData = glyphDatas[gl_VertexID / 4];
     TextData textData = textDatas[glyphData.textureAndTextIndex & 0x7FFFFFFu];
 
-    v_TexCoords = i_TexCoords;
+    v_TexCoord = i_TexCoord;
     v_TextureIndex = (glyphData.textureAndTextIndex >> 27) & 31u;
     v_TextColor = unpackUnorm4x8(textData.textColor);
 }

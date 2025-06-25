@@ -10,7 +10,7 @@ uniform int u_Width;
 uniform int u_StyleFlags;
 
 in vec2 v_VpPixelSize;
-in vec2 v_VpTexCoords;
+in vec2 v_VpTexCoord;
 out vec4 o_Color;
 
 int doubleWidth = u_Width * 2;
@@ -22,10 +22,10 @@ void main() {
     if (!u_FinalPass) { /* x axis pass */
         vec3 color = vec3(0);
         int xDistance = 0;
-        vec4 currentPixel = texture(u_Mask, v_VpTexCoords);
+        vec4 currentPixel = texture(u_Mask, v_VpTexCoord);
         if ((u_StyleFlags & STYLE_OUTER_BIT) != 0 && currentPixel.a == 0) {
             for (int i = -u_Width; i <= u_Width; i++) {
-                vec4 maskPixel = texture(u_Mask, v_VpTexCoords + vec2(i, 0) * v_VpPixelSize);
+                vec4 maskPixel = texture(u_Mask, v_VpTexCoord + vec2(i, 0) * v_VpPixelSize);
                 int xDist = abs(i);
                 if (maskPixel.a != 0 && (xDist < xDistance || xDistance == 0)) {
                     color = maskPixel.rgb;
@@ -35,7 +35,7 @@ void main() {
         }
         if ((u_StyleFlags & STYLE_INNER_BIT) != 0 && currentPixel.a != 0) {
             for (int i = -u_Width; i <= u_Width; i++) {
-                vec4 maskPixel = texture(u_Mask, v_VpTexCoords + vec2(i, 0) * v_VpPixelSize);
+                vec4 maskPixel = texture(u_Mask, v_VpTexCoord + vec2(i, 0) * v_VpPixelSize);
                 int xDist = -abs(i);
                 if (maskPixel.a == 0 && (xDist > xDistance || xDistance == 0)) {
                     color = currentPixel.rgb;
@@ -47,7 +47,7 @@ void main() {
         if (xDistance != 0) {
             o_Color = vec4(color, encodeDistance(xDistance));
         } else {
-            vec4 maskPixel = texture(u_Mask, v_VpTexCoords);
+            vec4 maskPixel = texture(u_Mask, v_VpTexCoord);
             if (maskPixel.a != 0) {
                 o_Color = vec4(maskPixel.rgb, encodeDistance(0));
             } else {
@@ -57,10 +57,10 @@ void main() {
     } else { /* y axis combining pass */
         vec3 color = vec3(0);
         float xyDistance = 0;
-        vec4 currentPixel = texture(u_Source, v_VpTexCoords);
+        vec4 currentPixel = texture(u_Source, v_VpTexCoord);
         if ((u_StyleFlags & STYLE_OUTER_BIT) != 0 && (currentPixel.a == 0 || decodeDistance(currentPixel.a) > 0)) {
             for (int i = -u_Width; i <= u_Width; i++) {
-                vec4 maskPixel = texture(u_Source, v_VpTexCoords + vec2(0, i) * v_VpPixelSize);
+                vec4 maskPixel = texture(u_Source, v_VpTexCoord + vec2(0, i) * v_VpPixelSize);
                 int xDist = decodeDistance(maskPixel.a);
                 int yDist = abs(i);
                 float xyDist = yDist;
@@ -75,7 +75,7 @@ void main() {
         }
         if ((u_StyleFlags & STYLE_INNER_BIT) != 0 && currentPixel.a != 0) {
             for (int i = -u_Width; i <= u_Width; i++) {
-                vec4 maskPixel = texture(u_Source, v_VpTexCoords + vec2(0, i) * v_VpPixelSize);
+                vec4 maskPixel = texture(u_Source, v_VpTexCoord + vec2(0, i) * v_VpPixelSize);
                 int xDist = decodeDistance(maskPixel.a);
                 int yDist = -abs(i);
                 float xyDist = yDist;
