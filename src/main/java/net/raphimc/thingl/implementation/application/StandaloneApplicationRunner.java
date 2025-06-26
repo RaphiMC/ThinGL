@@ -110,7 +110,7 @@ public abstract class StandaloneApplicationRunner {
 
     protected void init() {
         ThinGL.glStateManager().enable(GL11C.GL_BLEND);
-        Blending.standardBlending();
+        Blending.alphaBlending();
         ThinGL.glStateManager().enable(GL11C.GL_DEPTH_TEST);
         ThinGL.glStateManager().setDepthFunc(GL11C.GL_LEQUAL);
         ThinGL.glStateManager().enable(GL11C.GL_CULL_FACE);

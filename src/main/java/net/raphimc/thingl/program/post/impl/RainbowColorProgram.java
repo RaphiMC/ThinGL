@@ -51,7 +51,7 @@ public class RainbowColorProgram extends SinglePassPostProcessingProgram<Rainbow
     @Override
     protected void renderQuad0(final float x1, final float y1, final float x2, final float y2) {
         ThinGL.glStateStack().pushBlendFunc();
-        Blending.additiveBlending();
+        Blending.premultipliedAlphaBlending();
         super.renderQuad0(x1, y1, x2, y2);
         ThinGL.glStateStack().popBlendFunc();
     }

@@ -22,16 +22,24 @@ import org.lwjgl.opengl.GL11C;
 
 public class Blending {
 
-    public static void standardBlending() {
+    public static void noBlending() {
+        ThinGL.glStateManager().setBlendFunc(GL11C.GL_ONE, GL11C.GL_ZERO);
+    }
+
+    public static void alphaBlending() {
         ThinGL.glStateManager().setBlendFunc(GL11C.GL_SRC_ALPHA, GL11C.GL_ONE_MINUS_SRC_ALPHA);
     }
 
-    public static void premultipliedAlphaBlending() {
+    public static void alphaWithAdditiveAlphaBlending() {
         ThinGL.glStateManager().setBlendFunc(GL11C.GL_SRC_ALPHA, GL11C.GL_ONE_MINUS_SRC_ALPHA, GL11C.GL_ONE, GL11C.GL_ONE_MINUS_SRC_ALPHA);
     }
 
-    public static void additiveBlending() {
+    public static void premultipliedAlphaBlending() {
         ThinGL.glStateManager().setBlendFunc(GL11C.GL_ONE, GL11C.GL_ONE_MINUS_SRC_ALPHA);
+    }
+
+    public static void invertColorBlending() {
+        ThinGL.glStateManager().setBlendFunc(GL11C.GL_ONE_MINUS_DST_COLOR, GL11C.GL_ONE_MINUS_SRC_COLOR, GL11C.GL_ONE, GL11C.GL_ZERO);
     }
 
 }
