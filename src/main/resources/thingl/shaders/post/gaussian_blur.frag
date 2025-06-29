@@ -2,8 +2,8 @@
 #define M_PI 3.14159265359
 
 uniform sampler2D u_Source;
-uniform sampler2D u_Mask;
-uniform bool u_FinalPass;
+uniform sampler2D u_Input;
+uniform int u_Pass;
 uniform int u_Radius;
 uniform float u_Sigma;
 
@@ -21,7 +21,7 @@ float gaussian(float x);
 void main() {
     if (shouldBlur(v_VpTexCoord)) {
         vec4 colorSum = vec4(0);
-        if (!u_FinalPass) { /* x axis pass */
+        if (u_Pass == 0) { /* x axis pass */
             for (int i = -u_Radius; i <= u_Radius; i++) {
                 colorSum += getPixel(v_VpTexCoord + vec2(i, 0) * v_VpPixelSize) * gaussian(i);
             }
@@ -45,7 +45,7 @@ vec4 getPixel(vec2 pos) {
 }
 
 bool shouldBlur(vec2 pos) {
-    return texture(u_Mask, pos).a != 0;
+    return texture(u_Input, pos).a != 0;
 }
 
 float gaussian(float x) {

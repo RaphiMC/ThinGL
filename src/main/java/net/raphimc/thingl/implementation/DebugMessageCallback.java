@@ -57,6 +57,9 @@ public class DebugMessageCallback {
         }
         GL43C.glDebugMessageControl(GL11C.GL_DONT_CARE, GL11C.GL_DONT_CARE, GL11C.GL_DONT_CARE, (int[]) null, true);
         GL43C.glDebugMessageControl(GL11C.GL_DONT_CARE, GL11C.GL_DONT_CARE, GL43C.GL_DEBUG_SEVERITY_NOTIFICATION, (int[]) null, false);
+
+        // NVIDIA: Texture state usage warning: The texture object (0) bound to texture image unit 1 does not have a defined base level and cannot be used for texture mapping.
+        GL43C.glDebugMessageControl(GL43C.GL_DEBUG_SOURCE_API, GL43C.GL_DEBUG_TYPE_OTHER, GL11C.GL_DONT_CARE, 0x20084, false);
     }
 
 }

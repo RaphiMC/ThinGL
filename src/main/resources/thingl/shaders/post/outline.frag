@@ -4,8 +4,8 @@
 #define STYLE_SHARP_CORNERS_BIT 4
 
 uniform sampler2D u_Source;
-uniform sampler2D u_Mask;
-uniform bool u_FinalPass;
+uniform sampler2D u_Input;
+uniform int u_Pass;
 uniform int u_Width;
 uniform int u_StyleFlags;
 
@@ -19,25 +19,25 @@ int decodeDistance(float alpha);
 float encodeDistance(int dist);
 
 void main() {
-    if (!u_FinalPass) { /* x axis pass */
+    if (u_Pass == 0) { /* x axis pass */
         vec3 color = vec3(0);
         int xDistance = 0;
-        vec4 currentPixel = texture(u_Mask, v_VpTexCoord);
+        vec4 currentPixel = texture(u_Input, v_VpTexCoord);
         if ((u_StyleFlags & STYLE_OUTER_BIT) != 0 && currentPixel.a == 0) {
             for (int i = -u_Width; i <= u_Width; i++) {
-                vec4 maskPixel = texture(u_Mask, v_VpTexCoord + vec2(i, 0) * v_VpPixelSize);
+                vec4 inputPixel = texture(u_Input, v_VpTexCoord + vec2(i, 0) * v_VpPixelSize);
                 int xDist = abs(i);
-                if (maskPixel.a != 0 && (xDist < xDistance || xDistance == 0)) {
-                    color = maskPixel.rgb;
+                if (inputPixel.a != 0 && (xDist < xDistance || xDistance == 0)) {
+                    color = inputPixel.rgb;
                     xDistance = xDist;
                 }
             }
         }
         if ((u_StyleFlags & STYLE_INNER_BIT) != 0 && currentPixel.a != 0) {
             for (int i = -u_Width; i <= u_Width; i++) {
-                vec4 maskPixel = texture(u_Mask, v_VpTexCoord + vec2(i, 0) * v_VpPixelSize);
+                vec4 inputPixel = texture(u_Input, v_VpTexCoord + vec2(i, 0) * v_VpPixelSize);
                 int xDist = -abs(i);
-                if (maskPixel.a == 0 && (xDist > xDistance || xDistance == 0)) {
+                if (inputPixel.a == 0 && (xDist > xDistance || xDistance == 0)) {
                     color = currentPixel.rgb;
                     xDistance = xDist;
                 }
@@ -47,9 +47,9 @@ void main() {
         if (xDistance != 0) {
             o_Color = vec4(color, encodeDistance(xDistance));
         } else {
-            vec4 maskPixel = texture(u_Mask, v_VpTexCoord);
-            if (maskPixel.a != 0) {
-                o_Color = vec4(maskPixel.rgb, encodeDistance(0));
+            vec4 inputPixel = texture(u_Input, v_VpTexCoord);
+            if (inputPixel.a != 0) {
+                o_Color = vec4(inputPixel.rgb, encodeDistance(0));
             } else {
                 discard;
             }
@@ -60,30 +60,30 @@ void main() {
         vec4 currentPixel = texture(u_Source, v_VpTexCoord);
         if ((u_StyleFlags & STYLE_OUTER_BIT) != 0 && (currentPixel.a == 0 || decodeDistance(currentPixel.a) > 0)) {
             for (int i = -u_Width; i <= u_Width; i++) {
-                vec4 maskPixel = texture(u_Source, v_VpTexCoord + vec2(0, i) * v_VpPixelSize);
-                int xDist = decodeDistance(maskPixel.a);
+                vec4 inputPixel = texture(u_Source, v_VpTexCoord + vec2(0, i) * v_VpPixelSize);
+                int xDist = decodeDistance(inputPixel.a);
                 int yDist = abs(i);
                 float xyDist = yDist;
                 if (xDist > 0) {
                     xyDist = sqrt(xDist * xDist + yDist * yDist);
                 }
-                if (maskPixel.a != 0 && (xyDist < xyDistance || xyDistance == 0)) {
-                    color = maskPixel.rgb;
+                if (inputPixel.a != 0 && (xyDist < xyDistance || xyDistance == 0)) {
+                    color = inputPixel.rgb;
                     xyDistance = xyDist;
                 }
             }
         }
         if ((u_StyleFlags & STYLE_INNER_BIT) != 0 && currentPixel.a != 0) {
             for (int i = -u_Width; i <= u_Width; i++) {
-                vec4 maskPixel = texture(u_Source, v_VpTexCoord + vec2(0, i) * v_VpPixelSize);
-                int xDist = decodeDistance(maskPixel.a);
+                vec4 inputPixel = texture(u_Source, v_VpTexCoord + vec2(0, i) * v_VpPixelSize);
+                int xDist = decodeDistance(inputPixel.a);
                 int yDist = -abs(i);
                 float xyDist = yDist;
                 if (xDist < 0) {
                     xyDist = -sqrt(xDist * xDist + yDist * yDist);
-                    maskPixel.a = 0; // Allow the condition below to be true
+                    inputPixel.a = 0; // Allow the condition below to be true
                 }
-                if (maskPixel.a == 0 && (xyDist > xyDistance || xyDistance == 0)) {
+                if (inputPixel.a == 0 && (xyDist > xyDistance || xyDistance == 0)) {
                     color = currentPixel.rgb;
                     xyDistance = xyDist;
                 }

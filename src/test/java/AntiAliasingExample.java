@@ -33,7 +33,7 @@ public class AntiAliasingExample extends StandaloneApplicationRunner {
 
     @Override
     protected void render(final Matrix4fStack positionMatrix) {
-        ThinGL.programs().getMsaa().bindMask();
+        ThinGL.programs().getMsaa().bindInput();
 
         final float rectX = 100;
         final float rectY = 100;
@@ -49,9 +49,9 @@ public class AntiAliasingExample extends StandaloneApplicationRunner {
 
         ThinGL.renderer2D().filledRoundedRectangle(positionMatrix, 0, 0, rectW, rectH, 40, Color.GRAY);
 
-        ThinGL.programs().getMsaa().unbindMask();
+        ThinGL.programs().getMsaa().unbindInput();
         ThinGL.programs().getMsaa().renderFullscreenQuad();
-        ThinGL.programs().getMsaa().clearMask();
+        ThinGL.programs().getMsaa().clearInput();
     }
 
 }

@@ -27,55 +27,55 @@ import net.raphimc.thingl.wrapper.Blending;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11C;
 
-public abstract class MaskablePostProcessingProgram extends PostProcessingProgram {
+public abstract class AuxInputPostProcessingProgram extends PostProcessingProgram {
 
-    protected TextureFramebuffer maskFramebuffer;
+    protected TextureFramebuffer inputFramebuffer;
 
-    public MaskablePostProcessingProgram(final Shader vertexShader, final Shader fragmentShader) {
+    public AuxInputPostProcessingProgram(final Shader vertexShader, final Shader fragmentShader) {
         super(vertexShader, fragmentShader);
     }
 
-    public void bindMask() {
+    public void bindInput() {
         ThinGL.glStateStack().push();
         ThinGL.glStateStack().disable(GL11C.GL_DEPTH_TEST);
         ThinGL.glStateStack().disable(GL11C.GL_STENCIL_TEST);
         ThinGL.glStateStack().pushBlendFunc();
         Blending.alphaWithAdditiveAlphaBlending();
         ThinGL.glStateStack().pushFramebuffer();
-        if (this.maskFramebuffer == null) {
-            this.maskFramebuffer = ThinGL.framebufferPool().borrowFramebuffer(GL11C.GL_LINEAR);
+        if (this.inputFramebuffer == null) {
+            this.inputFramebuffer = ThinGL.framebufferPool().borrowFramebuffer(GL11C.GL_LINEAR);
         }
-        this.maskFramebuffer.bind();
+        this.inputFramebuffer.bind();
     }
 
-    public void unbindMask() {
+    public void unbindInput() {
         ThinGL.glStateStack().popFramebuffer();
         ThinGL.glStateStack().popBlendFunc();
         ThinGL.glStateStack().pop();
     }
 
-    public void renderMask() {
-        this.renderMask(RenderMathUtil.getIdentityMatrix());
+    public void renderInput() {
+        this.renderInput(RenderMathUtil.getIdentityMatrix());
     }
 
-    public void renderMask(final Matrix4f positionMatrix) {
+    public void renderInput(final Matrix4f positionMatrix) {
         ThinGL.glStateStack().pushBlendFunc();
         Blending.premultipliedAlphaBlending();
-        this.maskFramebuffer.render(positionMatrix, 0, 0, this.maskFramebuffer.getWidth(), this.maskFramebuffer.getHeight());
+        this.inputFramebuffer.render(positionMatrix, 0, 0, this.inputFramebuffer.getWidth(), this.inputFramebuffer.getHeight());
         ThinGL.glStateStack().popBlendFunc();
     }
 
-    public void clearMask() {
-        if (this.maskFramebuffer != null) {
-            ThinGL.framebufferPool().returnFramebuffer(this.maskFramebuffer);
-            this.maskFramebuffer = null;
+    public void clearInput() {
+        if (this.inputFramebuffer != null) {
+            ThinGL.framebufferPool().returnFramebuffer(this.inputFramebuffer);
+            this.inputFramebuffer = null;
         }
     }
 
     @Override
     public void bind() {
         super.bind();
-        this.setUniformSampler("u_Mask", this.maskFramebuffer);
+        this.setUniformSampler("u_Input", this.inputFramebuffer);
     }
 
 }

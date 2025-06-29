@@ -18,32 +18,22 @@
 package net.raphimc.thingl.program.post.impl;
 
 import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.program.post.MultiPassPostProcessingProgram;
+import net.raphimc.thingl.program.post.MultiPassAuxInputPostProcessingProgram;
 import net.raphimc.thingl.resource.framebuffer.Framebuffer;
 import net.raphimc.thingl.resource.shader.Shader;
 
-public class KawaseBlurProgram extends MultiPassPostProcessingProgram<KawaseBlurProgram> {
-
-    private float offset = 3F;
+public class KawaseBlurProgram extends MultiPassAuxInputPostProcessingProgram {
 
     public KawaseBlurProgram(final Shader vertexShader, final Shader fragmentShader) {
-        super(vertexShader, fragmentShader, s -> {
-            s.setUniformInt("u_Pass", 0);
-            s.setUniformFloat("u_Offset", s.offset);
-        }, s -> {
-            s.setUniformInt("u_Pass", 1);
-            s.setUniformFloat("u_Offset", s.offset);
-        }, s -> {
-            s.setUniformInt("u_Pass", 2);
-            s.setUniformFloat("u_Offset", s.offset);
-        }, s -> {
-            s.setUniformInt("u_Pass", 3);
-            s.setUniformFloat("u_Offset", s.offset);
-        });
+        super(vertexShader, fragmentShader, 4, true);
+    }
+
+    public void configureParameters() {
+        this.configureParameters(3F);
     }
 
     public void configureParameters(final float offset) {
-        this.offset = offset;
+        this.setUniformFloat("u_Offset", offset);
     }
 
     @Override

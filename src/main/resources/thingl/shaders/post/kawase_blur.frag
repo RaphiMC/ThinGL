@@ -3,7 +3,7 @@
 
 uniform vec2 u_Viewport;
 uniform sampler2D u_Source;
-uniform sampler2D u_Mask;
+uniform sampler2D u_Input;
 uniform int u_Pass;
 uniform float u_Offset;
 
@@ -51,5 +51,5 @@ vec4 getPixel(vec2 pos) {
 }
 
 bool shouldBlur(vec2 pos) {
-    return u_Pass != 3 || texture(u_Mask, pos).a != 0;
+    return u_Pass != 3 || texture(u_Input, pos).a != 0;
 }

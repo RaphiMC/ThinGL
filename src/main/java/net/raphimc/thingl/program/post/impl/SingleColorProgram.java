@@ -18,21 +18,17 @@
 package net.raphimc.thingl.program.post.impl;
 
 import net.lenni0451.commons.color.Color;
-import net.raphimc.thingl.program.post.SinglePassPostProcessingProgram;
+import net.raphimc.thingl.program.post.AuxInputPostProcessingProgram;
 import net.raphimc.thingl.resource.shader.Shader;
 
-public class SingleColorProgram extends SinglePassPostProcessingProgram<SingleColorProgram> {
-
-    private Color color = Color.WHITE;
+public class SingleColorProgram extends AuxInputPostProcessingProgram {
 
     public SingleColorProgram(final Shader vertexShader, final Shader fragmentShader) {
-        super(vertexShader, fragmentShader, s -> {
-            s.setUniformVector4f("u_Color", s.color);
-        });
+        super(vertexShader, fragmentShader);
     }
 
     public void configureParameters(final Color color) {
-        this.color = color;
+        this.setUniformVector4f("u_Color", color);
     }
 
 }

@@ -34,12 +34,12 @@ public class ObjectOutliningExample extends StandaloneApplicationRunner {
 
     @Override
     protected void render(final Matrix4fStack positionMatrix) {
-        ThinGL.programs().getOutline().bindMask();
+        ThinGL.programs().getOutline().bindInput();
         this.renderScene(positionMatrix);
-        ThinGL.programs().getOutline().unbindMask();
+        ThinGL.programs().getOutline().unbindInput();
         ThinGL.programs().getOutline().configureParameters(1, OutlineProgram.STYLE_OUTER_BIT); // Configure the outline
         ThinGL.programs().getOutline().renderFullscreenQuad();
-        ThinGL.programs().getOutline().clearMask();
+        ThinGL.programs().getOutline().clearInput();
 
         positionMatrix.translate(0, 200, 0);
         this.renderScene(positionMatrix);

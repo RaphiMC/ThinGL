@@ -28,7 +28,7 @@ import org.lwjgl.opengl.GL13C;
 public class MSAAProgram extends PostProcessingProgram {
 
     private final int samples;
-    protected MSAATextureFramebuffer maskFramebuffer;
+    protected MSAATextureFramebuffer inputFramebuffer;
 
     public MSAAProgram(final Shader vertexShader, final Shader fragmentShader, final int samples) {
         super(vertexShader, fragmentShader);
@@ -36,7 +36,7 @@ public class MSAAProgram extends PostProcessingProgram {
         this.samples = samples;
     }
 
-    public void bindMask() {
+    public void bindInput() {
         ThinGL.glStateStack().push();
         ThinGL.glStateStack().disable(GL11C.GL_DEPTH_TEST);
         ThinGL.glStateStack().disable(GL11C.GL_STENCIL_TEST);
@@ -44,28 +44,28 @@ public class MSAAProgram extends PostProcessingProgram {
         ThinGL.glStateStack().pushBlendFunc();
         Blending.alphaWithAdditiveAlphaBlending();
         ThinGL.glStateStack().pushFramebuffer();
-        if (this.maskFramebuffer == null) {
-            this.maskFramebuffer = new MSAATextureFramebuffer(this.samples);
+        if (this.inputFramebuffer == null) {
+            this.inputFramebuffer = new MSAATextureFramebuffer(this.samples);
         }
-        this.maskFramebuffer.bind();
+        this.inputFramebuffer.bind();
     }
 
-    public void unbindMask() {
+    public void unbindInput() {
         ThinGL.glStateStack().popFramebuffer();
         ThinGL.glStateStack().popBlendFunc();
         ThinGL.glStateStack().pop();
     }
 
-    public void clearMask() {
-        if (this.maskFramebuffer != null) {
-            this.maskFramebuffer.clear();
+    public void clearInput() {
+        if (this.inputFramebuffer != null) {
+            this.inputFramebuffer.clear();
         }
     }
 
     @Override
     public void bind() {
         super.bind();
-        this.setUniformSampler("u_Mask", this.maskFramebuffer);
+        this.setUniformSampler("u_Input", this.inputFramebuffer);
     }
 
     @Override
@@ -78,10 +78,9 @@ public class MSAAProgram extends PostProcessingProgram {
 
     @Override
     protected void free0() {
-        if (this.maskFramebuffer != null) {
-            this.maskFramebuffer.freeFully();
+        if (this.inputFramebuffer != null) {
+            this.inputFramebuffer.freeFully();
         }
-
         super.free0();
     }
 

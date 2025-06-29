@@ -1,17 +1,17 @@
 #version 450 core
 
-uniform sampler2DMS u_Mask;
+uniform sampler2DMS u_Input;
 
 in vec2 v_VpTexCoord;
 out vec4 o_Color;
 
 void main() {
-    ivec2 texPos = ivec2(v_VpTexCoord * textureSize(u_Mask));
-    int samples = textureSamples(u_Mask);
+    ivec2 texPos = ivec2(v_VpTexCoord * textureSize(u_Input));
+    int samples = textureSamples(u_Input);
 
     vec4 colorSum = vec4(0);
     for (int i = 0; i < samples; i++) {
-        colorSum += texelFetch(u_Mask, texPos, i);
+        colorSum += texelFetch(u_Input, texPos, i);
     }
 
     o_Color = colorSum / samples;

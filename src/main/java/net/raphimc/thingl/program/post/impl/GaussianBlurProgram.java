@@ -17,24 +17,17 @@
  */
 package net.raphimc.thingl.program.post.impl;
 
-import net.raphimc.thingl.program.post.MultiPassPostProcessingProgram;
+import net.raphimc.thingl.program.post.MultiPassAuxInputPostProcessingProgram;
 import net.raphimc.thingl.resource.shader.Shader;
 
-public class GaussianBlurProgram extends MultiPassPostProcessingProgram<GaussianBlurProgram> {
-
-    private int radius = 10;
-    private float sigma = 10F;
+public class GaussianBlurProgram extends MultiPassAuxInputPostProcessingProgram {
 
     public GaussianBlurProgram(final Shader vertexShader, final Shader fragmentShader) {
-        super(vertexShader, fragmentShader, s -> {
-            s.setUniformBoolean("u_FinalPass", false);
-            s.setUniformInt("u_Radius", s.radius);
-            s.setUniformFloat("u_Sigma", s.sigma);
-        }, s -> {
-            s.setUniformBoolean("u_FinalPass", true);
-            s.setUniformInt("u_Radius", s.radius);
-            s.setUniformFloat("u_Sigma", s.sigma);
-        });
+        super(vertexShader, fragmentShader, 2, true);
+    }
+
+    public void configureParameters() {
+        this.configureParameters(10);
     }
 
     public void configureParameters(final int strength) {
@@ -42,8 +35,8 @@ public class GaussianBlurProgram extends MultiPassPostProcessingProgram<Gaussian
     }
 
     public void configureParameters(final int radius, final float sigma) {
-        this.radius = radius;
-        this.sigma = sigma;
+        this.setUniformInt("u_Radius", radius);
+        this.setUniformFloat("u_Sigma", sigma);
     }
 
 }

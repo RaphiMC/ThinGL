@@ -19,22 +19,18 @@ package net.raphimc.thingl.program.post.impl;
 
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.program.post.SinglePassPostProcessingProgram;
+import net.raphimc.thingl.program.post.AuxInputPostProcessingProgram;
 import net.raphimc.thingl.resource.shader.Shader;
 import net.raphimc.thingl.wrapper.Blending;
 
-public class ColorTweakProgram extends SinglePassPostProcessingProgram<ColorTweakProgram> {
-
-    private Color color = Color.WHITE;
+public class ColorTweakProgram extends AuxInputPostProcessingProgram {
 
     public ColorTweakProgram(final Shader vertexShader, final Shader fragmentShader) {
-        super(vertexShader, fragmentShader, s -> {
-            s.setUniformVector4f("u_Color", s.color);
-        });
+        super(vertexShader, fragmentShader);
     }
 
     public void configureParameters(final Color color) {
-        this.color = color;
+        this.setUniformVector4f("u_Color", color);
     }
 
     @Override

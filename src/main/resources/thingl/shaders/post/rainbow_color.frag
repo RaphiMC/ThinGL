@@ -1,6 +1,6 @@
 #version 330 core
 
-uniform sampler2D u_Mask;
+uniform sampler2D u_Input;
 uniform float u_Time;
 uniform float u_SpeedDivider;
 uniform float u_RainbowDivider;
@@ -16,12 +16,12 @@ vec3 hsv2rgb(vec3 c);
 vec3 rgb2hsv(vec3 c);
 
 void main() {
-    vec4 maskPixel = texture(u_Mask, v_VpTexCoord);
-    if (maskPixel.a != 0) {
+    vec4 inputPixel = texture(u_Input, v_VpTexCoord);
+    if (inputPixel.a != 0) {
         vec2 position = v_RelTexCoord / u_RainbowDivider * u_Direction;
-        vec3 hsv = rgb2hsv(maskPixel.rgb);
+        vec3 hsv = rgb2hsv(inputPixel.rgb);
         hsv.x = position.x + position.y + u_Offset - u_Time / u_SpeedDivider;
-        o_Color = vec4(hsv2rgb(hsv), maskPixel.a);
+        o_Color = vec4(hsv2rgb(hsv), inputPixel.a);
     } else {
         discard;
     }

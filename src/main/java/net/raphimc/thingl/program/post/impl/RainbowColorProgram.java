@@ -18,40 +18,38 @@
 package net.raphimc.thingl.program.post.impl;
 
 import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.program.post.SinglePassPostProcessingProgram;
+import net.raphimc.thingl.program.post.AuxInputPostProcessingProgram;
 import net.raphimc.thingl.resource.shader.Shader;
 import net.raphimc.thingl.wrapper.Blending;
 
-public class RainbowColorProgram extends SinglePassPostProcessingProgram<RainbowColorProgram> {
+public class RainbowColorProgram extends AuxInputPostProcessingProgram {
 
     private final long startTime = System.currentTimeMillis();
 
-    private int speedDivider = 10;
-    private int rainbowDivider = 10;
-    private int offset = 0;
-    private Direction direction = Direction.DOWN;
-
     public RainbowColorProgram(final Shader vertexShader, final Shader fragmentShader) {
-        super(vertexShader, fragmentShader, s -> {
-            s.setUniformFloat("u_Time", (System.currentTimeMillis() - s.startTime) / 1_000F);
-            s.setUniformFloat("u_SpeedDivider", (float) s.speedDivider);
-            s.setUniformFloat("u_RainbowDivider", (float) s.rainbowDivider);
-            s.setUniformFloat("u_Offset", s.offset / 1000F);
-            s.setUniformVector2f("u_Direction", s.direction.x, s.direction.y);
-        });
+        super(vertexShader, fragmentShader);
+    }
+
+    public void configureParameters() {
+        this.configureParameters(10, 10, Direction.DOWN);
+    }
+
+    public void configureParameters(final int speedDivider, final int rainbowDivider, final Direction direction) {
+        this.configureParameters(speedDivider, rainbowDivider, 0, direction);
     }
 
     public void configureParameters(final int speedDivider, final int rainbowDivider, final int offset, final Direction direction) {
-        this.speedDivider = speedDivider;
-        this.rainbowDivider = rainbowDivider;
-        this.offset = offset;
-        this.direction = direction;
+        this.setUniformFloat("u_SpeedDivider", speedDivider);
+        this.setUniformFloat("u_RainbowDivider", rainbowDivider);
+        this.setUniformFloat("u_Offset", offset / 1000F);
+        this.setUniformVector2f("u_Direction", direction.x, direction.y);
     }
 
     @Override
     protected void renderQuad0(final float x1, final float y1, final float x2, final float y2) {
         ThinGL.glStateStack().pushBlendFunc();
         Blending.premultipliedAlphaBlending();
+        this.setUniformFloat("u_Time", (System.currentTimeMillis() - this.startTime) / 1_000F);
         super.renderQuad0(x1, y1, x2, y2);
         ThinGL.glStateStack().popBlendFunc();
     }

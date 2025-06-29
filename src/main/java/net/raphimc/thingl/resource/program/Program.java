@@ -154,15 +154,23 @@ public class Program extends GLContainerObject {
     }
 
     public void setUniformSampler(final String name, final Framebuffer framebuffer) {
-        if (framebuffer.getColorAttachment(0) instanceof AbstractTexture texture) {
-            this.setUniformSampler(name, texture);
+        if (framebuffer != null) {
+            if (framebuffer.getColorAttachment(0) instanceof AbstractTexture texture) {
+                this.setUniformSampler(name, texture);
+            } else {
+                throw new IllegalArgumentException("Framebuffer color attachment is not a texture");
+            }
         } else {
-            throw new IllegalArgumentException("Framebuffer color attachment is not a texture");
+            this.setUniformSampler(name, 0);
         }
     }
 
     public void setUniformSampler(final String name, final AbstractTexture texture) {
-        this.setUniformSampler(name, texture.getGlId());
+        if (texture != null) {
+            this.setUniformSampler(name, texture.getGlId());
+        } else {
+            this.setUniformSampler(name, 0);
+        }
     }
 
     public void setUniformSampler(final String name, final int textureId) {

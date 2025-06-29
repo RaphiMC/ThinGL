@@ -38,7 +38,7 @@ public class RetainedRenderingExample extends StandaloneApplicationRunner {
     @Override
     protected void init() {
         super.init();
-        ThinGL.renderer2D().beginBuffering(persistentDrawBatch); // Renderer2D now renders everything into drawBatch
+        ThinGL.renderer2D().beginBuffering(persistentDrawBatch); // Renderer2D now renders everything into persistentDrawBatch
         for (int i = 0; i < 10; i++) {
             final int x = i * 10;
             final int y = i * 10;
