@@ -20,9 +20,8 @@ package net.raphimc.thingl.drawbuilder.databuilder.writer;
 
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.drawbuilder.builder.BufferBuilder;
+import org.joml.*;
 import org.joml.Math;
-import org.joml.Matrix4f;
-import org.joml.Matrix4fc;
 
 public abstract class BufferDataWriter<T extends BufferDataWriter<T>> extends BufferWriter<T> {
 
@@ -45,9 +44,17 @@ public abstract class BufferDataWriter<T extends BufferDataWriter<T>> extends Bu
         return (T) this;
     }
 
+    public T putVector2i(final Vector2i vector) {
+        return this.putVector2i(vector.x, vector.y);
+    }
+
     public T putVector2i(final int x, final int y) {
         this.bufferBuilder.putVector2i(x, y);
         return (T) this;
+    }
+
+    public T putVector3i(final Vector3i vector) {
+        return this.putVector3i(vector.x, vector.y, vector.z);
     }
 
     public T putVector3i(final int x, final int y, final int z) {
@@ -55,9 +62,17 @@ public abstract class BufferDataWriter<T extends BufferDataWriter<T>> extends Bu
         return (T) this;
     }
 
+    public T putVector4i(final Vector4i vector) {
+        return this.putVector4i(vector.x, vector.y, vector.z, vector.w);
+    }
+
     public T putVector4i(final int x, final int y, final int z, final int w) {
         this.bufferBuilder.putVector4i(x, y, z, w);
         return (T) this;
+    }
+
+    public T putVector2f(final Vector2f vector) {
+        return this.putVector2f(vector.x, vector.y);
     }
 
     public T putVector2f(final float x, final float y) {
@@ -65,9 +80,17 @@ public abstract class BufferDataWriter<T extends BufferDataWriter<T>> extends Bu
         return (T) this;
     }
 
+    public T putVector3f(final Vector3f vector) {
+        return this.putVector3f(vector.x, vector.y, vector.z);
+    }
+
     public T putVector3f(final float x, final float y, final float z) {
         this.bufferBuilder.putVector3f(x, y, z);
         return (T) this;
+    }
+
+    public T putVector4f(final Vector4f vector) {
+        return this.putVector4f(vector.x, vector.y, vector.z, vector.w);
     }
 
     public T putVector4f(final float x, final float y, final float z, final float w) {
@@ -75,9 +98,17 @@ public abstract class BufferDataWriter<T extends BufferDataWriter<T>> extends Bu
         return (T) this;
     }
 
+    public T putVector2d(final Vector2d vector) {
+        return this.putVector2d(vector.x, vector.y);
+    }
+
     public T putVector2d(final double x, final double y) {
         this.bufferBuilder.putVector2d(x, y);
         return (T) this;
+    }
+
+    public T putVector3d(final Vector3d vector) {
+        return this.putVector3d(vector.x, vector.y, vector.z);
     }
 
     public T putVector3d(final double x, final double y, final double z) {
@@ -85,9 +116,17 @@ public abstract class BufferDataWriter<T extends BufferDataWriter<T>> extends Bu
         return (T) this;
     }
 
+    public T putVector4d(final Vector4d vector) {
+        return this.putVector4d(vector.x, vector.y, vector.z, vector.w);
+    }
+
     public T putVector4d(final double x, final double y, final double z, final double w) {
         this.bufferBuilder.putVector4d(x, y, z, w);
         return (T) this;
+    }
+
+    public T putVector3f(final Matrix4f positionMatrix, final Vector3f vector) {
+        return this.putVector3f(positionMatrix, vector.x, vector.y, vector.z);
     }
 
     public T putVector3f(final Matrix4f positionMatrix, final float x, final float y, final float z) {
