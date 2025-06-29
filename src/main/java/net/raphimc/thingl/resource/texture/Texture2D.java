@@ -57,6 +57,27 @@ public class Texture2D extends AbstractTexture {
         this.setFilter(GL11C.GL_LINEAR);
     }
 
+    public Texture2D(final InternalFormat internalFormat, final ByteBuffer imageBuffer) {
+        super(Type.TEX_2D, internalFormat);
+        try {
+            final int[] width = new int[1];
+            final int[] height = new int[1];
+            if (!STBImage.stbi_info_from_memory(imageBuffer, width, height, new int[1])) {
+                throw new RuntimeException("Failed to read image: " + STBImage.stbi_failure_reason());
+            }
+            this.width = width[0];
+            this.height = height[0];
+            this.mipMapLevels = 1;
+            GL45C.glTextureStorage2D(this.getGlId(), this.mipMapLevels, internalFormat.getGlFormat(), this.width, this.height);
+            this.setWrap(GL12C.GL_CLAMP_TO_EDGE);
+            this.setFilter(GL11C.GL_LINEAR);
+            this.uploadImage(0, 0, PixelFormat.RGBA, imageBuffer);
+        } catch (Throwable e) {
+            this.free();
+            throw e;
+        }
+    }
+
     public Texture2D(final InternalFormat internalFormat, final byte[] imageData) {
         super(Type.TEX_2D, internalFormat);
         try {
@@ -73,7 +94,7 @@ public class Texture2D extends AbstractTexture {
                 GL45C.glTextureStorage2D(this.getGlId(), this.mipMapLevels, internalFormat.getGlFormat(), this.width, this.height);
                 this.setWrap(GL12C.GL_CLAMP_TO_EDGE);
                 this.setFilter(GL11C.GL_LINEAR);
-                this.uploadImage(0, 0, this.width, this.height, PixelFormat.RGBA, imageBuffer);
+                this.uploadImage(0, 0, PixelFormat.RGBA, imageBuffer);
             } finally {
                 BufferUtil.memFree(imageBuffer);
             }
@@ -99,16 +120,16 @@ public class Texture2D extends AbstractTexture {
         this.wrapT = GL45C.glGetTextureParameteri(this.getGlId(), GL11C.GL_TEXTURE_WRAP_T);
     }
 
-    public void uploadImage(final int x, final int y, final int width, final int height, final PixelFormat pixelFormat, final byte[] imageData) {
+    public void uploadImage(final int x, final int y, final PixelFormat pixelFormat, final byte[] imageData) {
         final ByteBuffer imageBuffer = MemoryUtil.memAlloc(imageData.length).put(imageData).flip();
         try {
-            this.uploadImage(x, y, width, height, pixelFormat, imageBuffer);
+            this.uploadImage(x, y, pixelFormat, imageBuffer);
         } finally {
             BufferUtil.memFree(imageBuffer);
         }
     }
 
-    public void uploadImage(final int x, final int y, final int width, final int height, final PixelFormat pixelFormat, final ByteBuffer imageBuffer) {
+    public void uploadImage(final int x, final int y, final PixelFormat pixelFormat, final ByteBuffer imageBuffer) {
         final int[] imgWidth = new int[1];
         final int[] imgHeight = new int[1];
         final ByteBuffer pixelBuffer = STBImage.stbi_load_from_memory(imageBuffer, imgWidth, imgHeight, new int[1], pixelFormat.getChannelCount());
@@ -116,7 +137,7 @@ public class Texture2D extends AbstractTexture {
             throw new IllegalArgumentException("Failed to read image: " + STBImage.stbi_failure_reason());
         }
         try {
-            this.uploadPixels(x, y, width, height, pixelFormat, pixelBuffer);
+            this.uploadPixels(x, y, imgWidth[0], imgHeight[0], pixelFormat, pixelBuffer);
         } finally {
             STBImage.stbi_image_free(pixelBuffer);
         }
