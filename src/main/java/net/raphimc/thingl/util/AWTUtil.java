@@ -34,11 +34,15 @@ public class AWTUtil {
     }
 
     public static Texture2D createTextureFromBufferedImage(final AbstractTexture.InternalFormat internalFormat, final BufferedImage bufferedImage) {
+        final Texture2D texture = new Texture2D(internalFormat, bufferedImage.getWidth(), bufferedImage.getHeight());
+        uploadBufferedImageToTexture2D(texture, 0, 0, bufferedImage);
+        return texture;
+    }
+
+    public static void uploadBufferedImageToTexture2D(final Texture2D texture, final int x, final int y, final BufferedImage bufferedImage) {
         final int[] pixels = new int[bufferedImage.getWidth() * bufferedImage.getHeight()];
         bufferedImage.getRGB(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), pixels, 0, bufferedImage.getWidth());
-        final Texture2D texture = new Texture2D(internalFormat, bufferedImage.getWidth(), bufferedImage.getHeight());
-        texture.uploadPixels(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), AbstractTexture.PixelFormat.BGRA, pixels, false);
-        return texture;
+        texture.uploadPixels(x, y, bufferedImage.getWidth(), bufferedImage.getHeight(), AbstractTexture.PixelFormat.BGRA, pixels, false);
     }
 
 }
