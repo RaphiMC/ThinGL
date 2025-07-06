@@ -32,7 +32,9 @@ import java.util.Objects;
 
 public class Framebuffer extends GLContainerObject {
 
-    private final float[] clearColor = new float[4];
+    private final float[] clearColor = new float[]{0F, 0F, 0F, 0F};
+    private final float[] clearDepth = new float[]{1F};
+    private final int[] clearStencil = new int[]{0};
 
     private final FramebufferAttachment[] colorAttachments = new FramebufferAttachment[this.getMaxSupportedColorAttachmentCount()];
     private FramebufferAttachment depthAttachment;
@@ -136,9 +138,29 @@ public class Framebuffer extends GLContainerObject {
     }
 
     public void clear() {
+        this.clearColor();
+        this.clearDepthAndStencil();
+    }
+
+    public void clearColor() {
         GL45C.glClearNamedFramebufferfv(this.getGlId(), GL11C.GL_COLOR, 0, this.clearColor);
+    }
+
+    public void clearDepth() {
+        if (this.depthAttachment != null) {
+            GL45C.glClearNamedFramebufferfv(this.getGlId(), GL11C.GL_DEPTH, 0, this.clearDepth);
+        }
+    }
+
+    public void clearStencil() {
+        if (this.stencilAttachment != null) {
+            GL45C.glClearNamedFramebufferiv(this.getGlId(), GL11C.GL_STENCIL, 0, this.clearStencil);
+        }
+    }
+
+    public void clearDepthAndStencil() {
         if (this.depthAttachment != null || this.stencilAttachment != null) {
-            GL45C.glClearNamedFramebufferfi(this.getGlId(), GL30C.GL_DEPTH_STENCIL, 0, 1F, 0);
+            GL45C.glClearNamedFramebufferfi(this.getGlId(), GL30C.GL_DEPTH_STENCIL, 0, this.clearDepth[0], this.clearStencil[0]);
         }
     }
 
@@ -189,6 +211,14 @@ public class Framebuffer extends GLContainerObject {
         this.clearColor[1] = g;
         this.clearColor[2] = b;
         this.clearColor[3] = a;
+    }
+
+    public void setClearDepth(final float depth) {
+        this.clearDepth[0] = depth;
+    }
+
+    public void setClearStencil(final int stencil) {
+        this.clearStencil[0] = stencil;
     }
 
     public FramebufferAttachment getColorAttachment(final int index) {
