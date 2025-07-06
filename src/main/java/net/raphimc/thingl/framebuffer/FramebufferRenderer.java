@@ -49,7 +49,7 @@ public class FramebufferRenderer {
         ThinGL.glStateStack().pushFramebuffer();
         this.framebuffer.clear();
         this.framebuffer.bind(true);
-        ThinGL.applicationInterface().pushProjectionMatrix(new Matrix4f().setOrtho(0F, this.framebuffer.getWidth(), this.framebuffer.getHeight(), 0F, -5000F, 5000F));
+        ThinGL.applicationInterface().pushProjectionMatrix(new Matrix4f().setOrtho(0F, this.framebuffer.getWidth(), this.framebuffer.getHeight(), 0F, -1000F, 1000F));
         ThinGL.applicationInterface().pushViewMatrix(RenderMathUtil.getIdentityMatrix());
     }
 

@@ -37,7 +37,7 @@ public class PostProcessingProgram extends Program {
     public void bind() {
         super.bind();
         final Framebuffer currentFramebuffer = ThinGL.applicationInterface().getCurrentFramebuffer();
-        this.setUniformMatrix4f("u_ProjectionMatrix", new Matrix4f().setOrtho(0F, currentFramebuffer.getWidth(), currentFramebuffer.getHeight(), 0F, -5000F, 5000F));
+        this.setUniformMatrix4f("u_ProjectionMatrix", new Matrix4f().setOrtho(0F, currentFramebuffer.getWidth(), currentFramebuffer.getHeight(), 0F, -1000F, 1000F));
         this.setUniformVector2f("u_Viewport", currentFramebuffer.getWidth(), currentFramebuffer.getHeight());
         this.setUniformVector4f("u_Quad", 0F, 0F, currentFramebuffer.getWidth(), currentFramebuffer.getHeight());
     }

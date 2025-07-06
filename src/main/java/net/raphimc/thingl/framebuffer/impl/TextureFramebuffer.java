@@ -57,7 +57,7 @@ public class TextureFramebuffer extends ResizingFramebuffer {
     }
 
     public void render(final Matrix4f positionMatrix, final float x, final float y, final float width, final float height) {
-        ThinGL.applicationInterface().pushProjectionMatrix(new Matrix4f().setOrtho(0F, this.getWidth(), this.getHeight(), 0F, -5000F, 5000F));
+        ThinGL.applicationInterface().pushProjectionMatrix(new Matrix4f().setOrtho(0F, this.getWidth(), this.getHeight(), 0F, -1000F, 1000F));
         ThinGL.applicationInterface().pushViewMatrix(RenderMathUtil.getIdentityMatrix());
         ThinGL.renderer2D().texture(positionMatrix, this.getColorAttachment(0).getGlId(), x, y, width, height, 0F, height, width, -height, width, height);
         ThinGL.applicationInterface().popProjectionMatrix();

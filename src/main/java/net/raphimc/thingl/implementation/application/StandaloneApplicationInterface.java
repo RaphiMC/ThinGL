@@ -31,8 +31,8 @@ public class StandaloneApplicationInterface extends ApplicationInterface {
 
     public StandaloneApplicationInterface(final ThinGL thinGL) {
         super(thinGL);
-        thinGL.getWindowInterface().addFramebufferResizeCallback(this::createProjectionMatrix);
-        this.createProjectionMatrix(thinGL.getWindowInterface().getFramebufferWidth(), thinGL.getWindowInterface().getFramebufferHeight());
+        thinGL.getWindowInterface().addFramebufferResizeCallback(this::loadProjectionMatrix);
+        this.loadProjectionMatrix(thinGL.getWindowInterface().getFramebufferWidth(), thinGL.getWindowInterface().getFramebufferHeight());
     }
 
     @Override
@@ -75,7 +75,7 @@ public class StandaloneApplicationInterface extends ApplicationInterface {
         this.framebuffer = framebuffer;
     }
 
-    protected void createProjectionMatrix(final int width, final int height) {
+    protected void loadProjectionMatrix(final float width, final float height) {
         this.projectionMatrixStack.setOrtho(0F, width, height, 0F, -1000F, 1000F);
     }
 
