@@ -11,8 +11,6 @@ in vec2 v_VpPixelSize;
 in vec2 v_VpTexCoord;
 out vec4 o_Color;
 
-float multiplier = u_Pass < 2 ? 2 : 0.5;
-
 vec4 getPixel(vec2 pos);
 bool shouldBlur(vec2 pos);
 

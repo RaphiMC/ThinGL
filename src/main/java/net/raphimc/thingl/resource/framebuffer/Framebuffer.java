@@ -138,41 +138,34 @@ public class Framebuffer extends GLContainerObject {
     }
 
     public void clear() {
-        this.clearColor();
-        this.clearDepthAndStencil();
+        this.clear(true, true, true);
     }
 
-    public void clearColor() {
-        GL45C.glClearNamedFramebufferfv(this.getGlId(), GL11C.GL_COLOR, 0, this.clearColor);
-    }
-
-    public void clearDepth() {
-        if (this.depthAttachment != null) {
-            GL45C.glClearNamedFramebufferfv(this.getGlId(), GL11C.GL_DEPTH, 0, this.clearDepth);
+    public void clear(final boolean color, final boolean depth, final boolean stencil) {
+        if (color) {
+            GL45C.glClearNamedFramebufferfv(this.getGlId(), GL11C.GL_COLOR, 0, this.clearColor);
         }
-    }
-
-    public void clearStencil() {
-        if (this.stencilAttachment != null) {
-            GL45C.glClearNamedFramebufferiv(this.getGlId(), GL11C.GL_STENCIL, 0, this.clearStencil);
-        }
-    }
-
-    public void clearDepthAndStencil() {
-        if (this.depthAttachment != null || this.stencilAttachment != null) {
+        if (depth && stencil && this.depthAttachment != null && this.stencilAttachment != null) {
             GL45C.glClearNamedFramebufferfi(this.getGlId(), GL30C.GL_DEPTH_STENCIL, 0, this.clearDepth[0], this.clearStencil[0]);
+        } else {
+            if (depth && this.depthAttachment != null) {
+                GL45C.glClearNamedFramebufferfv(this.getGlId(), GL11C.GL_DEPTH, 0, this.clearDepth);
+            }
+            if (stencil && this.stencilAttachment != null) {
+                GL45C.glClearNamedFramebufferiv(this.getGlId(), GL11C.GL_STENCIL, 0, this.clearStencil);
+            }
         }
     }
 
-    public void blitTo(final Framebuffer target, final boolean copyColor, final boolean copyDepth, final boolean copyStencil) {
+    public void blitTo(final Framebuffer target, final boolean color, final boolean depth, final boolean stencil) {
         int mask = 0;
-        if (copyColor) {
+        if (color) {
             mask |= GL11C.GL_COLOR_BUFFER_BIT;
         }
-        if (copyDepth) {
+        if (depth) {
             mask |= GL11C.GL_DEPTH_BUFFER_BIT;
         }
-        if (copyStencil) {
+        if (stencil) {
             mask |= GL11C.GL_STENCIL_BUFFER_BIT;
         }
         GL45C.glBlitNamedFramebuffer(this.getGlId(), target.getGlId(), 0, 0, this.getWidth(), this.getHeight(), 0, 0, target.getWidth(), target.getHeight(), mask, GL11C.GL_NEAREST);
