@@ -33,6 +33,7 @@ public class Capabilities {
     private final boolean isEarcut4jPresent;
     private final int maxSamples;
     private final int maxColorAttachments;
+    private final int maxArrayTextureLayers;
     private final boolean supportsNVFramebufferMixedSamples;
     private final int nvFramebufferMixedSamplesMaxRasterSamples;
 
@@ -45,6 +46,7 @@ public class Capabilities {
         this.isEarcut4jPresent = isClassPresent("earcut4j.Earcut");
         this.maxSamples = GL11C.glGetInteger(GL30C.GL_MAX_SAMPLES);
         this.maxColorAttachments = GL11C.glGetInteger(GL30C.GL_MAX_COLOR_ATTACHMENTS);
+        this.maxArrayTextureLayers = GL11C.glGetInteger(GL30C.GL_MAX_ARRAY_TEXTURE_LAYERS);
         this.supportsNVFramebufferMixedSamples = GL.getCapabilities().GL_NV_framebuffer_mixed_samples;
         if (this.supportsNVFramebufferMixedSamples) {
             this.nvFramebufferMixedSamplesMaxRasterSamples = GL11C.glGetInteger(NVFramebufferMixedSamples.GL_MAX_RASTER_SAMPLES_EXT);
@@ -109,6 +111,10 @@ public class Capabilities {
 
     public int getMaxColorAttachments() {
         return this.maxColorAttachments;
+    }
+
+    public int getMaxArrayTextureLayers() {
+        return this.maxArrayTextureLayers;
     }
 
     public boolean supportsNVFramebufferMixedSamples() {

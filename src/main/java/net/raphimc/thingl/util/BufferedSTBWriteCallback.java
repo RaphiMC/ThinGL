@@ -1,0 +1,41 @@
+/*
+ * This file is part of ThinGL - https://github.com/RaphiMC/ThinGL
+ * Copyright (C) 2024-2025 RK_01/RaphiMC and contributors
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package net.raphimc.thingl.util;
+
+import org.lwjgl.stb.STBIWriteCallback;
+
+import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
+
+public class BufferedSTBWriteCallback extends STBIWriteCallback {
+
+    private final ByteArrayOutputStream imageData = new ByteArrayOutputStream();
+
+    @Override
+    public void invoke(final long context, final long data, final int size) {
+        final ByteBuffer dataBuffer = getData(data, size);
+        final byte[] dataBytes = new byte[size];
+        dataBuffer.get(dataBytes);
+        this.imageData.writeBytes(dataBytes);
+    }
+
+    public byte[] getImageData() {
+        return this.imageData.toByteArray();
+    }
+
+}

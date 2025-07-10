@@ -50,6 +50,12 @@ public class Programs {
         return program;
     });
 
+    private final Lazy<RegularProgram> positionTextureArray = Lazy.of(() -> {
+        final RegularProgram program = new RegularProgram(this.getShader("regular/position_texture_array", VERTEX), this.getShader("regular/position_texture_array", FRAGMENT));
+        program.setDebugName("position_texture_array");
+        return program;
+    });
+
     private final Lazy<RegularProgram> positionColorTexture = Lazy.of(() -> {
         final RegularProgram program = new RegularProgram(this.getShader("regular/position_color_texture", VERTEX), this.getShader("regular/position_color_texture", FRAGMENT));
         program.setDebugName("position_color_texture");
@@ -148,6 +154,10 @@ public class Programs {
 
     public RegularProgram getPositionTexture() {
         return this.positionTexture.get();
+    }
+
+    public RegularProgram getPositionTextureArray() {
+        return this.positionTextureArray.get();
     }
 
     public RegularProgram getPositionColorTexture() {

@@ -43,9 +43,10 @@ public class BuiltinDrawBatches {
     // === Vertex Data Layouts ===
 
     public static final VertexDataLayout POSITION_COLOR_LAYOUT = new VertexDataLayout(POSITION_ELEMENT, COLOR_ELEMENT);
-    public static final VertexDataLayout LINE_LAYOUT = new VertexDataLayout(POSITION_ELEMENT, COLOR_ELEMENT, new VertexDataLayoutElement(DataType.FLOAT, 1));
     public static final VertexDataLayout POSITION_TEXTURE_LAYOUT = new VertexDataLayout(POSITION_ELEMENT, TEXTURE_ELEMENT);
+    public static final VertexDataLayout POSITION_TEXTURE_ARRAY_LAYOUT = new VertexDataLayout(POSITION_ELEMENT, TEXTURE_ELEMENT, new VertexDataLayoutElement(DataType.SHORT, 1));
     public static final VertexDataLayout POSITION_COLOR_TEXTURE_LAYOUT = new VertexDataLayout(POSITION_ELEMENT, COLOR_ELEMENT, TEXTURE_ELEMENT);
+    public static final VertexDataLayout LINE_LAYOUT = new VertexDataLayout(POSITION_ELEMENT, COLOR_ELEMENT, new VertexDataLayoutElement(DataType.FLOAT, 1));
 
     // === Draw Batches ===
 

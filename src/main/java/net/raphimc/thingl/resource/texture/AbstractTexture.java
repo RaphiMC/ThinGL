@@ -49,7 +49,7 @@ public abstract class AbstractTexture extends GLObject implements FramebufferAtt
             return switch (type) {
                 case TEX_2D -> new Texture2D(glId);
                 case TEX_2D_MULTISAMPLE -> new MultisampleTexture2D(glId);
-                default -> throw new IllegalArgumentException("Unsupported texture type: " + type.getDisplayName());
+                case TEX_2D_ARRAY -> new Texture2DArray(glId);
             };
         } else {
             final int samples = GL45C.glGetTextureLevelParameteri(glId, 0, GL32C.GL_TEXTURE_SAMPLES);
@@ -89,10 +89,9 @@ public abstract class AbstractTexture extends GLObject implements FramebufferAtt
 
     public enum Type {
 
-        TEX_1D(GL11C.GL_TEXTURE_1D, "1D Texture"),
         TEX_2D(GL11C.GL_TEXTURE_2D, "2D Texture"),
         TEX_2D_MULTISAMPLE(GL32C.GL_TEXTURE_2D_MULTISAMPLE, "Multisample 2D Texture"),
-        TEX_3D(GL12C.GL_TEXTURE_3D, "3D Texture"),
+        TEX_2D_ARRAY(GL30C.GL_TEXTURE_2D_ARRAY, "2D Texture Array"),
         ;
 
         public static Type fromGlType(final int glType) {
