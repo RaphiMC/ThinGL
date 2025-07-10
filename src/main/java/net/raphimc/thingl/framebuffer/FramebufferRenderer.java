@@ -30,24 +30,27 @@ import org.lwjgl.opengl.GL45C;
 public class FramebufferRenderer {
 
     private final Texture2D colorAttachment;
+    private final Texture2D depthStencilAttachment;
     private final Framebuffer framebuffer;
 
     public FramebufferRenderer(final int width, final int height) {
-        this(width, height, GL11C.GL_LINEAR);
+        this(width, height, true);
     }
 
-    public FramebufferRenderer(final int width, final int height, final int textureFilter) {
+    public FramebufferRenderer(final int width, final int height, final boolean addDepthAttachment) {
         this.colorAttachment = new Texture2D(Texture2D.InternalFormat.RGBA8, width, height);
-        this.colorAttachment.setFilter(textureFilter);
-        final Texture2D depthStencilAttachment = new Texture2D(Texture2D.InternalFormat.DEPTH32F_STENCIL8, width, height);
-        depthStencilAttachment.setFilter(textureFilter);
-        GL45C.glTextureParameteri(depthStencilAttachment.getGlId(), GL14C.GL_TEXTURE_COMPARE_MODE, GL11C.GL_NONE);
-        this.framebuffer = new Framebuffer(this.colorAttachment, depthStencilAttachment);
+        if (addDepthAttachment) {
+            this.depthStencilAttachment = new Texture2D(Texture2D.InternalFormat.DEPTH32F_STENCIL8, width, height);
+            GL45C.glTextureParameteri(this.depthStencilAttachment.getGlId(), GL14C.GL_TEXTURE_COMPARE_MODE, GL11C.GL_NONE);
+            this.framebuffer = new Framebuffer(this.colorAttachment, this.depthStencilAttachment);
+        } else {
+            this.depthStencilAttachment = null;
+            this.framebuffer = new Framebuffer(this.colorAttachment);
+        }
     }
 
     public void begin() {
         ThinGL.glStateStack().pushFramebuffer();
-        this.framebuffer.clear();
         this.framebuffer.bind(true);
         ThinGL.applicationInterface().pushProjectionMatrix(new Matrix4f().setOrtho(0F, this.framebuffer.getWidth(), this.framebuffer.getHeight(), 0F, -1000F, 1000F));
         ThinGL.applicationInterface().pushViewMatrix(RenderMathUtil.getIdentityMatrix());
@@ -59,12 +62,27 @@ public class FramebufferRenderer {
         ThinGL.glStateStack().popFramebuffer(true);
     }
 
-    public Framebuffer getFramebuffer() {
-        return this.framebuffer;
+    public void clear() {
+        this.framebuffer.clear();
     }
 
-    public int getGlId() {
-        return this.colorAttachment.getGlId();
+    public void setTextureFilter(final int filter) {
+        this.colorAttachment.setFilter(filter);
+        if (this.depthStencilAttachment != null) {
+            this.depthStencilAttachment.setFilter(filter);
+        }
+    }
+
+    public Texture2D getColorAttachment() {
+        return this.colorAttachment;
+    }
+
+    public Texture2D getDepthStencilAttachment() {
+        return this.depthStencilAttachment;
+    }
+
+    public Framebuffer getFramebuffer() {
+        return this.framebuffer;
     }
 
     public void free() {
