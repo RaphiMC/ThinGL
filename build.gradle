@@ -50,6 +50,7 @@ dependencies {
     compileOnly "org.lwjgl:lwjgl-par:3.3.6"
     compileOnly "io.github.earcut4j:earcut4j:2.2.2"
     compileOnly "com.github.RaphiMC:gif-reader:0bdb781a96"
+    compileOnly "com.twelvemonkeys.imageio:imageio-webp:3.12.0"
 
     // Test dependencies
     ["natives-windows", "natives-windows-arm64", "natives-linux", "natives-linux-arm64"].each {

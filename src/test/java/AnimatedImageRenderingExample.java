@@ -44,6 +44,7 @@ public class AnimatedImageRenderingExample extends StandaloneApplicationRunner {
             final byte[] imageData = AnimatedImageRenderingExample.class.getResourceAsStream("/images/hand.gif").readAllBytes();
             this.image = AWTUtil.createSequencedTextureFromGif(imageData);
             // this.image = SequencedTexture.fromGif(imageData); // Alternative method which uses a library. This is faster than using AWT
+            // this.image = AWTUtil.createSequencedTextureFromWebp(imageData); // WebP is also supported, but requires a library
             this.startTime = System.currentTimeMillis();
         } catch (IOException e) {
             throw new RuntimeException(e);

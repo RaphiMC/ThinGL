@@ -32,6 +32,7 @@ public class Capabilities {
     private final boolean isParPresent;
     private final boolean isEarcut4jPresent;
     private final boolean isGifReaderPresent;
+    private final boolean isTwelveMonkeysWebpReaderPresent;
     private final int maxSamples;
     private final int maxColorAttachments;
     private final int maxArrayTextureLayers;
@@ -46,6 +47,7 @@ public class Capabilities {
         this.isParPresent = isClassPresent("org.lwjgl.util.par.LibPar");
         this.isEarcut4jPresent = isClassPresent("earcut4j.Earcut");
         this.isGifReaderPresent = isClassPresent("com.ibasco.image.gif.GifImageReader");
+        this.isTwelveMonkeysWebpReaderPresent = isClassPresent("com.twelvemonkeys.imageio.plugins.webp.WebPImageReader");
         this.maxSamples = GL11C.glGetInteger(GL30C.GL_MAX_SAMPLES);
         this.maxColorAttachments = GL11C.glGetInteger(GL30C.GL_MAX_COLOR_ATTACHMENTS);
         this.maxArrayTextureLayers = GL11C.glGetInteger(GL30C.GL_MAX_ARRAY_TEXTURE_LAYERS);
@@ -93,6 +95,12 @@ public class Capabilities {
         }
     }
 
+    public void ensureTwelveMonkeysWebpReaderPresent() {
+        if (!this.isTwelveMonkeysWebpReaderPresent) {
+            throw new UnsupportedOperationException("TwelveMonkeys WebP Reader is not present. Please add https://github.com/haraldk/TwelveMonkeys to your project.");
+        }
+    }
+
     public boolean isFreeTypePresent() {
         return this.isFreeTypePresent;
     }
@@ -115,6 +123,10 @@ public class Capabilities {
 
     public boolean isGifReaderPresent() {
         return this.isGifReaderPresent;
+    }
+
+    public boolean isTwelveMonkeysWebpReaderPresent() {
+        return this.isTwelveMonkeysWebpReaderPresent;
     }
 
     public int getMaxSamples() {

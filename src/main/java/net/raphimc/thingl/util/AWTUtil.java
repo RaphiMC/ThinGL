@@ -17,12 +17,15 @@
  */
 package net.raphimc.thingl.util;
 
+import com.twelvemonkeys.imageio.plugins.webp.WebPImageReaderSpi;
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.framebuffer.FramebufferRenderer;
 import net.raphimc.thingl.resource.texture.AbstractTexture;
 import net.raphimc.thingl.resource.texture.Texture2D;
+import net.raphimc.thingl.resource.texture.Texture2DArray;
 import net.raphimc.thingl.texture.SequencedTexture;
+import org.lwjgl.opengl.GL43C;
 import org.lwjgl.opengl.GL45C;
 import org.w3c.dom.Node;
 
@@ -30,11 +33,14 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
+import java.util.List;
+import java.util.function.Function;
 
 public class AWTUtil {
 
@@ -56,6 +62,12 @@ public class AWTUtil {
         final int[] pixels = new int[bufferedImage.getWidth() * bufferedImage.getHeight()];
         bufferedImage.getRGB(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), pixels, 0, bufferedImage.getWidth());
         texture.uploadPixels(x, y, bufferedImage.getWidth(), bufferedImage.getHeight(), AbstractTexture.PixelFormat.BGRA, pixels, false);
+    }
+
+    public static void uploadBufferedImageToTexture2DArray(final Texture2DArray texture, final int x, final int y, final int layer, final BufferedImage bufferedImage) {
+        final int[] pixels = new int[bufferedImage.getWidth() * bufferedImage.getHeight()];
+        bufferedImage.getRGB(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), pixels, 0, bufferedImage.getWidth());
+        texture.uploadPixels(x, y, layer, bufferedImage.getWidth(), bufferedImage.getHeight(), AbstractTexture.PixelFormat.BGRA, pixels, false);
     }
 
     public static SequencedTexture createSequencedTextureFromGif(final byte[] imageData) throws IOException {
@@ -133,6 +145,82 @@ public class AWTUtil {
             return sequencedTexture;
         } finally {
             gifReader.dispose();
+        }
+    }
+
+    public static SequencedTexture createSequencedTextureFromWebp(final byte[] imageData) throws IOException {
+        return createSequencedTextureFromWebp(new ByteArrayInputStream(imageData));
+    }
+
+    public static SequencedTexture createSequencedTextureFromWebp(final InputStream imageDataStream) throws IOException {
+        ThinGL.capabilities().ensureTwelveMonkeysWebpReaderPresent();
+        final ImageReader webpReader = new WebPImageReaderSpi().createReaderInstance();
+        try (ImageInputStream imageInputStream = ImageIO.createImageInputStream(imageDataStream)) {
+            webpReader.setInput(imageInputStream);
+            int frameCount = webpReader.getNumImages(true);
+            if (frameCount > ThinGL.capabilities().getMaxArrayTextureLayers()) {
+                ThinGL.LOGGER.warn("WebP has more frames (" + frameCount + ") than the maximum supported by the GPU (" + ThinGL.capabilities().getMaxArrayTextureLayers() + "). Using the maximum supported frames.");
+                frameCount = ThinGL.capabilities().getMaxArrayTextureLayers();
+            }
+
+            final Object header = ReflectionUtil.createGetter("com.twelvemonkeys.imageio.plugins.webp.WebPImageReader", "header").apply(webpReader);
+            final int width = (int) ReflectionUtil.createGetter("com.twelvemonkeys.imageio.plugins.webp.VP8xChunk", "width").apply(header);
+            final int height = (int) ReflectionUtil.createGetter("com.twelvemonkeys.imageio.plugins.webp.VP8xChunk", "height").apply(header);
+            final boolean isAnimated = (boolean) ReflectionUtil.createGetter("com.twelvemonkeys.imageio.plugins.webp.VP8xChunk", "containsANIM").apply(header);
+            if (!isAnimated) {
+                throw new UnsupportedOperationException("WebP image is not animated, cannot create sequenced texture");
+            }
+
+            final List<?> frames = (List<?>) ReflectionUtil.createGetter("com.twelvemonkeys.imageio.plugins.webp.WebPImageReader", "frames").apply(webpReader);
+            final Function<Object, Object> boundsGetter = ReflectionUtil.createGetter("com.twelvemonkeys.imageio.plugins.webp.AnimationFrame", "bounds");
+            final Function<Object, Object> durationGetter = ReflectionUtil.createGetter("com.twelvemonkeys.imageio.plugins.webp.AnimationFrame", "duration");
+            final Function<Object, Object> blendGetter = ReflectionUtil.createGetter("com.twelvemonkeys.imageio.plugins.webp.AnimationFrame", "blend");
+            final Function<Object, Object> disposeGetter = ReflectionUtil.createGetter("com.twelvemonkeys.imageio.plugins.webp.AnimationFrame", "dispose");
+
+            final SequencedTexture sequencedTexture = new SequencedTexture(AbstractTexture.InternalFormat.RGBA8, width, height, frameCount);
+            final Texture2D partialTexture = new Texture2D(AbstractTexture.InternalFormat.RGBA8, width, height);
+            final FramebufferRenderer frameBuilder = new FramebufferRenderer(width, height, false);
+            final Texture2D frameBuilderTexture = frameBuilder.getColorAttachment();
+            frameBuilder.begin();
+            try {
+                int relativeTime = 0;
+                for (int frameIndex = 0; frameIndex < frameCount; frameIndex++) {
+                    final BufferedImage frame = webpReader.read(frameIndex);
+                    final Object animationFrame = frames.get(frameIndex);
+                    final Rectangle bounds = (Rectangle) boundsGetter.apply(animationFrame);
+                    final boolean blend = (boolean) blendGetter.apply(animationFrame);
+                    final boolean dispose = (boolean) disposeGetter.apply(animationFrame);
+
+                    AWTUtil.uploadBufferedImageToTexture2D(partialTexture, 0, 0, frame);
+                    if (blend) {
+                        ThinGL.renderer2D().texture(RenderMathUtil.getIdentityMatrix(), partialTexture.getGlId(), bounds.x, bounds.y, frame.getWidth(), frame.getHeight(), 0, 0, frame.getWidth(), frame.getHeight(), partialTexture.getWidth(), partialTexture.getHeight());
+                    } else {
+                        for (int y = 0; y < frame.getHeight(); y++) { // Copy to the frame builder while flipping it vertically
+                            GL43C.glCopyImageSubData(partialTexture.getGlId(), partialTexture.getType(), 0, 0, y, 0, frameBuilderTexture.getGlId(), frameBuilderTexture.getType(), 0, bounds.x, frameBuilderTexture.getHeight() - 1 - bounds.y - y, 0, frame.getWidth(), 1, 1);
+                        }
+                    }
+                    for (int y = 0; y < sequencedTexture.getHeight(); y++) { // Copy to the image while flipping it vertically
+                        GL45C.glCopyTextureSubImage3D(sequencedTexture.getGlId(), 0, 0, y, frameIndex, 0, sequencedTexture.getHeight() - 1 - y, sequencedTexture.getWidth(), 1);
+                    }
+                    if (dispose) {
+                        frameBuilder.clear();
+                    }
+
+                    sequencedTexture.getFrameTimes().put(relativeTime, frameIndex);
+                    relativeTime += (int) durationGetter.apply(animationFrame);
+                }
+                sequencedTexture.getFrameTimes().put(relativeTime, frameCount - 1);
+            } catch (Throwable e) {
+                sequencedTexture.free();
+                throw e;
+            } finally {
+                frameBuilder.end();
+                frameBuilder.free();
+                partialTexture.free();
+            }
+            return sequencedTexture;
+        } finally {
+            webpReader.dispose();
         }
     }
 
