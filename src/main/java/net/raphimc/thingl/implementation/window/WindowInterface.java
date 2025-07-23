@@ -19,7 +19,6 @@ package net.raphimc.thingl.implementation.window;
 
 import net.lenni0451.commons.threading.ThreadUtils;
 import net.raphimc.thingl.ThinGL;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +64,6 @@ public abstract class WindowInterface {
         return this.framebufferHeight;
     }
 
-    @ApiStatus.Internal
     public abstract void free();
 
     protected synchronized void callFramebufferResizeCallbacks(final int width, final int height) {

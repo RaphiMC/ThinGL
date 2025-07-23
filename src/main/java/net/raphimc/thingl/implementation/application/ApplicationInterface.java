@@ -17,19 +17,12 @@
  */
 package net.raphimc.thingl.implementation.application;
 
-import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.resource.framebuffer.Framebuffer;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector2f;
 
 public abstract class ApplicationInterface {
-
-    protected final ThinGL thinGL;
-
-    public ApplicationInterface(final ThinGL thinGL) {
-        this.thinGL = thinGL;
-    }
 
     public abstract Matrix4f getProjectionMatrix();
 

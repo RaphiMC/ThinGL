@@ -20,7 +20,6 @@ package net.raphimc.thingl.text;
 
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.text.renderer.SDFTextRenderer;
-import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.util.freetype.FreeType;
@@ -44,9 +43,8 @@ public class FreeTypeLibrary {
 
     private final long pointer;
 
-    @ApiStatus.Internal
-    public FreeTypeLibrary(final ThinGL thinGL) {
-        thinGL.getCapabilities().ensureFreeTypePresent();
+    public FreeTypeLibrary() {
+        ThinGL.get().getCapabilities().ensureFreeTypePresent();
         try (MemoryStack memoryStack = MemoryStack.stackPush()) {
             final PointerBuffer instanceBuffer = memoryStack.mallocPointer(1);
             checkError(FreeType.FT_Init_FreeType(instanceBuffer), "Failed to initialize FreeType library");
@@ -63,7 +61,6 @@ public class FreeTypeLibrary {
         return this.pointer;
     }
 
-    @ApiStatus.Internal
     public void free() {
         checkError(FreeType.FT_Done_FreeType(this.pointer), "Failed to free FreeType library");
     }

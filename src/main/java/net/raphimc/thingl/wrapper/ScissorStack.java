@@ -20,7 +20,6 @@ package net.raphimc.thingl.wrapper;
 
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.util.RenderMathUtil;
-import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
 import org.joml.primitives.Rectanglei;
 import org.lwjgl.opengl.GL11C;
@@ -31,9 +30,8 @@ public class ScissorStack {
 
     private final Stack<Rectanglei> stack = new Stack<>();
 
-    @ApiStatus.Internal
-    public ScissorStack(final ThinGL thinGL) {
-        thinGL.addFinishFrameCallback(() -> {
+    public ScissorStack() {
+        ThinGL.get().addFinishFrameCallback(() -> {
             if (!this.stack.isEmpty()) {
                 while (!this.stack.isEmpty()) this.pop();
                 ThinGL.LOGGER.warn("ScissorStack was not empty at the end of the frame!");

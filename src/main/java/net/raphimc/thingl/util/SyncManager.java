@@ -21,7 +21,6 @@ import it.unimi.dsi.fastutil.Pair;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.resource.query.Query;
 import net.raphimc.thingl.resource.sync.FenceSync;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +31,8 @@ public class SyncManager {
     private final List<Pair<FenceSync, Consumer<FenceSync>>> pendingFenceSyncs = new ArrayList<>();
     private final List<Pair<Query, Consumer<Query>>> pendingQueries = new ArrayList<>();
 
-    @ApiStatus.Internal
-    public SyncManager(final ThinGL thinGL) {
-        thinGL.addFinishFrameCallback(() -> {
+    public SyncManager() {
+        ThinGL.get().addFinishFrameCallback(() -> {
             for (int i = 0; i < this.pendingFenceSyncs.size(); i++) {
                 final Pair<FenceSync, Consumer<FenceSync>> pair = this.pendingFenceSyncs.get(i);
                 if (pair.key().isSignaled()) {

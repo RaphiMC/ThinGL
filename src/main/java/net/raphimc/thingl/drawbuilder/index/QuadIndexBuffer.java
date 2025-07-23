@@ -18,13 +18,11 @@
 
 package net.raphimc.thingl.drawbuilder.index;
 
-import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.builder.BufferBuilder;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.IndexDataHolder;
 import net.raphimc.thingl.resource.buffer.Buffer;
 import net.raphimc.thingl.resource.buffer.MutableBuffer;
 import net.raphimc.thingl.util.BufferUtil;
-import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.opengl.GL15C;
 
 import java.nio.ByteBuffer;
@@ -37,8 +35,7 @@ public class QuadIndexBuffer {
     private final MutableBuffer indexBuffer = new MutableBuffer(0L, GL15C.GL_DYNAMIC_DRAW);
     private ByteBuffer indexData = null;
 
-    @ApiStatus.Internal
-    public QuadIndexBuffer(final ThinGL thinGL) {
+    public QuadIndexBuffer() {
         this.ensureSize(4096);
         this.indexBuffer.setDebugName("Quad Index Buffer");
     }
@@ -71,7 +68,6 @@ public class QuadIndexBuffer {
         return this.indexData;
     }
 
-    @ApiStatus.Internal
     public void free() {
         this.indexBuffer.free();
         BufferUtil.memFree(this.indexData);

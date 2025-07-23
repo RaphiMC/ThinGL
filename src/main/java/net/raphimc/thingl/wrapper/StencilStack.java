@@ -19,7 +19,6 @@
 package net.raphimc.thingl.wrapper;
 
 import net.raphimc.thingl.ThinGL;
-import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL30C;
 
@@ -31,9 +30,8 @@ public class StencilStack {
 
     private final Stack<Mode> stack = new Stack<>();
 
-    @ApiStatus.Internal
-    public StencilStack(final ThinGL thinGL) {
-        thinGL.addFinishFrameCallback(() -> {
+    public StencilStack() {
+        ThinGL.get().addFinishFrameCallback(() -> {
             if (!this.stack.isEmpty()) {
                 while (!this.stack.isEmpty()) this.pop();
                 ThinGL.LOGGER.warn("StencilStack was not empty at the end of the frame!");

@@ -18,12 +18,10 @@
 package net.raphimc.thingl.program;
 
 import net.lenni0451.commons.lazy.Lazy;
-import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.program.post.impl.*;
 import net.raphimc.thingl.resource.program.Program;
 import net.raphimc.thingl.resource.shader.Shader;
 import net.raphimc.thingl.util.GlSlPreprocessor;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -144,10 +142,6 @@ public class Programs {
         return program;
     });
 
-    @ApiStatus.Internal
-    public Programs(final ThinGL thinGL) {
-    }
-
     public RegularProgram getPositionColor() {
         return this.positionColor.get();
     }
@@ -242,7 +236,6 @@ public class Programs {
         });
     }
 
-    @ApiStatus.Internal
     public void free() {
         Class<?> clazz = this.getClass();
         while (clazz != null) {

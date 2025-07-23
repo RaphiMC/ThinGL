@@ -29,10 +29,9 @@ public class StandaloneApplicationInterface extends ApplicationInterface {
     protected final Matrix4fStack viewMatrixStack = new Matrix4fStack(16);
     private Framebuffer framebuffer = WindowFramebuffer.INSTANCE;
 
-    public StandaloneApplicationInterface(final ThinGL thinGL) {
-        super(thinGL);
-        thinGL.getWindowInterface().addFramebufferResizeCallback(this::loadProjectionMatrix);
-        this.loadProjectionMatrix(thinGL.getWindowInterface().getFramebufferWidth(), thinGL.getWindowInterface().getFramebufferHeight());
+    public StandaloneApplicationInterface() {
+        ThinGL.windowInterface().addFramebufferResizeCallback(this::loadProjectionMatrix);
+        this.loadProjectionMatrix(ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight());
     }
 
     @Override

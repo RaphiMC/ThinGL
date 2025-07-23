@@ -17,8 +17,6 @@
  */
 package net.raphimc.thingl.implementation;
 
-import net.raphimc.thingl.ThinGL;
-import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL30C;
@@ -39,8 +37,7 @@ public class Capabilities {
     private final boolean supportsNVFramebufferMixedSamples;
     private final int nvFramebufferMixedSamplesMaxRasterSamples;
 
-    @ApiStatus.Internal
-    public Capabilities(final ThinGL thinGL) {
+    public Capabilities() {
         this.isFreeTypePresent = isClassPresent("org.lwjgl.util.freetype.FreeType");
         this.isHarfBuzzPresent = isClassPresent("org.lwjgl.util.harfbuzz.HarfBuzz");
         this.isMeshOptimizerPresent = isClassPresent("org.lwjgl.util.meshoptimizer.LibMeshOptimizer");

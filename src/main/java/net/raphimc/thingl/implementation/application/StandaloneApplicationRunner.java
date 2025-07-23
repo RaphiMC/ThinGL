@@ -50,7 +50,7 @@ public abstract class StandaloneApplicationRunner {
         GLFW.glfwSwapInterval(this.configuration.shouldUseVSync() ? 1 : 0);
         GL.createCapabilities();
 
-        ThinGL.setInstance(this.createThinGL()); // Init ThinGL
+        this.createThinGL(); // Init ThinGL
         if (this.configuration.debugMode) {
             DebugMessageCallback.install(this.configuration.extendedDebugMode);
         }

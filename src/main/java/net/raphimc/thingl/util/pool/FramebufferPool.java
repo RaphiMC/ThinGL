@@ -25,7 +25,6 @@ import it.unimi.dsi.fastutil.objects.ReferenceList;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.framebuffer.impl.TextureFramebuffer;
 import net.raphimc.thingl.resource.image.texture.Texture2D;
-import org.jetbrains.annotations.ApiStatus;
 
 public class FramebufferPool {
 
@@ -33,9 +32,8 @@ public class FramebufferPool {
     private final ReferenceList<TextureFramebuffer> inUse = new ReferenceArrayList<>();
     private final Reference2LongMap<TextureFramebuffer> framebufferAccessTime = new Reference2LongOpenHashMap<>();
 
-    @ApiStatus.Internal
-    public FramebufferPool(final ThinGL thinGL) {
-        thinGL.addFinishFrameCallback(() -> {
+    public FramebufferPool() {
+        ThinGL.get().addFinishFrameCallback(() -> {
             if (!this.inUse.isEmpty()) {
                 ThinGL.LOGGER.warn(this.inUse.size() + " Framebuffer(s) were not returned to the pool. Forcibly reclaiming them.");
                 this.free.addAll(this.inUse);
@@ -89,7 +87,6 @@ public class FramebufferPool {
         return this.free.size() + this.inUse.size();
     }
 
-    @ApiStatus.Internal
     public void free() {
         for (TextureFramebuffer framebuffer : this.free) {
             framebuffer.freeFully();

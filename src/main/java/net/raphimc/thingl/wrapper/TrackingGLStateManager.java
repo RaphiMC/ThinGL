@@ -21,8 +21,6 @@ import it.unimi.dsi.fastutil.ints.Int2BooleanMap;
 import it.unimi.dsi.fastutil.ints.Int2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import net.raphimc.thingl.ThinGL;
-import org.jetbrains.annotations.ApiStatus;
 
 public class TrackingGLStateManager extends GLStateManager {
 
@@ -39,11 +37,6 @@ public class TrackingGLStateManager extends GLStateManager {
     private final Int2IntMap pixelStores = new Int2IntOpenHashMap();
     private Integer program;
     private Integer vertexArray;
-
-    @ApiStatus.Internal
-    public TrackingGLStateManager(final ThinGL thinGL) {
-        super(thinGL);
-    }
 
     @Override
     public boolean getCapability(final int capability) {

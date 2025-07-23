@@ -43,7 +43,6 @@ import org.lwjgl.util.freetype.FreeType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class ThinGL {
@@ -53,16 +52,6 @@ public class ThinGL {
     public static final Logger LOGGER = LoggerFactory.getLogger("ThinGL");
 
     private static ThinGL INSTANCE;
-
-    public static void setInstance(final ThinGL instance) {
-        if (instance == null) {
-            throw new IllegalArgumentException("Instance cannot be null");
-        }
-        if (INSTANCE != null) {
-            throw new IllegalStateException("ThinGL instance is already set");
-        }
-        INSTANCE = instance;
-    }
 
     public static ThinGL get() {
         if (INSTANCE == null) {
@@ -190,33 +179,37 @@ public class ThinGL {
     private int fpsCounter = 0;
     private int fps = 0;
 
-    public ThinGL(final Function<ThinGL, ApplicationInterface> applicationInterface, final Supplier<WindowInterface> windowInterface) {
+    public ThinGL(final Supplier<ApplicationInterface> applicationInterface, final Supplier<WindowInterface> windowInterface) {
         this(applicationInterface, windowInterface.get());
     }
 
-    public ThinGL(final Function<ThinGL, ApplicationInterface> applicationInterface, final WindowInterface windowInterface) {
+    public ThinGL(final Supplier<ApplicationInterface> applicationInterface, final WindowInterface windowInterface) {
+        if (INSTANCE != null) {
+            throw new IllegalStateException("ThinGL has already been initialized");
+        }
+        INSTANCE = this;
         this.renderThread = Thread.currentThread();
         this.windowInterface = windowInterface;
-        this.applicationInterface = applicationInterface.apply(this);
-        this.glStateManager = new TrackingGLStateManager(this);
-        this.capabilities = new Capabilities(this);
-        this.workarounds = new Workarounds(this);
-        this.glStateStack = new GLStateStack(this);
-        this.scissorStack = new ScissorStack(this);
-        this.stencilStack = new StencilStack(this);
-        this.programs = new Programs(this);
+        this.applicationInterface = applicationInterface.get();
+        this.glStateManager = new TrackingGLStateManager();
+        this.capabilities = new Capabilities();
+        this.workarounds = new Workarounds();
+        this.glStateStack = new GLStateStack();
+        this.scissorStack = new ScissorStack();
+        this.stencilStack = new StencilStack();
+        this.programs = new Programs();
         this.renderer2D = new Renderer2D();
         this.renderer3D = new Renderer3D();
         this.rendererText = new RendererText(new BSDFTextRenderer());
         this.globalDrawBatch = new ImmediateMultiDrawBatchDataHolder();
-        this.bufferBuilderPool = new BufferBuilderPool(this);
-        this.gpuBufferPool = new GpuBufferPool(this);
-        this.framebufferPool = new FramebufferPool(this);
-        this.immediateVertexArrays = new ImmediateVertexArrays(this);
-        this.quadIndexBuffer = new QuadIndexBuffer(this);
-        this.syncManager = new SyncManager(this);
+        this.bufferBuilderPool = new BufferBuilderPool();
+        this.gpuBufferPool = new GpuBufferPool();
+        this.framebufferPool = new FramebufferPool();
+        this.immediateVertexArrays = new ImmediateVertexArrays();
+        this.quadIndexBuffer = new QuadIndexBuffer();
+        this.syncManager = new SyncManager();
         if (this.capabilities.isFreeTypePresent()) {
-            this.freeTypeLibrary = new FreeTypeLibrary(this);
+            this.freeTypeLibrary = new FreeTypeLibrary();
             if (this.capabilities.isHarfBuzzPresent()) {
                 Configuration.HARFBUZZ_LIBRARY_NAME.set(FreeType.getLibrary());
             }

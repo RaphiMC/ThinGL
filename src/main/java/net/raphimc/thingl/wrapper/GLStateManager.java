@@ -17,18 +17,12 @@
  */
 package net.raphimc.thingl.wrapper;
 
-import net.raphimc.thingl.ThinGL;
-import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL14C;
 import org.lwjgl.opengl.GL20C;
 import org.lwjgl.opengl.GL30C;
 
 public class GLStateManager {
-
-    @ApiStatus.Internal
-    public GLStateManager(final ThinGL thinGL) {
-    }
 
     public boolean getCapability(final int capability) {
         return GL11C.glIsEnabled(capability);

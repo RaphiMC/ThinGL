@@ -27,7 +27,6 @@ import net.raphimc.thingl.drawbuilder.vertex.VertexDataLayout;
 import net.raphimc.thingl.resource.buffer.MutableBuffer;
 import net.raphimc.thingl.resource.vertexarray.VertexArray;
 import net.raphimc.thingl.util.BufferUtil;
-import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.opengl.GL15C;
 
 public class ImmediateVertexArrays {
@@ -36,9 +35,8 @@ public class ImmediateVertexArrays {
     private final Reference2LongMap<VertexArray> vertexArrayAccessTime = new Reference2LongOpenHashMap<>();
     private final VertexArray postProcessingVao;
 
-    @ApiStatus.Internal
-    public ImmediateVertexArrays(final ThinGL thinGL) {
-        thinGL.addFinishFrameCallback(() -> {
+    public ImmediateVertexArrays() {
+        ThinGL.get().addFinishFrameCallback(() -> {
             if (this.vertexArrayCache.size() > 64) {
                 ThinGL.LOGGER.warn("ImmediateVertexArrays cache has grown to " + this.vertexArrayCache.size() + " entries. Clearing the cache to prevent memory starvation.");
                 this.vertexArrayCache.values().forEach(VertexArray::freeFully);
@@ -76,7 +74,6 @@ public class ImmediateVertexArrays {
         return this.postProcessingVao;
     }
 
-    @ApiStatus.Internal
     public void free() {
         for (VertexArray vertexArray : this.vertexArrayCache.values()) {
             vertexArray.freeFully();

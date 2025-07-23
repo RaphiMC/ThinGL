@@ -23,7 +23,6 @@ import it.unimi.dsi.fastutil.booleans.BooleanStack;
 import it.unimi.dsi.fastutil.ints.*;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.resource.framebuffer.Framebuffer;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Stack;
 
@@ -44,9 +43,8 @@ public class GLStateStack {
     private final IntStack programStack = new IntArrayList();
     private final IntStack vertexArrayStack = new IntArrayList();
 
-    @ApiStatus.Internal
-    public GLStateStack(final ThinGL thinGL) {
-        thinGL.addFinishFrameCallback(() -> {
+    public GLStateStack() {
+        ThinGL.get().addFinishFrameCallback(() -> {
             if (!this.capabilitiesStack.isEmpty()) {
                 while (!this.capabilitiesStack.isEmpty()) this.pop();
                 ThinGL.LOGGER.warn("GLStateStack capabilities stack was not empty at the end of the frame!");

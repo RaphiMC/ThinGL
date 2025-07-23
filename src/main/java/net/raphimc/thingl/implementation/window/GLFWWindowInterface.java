@@ -17,7 +17,6 @@
  */
 package net.raphimc.thingl.implementation.window;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 
@@ -54,7 +53,6 @@ public class GLFWWindowInterface extends WindowInterface {
     }
 
     @Override
-    @ApiStatus.Internal
     public void free() {
         GLFW.glfwSetFramebufferSizeCallback(this.windowHandle, this.originalFramebufferSizeCallback);
     }
