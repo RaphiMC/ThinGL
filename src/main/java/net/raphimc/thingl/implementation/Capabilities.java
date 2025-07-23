@@ -17,10 +17,12 @@
  */
 package net.raphimc.thingl.implementation;
 
+import net.raphimc.thingl.util.RenderMathUtil;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL30C;
 import org.lwjgl.opengl.NVFramebufferMixedSamples;
+import org.lwjgl.system.MemoryStack;
 
 public class Capabilities {
 
@@ -36,6 +38,7 @@ public class Capabilities {
     private final int maxArrayTextureLayers;
     private final boolean supportsNVFramebufferMixedSamples;
     private final int nvFramebufferMixedSamplesMaxRasterSamples;
+    private final boolean supportsJomlUnsafe;
 
     public Capabilities() {
         this.isFreeTypePresent = isClassPresent("org.lwjgl.util.freetype.FreeType");
@@ -45,6 +48,7 @@ public class Capabilities {
         this.isEarcut4jPresent = isClassPresent("earcut4j.Earcut");
         this.isGifReaderPresent = isClassPresent("com.ibasco.image.gif.GifImageReader");
         this.isTwelveMonkeysWebpReaderPresent = isClassPresent("com.twelvemonkeys.imageio.plugins.webp.WebPImageReader");
+
         this.maxSamples = GL11C.glGetInteger(GL30C.GL_MAX_SAMPLES);
         this.maxColorAttachments = GL11C.glGetInteger(GL30C.GL_MAX_COLOR_ATTACHMENTS);
         this.maxArrayTextureLayers = GL11C.glGetInteger(GL30C.GL_MAX_ARRAY_TEXTURE_LAYERS);
@@ -54,6 +58,12 @@ public class Capabilities {
         } else {
             this.nvFramebufferMixedSamplesMaxRasterSamples = 0;
         }
+
+        this.supportsJomlUnsafe = tryRun(() -> {
+            try (MemoryStack memoryStack = MemoryStack.stackPush()) {
+                RenderMathUtil.getIdentityMatrix().getToAddress(memoryStack.nmalloc(Float.BYTES * 4 * 4));
+            }
+        });
     }
 
     public void ensureFreeTypePresent() {
@@ -146,9 +156,22 @@ public class Capabilities {
         return this.nvFramebufferMixedSamplesMaxRasterSamples;
     }
 
+    public boolean supportsJomlUnsafe() {
+        return this.supportsJomlUnsafe;
+    }
+
     private static boolean isClassPresent(final String className) {
         try {
             Class.forName(className, false, Capabilities.class.getClassLoader());
+            return true;
+        } catch (Throwable e) {
+            return false;
+        }
+    }
+
+    private static boolean tryRun(final Runnable runnable) {
+        try {
+            runnable.run();
             return true;
         } catch (Throwable e) {
             return false;

@@ -32,6 +32,7 @@ import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -143,7 +144,11 @@ public class Program extends GLContainerObject {
     public void setUniformMatrix3f(final String name, final Matrix3f matrix) {
         try (MemoryStack memoryStack = MemoryStack.stackPush()) {
             final long address = memoryStack.nmalloc(Float.BYTES * 3 * 3);
-            matrix.getToAddress(address);
+            if (ThinGL.capabilities().supportsJomlUnsafe()) {
+                matrix.getToAddress(address);
+            } else {
+                matrix.get(MemoryUtil.memFloatBuffer(address, 3 * 3));
+            }
             GL41C.nglProgramUniformMatrix3fv(this.getGlId(), this.getUniformLocation(name), 1, false, address);
         }
     }
@@ -151,7 +156,11 @@ public class Program extends GLContainerObject {
     public void setUniformMatrix4f(final String name, final Matrix4f matrix) {
         try (MemoryStack memoryStack = MemoryStack.stackPush()) {
             final long address = memoryStack.nmalloc(Float.BYTES * 4 * 4);
-            matrix.getToAddress(address);
+            if (ThinGL.capabilities().supportsJomlUnsafe()) {
+                matrix.getToAddress(address);
+            } else {
+                matrix.get(MemoryUtil.memFloatBuffer(address, 4 * 4));
+            }
             GL41C.nglProgramUniformMatrix4fv(this.getGlId(), this.getUniformLocation(name), 1, false, address);
         }
     }
