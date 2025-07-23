@@ -30,7 +30,7 @@ public class RetainedRenderingExample extends StandaloneApplicationRunner {
     }
 
     public RetainedRenderingExample() {
-        super(new Configuration().setWindowTitle("ThinGL Example - Retained rendering").setDebugMode(true));
+        super(new Configuration().setWindowTitle("ThinGL Example - Retained rendering").setExtendedDebugMode(true));
     }
 
     private final PersistentMultiDrawBatchDataHolder persistentDrawBatch = new PersistentMultiDrawBatchDataHolder();

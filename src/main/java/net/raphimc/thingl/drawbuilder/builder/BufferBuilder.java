@@ -18,6 +18,7 @@
 
 package net.raphimc.thingl.drawbuilder.builder;
 
+import net.lenni0451.commons.math.MathUtils;
 import net.raphimc.thingl.util.MathUtil;
 import org.joml.*;
 import org.lwjgl.system.MemoryStack;
@@ -291,7 +292,7 @@ public class BufferBuilder {
 
     public BufferBuilder align(final int alignment) {
         final int position = this.getPosition();
-        final int alignedPosition = MathUtil.align(position, alignment);
+        final int alignedPosition = MathUtils.align(position, alignment);
         return this.skip(alignedPosition - position);
     }
 
@@ -326,7 +327,7 @@ public class BufferBuilder {
         if (this.getRemaining() < bytes) {
             if (!this.isExternallyAllocated) {
                 final int oldSize = this.getSize();
-                this.resize(MathUtil.align(oldSize + Math.max(bytes, oldSize), GROW_ALIGNMENT));
+                this.resize(MathUtils.align(oldSize + Math.max(bytes, oldSize), GROW_ALIGNMENT));
             } else {
                 throw new IllegalStateException("Buffer is full");
             }

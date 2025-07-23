@@ -30,9 +30,6 @@ public abstract class GLObject {
         this.glId = glId;
     }
 
-    public void refreshCachedData() {
-    }
-
     public void free() {
         if (this.isAllocated()) {
             try {

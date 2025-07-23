@@ -31,7 +31,7 @@ public class AnimatedImageRenderingExample extends StandaloneApplicationRunner {
     }
 
     public AnimatedImageRenderingExample() {
-        super(new Configuration().setWindowTitle("ThinGL Example - Animated Image rendering").setDebugMode(true));
+        super(new Configuration().setWindowTitle("ThinGL Example - Animated Image rendering").setExtendedDebugMode(true));
     }
 
     private SequencedTexture image;
@@ -41,10 +41,10 @@ public class AnimatedImageRenderingExample extends StandaloneApplicationRunner {
     protected void init() {
         super.init();
         try {
-            final byte[] imageData = AnimatedImageRenderingExample.class.getResourceAsStream("/images/hand.gif").readAllBytes();
-            this.image = AWTUtil.createSequencedTextureFromGif(imageData);
-            // this.image = SequencedTexture.fromGif(imageData); // Alternative method which uses a library. This is faster than using AWT
-            // this.image = AWTUtil.createSequencedTextureFromWebp(imageData); // WebP is also supported, but requires a library
+            final byte[] imageBytes = AnimatedImageRenderingExample.class.getResourceAsStream("/images/hand.gif").readAllBytes();
+            this.image = AWTUtil.createSequencedTextureFromGif(imageBytes);
+            // this.image = SequencedTexture.fromGif(imageBytes); // Alternative method which uses a library. This is faster than using AWT
+            // this.image = AWTUtil.createSequencedTextureFromWebp(imageBytes); // WebP is also supported, but requires a library
             this.startTime = System.currentTimeMillis();
         } catch (IOException e) {
             throw new RuntimeException(e);

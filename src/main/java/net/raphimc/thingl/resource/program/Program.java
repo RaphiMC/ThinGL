@@ -23,10 +23,11 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.resource.GLContainerObject;
-import net.raphimc.thingl.resource.buffer.AbstractBuffer;
+import net.raphimc.thingl.resource.buffer.Buffer;
 import net.raphimc.thingl.resource.framebuffer.Framebuffer;
+import net.raphimc.thingl.resource.image.texture.ImageTexture;
+import net.raphimc.thingl.resource.image.texture.Texture;
 import net.raphimc.thingl.resource.shader.Shader;
-import net.raphimc.thingl.resource.texture.AbstractTexture;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.*;
@@ -38,7 +39,8 @@ import java.util.Set;
 
 public class Program extends GLContainerObject {
 
-    private final Set<Shader> shaders = new HashSet<>();
+    private Set<Shader> shaders;
+
     private final Object2IntMap<String> uniformLocationCache = new Object2IntOpenHashMap<>();
     private final Object2IntMap<String> uniformBlockIndexCache = new Object2IntOpenHashMap<>();
     private final Object2IntMap<String> shaderStorageBlockIndexCache = new Object2IntOpenHashMap<>();
@@ -50,6 +52,7 @@ public class Program extends GLContainerObject {
 
     public Program(final Shader... shaders) {
         super(GL20C.glCreateProgram());
+        this.shaders = new HashSet<>(shaders.length);
         try {
             for (Shader shader : shaders) {
                 this.attachShader(shader);
@@ -63,7 +66,6 @@ public class Program extends GLContainerObject {
 
     protected Program(final int glId) {
         super(glId);
-        this.refreshCachedData();
     }
 
     public static Program fromGlId(final int glId) {
@@ -73,27 +75,28 @@ public class Program extends GLContainerObject {
         return new Program(glId);
     }
 
-    @Override
-    public void refreshCachedData() {
-        this.shaders.clear();
-        final int count = GL20C.glGetProgrami(this.getGlId(), GL20C.GL_ATTACHED_SHADERS);
-        final int[] shaderIds = new int[count];
-        GL20C.glGetAttachedShaders(this.getGlId(), null, shaderIds);
-        for (int shaderId : shaderIds) {
-            this.shaders.add(Shader.fromGlId(shaderId));
-        }
-        this.uniformLocationCache.clear();
-        this.uniformBlockIndexCache.clear();
-        this.shaderStorageBlockIndexCache.clear();
+    public void attachShader(final Shader shader) {
+        this.getShaders(); // Ensure shaders set is initialized
+        GL20C.glAttachShader(this.getGlId(), shader.getGlId());
+        this.shaders.add(shader);
+    }
+
+    public void detachShader(final Shader shader) {
+        this.getShaders(); // Ensure shaders set is initialized
+        GL20C.glDetachShader(this.getGlId(), shader.getGlId());
+        this.shaders.remove(shader);
     }
 
     public void linkAndValidate() {
+        this.uniformLocationCache.clear();
+        this.uniformBlockIndexCache.clear();
+        this.shaderStorageBlockIndexCache.clear();
         GL20C.glLinkProgram(this.getGlId());
         final String linkLog = GL20C.glGetProgramInfoLog(this.getGlId());
         if (GL20C.glGetProgrami(this.getGlId(), GL20C.GL_LINK_STATUS) == GL11C.GL_FALSE) {
             throw new IllegalStateException("Error linking program: " + linkLog);
         } else if (!linkLog.isBlank()) {
-            ThinGL.LOGGER.warn("Program linkLog: " + linkLog);
+            ThinGL.LOGGER.warn("Program link log: " + linkLog);
         }
 
         GL20C.glValidateProgram(this.getGlId());
@@ -101,7 +104,7 @@ public class Program extends GLContainerObject {
         if (GL20C.glGetProgrami(this.getGlId(), GL20C.GL_VALIDATE_STATUS) == GL11C.GL_FALSE) {
             throw new IllegalStateException("Error validating program: " + validateLog);
         } else if (!validateLog.isBlank()) {
-            ThinGL.LOGGER.warn("Program validateLog: " + validateLog);
+            ThinGL.LOGGER.warn("Program validate log: " + validateLog);
         }
     }
 
@@ -155,7 +158,7 @@ public class Program extends GLContainerObject {
 
     public void setUniformSampler(final String name, final Framebuffer framebuffer) {
         if (framebuffer != null) {
-            if (framebuffer.getColorAttachment(0) instanceof AbstractTexture texture) {
+            if (framebuffer.getColorAttachment(0) instanceof ImageTexture texture) {
                 this.setUniformSampler(name, texture);
             } else {
                 throw new IllegalArgumentException("Framebuffer color attachment is not a texture");
@@ -165,7 +168,7 @@ public class Program extends GLContainerObject {
         }
     }
 
-    public void setUniformSampler(final String name, final AbstractTexture texture) {
+    public void setUniformSampler(final String name, final Texture texture) {
         if (texture != null) {
             this.setUniformSampler(name, texture.getGlId());
         } else {
@@ -189,14 +192,14 @@ public class Program extends GLContainerObject {
     }
 
     public void setUniformImage(final String name, final Framebuffer framebuffer, final int access, final int format) {
-        if (framebuffer.getColorAttachment(0) instanceof AbstractTexture texture) {
+        if (framebuffer.getColorAttachment(0) instanceof ImageTexture texture) {
             this.setUniformImage(name, texture, access, format);
         } else {
             throw new IllegalArgumentException("Framebuffer color attachment is not a texture");
         }
     }
 
-    public void setUniformImage(final String name, final AbstractTexture texture, final int access, final int format) {
+    public void setUniformImage(final String name, final Texture texture, final int access, final int format) {
         this.setUniformImage(name, texture.getGlId(), access, format);
     }
 
@@ -205,7 +208,7 @@ public class Program extends GLContainerObject {
         this.setUniformInt(name, this.currentImageUnit++);
     }
 
-    public void setUniformBuffer(final String name, final AbstractBuffer buffer) {
+    public void setUniformBuffer(final String name, final Buffer buffer) {
         GL31C.glUniformBlockBinding(this.getGlId(), this.getUniformBlockIndex(name), this.currentUniformBlockIndex);
         if (buffer != null) {
             GL30C.glBindBufferBase(GL31C.GL_UNIFORM_BUFFER, this.currentUniformBlockIndex++, buffer.getGlId());
@@ -214,7 +217,7 @@ public class Program extends GLContainerObject {
         }
     }
 
-    public void setShaderStorageBuffer(final String name, final AbstractBuffer buffer) {
+    public void setShaderStorageBuffer(final String name, final Buffer buffer) {
         GL43C.glShaderStorageBlockBinding(this.getGlId(), this.getShaderStorageBlockIndex(name), this.currentShaderStorageBufferIndex);
         if (buffer != null) {
             GL30C.glBindBufferBase(GL43C.GL_SHADER_STORAGE_BUFFER, this.currentShaderStorageBufferIndex++, buffer.getGlId());
@@ -251,10 +254,9 @@ public class Program extends GLContainerObject {
 
     @Override
     protected void freeContainingObjects() {
-        for (Shader shader : this.shaders) {
+        for (Shader shader : this.getShaders()) {
             shader.free();
         }
-        this.shaders.clear();
     }
 
     @Override
@@ -263,7 +265,7 @@ public class Program extends GLContainerObject {
     }
 
     public Shader getShader(final Shader.Type type) {
-        for (Shader shader : this.shaders) {
+        for (Shader shader : this.getShaders()) {
             if (shader.getType() == type.getGlType()) {
                 return shader;
             }
@@ -273,17 +275,16 @@ public class Program extends GLContainerObject {
     }
 
     public Set<Shader> getShaders() {
+        if (this.shaders == null) {
+            final int shaderCount = GL20C.glGetProgrami(this.getGlId(), GL20C.GL_ATTACHED_SHADERS);
+            this.shaders = new HashSet<>(shaderCount);
+            final int[] shaderGlIds = new int[shaderCount];
+            GL20C.glGetAttachedShaders(this.getGlId(), null, shaderGlIds);
+            for (int shaderGlId : shaderGlIds) {
+                this.shaders.add(Shader.fromGlId(shaderGlId));
+            }
+        }
         return Collections.unmodifiableSet(this.shaders);
-    }
-
-    public void attachShader(final Shader shader) {
-        GL20C.glAttachShader(this.getGlId(), shader.getGlId());
-        this.shaders.add(shader);
-    }
-
-    public void detachShader(final Shader shader) {
-        GL20C.glDetachShader(this.getGlId(), shader.getGlId());
-        this.shaders.remove(shader);
     }
 
     private int getUniformLocation(final String name) {

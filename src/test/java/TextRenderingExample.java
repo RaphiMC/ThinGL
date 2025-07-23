@@ -39,7 +39,7 @@ public class TextRenderingExample extends StandaloneApplicationRunner {
     }
 
     public TextRenderingExample() {
-        super(new Configuration().setWindowTitle("ThinGL Example - Text rendering").setDebugMode(true));
+        super(new Configuration().setWindowTitle("ThinGL Example - Text rendering").setExtendedDebugMode(true));
     }
 
     // Instead of creating a new RendererText instance, you can use ThinGL.rendererText() to get the default text renderer (Currently BSDF).

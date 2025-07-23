@@ -25,14 +25,14 @@ import net.raphimc.thingl.drawbuilder.DrawMode;
 import net.raphimc.thingl.drawbuilder.vertex.VertexDataLayout;
 import net.raphimc.thingl.drawbuilder.vertex.VertexDataLayoutElement;
 import net.raphimc.thingl.resource.GLContainerObject;
-import net.raphimc.thingl.resource.buffer.AbstractBuffer;
+import net.raphimc.thingl.resource.buffer.Buffer;
 import org.lwjgl.opengl.*;
 
 public class VertexArray extends GLContainerObject {
 
-    private final Int2ObjectMap<AbstractBuffer> vertexBuffers = new Int2ObjectOpenHashMap<>();
+    private final Int2ObjectMap<Buffer> vertexBuffers = new Int2ObjectOpenHashMap<>();
     private int indexType;
-    private AbstractBuffer indexBuffer;
+    private Buffer indexBuffer;
 
     public VertexArray() {
         super(GL45C.glCreateVertexArrays());
@@ -49,7 +49,7 @@ public class VertexArray extends GLContainerObject {
         return new VertexArray(glId);
     }
 
-    public void setVertexBuffer(final int bindingIndex, final AbstractBuffer buffer, final long offset, final int stride) {
+    public void setVertexBuffer(final int bindingIndex, final Buffer buffer, final long offset, final int stride) {
         if (buffer != null) {
             this.vertexBuffers.put(bindingIndex, buffer);
             GL45C.glVertexArrayVertexBuffer(this.getGlId(), bindingIndex, buffer.getGlId(), offset, stride);
@@ -59,7 +59,7 @@ public class VertexArray extends GLContainerObject {
         }
     }
 
-    public void setIndexBuffer(final int indexType, final AbstractBuffer buffer) {
+    public void setIndexBuffer(final int indexType, final Buffer buffer) {
         this.indexType = indexType;
         this.indexBuffer = buffer;
         if (buffer != null) {
@@ -104,7 +104,7 @@ public class VertexArray extends GLContainerObject {
         this.unbind();
     }
 
-    public void drawArraysIndirect(final DrawMode drawMode, final AbstractBuffer indirectCommandBuffer, final long offset, final int count) {
+    public void drawArraysIndirect(final DrawMode drawMode, final Buffer indirectCommandBuffer, final long offset, final int count) {
         this.bind();
         final int prevIndirectCommandBuffer = GL11C.glGetInteger(GL40C.GL_DRAW_INDIRECT_BUFFER_BINDING);
         GL15C.glBindBuffer(GL40C.GL_DRAW_INDIRECT_BUFFER, indirectCommandBuffer.getGlId());
@@ -129,7 +129,7 @@ public class VertexArray extends GLContainerObject {
         this.unbind();
     }
 
-    public void drawElementsIndirect(final DrawMode drawMode, final AbstractBuffer indirectCommandBuffer, final long offset, final int count) {
+    public void drawElementsIndirect(final DrawMode drawMode, final Buffer indirectCommandBuffer, final long offset, final int count) {
         this.bind();
         final int prevIndirectCommandBuffer = GL11C.glGetInteger(GL40C.GL_DRAW_INDIRECT_BUFFER_BINDING);
         GL15C.glBindBuffer(GL40C.GL_DRAW_INDIRECT_BUFFER, indirectCommandBuffer.getGlId());
@@ -149,7 +149,7 @@ public class VertexArray extends GLContainerObject {
 
     @Override
     protected void freeContainingObjects() {
-        for (AbstractBuffer buffer : this.vertexBuffers.values()) {
+        for (Buffer buffer : this.vertexBuffers.values()) {
             buffer.free();
         }
         this.vertexBuffers.clear();
@@ -164,7 +164,7 @@ public class VertexArray extends GLContainerObject {
         return GL11C.GL_VERTEX_ARRAY;
     }
 
-    public Int2ObjectMap<AbstractBuffer> getVertexBuffers() {
+    public Int2ObjectMap<Buffer> getVertexBuffers() {
         return this.vertexBuffers;
     }
 
@@ -172,7 +172,7 @@ public class VertexArray extends GLContainerObject {
         return this.indexType;
     }
 
-    public AbstractBuffer getIndexBuffer() {
+    public Buffer getIndexBuffer() {
         return this.indexBuffer;
     }
 

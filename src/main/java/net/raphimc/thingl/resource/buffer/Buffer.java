@@ -18,44 +18,120 @@
 
 package net.raphimc.thingl.resource.buffer;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.raphimc.thingl.resource.GLObject;
+import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL15C;
+import org.lwjgl.opengl.GL43C;
 import org.lwjgl.opengl.GL45C;
+import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
 
-public class Buffer extends AbstractBuffer {
+public abstract class Buffer extends GLObject {
 
-    private final int usage;
+    protected final Int2ObjectMap<Object> parameters = new Int2ObjectOpenHashMap<>();
 
-    public Buffer(final long size, final int usage) {
-        super(size);
-        this.usage = usage;
-        GL45C.glNamedBufferData(this.getGlId(), size, usage);
-    }
-
-    public Buffer(final ByteBuffer data, final int usage) {
-        super((long) data.remaining());
-        this.usage = usage;
-        GL45C.glNamedBufferData(this.getGlId(), data, usage);
+    public Buffer() {
+        super(GL45C.glCreateBuffers());
     }
 
     protected Buffer(final int glId) {
         super(glId);
-        this.usage = GL45C.glGetNamedBufferParameteri(glId, GL15C.GL_BUFFER_USAGE);
+    }
+
+    public static Buffer fromGlId(final int glId) {
+        if (!GL15C.glIsBuffer(glId)) {
+            throw new IllegalArgumentException("Not a buffer object");
+        }
+        final boolean immutable = GL45C.glGetNamedBufferParameteri(glId, GL45C.GL_BUFFER_IMMUTABLE_STORAGE) != GL11C.GL_FALSE;
+        if (immutable) {
+            return new ImmutableBuffer(glId);
+        } else {
+            return new MutableBuffer(glId);
+        }
+    }
+
+    public void upload(final ByteBuffer dataBuffer) {
+        this.upload(0L, dataBuffer);
+    }
+
+    public void upload(final long offset, final ByteBuffer dataBuffer) {
+        if (!dataBuffer.isDirect()) {
+            throw new IllegalArgumentException("Data buffer must be a direct ByteBuffer");
+        }
+
+        GL45C.glNamedBufferSubData(this.getGlId(), offset, dataBuffer);
+    }
+
+    public ByteBuffer download() {
+        return this.download(0L, this.getSize());
+    }
+
+    public ByteBuffer download(final long offset, final long length) {
+        final ByteBuffer dataBuffer = MemoryUtil.memAlloc((int) length);
+        GL45C.glGetNamedBufferSubData(this.getGlId(), offset, dataBuffer);
+        return dataBuffer;
+    }
+
+    public void copyTo(final Buffer target, final long readOffset, final long writeOffset, final long length) {
+        GL45C.glCopyNamedBufferSubData(this.getGlId(), target.getGlId(), readOffset, writeOffset, length);
+    }
+
+    public ByteBuffer map(final int access) {
+        this.parameters.clear();
+        return GL45C.glMapNamedBuffer(this.getGlId(), access);
+    }
+
+    public ByteBuffer mapFullRange(final int accessFlags) {
+        return this.mapRange(0L, this.getSize(), accessFlags);
+    }
+
+    public ByteBuffer mapRange(final long offset, final long length, final int accessFlags) {
+        this.parameters.clear();
+        return GL45C.glMapNamedBufferRange(this.getGlId(), offset, length, accessFlags);
+    }
+
+    public void flush(final long offset, final long length) {
+        GL45C.glFlushMappedNamedBufferRange(this.getGlId(), offset, length);
+    }
+
+    public void unmap() {
+        this.parameters.clear();
+        GL45C.glUnmapNamedBuffer(this.getGlId());
     }
 
     @Override
-    public void refreshCachedData() {
-        this.size = GL45C.glGetNamedBufferParameteri64(this.getGlId(), GL15C.GL_BUFFER_SIZE);
+    protected void free0() {
+        GL15C.glDeleteBuffers(this.getGlId());
     }
 
-    public void setSize(final long size) {
-        this.size = size;
-        GL45C.glNamedBufferData(this.getGlId(), size, this.usage);
+    @Override
+    public final int getGlType() {
+        return GL43C.GL_BUFFER;
     }
 
-    public int getUsage() {
-        return this.usage;
+    public int getParameterInt(final int parameter) {
+        Object value = this.parameters.get(parameter);
+        if (!(value instanceof Integer)) {
+            value = GL45C.glGetNamedBufferParameteri(this.getGlId(), parameter);
+            this.parameters.put(parameter, value);
+        }
+        return (int) value;
+    }
+
+    public long getParameterLong(final int parameter) {
+        Object value = this.parameters.get(parameter);
+        if (!(value instanceof Long)) {
+            value = GL45C.glGetNamedBufferParameteri64(this.getGlId(), parameter);
+            this.parameters.put(parameter, value);
+        }
+        return (long) value;
+    }
+
+    public long getSize() {
+        return this.getParameterLong(GL15C.GL_BUFFER_SIZE);
     }
 
 }

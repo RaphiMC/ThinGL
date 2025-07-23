@@ -20,7 +20,9 @@ package net.raphimc.thingl.texture;
 import com.ibasco.image.gif.GifFrame;
 import com.ibasco.image.gif.GifImageReader;
 import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.resource.texture.Texture2DArray;
+import net.raphimc.thingl.resource.image.texture.Texture2DArray;
+import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL12C;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -32,24 +34,24 @@ public class SequencedTexture extends Texture2DArray {
 
     private final NavigableMap<Integer, Integer> frameTimes = new TreeMap<>();
 
-    public SequencedTexture(final InternalFormat internalFormat, final int width, final int height, final int frameCount) {
+    public SequencedTexture(final int internalFormat, final int width, final int height, final int frameCount) {
         super(internalFormat, width, height, frameCount);
         this.frameTimes.put(0, 0);
     }
 
-    public static SequencedTexture fromGif(final byte[] imageData) throws IOException {
-        return fromGif(new ByteArrayInputStream(imageData));
+    public static SequencedTexture fromGif(final byte[] imageBytes) throws IOException {
+        return fromGif(new ByteArrayInputStream(imageBytes));
     }
 
-    public static SequencedTexture fromGif(final InputStream imageDataStream) throws IOException {
+    public static SequencedTexture fromGif(final InputStream imageStream) throws IOException {
         ThinGL.capabilities().ensureGifReaderPresent();
-        try (GifImageReader gifReader = new GifImageReader(imageDataStream, true)) {
+        try (GifImageReader gifReader = new GifImageReader(imageStream, true)) {
             int frameCount = gifReader.getTotalFrames();
             if (frameCount > ThinGL.capabilities().getMaxArrayTextureLayers()) {
                 ThinGL.LOGGER.warn("GIF has more frames (" + frameCount + ") than the maximum supported by the GPU (" + ThinGL.capabilities().getMaxArrayTextureLayers() + "). Using the maximum supported frames.");
                 frameCount = ThinGL.capabilities().getMaxArrayTextureLayers();
             }
-            final SequencedTexture sequencedTexture = new SequencedTexture(InternalFormat.RGBA8, gifReader.getMetadata().getWidth(), gifReader.getMetadata().getHeight(), frameCount);
+            final SequencedTexture sequencedTexture = new SequencedTexture(GL11C.GL_RGBA8, gifReader.getMetadata().getWidth(), gifReader.getMetadata().getHeight(), frameCount);
             int relativeTime = 0;
             while (gifReader.hasRemaining()) {
                 final GifFrame frame = gifReader.read();
@@ -57,7 +59,7 @@ public class SequencedTexture extends Texture2DArray {
                 if (frameIndex >= frameCount) {
                     break;
                 }
-                sequencedTexture.uploadPixels(0, 0, frameIndex, frame.getWidth(), frame.getHeight(), PixelFormat.BGRA, frame.getData(), false);
+                sequencedTexture.uploadPixels(0, 0, frameIndex, frame.getWidth(), frame.getHeight(), GL12C.GL_BGRA, frame.getData(), false);
                 sequencedTexture.getFrameTimes().put(relativeTime, frameIndex);
                 relativeTime += frame.getDelay() * 10;
             }

@@ -23,16 +23,16 @@ import it.unimi.dsi.fastutil.objects.Reference2LongOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import it.unimi.dsi.fastutil.objects.ReferenceList;
 import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.resource.buffer.Buffer;
+import net.raphimc.thingl.resource.buffer.MutableBuffer;
 import net.raphimc.thingl.util.BufferUtil;
 import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.opengl.GL15C;
 
 public class GpuBufferPool {
 
-    private final ReferenceList<Buffer> free = new ReferenceArrayList<>();
-    private final ReferenceList<Buffer> inUse = new ReferenceArrayList<>();
-    private final Reference2LongMap<Buffer> bufferAccessTime = new Reference2LongOpenHashMap<>();
+    private final ReferenceList<MutableBuffer> free = new ReferenceArrayList<>();
+    private final ReferenceList<MutableBuffer> inUse = new ReferenceArrayList<>();
+    private final Reference2LongMap<MutableBuffer> bufferAccessTime = new Reference2LongOpenHashMap<>();
 
     @ApiStatus.Internal
     public GpuBufferPool(final ThinGL thinGL) {
@@ -55,11 +55,11 @@ public class GpuBufferPool {
         });
     }
 
-    public Buffer borrowBuffer() {
+    public MutableBuffer borrowBuffer() {
         ThinGL.get().assertOnRenderThread();
-        final Buffer buffer;
+        final MutableBuffer buffer;
         if (this.free.isEmpty()) {
-            buffer = new Buffer(BufferUtil.DEFAULT_BUFFER_SIZE, GL15C.GL_DYNAMIC_DRAW);
+            buffer = new MutableBuffer(BufferUtil.DEFAULT_BUFFER_SIZE, GL15C.GL_DYNAMIC_DRAW);
             buffer.setDebugName("Buffer Pool Buffer " + this.getSize());
         } else {
             buffer = this.free.remove(0);
@@ -69,7 +69,7 @@ public class GpuBufferPool {
         return buffer;
     }
 
-    public void returnBuffer(final Buffer buffer) {
+    public void returnBuffer(final MutableBuffer buffer) {
         ThinGL.get().assertOnRenderThread();
         if (!this.inUse.remove(buffer)) {
             throw new IllegalStateException("Buffer is not part of the pool");
@@ -83,10 +83,10 @@ public class GpuBufferPool {
 
     @ApiStatus.Internal
     public void free() {
-        for (Buffer buffer : this.free) {
+        for (MutableBuffer buffer : this.free) {
             buffer.free();
         }
-        for (Buffer buffer : this.inUse) {
+        for (MutableBuffer buffer : this.inUse) {
             buffer.free();
         }
     }

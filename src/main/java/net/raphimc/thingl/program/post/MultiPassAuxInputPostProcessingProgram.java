@@ -21,8 +21,8 @@ package net.raphimc.thingl.program.post;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.framebuffer.impl.TextureFramebuffer;
 import net.raphimc.thingl.resource.framebuffer.Framebuffer;
+import net.raphimc.thingl.resource.image.texture.Texture2D;
 import net.raphimc.thingl.resource.shader.Shader;
-import net.raphimc.thingl.resource.texture.Texture2D;
 import org.lwjgl.opengl.GL11C;
 
 public abstract class MultiPassAuxInputPostProcessingProgram extends AuxInputPostProcessingProgram {

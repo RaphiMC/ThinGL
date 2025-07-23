@@ -18,13 +18,12 @@
 
 package net.raphimc.thingl.texture;
 
-import net.raphimc.thingl.resource.texture.Texture2D;
+import net.lenni0451.commons.color.Color;
+import net.raphimc.thingl.resource.image.texture.Texture2D;
 import net.raphimc.thingl.util.rectpack.Slot;
 import net.raphimc.thingl.util.rectpack.StaticRectanglePacker;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL13C;
-import org.lwjgl.opengl.GL44C;
-import org.lwjgl.opengl.GL45C;
 
 import java.nio.ByteBuffer;
 
@@ -32,21 +31,21 @@ public class StaticAtlasTexture extends Texture2D {
 
     private final StaticRectanglePacker rectanglePacker;
 
-    public StaticAtlasTexture(final InternalFormat internalFormat, final int width, final int height) {
+    public StaticAtlasTexture(final int internalFormat, final int width, final int height) {
         super(internalFormat, width, height);
         this.setWrap(GL13C.GL_CLAMP_TO_BORDER);
-        GL45C.glTextureParameterfv(this.getGlId(), GL11C.GL_TEXTURE_BORDER_COLOR, new float[4]);
-        GL44C.glClearTexImage(this.getGlId(), 0, GL11C.GL_RGBA, GL11C.GL_UNSIGNED_BYTE, (ByteBuffer) null);
+        this.setParameterFloatArray(GL11C.GL_TEXTURE_BORDER_COLOR, new float[4]);
+        this.clear(Color.TRANSPARENT);
         this.rectanglePacker = new StaticRectanglePacker(width, height);
     }
 
-    public Slot addSlot(final int width, final int height, final PixelFormat pixelFormat, final ByteBuffer pixels) {
+    public Slot addSlot(final int width, final int height, final int pixelFormat, final ByteBuffer pixelBuffer) {
         final Slot slot = this.rectanglePacker.pack(width, height);
         if (slot == null) {
             return null;
         }
 
-        this.uploadPixels(slot.x(), slot.y(), width, height, pixelFormat, pixels);
+        this.uploadPixels(slot.x(), slot.y(), width, height, pixelFormat, pixelBuffer);
         return slot;
     }
 

@@ -21,8 +21,8 @@ import org.lwjgl.opengl.GL32C;
 
 public class FenceSync extends GLSyncObject {
 
-    private final int condition;
-    private final int flags;
+    private Integer condition;
+    private Integer flags;
 
     public FenceSync() {
         this(GL32C.GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
@@ -36,8 +36,6 @@ public class FenceSync extends GLSyncObject {
 
     protected FenceSync(final long pointer) {
         super(pointer);
-        this.condition = GL32C.glGetSynci(pointer, GL32C.GL_SYNC_CONDITION, null);
-        this.flags = GL32C.glGetSynci(pointer, GL32C.GL_SYNC_FLAGS, null);
     }
 
     public static FenceSync fromPointer(final long pointer) {
@@ -69,10 +67,16 @@ public class FenceSync extends GLSyncObject {
     }
 
     public int getCondition() {
+        if (this.condition == null) {
+            this.condition = GL32C.glGetSynci(this.getPointer(), GL32C.GL_SYNC_CONDITION, null);
+        }
         return this.condition;
     }
 
     public int getFlags() {
+        if (this.flags == null) {
+            this.flags = GL32C.glGetSynci(this.getPointer(), GL32C.GL_SYNC_FLAGS, null);
+        }
         return this.flags;
     }
 

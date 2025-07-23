@@ -20,7 +20,7 @@ package net.raphimc.thingl.framebuffer.impl;
 
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.framebuffer.ResizingFramebuffer;
-import net.raphimc.thingl.resource.renderbuffer.MultisampleRenderBuffer;
+import net.raphimc.thingl.resource.image.renderbuffer.MultisampleRenderBuffer;
 import org.joml.Math;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL30C;

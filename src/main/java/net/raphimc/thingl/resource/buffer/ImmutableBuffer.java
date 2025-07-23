@@ -23,29 +23,26 @@ import org.lwjgl.opengl.GL45C;
 
 import java.nio.ByteBuffer;
 
-public class ImmutableBuffer extends AbstractBuffer {
-
-    private final int flags;
+public class ImmutableBuffer extends Buffer {
 
     public ImmutableBuffer(final long size, final int flags) {
-        super(size);
-        this.flags = flags;
         GL45C.glNamedBufferStorage(this.getGlId(), size, flags);
     }
 
-    public ImmutableBuffer(final ByteBuffer data, final int flags) {
-        super((long) data.remaining());
-        this.flags = flags;
-        GL45C.glNamedBufferStorage(this.getGlId(), data, flags);
+    public ImmutableBuffer(final ByteBuffer dataBuffer, final int flags) {
+        if (!dataBuffer.isDirect()) {
+            throw new IllegalArgumentException("Data buffer must be a direct ByteBuffer");
+        }
+
+        GL45C.glNamedBufferStorage(this.getGlId(), dataBuffer, flags);
     }
 
     protected ImmutableBuffer(final int glId) {
         super(glId);
-        this.flags = GL45C.glGetNamedBufferParameteri(glId, GL44C.GL_BUFFER_STORAGE_FLAGS);
     }
 
     public int getFlags() {
-        return this.flags;
+        return this.getParameterInt(GL44C.GL_BUFFER_STORAGE_FLAGS);
     }
 
 }

@@ -24,18 +24,18 @@ import java.nio.ByteBuffer;
 
 public class BufferedSTBWriteCallback extends STBIWriteCallback {
 
-    private final ByteArrayOutputStream imageData = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream imageBytes = new ByteArrayOutputStream();
 
     @Override
     public void invoke(final long context, final long data, final int size) {
         final ByteBuffer dataBuffer = getData(data, size);
         final byte[] dataBytes = new byte[size];
         dataBuffer.get(dataBytes);
-        this.imageData.writeBytes(dataBytes);
+        this.imageBytes.writeBytes(dataBytes);
     }
 
-    public byte[] getImageData() {
-        return this.imageData.toByteArray();
+    public byte[] getImageBytes() {
+        return this.imageBytes.toByteArray();
     }
 
 }

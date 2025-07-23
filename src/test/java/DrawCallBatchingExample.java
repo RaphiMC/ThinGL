@@ -30,7 +30,7 @@ public class DrawCallBatchingExample extends StandaloneApplicationRunner {
     }
 
     public DrawCallBatchingExample() {
-        super(new Configuration().setWindowTitle("ThinGL Example - Draw call batching").setDebugMode(true));
+        super(new Configuration().setWindowTitle("ThinGL Example - Draw call batching").setExtendedDebugMode(true));
     }
 
     @Override

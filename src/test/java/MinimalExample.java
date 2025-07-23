@@ -28,7 +28,7 @@ public class MinimalExample extends StandaloneApplicationRunner {
     }
 
     public MinimalExample() {
-        super(new Configuration().setWindowTitle("ThinGL Example - Minimal Example").setDebugMode(true));
+        super(new Configuration().setWindowTitle("ThinGL Example - Minimal Example").setExtendedDebugMode(true));
     }
 
     @Override

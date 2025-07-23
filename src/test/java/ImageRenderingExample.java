@@ -18,8 +18,7 @@
 
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.implementation.application.StandaloneApplicationRunner;
-import net.raphimc.thingl.resource.texture.AbstractTexture;
-import net.raphimc.thingl.resource.texture.Texture2D;
+import net.raphimc.thingl.resource.image.texture.Texture2D;
 import org.joml.Matrix4fStack;
 
 import java.io.IOException;
@@ -31,7 +30,7 @@ public class ImageRenderingExample extends StandaloneApplicationRunner {
     }
 
     public ImageRenderingExample() {
-        super(new Configuration().setWindowTitle("ThinGL Example - Image rendering").setDebugMode(true));
+        super(new Configuration().setWindowTitle("ThinGL Example - Image rendering").setExtendedDebugMode(true));
     }
 
     private Texture2D image;
@@ -40,8 +39,8 @@ public class ImageRenderingExample extends StandaloneApplicationRunner {
     protected void init() {
         super.init();
         try {
-            final byte[] imageData = ImageRenderingExample.class.getResourceAsStream("/images/triangles-1430105_640.png").readAllBytes();
-            this.image = new Texture2D(AbstractTexture.InternalFormat.RGBA8, imageData);
+            final byte[] imageBytes = ImageRenderingExample.class.getResourceAsStream("/images/triangles-1430105_640.png").readAllBytes();
+            this.image = Texture2D.fromImage(imageBytes);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -28,7 +28,7 @@ public class AntiAliasingExample extends StandaloneApplicationRunner {
     }
 
     public AntiAliasingExample() {
-        super(new Configuration().setWindowTitle("ThinGL Example - AntiAliasing").setDebugMode(true));
+        super(new Configuration().setWindowTitle("ThinGL Example - AntiAliasing").setExtendedDebugMode(true));
     }
 
     @Override

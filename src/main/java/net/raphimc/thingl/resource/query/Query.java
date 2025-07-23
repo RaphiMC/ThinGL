@@ -22,7 +22,7 @@ import org.lwjgl.opengl.*;
 
 public class Query extends GLObject {
 
-    private final int target;
+    private Integer target;
 
     public Query(final int target) {
         super(GL45C.glCreateQueries(target));
@@ -31,7 +31,6 @@ public class Query extends GLObject {
 
     protected Query(final int glId, final Object unused) {
         super(glId);
-        this.target = GL15C.glGetQueryObjecti(glId, GL45C.GL_QUERY_TARGET);
     }
 
     public static Query fromGlId(final int glId) {
@@ -42,11 +41,11 @@ public class Query extends GLObject {
     }
 
     public void begin() {
-        GL15C.glBeginQuery(this.target, this.getGlId());
+        GL15C.glBeginQuery(this.getTarget(), this.getGlId());
     }
 
     public void end() {
-        GL15C.glEndQuery(this.target);
+        GL15C.glEndQuery(this.getTarget());
     }
 
     public boolean isResultAvailable() {
@@ -76,6 +75,9 @@ public class Query extends GLObject {
     }
 
     public int getTarget() {
+        if (this.target == null) {
+            this.target = GL15C.glGetQueryObjecti(this.getGlId(), GL45C.GL_QUERY_TARGET);
+        }
         return this.target;
     }
 

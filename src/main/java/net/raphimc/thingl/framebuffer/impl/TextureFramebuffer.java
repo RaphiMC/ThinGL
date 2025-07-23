@@ -20,13 +20,12 @@ package net.raphimc.thingl.framebuffer.impl;
 
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.framebuffer.ResizingFramebuffer;
-import net.raphimc.thingl.resource.texture.AbstractTexture;
-import net.raphimc.thingl.resource.texture.Texture2D;
+import net.raphimc.thingl.resource.image.texture.Texture2D;
 import net.raphimc.thingl.util.RenderMathUtil;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL14C;
-import org.lwjgl.opengl.GL45C;
+import org.lwjgl.opengl.GL30C;
 
 public class TextureFramebuffer extends ResizingFramebuffer {
 
@@ -44,13 +43,13 @@ public class TextureFramebuffer extends ResizingFramebuffer {
 
     public TextureFramebuffer(final boolean addDepthAttachment, final int textureFilter) {
         super((width, height) -> {
-            final Texture2D texture = new Texture2D(AbstractTexture.InternalFormat.RGBA8, width, height);
+            final Texture2D texture = new Texture2D(GL11C.GL_RGBA8, width, height);
             texture.setFilter(textureFilter);
             return texture;
         }, addDepthAttachment ? (width, height) -> {
-            final Texture2D texture = new Texture2D(AbstractTexture.InternalFormat.DEPTH32F_STENCIL8, width, height);
+            final Texture2D texture = new Texture2D(GL30C.GL_DEPTH32F_STENCIL8, width, height);
             texture.setFilter(textureFilter);
-            GL45C.glTextureParameteri(texture.getGlId(), GL14C.GL_TEXTURE_COMPARE_MODE, GL11C.GL_NONE);
+            texture.setParameterInt(GL14C.GL_TEXTURE_COMPARE_MODE, GL11C.GL_NONE);
             return texture;
         } : null);
         this.init();

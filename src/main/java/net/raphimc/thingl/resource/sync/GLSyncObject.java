@@ -30,9 +30,6 @@ public abstract class GLSyncObject {
         this.pointer = pointer;
     }
 
-    public void refreshCachedData() {
-    }
-
     public void free() {
         if (this.isAllocated()) {
             try {

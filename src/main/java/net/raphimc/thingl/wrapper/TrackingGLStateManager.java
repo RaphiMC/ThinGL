@@ -31,6 +31,7 @@ public class TrackingGLStateManager extends GLStateManager {
     private Integer depthFunc;
     private ColorMask colorMask;
     private Boolean depthMask;
+    private StencilMask stencilMask;
     private Scissor scissor;
     private Viewport viewport;
     private Integer logicOp;
@@ -46,13 +47,10 @@ public class TrackingGLStateManager extends GLStateManager {
 
     @Override
     public boolean getCapability(final int capability) {
-        if (this.capabilities.containsKey(capability)) {
-            return this.capabilities.get(capability);
-        } else {
-            final boolean state = super.getCapability(capability);
-            this.capabilities.put(capability, state);
-            return state;
+        if (!this.capabilities.containsKey(capability)) {
+            this.capabilities.put(capability, super.getCapability(capability));
         }
+        return this.capabilities.get(capability);
     }
 
     @Override
@@ -69,13 +67,10 @@ public class TrackingGLStateManager extends GLStateManager {
 
     @Override
     public BlendFunc getBlendFunc() {
-        if (this.blendFunc != null) {
-            return this.blendFunc;
-        } else {
-            final BlendFunc blendFunc = super.getBlendFunc();
-            this.blendFunc = blendFunc;
-            return blendFunc;
+        if (this.blendFunc == null) {
+            this.blendFunc = super.getBlendFunc();
         }
+        return this.blendFunc;
     }
 
     @Override
@@ -93,13 +88,10 @@ public class TrackingGLStateManager extends GLStateManager {
 
     @Override
     public int getDepthFunc() {
-        if (this.depthFunc != null) {
-            return this.depthFunc;
-        } else {
-            final int depthFunc = super.getDepthFunc();
-            this.depthFunc = depthFunc;
-            return depthFunc;
+        if (this.depthFunc == null) {
+            this.depthFunc = super.getDepthFunc();
         }
+        return this.depthFunc;
     }
 
     @Override
@@ -116,13 +108,10 @@ public class TrackingGLStateManager extends GLStateManager {
 
     @Override
     public ColorMask getColorMask() {
-        if (this.colorMask != null) {
-            return this.colorMask;
-        } else {
-            final ColorMask colorMask = super.getColorMask();
-            this.colorMask = colorMask;
-            return colorMask;
+        if (this.colorMask == null) {
+            this.colorMask = super.getColorMask();
         }
+        return this.colorMask;
     }
 
     @Override
@@ -140,13 +129,10 @@ public class TrackingGLStateManager extends GLStateManager {
 
     @Override
     public boolean getDepthMask() {
-        if (this.depthMask != null) {
-            return this.depthMask;
-        } else {
-            final boolean depthMask = super.getDepthMask();
-            this.depthMask = depthMask;
-            return depthMask;
+        if (this.depthMask == null) {
+            this.depthMask = super.getDepthMask();
         }
+        return this.depthMask;
     }
 
     @Override
@@ -162,14 +148,32 @@ public class TrackingGLStateManager extends GLStateManager {
     }
 
     @Override
-    public Scissor getScissor() {
-        if (this.scissor != null) {
-            return this.scissor;
-        } else {
-            final Scissor scissor = super.getScissor();
-            this.scissor = scissor;
-            return scissor;
+    public StencilMask getStencilMask() {
+        if (this.stencilMask == null) {
+            this.stencilMask = super.getStencilMask();
         }
+        return this.stencilMask;
+    }
+
+    @Override
+    public void setStencilMask(final int front, final int back) {
+        final StencilMask currentStencilMask = this.getStencilMask();
+        if (currentStencilMask.front() != front || currentStencilMask.back() != back) {
+            this.stencilMask = new StencilMask(front, back);
+            super.setStencilMask(front, back);
+        }
+    }
+
+    public void clearStencilMaskCache() {
+        this.stencilMask = null;
+    }
+
+    @Override
+    public Scissor getScissor() {
+        if (this.scissor == null) {
+            this.scissor = super.getScissor();
+        }
+        return this.scissor;
     }
 
     @Override
@@ -187,13 +191,10 @@ public class TrackingGLStateManager extends GLStateManager {
 
     @Override
     public Viewport getViewport() {
-        if (this.viewport != null) {
-            return this.viewport;
-        } else {
-            final Viewport viewport = super.getViewport();
-            this.viewport = viewport;
-            return viewport;
+        if (this.viewport == null) {
+            this.viewport = super.getViewport();
         }
+        return this.viewport;
     }
 
     @Override
@@ -211,13 +212,10 @@ public class TrackingGLStateManager extends GLStateManager {
 
     @Override
     public int getLogicOp() {
-        if (this.logicOp != null) {
-            return this.logicOp;
-        } else {
-            final int logicOp = super.getLogicOp();
-            this.logicOp = logicOp;
-            return logicOp;
+        if (this.logicOp == null) {
+            this.logicOp = super.getLogicOp();
         }
+        return this.logicOp;
     }
 
     @Override
@@ -234,13 +232,10 @@ public class TrackingGLStateManager extends GLStateManager {
 
     @Override
     public PolygonOffset getPolygonOffset() {
-        if (this.polygonOffset != null) {
-            return this.polygonOffset;
-        } else {
-            final PolygonOffset polygonOffset = super.getPolygonOffset();
-            this.polygonOffset = polygonOffset;
-            return polygonOffset;
+        if (this.polygonOffset == null) {
+            this.polygonOffset = super.getPolygonOffset();
         }
+        return this.polygonOffset;
     }
 
     @Override
@@ -258,13 +253,10 @@ public class TrackingGLStateManager extends GLStateManager {
 
     @Override
     public int getPixelStore(final int parameter) {
-        if (this.pixelStores.containsKey(parameter)) {
-            return this.pixelStores.get(parameter);
-        } else {
-            final int value = super.getPixelStore(parameter);
-            this.pixelStores.put(parameter, value);
-            return value;
+        if (!this.pixelStores.containsKey(parameter)) {
+            this.pixelStores.put(parameter, super.getPixelStore(parameter));
         }
+        return this.pixelStores.get(parameter);
     }
 
     @Override
@@ -281,13 +273,10 @@ public class TrackingGLStateManager extends GLStateManager {
 
     @Override
     public int getProgram() {
-        if (this.program != null) {
-            return this.program;
-        } else {
-            final int program = super.getProgram();
-            this.program = program;
-            return program;
+        if (this.program == null) {
+            this.program = super.getProgram();
         }
+        return this.program;
     }
 
     @Override
@@ -304,13 +293,10 @@ public class TrackingGLStateManager extends GLStateManager {
 
     @Override
     public int getVertexArray() {
-        if (this.vertexArray != null) {
-            return this.vertexArray;
-        } else {
-            final int vertexArray = super.getVertexArray();
-            this.vertexArray = vertexArray;
-            return vertexArray;
+        if (this.vertexArray == null) {
+            this.vertexArray = super.getVertexArray();
         }
+        return this.vertexArray;
     }
 
     @Override

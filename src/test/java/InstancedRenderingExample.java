@@ -31,7 +31,7 @@ public class InstancedRenderingExample extends StandaloneApplicationRunner {
     }
 
     public InstancedRenderingExample() {
-        super(new Configuration().setWindowTitle("ThinGL Example - Instancing").setDebugMode(true));
+        super(new Configuration().setWindowTitle("ThinGL Example - Instancing").setExtendedDebugMode(true));
     }
 
     @Override

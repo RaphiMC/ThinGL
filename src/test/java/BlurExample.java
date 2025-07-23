@@ -19,8 +19,7 @@
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.implementation.application.StandaloneApplicationRunner;
-import net.raphimc.thingl.resource.texture.AbstractTexture;
-import net.raphimc.thingl.resource.texture.Texture2D;
+import net.raphimc.thingl.resource.image.texture.Texture2D;
 import org.joml.Matrix4fStack;
 
 import java.io.IOException;
@@ -32,7 +31,7 @@ public class BlurExample extends StandaloneApplicationRunner {
     }
 
     public BlurExample() {
-        super(new Configuration().setWindowTitle("ThinGL Example - Blur").setDebugMode(true));
+        super(new Configuration().setWindowTitle("ThinGL Example - Blur").setExtendedDebugMode(true));
     }
 
     private Texture2D image;
@@ -41,8 +40,8 @@ public class BlurExample extends StandaloneApplicationRunner {
     protected void init() {
         super.init();
         try {
-            final byte[] imageData = BlurExample.class.getResourceAsStream("/images/triangles-1430105_640.png").readAllBytes();
-            this.image = new Texture2D(AbstractTexture.InternalFormat.RGBA8, imageData);
+            final byte[] imageBytes = BlurExample.class.getResourceAsStream("/images/triangles-1430105_640.png").readAllBytes();
+            this.image = Texture2D.fromImage(imageBytes);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

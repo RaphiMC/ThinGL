@@ -21,12 +21,11 @@ import com.twelvemonkeys.imageio.plugins.webp.WebPImageReaderSpi;
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.framebuffer.FramebufferRenderer;
-import net.raphimc.thingl.resource.texture.AbstractTexture;
-import net.raphimc.thingl.resource.texture.Texture2D;
-import net.raphimc.thingl.resource.texture.Texture2DArray;
+import net.raphimc.thingl.resource.image.texture.Texture2D;
+import net.raphimc.thingl.resource.image.texture.Texture2DArray;
 import net.raphimc.thingl.texture.SequencedTexture;
-import org.lwjgl.opengl.GL43C;
-import org.lwjgl.opengl.GL45C;
+import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL12C;
 import org.w3c.dom.Node;
 
 import javax.imageio.ImageIO;
@@ -48,11 +47,11 @@ public class AWTUtil {
         return Color.fromARGB(color.getRGB());
     }
 
-    public static Texture2D createTextureFromBufferedImage(final BufferedImage bufferedImage) {
-        return createTextureFromBufferedImage(AbstractTexture.InternalFormat.RGBA8, bufferedImage);
+    public static Texture2D createTexture2DFromBufferedImage(final BufferedImage bufferedImage) {
+        return createTexture2DFromBufferedImage(GL11C.GL_RGBA8, bufferedImage);
     }
 
-    public static Texture2D createTextureFromBufferedImage(final AbstractTexture.InternalFormat internalFormat, final BufferedImage bufferedImage) {
+    public static Texture2D createTexture2DFromBufferedImage(final int internalFormat, final BufferedImage bufferedImage) {
         final Texture2D texture = new Texture2D(internalFormat, bufferedImage.getWidth(), bufferedImage.getHeight());
         uploadBufferedImageToTexture2D(texture, 0, 0, bufferedImage);
         return texture;
@@ -61,26 +60,26 @@ public class AWTUtil {
     public static void uploadBufferedImageToTexture2D(final Texture2D texture, final int x, final int y, final BufferedImage bufferedImage) {
         final int[] pixels = new int[bufferedImage.getWidth() * bufferedImage.getHeight()];
         bufferedImage.getRGB(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), pixels, 0, bufferedImage.getWidth());
-        texture.uploadPixels(x, y, bufferedImage.getWidth(), bufferedImage.getHeight(), AbstractTexture.PixelFormat.BGRA, pixels, false);
+        texture.uploadPixels(x, y, bufferedImage.getWidth(), bufferedImage.getHeight(), GL12C.GL_BGRA, pixels, false);
     }
 
     public static void uploadBufferedImageToTexture2DArray(final Texture2DArray texture, final int x, final int y, final int layer, final BufferedImage bufferedImage) {
         final int[] pixels = new int[bufferedImage.getWidth() * bufferedImage.getHeight()];
         bufferedImage.getRGB(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), pixels, 0, bufferedImage.getWidth());
-        texture.uploadPixels(x, y, layer, bufferedImage.getWidth(), bufferedImage.getHeight(), AbstractTexture.PixelFormat.BGRA, pixels, false);
+        texture.uploadPixels(x, y, layer, bufferedImage.getWidth(), bufferedImage.getHeight(), GL12C.GL_BGRA, pixels, false);
     }
 
-    public static SequencedTexture createSequencedTextureFromGif(final byte[] imageData) throws IOException {
-        return createSequencedTextureFromGif(new ByteArrayInputStream(imageData));
+    public static SequencedTexture createSequencedTextureFromGif(final byte[] imageBytes) throws IOException {
+        return createSequencedTextureFromGif(new ByteArrayInputStream(imageBytes));
     }
 
-    public static SequencedTexture createSequencedTextureFromGif(final InputStream imageDataStream) throws IOException {
+    public static SequencedTexture createSequencedTextureFromGif(final InputStream imageStream) throws IOException {
         final Iterator<ImageReader> gifReaders = ImageIO.getImageReadersByFormatName("gif");
         if (!gifReaders.hasNext()) {
             throw new RuntimeException("No GIF reader available");
         }
         final ImageReader gifReader = gifReaders.next();
-        try (ImageInputStream imageInputStream = ImageIO.createImageInputStream(imageDataStream)) {
+        try (ImageInputStream imageInputStream = ImageIO.createImageInputStream(imageStream)) {
             gifReader.setInput(imageInputStream);
             int frameCount = gifReader.getNumImages(true);
             if (frameCount > ThinGL.capabilities().getMaxArrayTextureLayers()) {
@@ -90,9 +89,10 @@ public class AWTUtil {
             final int width = gifReader.getWidth(0);
             final int height = gifReader.getHeight(0);
 
-            final SequencedTexture sequencedTexture = new SequencedTexture(AbstractTexture.InternalFormat.RGBA8, width, height, frameCount);
-            final Texture2D partialTexture = new Texture2D(AbstractTexture.InternalFormat.RGBA8, width, height);
+            final SequencedTexture sequencedTexture = new SequencedTexture(GL11C.GL_RGBA8, width, height, frameCount);
+            final Texture2D partialTexture = new Texture2D(GL11C.GL_RGBA8, width, height);
             final FramebufferRenderer frameBuilder = new FramebufferRenderer(width, height, false);
+            final Texture2D frameBuilderTexture = frameBuilder.getColorAttachment();
             frameBuilder.begin();
             try {
                 int relativeTime = 0;
@@ -121,7 +121,7 @@ public class AWTUtil {
                     AWTUtil.uploadBufferedImageToTexture2D(partialTexture, 0, 0, frame);
                     ThinGL.renderer2D().texture(RenderMathUtil.getIdentityMatrix(), partialTexture.getGlId(), imageLeftPosition, imageTopPosition, frame.getWidth(), frame.getHeight(), 0, 0, frame.getWidth(), frame.getHeight(), partialTexture.getWidth(), partialTexture.getHeight());
                     for (int y = 0; y < sequencedTexture.getHeight(); y++) { // Copy to the image while flipping it vertically
-                        GL45C.glCopyTextureSubImage3D(sequencedTexture.getGlId(), 0, 0, y, frameIndex, 0, sequencedTexture.getHeight() - 1 - y, sequencedTexture.getWidth(), 1);
+                        frameBuilderTexture.copyTo(sequencedTexture, 0, sequencedTexture.getHeight() - 1 - y, 0, y, frameIndex, sequencedTexture.getWidth(), 1);
                     }
                     switch (disposalMethod) {
                         case "none", "doNotDispose" -> {
@@ -148,14 +148,14 @@ public class AWTUtil {
         }
     }
 
-    public static SequencedTexture createSequencedTextureFromWebp(final byte[] imageData) throws IOException {
-        return createSequencedTextureFromWebp(new ByteArrayInputStream(imageData));
+    public static SequencedTexture createSequencedTextureFromWebp(final byte[] imageBytes) throws IOException {
+        return createSequencedTextureFromWebp(new ByteArrayInputStream(imageBytes));
     }
 
-    public static SequencedTexture createSequencedTextureFromWebp(final InputStream imageDataStream) throws IOException {
+    public static SequencedTexture createSequencedTextureFromWebp(final InputStream imageStream) throws IOException {
         ThinGL.capabilities().ensureTwelveMonkeysWebpReaderPresent();
         final ImageReader webpReader = new WebPImageReaderSpi().createReaderInstance();
-        try (ImageInputStream imageInputStream = ImageIO.createImageInputStream(imageDataStream)) {
+        try (ImageInputStream imageInputStream = ImageIO.createImageInputStream(imageStream)) {
             webpReader.setInput(imageInputStream);
             int frameCount = webpReader.getNumImages(true);
             if (frameCount > ThinGL.capabilities().getMaxArrayTextureLayers()) {
@@ -177,8 +177,8 @@ public class AWTUtil {
             final Function<Object, Object> blendGetter = ReflectionUtil.createGetter("com.twelvemonkeys.imageio.plugins.webp.AnimationFrame", "blend");
             final Function<Object, Object> disposeGetter = ReflectionUtil.createGetter("com.twelvemonkeys.imageio.plugins.webp.AnimationFrame", "dispose");
 
-            final SequencedTexture sequencedTexture = new SequencedTexture(AbstractTexture.InternalFormat.RGBA8, width, height, frameCount);
-            final Texture2D partialTexture = new Texture2D(AbstractTexture.InternalFormat.RGBA8, width, height);
+            final SequencedTexture sequencedTexture = new SequencedTexture(GL11C.GL_RGBA8, width, height, frameCount);
+            final Texture2D partialTexture = new Texture2D(GL11C.GL_RGBA8, width, height);
             final FramebufferRenderer frameBuilder = new FramebufferRenderer(width, height, false);
             final Texture2D frameBuilderTexture = frameBuilder.getColorAttachment();
             frameBuilder.begin();
@@ -196,11 +196,11 @@ public class AWTUtil {
                         ThinGL.renderer2D().texture(RenderMathUtil.getIdentityMatrix(), partialTexture.getGlId(), bounds.x, bounds.y, frame.getWidth(), frame.getHeight(), 0, 0, frame.getWidth(), frame.getHeight(), partialTexture.getWidth(), partialTexture.getHeight());
                     } else {
                         for (int y = 0; y < frame.getHeight(); y++) { // Copy to the frame builder while flipping it vertically
-                            GL43C.glCopyImageSubData(partialTexture.getGlId(), partialTexture.getType(), 0, 0, y, 0, frameBuilderTexture.getGlId(), frameBuilderTexture.getType(), 0, bounds.x, frameBuilderTexture.getHeight() - 1 - bounds.y - y, 0, frame.getWidth(), 1, 1);
+                            partialTexture.copyTo(frameBuilderTexture, 0, y, bounds.x, frameBuilderTexture.getHeight() - 1 - bounds.y - y, frame.getWidth(), 1);
                         }
                     }
                     for (int y = 0; y < sequencedTexture.getHeight(); y++) { // Copy to the image while flipping it vertically
-                        GL45C.glCopyTextureSubImage3D(sequencedTexture.getGlId(), 0, 0, y, frameIndex, 0, sequencedTexture.getHeight() - 1 - y, sequencedTexture.getWidth(), 1);
+                        frameBuilderTexture.copyTo(sequencedTexture, 0, sequencedTexture.getHeight() - 1 - y, 0, y, frameIndex, sequencedTexture.getWidth(), 1);
                     }
                     if (dispose) {
                         frameBuilder.clear();

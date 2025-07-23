@@ -16,19 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.raphimc.thingl.resource.renderbuffer;
+package net.raphimc.thingl.resource.image.renderbuffer;
 
+import net.raphimc.thingl.resource.image.ImageStorage2D;
 import org.lwjgl.opengl.GL45C;
 
-public class RenderBuffer extends AbstractRenderBuffer {
+public class StandardRenderBuffer extends RenderBuffer implements ImageStorage2D {
 
-    public RenderBuffer(final int internalFormat, final int width, final int height) {
-        super(internalFormat, width, height);
-        GL45C.glNamedRenderbufferStorage(this.getGlId(), internalFormat, width, height);
+    public StandardRenderBuffer(final int internalFormat, final int width, final int height) {
+        this.initialize(internalFormat, width, height);
     }
 
-    protected RenderBuffer(final int glId) {
+    protected StandardRenderBuffer(final int glId) {
         super(glId);
+    }
+
+    public void initialize(final int internalFormat, final int width, final int height) {
+        this.parameters.clear();
+        GL45C.glNamedRenderbufferStorage(this.getGlId(), internalFormat, width, height);
     }
 
 }

@@ -15,28 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package net.raphimc.thingl.resource.image;
 
-package net.raphimc.thingl.resource.texture;
+public interface MultisampleImageStorage3D extends MultisampleImageStorage {
 
-import org.lwjgl.opengl.GL32C;
-import org.lwjgl.opengl.GL45C;
-
-public abstract class MultisampledTexture extends AbstractTexture {
-
-    private final int samples;
-
-    public MultisampledTexture(final Type type, final InternalFormat internalFormat, final int samples) {
-        super(type, internalFormat);
-        this.samples = samples;
+    default void copyTo(final MultisampleImageStorage2D target, final int srcX, final int srcY, final int srcZ, final int dstX, final int dstY, final int width, final int height) {
+        this.copyTo(target, 0, srcX, srcY, srcZ, 0, dstX, dstY, 0, width, height, 1);
     }
 
-    protected MultisampledTexture(final int glId, final Type type) {
-        super(glId, type);
-        this.samples = GL45C.glGetTextureLevelParameteri(glId, 0, GL32C.GL_TEXTURE_SAMPLES);
+    default void copyTo(final MultisampleImageStorage3D target, final int srcX, final int srcY, final int srcZ, final int dstX, final int dstY, final int dstZ, final int width, final int height, final int depth) {
+        this.copyTo((ImageStorage) target, srcX, srcY, srcZ, dstX, dstY, dstZ, width, height, depth);
     }
 
-    public int getSamples() {
-        return this.samples;
-    }
+    int getDepth();
 
 }

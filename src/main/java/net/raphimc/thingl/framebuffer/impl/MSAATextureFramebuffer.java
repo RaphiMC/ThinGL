@@ -20,9 +20,10 @@ package net.raphimc.thingl.framebuffer.impl;
 
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.framebuffer.ResizingFramebuffer;
-import net.raphimc.thingl.resource.texture.AbstractTexture;
-import net.raphimc.thingl.resource.texture.MultisampleTexture2D;
+import net.raphimc.thingl.resource.image.texture.MultisampleTexture2D;
 import org.joml.Math;
+import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL30C;
 import org.lwjgl.system.MathUtil;
 
 public class MSAATextureFramebuffer extends ResizingFramebuffer {
@@ -31,9 +32,9 @@ public class MSAATextureFramebuffer extends ResizingFramebuffer {
 
     public MSAATextureFramebuffer(final int samples) {
         super((width, height) -> {
-            return new MultisampleTexture2D(AbstractTexture.InternalFormat.RGBA8, width, height, returnSamples(samples));
+            return new MultisampleTexture2D(GL11C.GL_RGBA8, width, height, returnSamples(samples));
         }, (width, height) -> {
-            return new MultisampleTexture2D(AbstractTexture.InternalFormat.DEPTH32F_STENCIL8, width, height, returnSamples(samples));
+            return new MultisampleTexture2D(GL30C.GL_DEPTH32F_STENCIL8, width, height, returnSamples(samples));
         });
         this.samples = returnSamples(samples);
         this.init();

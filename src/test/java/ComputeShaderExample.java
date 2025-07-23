@@ -18,7 +18,7 @@
 
 import net.raphimc.thingl.drawbuilder.builder.BufferBuilder;
 import net.raphimc.thingl.implementation.application.StandaloneApplicationRunner;
-import net.raphimc.thingl.resource.buffer.AbstractBuffer;
+import net.raphimc.thingl.resource.buffer.Buffer;
 import net.raphimc.thingl.resource.buffer.ImmutableBuffer;
 import net.raphimc.thingl.resource.program.Program;
 import net.raphimc.thingl.resource.shader.Shader;
@@ -52,7 +52,7 @@ public class ComputeShaderExample extends StandaloneApplicationRunner {
     }
 
     public ComputeShaderExample() {
-        super(new Configuration().setWindowTitle("ThinGL Example - Compute Shader").setDebugMode(true));
+        super(new Configuration().setWindowTitle("ThinGL Example - Compute Shader").setExtendedDebugMode(true));
     }
 
     @Override
@@ -65,7 +65,7 @@ public class ComputeShaderExample extends StandaloneApplicationRunner {
         for (int i = 0; i < COUNT; i++) {
             counterBufferBuilder.putInt(i + 10);
         }
-        final AbstractBuffer counterBuffer = new ImmutableBuffer(counterBufferBuilder.finish(), GL44C.GL_CLIENT_STORAGE_BIT);
+        final Buffer counterBuffer = new ImmutableBuffer(counterBufferBuilder.finish(), GL44C.GL_CLIENT_STORAGE_BIT);
         counterBufferBuilder.free();
 
         computeProgram.bind();
@@ -75,7 +75,7 @@ public class ComputeShaderExample extends StandaloneApplicationRunner {
         computeProgram.unbind();
 
         final int[] counterResult = new int[10];
-        final ByteBuffer counterResultBuffer = counterBuffer.download(0);
+        final ByteBuffer counterResultBuffer = counterBuffer.download();
         counterResultBuffer.asIntBuffer().get(counterResult);
         MemoryUtil.memFree(counterResultBuffer);
 

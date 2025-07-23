@@ -17,8 +17,8 @@
  */
 package net.raphimc.thingl.drawbuilder.databuilder.holder;
 
+import net.lenni0451.commons.math.MathUtils;
 import net.raphimc.thingl.drawbuilder.builder.BufferBuilder;
-import net.raphimc.thingl.util.MathUtil;
 import org.joml.Matrix4f;
 
 import java.util.function.Function;
@@ -119,7 +119,7 @@ public class Std140ShaderDataHolder extends ShaderDataHolder {
 
     @Override
     protected int getStructAlignment(final int maxMemberAlignment) {
-        return MathUtil.align(maxMemberAlignment, VEC4_BYTES);
+        return MathUtils.align(maxMemberAlignment, VEC4_BYTES);
     }
 
     private void checkArrayAlignment() {

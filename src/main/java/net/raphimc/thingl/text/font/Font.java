@@ -130,8 +130,8 @@ public class Font {
         final int height = bitmap.rows();
         final int xOffset = glyphSlot.bitmap_left();
         final int yOffset = -glyphSlot.bitmap_top();
-        final ByteBuffer pixels = bitmap.buffer(width * height);
-        return new GlyphBitmap(pixels, width, height, xOffset, yOffset);
+        final ByteBuffer pixelBuffer = bitmap.buffer(width * height);
+        return new GlyphBitmap(pixelBuffer, width, height, xOffset, yOffset);
     }
 
     public void free() {
@@ -221,7 +221,7 @@ public class Font {
     public record Glyph(Font font, int glyphIndex, float width, float height, float xAdvance, float bearingX, float bearingY) {
     }
 
-    public record GlyphBitmap(ByteBuffer pixels, int width, int height, int xOffset, int yOffset) {
+    public record GlyphBitmap(ByteBuffer pixelBuffer, int width, int height, int xOffset, int yOffset) {
     }
 
 }

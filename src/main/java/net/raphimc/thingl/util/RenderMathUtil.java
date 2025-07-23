@@ -29,6 +29,18 @@ public class RenderMathUtil {
 
     private static final Matrix4f IDENTITY_MATRIX = new Matrix4f();
 
+    public static int getMaxMipMapLevels(final int width, final int height) {
+        return getMaxMipMapLevels(Math.max(width, height));
+    }
+
+    public static int getMaxMipMapLevels(final int width, final int height, final int depth) {
+        return getMaxMipMapLevels(Math.max(Math.max(width, height), depth));
+    }
+
+    public static int getMaxMipMapLevels(final int maxDim) {
+        return (int) (Math.floor(Math.log(maxDim) / Math.log(2))) + 1;
+    }
+
     public static Matrix4f getIdentityMatrix() {
         if ((IDENTITY_MATRIX.properties() & Matrix4fc.PROPERTY_IDENTITY) == 0) {
             IDENTITY_MATRIX.identity();

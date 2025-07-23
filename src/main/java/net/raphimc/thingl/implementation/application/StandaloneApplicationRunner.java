@@ -133,8 +133,8 @@ public abstract class StandaloneApplicationRunner {
         private int windowHeight = 720;
         private boolean useVSync = true;
         private int fpsLimit = -1;
-        private boolean debugMode = false;
-        private boolean extendedDebugMode = true;
+        private boolean debugMode = true;
+        private boolean extendedDebugMode = false;
 
         public String getWindowTitle() {
             return this.windowTitle;

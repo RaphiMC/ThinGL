@@ -24,10 +24,8 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import it.unimi.dsi.fastutil.objects.ReferenceList;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.framebuffer.impl.TextureFramebuffer;
-import net.raphimc.thingl.resource.texture.Texture2D;
+import net.raphimc.thingl.resource.image.texture.Texture2D;
 import org.jetbrains.annotations.ApiStatus;
-import org.lwjgl.opengl.GL30C;
-import org.lwjgl.opengl.GL45C;
 
 public class FramebufferPool {
 
@@ -84,7 +82,6 @@ public class FramebufferPool {
         if (!this.inUse.remove(framebuffer)) {
             throw new IllegalStateException("Framebuffer is not part of the pool");
         }
-        GL45C.glInvalidateNamedFramebufferData(framebuffer.getGlId(), new int[]{GL30C.GL_COLOR_ATTACHMENT0, GL30C.GL_DEPTH_STENCIL_ATTACHMENT});
         this.free.add(framebuffer);
     }
 

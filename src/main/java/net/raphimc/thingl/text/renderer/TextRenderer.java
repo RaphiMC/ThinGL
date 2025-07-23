@@ -32,7 +32,6 @@ import net.raphimc.thingl.drawbuilder.drawbatchdataholder.DrawBatchDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.MultiDrawBatchDataHolder;
 import net.raphimc.thingl.renderer.Primitives;
 import net.raphimc.thingl.resource.program.Program;
-import net.raphimc.thingl.resource.texture.AbstractTexture;
 import net.raphimc.thingl.text.TextSegment;
 import net.raphimc.thingl.text.font.Font;
 import net.raphimc.thingl.text.shaper.ShapedTextBuffer;
@@ -43,6 +42,7 @@ import net.raphimc.thingl.texture.StaticAtlasTexture;
 import net.raphimc.thingl.util.rectpack.Slot;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL30C;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -217,7 +217,7 @@ public abstract class TextRenderer {
     private AtlasGlyph createAtlasGlyph(final Font.Glyph fontGlyph) {
         final Font.GlyphBitmap glyphBitmap = this.createGlyphBitmap(fontGlyph);
 
-        if (glyphBitmap.pixels() == null) {
+        if (glyphBitmap.pixelBuffer() == null) {
             return new AtlasGlyph(-1, 0F, 0F, 0F, 0F, glyphBitmap.width(), glyphBitmap.height(), glyphBitmap.xOffset(), glyphBitmap.yOffset());
         }
 
@@ -225,11 +225,11 @@ public abstract class TextRenderer {
         StaticAtlasTexture atlas = null;
         for (int i = 0; i <= this.glyphAtlases.size(); i++) {
             if (i == this.glyphAtlases.size()) {
-                atlas = new StaticAtlasTexture(AbstractTexture.InternalFormat.R8, ATLAS_SIZE, ATLAS_SIZE);
+                atlas = new StaticAtlasTexture(GL30C.GL_R8, ATLAS_SIZE, ATLAS_SIZE);
             } else {
                 atlas = this.glyphAtlases.get(i);
             }
-            atlasSlot = atlas.addSlot(glyphBitmap.width(), glyphBitmap.height(), AbstractTexture.PixelFormat.R, glyphBitmap.pixels());
+            atlasSlot = atlas.addSlot(glyphBitmap.width(), glyphBitmap.height(), GL11C.GL_RED, glyphBitmap.pixelBuffer());
             if (atlasSlot != null) {
                 break;
             }

@@ -34,6 +34,7 @@ public class GLStateStack {
     private final IntStack depthFuncStack = new IntArrayList();
     private final Stack<GLStateManager.ColorMask> colorMaskStack = new Stack<>();
     private final BooleanStack depthMaskStack = new BooleanArrayList();
+    private final Stack<GLStateManager.StencilMask> stencilMaskStack = new Stack<>();
     private final Stack<GLStateManager.Scissor> scissorStack = new Stack<>();
     private final Stack<GLStateManager.Viewport> viewportStack = new Stack<>();
     private final IntStack logicOpStack = new IntArrayList();
@@ -65,6 +66,10 @@ public class GLStateStack {
             if (!this.depthMaskStack.isEmpty()) {
                 while (!this.depthMaskStack.isEmpty()) this.popDepthMask();
                 ThinGL.LOGGER.warn("GLStateStack depth mask stack was not empty at the end of the frame!");
+            }
+            if (!this.stencilMaskStack.isEmpty()) {
+                while (!this.stencilMaskStack.isEmpty()) this.popStencilMask();
+                ThinGL.LOGGER.warn("GLStateStack stencil mask stack was not empty at the end of the frame!");
             }
             if (!this.scissorStack.isEmpty()) {
                 while (!this.scissorStack.isEmpty()) this.popScissor();
@@ -162,6 +167,15 @@ public class GLStateStack {
         ThinGL.glStateManager().setDepthMask(this.depthMaskStack.popBoolean());
     }
 
+    public void pushStencilMask() {
+        this.stencilMaskStack.push(ThinGL.glStateManager().getStencilMask());
+    }
+
+    public void popStencilMask() {
+        final GLStateManager.StencilMask stencilMask = this.stencilMaskStack.pop();
+        ThinGL.glStateManager().setStencilMask(stencilMask.front(), stencilMask.back());
+    }
+
     public void pushScissor() {
         this.scissorStack.push(ThinGL.glStateManager().getScissor());
     }
@@ -226,7 +240,7 @@ public class GLStateStack {
 
     public void popFramebuffer(final boolean setViewport) {
         final Framebuffer framebuffer = this.framebufferStack.pop();
-        if (framebuffer.getGlId() < 0) throw new IllegalStateException("Framebuffer is no longer available");
+        if (!framebuffer.isAllocated()) throw new IllegalStateException("Framebuffer is no longer available");
         framebuffer.bind(setViewport);
     }
 

@@ -24,32 +24,6 @@ public class MathUtil {
     public static final float TAU = org.joml.Math.PI_TIMES_2_f;
     public static final float HALF_PI = org.joml.Math.PI_OVER_2_f;
 
-    public static int align(final int value, final int alignment) {
-        // return (value + alignment - 1) & -alignment; // Fast POT alignment
-        if (alignment <= 0) {
-            throw new IllegalArgumentException("Alignment must be a positive integer");
-        }
-
-        final int remainder = value % alignment;
-        if (remainder == 0) {
-            return value;
-        }
-        return value + alignment - remainder;
-    }
-
-    public static long align(final long value, final long alignment) {
-        // return (value + alignment - 1) & -alignment; // Fast POT alignment
-        if (alignment <= 0) {
-            throw new IllegalArgumentException("Alignment must be a positive integer");
-        }
-
-        final long remainder = value % alignment;
-        if (remainder == 0) {
-            return value;
-        }
-        return value + alignment - remainder;
-    }
-
     /**
      * Encodes a float value into a half precision float (IEEE-754 fp16) value.
      *

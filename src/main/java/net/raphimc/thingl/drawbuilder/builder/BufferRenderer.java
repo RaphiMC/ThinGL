@@ -35,16 +35,15 @@ import net.raphimc.thingl.drawbuilder.drawbatchdataholder.DrawBatchDataHolder;
 import net.raphimc.thingl.drawbuilder.index.IndexByteBuffer;
 import net.raphimc.thingl.drawbuilder.index.QuadIndexBuffer;
 import net.raphimc.thingl.program.RegularProgram;
-import net.raphimc.thingl.resource.buffer.AbstractBuffer;
 import net.raphimc.thingl.resource.buffer.Buffer;
 import net.raphimc.thingl.resource.buffer.ImmutableBuffer;
+import net.raphimc.thingl.resource.buffer.MutableBuffer;
 import net.raphimc.thingl.resource.program.Program;
 import net.raphimc.thingl.resource.vertexarray.VertexArray;
 import net.raphimc.thingl.util.BufferUtil;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.lwjgl.opengl.GL11C;
-import org.lwjgl.opengl.GL45C;
 import org.lwjgl.system.MemoryUtil;
 import org.lwjgl.util.meshoptimizer.MeshOptimizer;
 
@@ -197,52 +196,42 @@ public class BufferRenderer {
 
     public static BuiltBuffer buildTemporaryBuffer(final PreparedBuffer preparedBuffer) {
         final DrawBatch drawBatch = preparedBuffer.drawBatch();
-        final VertexArray vertexArray = ThinGL.immediateVertexArrays().getVertexArray(drawBatch.vertexDataLayout());
+        final VertexArray vertexArray = ThinGL.immediateVertexArrays().getVertexArray(drawBatch.vertexDataLayout(), drawBatch.instanceVertexDataLayout());
 
         if (preparedBuffer.indexBuffer() != null) {
             final ByteBuffer indexData = preparedBuffer.indexBuffer().buffer();
             if (indexData == ThinGL.quadIndexBuffer().getSharedData()) {
                 vertexArray.setIndexBuffer(preparedBuffer.indexBuffer().type(), ThinGL.quadIndexBuffer().getSharedBuffer());
             } else {
-                final Buffer indexBuffer = ThinGL.gpuBufferPool().borrowBuffer();
-                if (indexBuffer.getSize() < indexData.remaining()) {
-                    indexBuffer.setSize(indexData.remaining());
-                }
-                indexBuffer.upload(0, indexData);
+                final MutableBuffer indexBuffer = ThinGL.gpuBufferPool().borrowBuffer();
+                indexBuffer.ensureSize(indexData.remaining());
+                indexBuffer.upload(indexData);
                 vertexArray.setIndexBuffer(preparedBuffer.indexBuffer().type(), indexBuffer);
             }
         }
 
         final ByteBuffer vertexData = preparedBuffer.vertexBuffer();
-        final Buffer vertexBuffer = (Buffer) vertexArray.getVertexBuffers().get(0);
-        if (vertexBuffer.getSize() < vertexData.remaining()) {
-            vertexBuffer.setSize(vertexData.remaining());
-        }
-        vertexBuffer.upload(0, vertexData);
+        final MutableBuffer vertexBuffer = (MutableBuffer) vertexArray.getVertexBuffers().get(0);
+        vertexBuffer.ensureSize(vertexData.remaining());
+        vertexBuffer.upload(vertexData);
 
         final ByteBuffer instanceVertexData = preparedBuffer.instanceVertexBuffer();
         if (instanceVertexData != null) {
-            final Buffer instanceVertexBuffer = ThinGL.gpuBufferPool().borrowBuffer();
-            if (instanceVertexBuffer.getSize() < instanceVertexData.remaining()) {
-                instanceVertexBuffer.setSize(instanceVertexData.remaining());
-            }
-            instanceVertexBuffer.upload(0, instanceVertexData);
-            vertexArray.setVertexBuffer(1, instanceVertexBuffer, 0, drawBatch.instanceVertexDataLayout().getSize());
-            vertexArray.configureVertexDataLayout(1, drawBatch.vertexDataLayout().getElements().length, drawBatch.instanceVertexDataLayout(), 1);
+            final MutableBuffer instanceVertexBuffer = (MutableBuffer) vertexArray.getVertexBuffers().get(1);
+            instanceVertexBuffer.ensureSize(instanceVertexData.remaining());
+            instanceVertexBuffer.upload(instanceVertexData);
         }
 
-        final Object2ObjectMap<String, AbstractBuffer> shaderDataBuffers = new Object2ObjectOpenHashMap<>();
+        final Object2ObjectMap<String, Buffer> shaderDataBuffers = new Object2ObjectOpenHashMap<>();
         for (Map.Entry<String, ByteBuffer> entry : preparedBuffer.shaderDataBuffers().entrySet()) {
             final ByteBuffer ssboData = entry.getValue();
-            final Buffer ssboBuffer = ThinGL.gpuBufferPool().borrowBuffer();
-            if (ssboBuffer.getSize() < ssboData.remaining()) {
-                ssboBuffer.setSize(ssboData.remaining());
-            }
-            ssboBuffer.upload(0, ssboData);
+            final MutableBuffer ssboBuffer = ThinGL.gpuBufferPool().borrowBuffer();
+            ssboBuffer.ensureSize(ssboData.remaining());
+            ssboBuffer.upload(ssboData);
             shaderDataBuffers.put(entry.getKey(), ssboBuffer);
         }
 
-        Buffer commandBuffer = null;
+        MutableBuffer commandBuffer = null;
         if (preparedBuffer.drawCommands().size() > 1) {
             final BufferBuilder commandBufferBuilder = ThinGL.bufferBuilderPool().borrowBufferBuilder();
             commandBufferBuilder.ensureHasEnoughSpace(preparedBuffer.drawCommands().size() * DrawCommand.BYTES);
@@ -251,10 +240,8 @@ public class BufferRenderer {
             }
             final ByteBuffer commandData = commandBufferBuilder.finish();
             commandBuffer = ThinGL.gpuBufferPool().borrowBuffer();
-            if (commandBuffer.getSize() < commandData.remaining()) {
-                commandBuffer.setSize(commandData.remaining());
-            }
-            commandBuffer.upload(0, commandData);
+            commandBuffer.ensureSize(commandData.remaining());
+            commandBuffer.upload(commandData);
             ThinGL.bufferBuilderPool().returnBufferBuilder(commandBufferBuilder);
         }
 
@@ -266,26 +253,16 @@ public class BufferRenderer {
         final VertexArray vertexArray = builtBuffer.vertexArray();
         if (vertexArray.getIndexBuffer() != null) {
             if (vertexArray.getIndexBuffer() != ThinGL.quadIndexBuffer().getSharedBuffer()) {
-                ThinGL.gpuBufferPool().returnBuffer((Buffer) vertexArray.getIndexBuffer());
+                ThinGL.gpuBufferPool().returnBuffer((MutableBuffer) vertexArray.getIndexBuffer());
             }
             vertexArray.setIndexBuffer(0, null);
         }
 
-        if (vertexArray.getVertexBuffers().containsKey(1)) {
-            ThinGL.gpuBufferPool().returnBuffer((Buffer) vertexArray.getVertexBuffers().get(1));
-            vertexArray.setVertexBuffer(1, null, 0, 0);
-            int vertexAttribIndex = builtBuffer.drawBatch().vertexDataLayout().getElements().length;
-            while (GL45C.glGetVertexArrayIndexedi(vertexArray.getGlId(), vertexAttribIndex, GL45C.GL_VERTEX_ATTRIB_ARRAY_ENABLED) == GL11C.GL_TRUE) {
-                GL45C.glDisableVertexArrayAttrib(vertexArray.getGlId(), vertexAttribIndex);
-                vertexAttribIndex++;
-            }
-        }
-
-        for (AbstractBuffer buffer : builtBuffer.shaderDataBuffers().values()) {
-            ThinGL.gpuBufferPool().returnBuffer((Buffer) buffer);
+        for (Buffer buffer : builtBuffer.shaderDataBuffers().values()) {
+            ThinGL.gpuBufferPool().returnBuffer((MutableBuffer) buffer);
         }
         if (builtBuffer.commandBuffer() != null) {
-            ThinGL.gpuBufferPool().returnBuffer((Buffer) builtBuffer.commandBuffer());
+            ThinGL.gpuBufferPool().returnBuffer((MutableBuffer) builtBuffer.commandBuffer());
         }
     }
 
@@ -298,27 +275,27 @@ public class BufferRenderer {
             if (indexData == ThinGL.quadIndexBuffer().getSharedData()) {
                 vertexArray.setIndexBuffer(preparedBuffer.indexBuffer().type(), ThinGL.quadIndexBuffer().getSharedBuffer());
             } else {
-                final AbstractBuffer indexBuffer = new ImmutableBuffer(indexData, 0);
+                final Buffer indexBuffer = new ImmutableBuffer(indexData, 0);
                 vertexArray.setIndexBuffer(preparedBuffer.indexBuffer().type(), indexBuffer);
             }
         }
 
-        final AbstractBuffer vertexBuffer = new ImmutableBuffer(preparedBuffer.vertexBuffer(), 0);
+        final Buffer vertexBuffer = new ImmutableBuffer(preparedBuffer.vertexBuffer(), 0);
         vertexArray.setVertexBuffer(0, vertexBuffer, 0, drawBatch.vertexDataLayout().getSize());
         vertexArray.configureVertexDataLayout(0, 0, drawBatch.vertexDataLayout(), 0);
 
         if (preparedBuffer.instanceVertexBuffer() != null) {
-            final AbstractBuffer instanceBuffer = new ImmutableBuffer(preparedBuffer.instanceVertexBuffer(), 0);
-            vertexArray.setVertexBuffer(1, instanceBuffer, 0, drawBatch.instanceVertexDataLayout().getSize());
+            final Buffer instanceVertexBuffer = new ImmutableBuffer(preparedBuffer.instanceVertexBuffer(), 0);
+            vertexArray.setVertexBuffer(1, instanceVertexBuffer, 0, drawBatch.instanceVertexDataLayout().getSize());
             vertexArray.configureVertexDataLayout(1, drawBatch.vertexDataLayout().getElements().length, drawBatch.instanceVertexDataLayout(), 1);
         }
 
-        final Object2ObjectMap<String, AbstractBuffer> shaderDataBuffers = new Object2ObjectOpenHashMap<>();
+        final Object2ObjectMap<String, Buffer> shaderDataBuffers = new Object2ObjectOpenHashMap<>();
         for (Map.Entry<String, ByteBuffer> entry : preparedBuffer.shaderDataBuffers().entrySet()) {
             shaderDataBuffers.put(entry.getKey(), new ImmutableBuffer(entry.getValue(), 0));
         }
 
-        AbstractBuffer commandBuffer = null;
+        Buffer commandBuffer = null;
         if (preparedBuffer.drawCommands().size() > 1) {
             final BufferBuilder commandBufferBuilder = ThinGL.bufferBuilderPool().borrowBufferBuilder();
             commandBufferBuilder.ensureHasEnoughSpace(preparedBuffer.drawCommands().size() * DrawCommand.BYTES);
@@ -354,7 +331,7 @@ public class BufferRenderer {
                 if (COLOR_MODIFIER != null) {
                     program.setUniformVector4f("u_ColorModifier", COLOR_MODIFIER);
                 }
-                for (Map.Entry<String, AbstractBuffer> entry : builtBuffer.shaderDataBuffers().entrySet()) {
+                for (Map.Entry<String, Buffer> entry : builtBuffer.shaderDataBuffers().entrySet()) {
                     program.setShaderStorageBuffer(entry.getKey(), entry.getValue());
                 }
             }

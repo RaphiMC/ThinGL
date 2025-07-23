@@ -29,7 +29,7 @@ public class ObjectOutliningExample extends StandaloneApplicationRunner {
     }
 
     public ObjectOutliningExample() {
-        super(new Configuration().setWindowTitle("ThinGL Example - Object outlining").setDebugMode(true));
+        super(new Configuration().setWindowTitle("ThinGL Example - Object outlining").setExtendedDebugMode(true));
     }
 
     @Override

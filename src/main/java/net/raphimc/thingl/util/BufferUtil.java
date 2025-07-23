@@ -18,10 +18,9 @@
 
 package net.raphimc.thingl.util;
 
-import net.raphimc.thingl.resource.buffer.AbstractBuffer;
 import net.raphimc.thingl.resource.buffer.Buffer;
 import net.raphimc.thingl.resource.buffer.ImmutableBuffer;
-import org.lwjgl.opengl.GL45C;
+import net.raphimc.thingl.resource.buffer.MutableBuffer;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
@@ -30,51 +29,50 @@ public class BufferUtil {
 
     public static final long DEFAULT_BUFFER_SIZE = 256 * 1024L;
 
-    public static AbstractBuffer uploadResizing(AbstractBuffer abstractBuffer, final ByteBuffer data) {
-        abstractBuffer = ensureSize(abstractBuffer, data.remaining());
-        abstractBuffer.upload(0, data);
-        return abstractBuffer;
+    public static Buffer uploadResizing(Buffer buffer, final ByteBuffer dataBuffer) {
+        buffer = ensureSize(buffer, dataBuffer.remaining());
+        buffer.upload(dataBuffer);
+        return buffer;
     }
 
-    public static AbstractBuffer resize(final AbstractBuffer abstractBuffer, final long size) {
-        if (abstractBuffer.getSize() >= size) {
-            return abstractBuffer;
+    public static Buffer resize(final Buffer buffer, final long size) {
+        if (buffer.getSize() >= size) {
+            return buffer;
         }
 
-        if (abstractBuffer instanceof ImmutableBuffer buffer) {
-            final ImmutableBuffer newBuffer = new ImmutableBuffer(size, buffer.getFlags());
-            newBuffer.setDebugName(buffer.getDebugName());
-            GL45C.glCopyNamedBufferSubData(buffer.getGlId(), newBuffer.getGlId(), 0, 0, buffer.getSize());
-            buffer.free();
+        if (buffer instanceof ImmutableBuffer immutableBuffer) {
+            final ImmutableBuffer newBuffer = new ImmutableBuffer(size, immutableBuffer.getFlags());
+            newBuffer.setDebugName(immutableBuffer.getDebugName());
+            immutableBuffer.copyTo(newBuffer, 0, 0, immutableBuffer.getSize());
+            immutableBuffer.free();
             return newBuffer;
-        } else if (abstractBuffer instanceof Buffer buffer) {
-            final Buffer newBuffer = new Buffer(size, buffer.getUsage());
-            newBuffer.setDebugName(buffer.getDebugName());
-            GL45C.glCopyNamedBufferSubData(buffer.getGlId(), newBuffer.getGlId(), 0, 0, buffer.getSize());
-            buffer.free();
+        } else if (buffer instanceof MutableBuffer mutableBuffer) {
+            final MutableBuffer newBuffer = new MutableBuffer(size, mutableBuffer.getUsage());
+            newBuffer.setDebugName(mutableBuffer.getDebugName());
+            mutableBuffer.copyTo(newBuffer, 0, 0, mutableBuffer.getSize());
+            mutableBuffer.free();
             return newBuffer;
         } else {
-            throw new IllegalArgumentException("Unsupported buffer type " + abstractBuffer.getClass().getSimpleName());
+            throw new IllegalArgumentException("Unsupported buffer type " + buffer.getClass().getSimpleName());
         }
     }
 
-    private static AbstractBuffer ensureSize(final AbstractBuffer abstractBuffer, final long size) {
-        if (abstractBuffer instanceof ImmutableBuffer buffer) {
-            if (buffer.getSize() < size) {
-                final String debugName = buffer.getDebugName();
-                buffer.free();
-                final ImmutableBuffer newBuffer = new ImmutableBuffer(size, buffer.getFlags());
+    private static Buffer ensureSize(final Buffer buffer, final long size) {
+        if (buffer instanceof ImmutableBuffer immutableBuffer) {
+            if (immutableBuffer.getSize() < size) {
+                final String debugName = immutableBuffer.getDebugName();
+                final int flags = immutableBuffer.getFlags();
+                immutableBuffer.free();
+                final ImmutableBuffer newBuffer = new ImmutableBuffer(size, flags);
                 newBuffer.setDebugName(debugName);
                 return newBuffer;
             }
-            return buffer;
-        } else if (abstractBuffer instanceof Buffer buffer) {
-            if (buffer.getSize() < size) {
-                buffer.setSize(size);
-            }
-            return buffer;
+            return immutableBuffer;
+        } else if (buffer instanceof MutableBuffer mutableBuffer) {
+            mutableBuffer.ensureSize(size);
+            return mutableBuffer;
         } else {
-            throw new IllegalArgumentException("Unsupported buffer type " + abstractBuffer.getClass().getSimpleName());
+            throw new IllegalArgumentException("Unsupported buffer type " + buffer.getClass().getSimpleName());
         }
     }
 

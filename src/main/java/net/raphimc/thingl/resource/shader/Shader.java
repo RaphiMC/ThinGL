@@ -24,7 +24,7 @@ import org.lwjgl.opengl.*;
 
 public class Shader extends GLObject {
 
-    private final int type;
+    private Integer type;
     private String source;
 
     public Shader(final Type type, final String source) {
@@ -41,8 +41,6 @@ public class Shader extends GLObject {
 
     protected Shader(final int glId) {
         super(glId);
-        this.type = GL20C.glGetShaderi(glId, GL20C.GL_SHADER_TYPE);
-        this.refreshCachedData();
     }
 
     public static Shader fromGlId(final int glId) {
@@ -52,18 +50,13 @@ public class Shader extends GLObject {
         return new Shader(glId);
     }
 
-    @Override
-    public void refreshCachedData() {
-        this.source = GL20C.glGetShaderSource(this.getGlId());
-    }
-
     public void compile() {
         GL20C.glCompileShader(this.getGlId());
         final String compileLog = GL20C.glGetShaderInfoLog(this.getGlId());
         if (GL20C.glGetShaderi(this.getGlId(), GL20C.GL_COMPILE_STATUS) == GL11C.GL_FALSE) {
             throw new IllegalStateException("Error compiling shader: " + compileLog);
         } else if (!compileLog.isBlank()) {
-            ThinGL.LOGGER.warn("Shader compileLog: " + compileLog);
+            ThinGL.LOGGER.warn("Shader compile log: " + compileLog);
         }
     }
 
@@ -78,14 +71,20 @@ public class Shader extends GLObject {
     }
 
     public int getType() {
+        if (this.type == null) {
+            this.type = GL20C.glGetShaderi(this.getGlId(), GL20C.GL_SHADER_TYPE);
+        }
         return this.type;
     }
 
     public Type getTypeEnum() {
-        return Type.fromGlType(this.type);
+        return Type.fromGlType(this.getType());
     }
 
     public String getSource() {
+        if (this.source == null) {
+            this.source = GL20C.glGetShaderSource(this.getGlId());
+        }
         return this.source;
     }
 

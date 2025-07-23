@@ -64,7 +64,11 @@ public class GLStateManager {
     }
 
     public void setBlendFunc(final int srcRGB, final int dstRGB, final int srcAlpha, final int dstAlpha) {
-        GL14C.glBlendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha);
+        if (srcRGB == srcAlpha && dstRGB == dstAlpha) {
+            GL11C.glBlendFunc(srcRGB, dstRGB);
+        } else {
+            GL14C.glBlendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha);
+        }
     }
 
     public int getDepthFunc() {
@@ -94,6 +98,26 @@ public class GLStateManager {
 
     public void setDepthMask(final boolean state) {
         GL11C.glDepthMask(state);
+    }
+
+    public StencilMask getStencilMask() {
+        return new StencilMask(
+                GL11C.glGetInteger(GL11C.GL_STENCIL_WRITEMASK),
+                GL11C.glGetInteger(GL20C.GL_STENCIL_BACK_WRITEMASK)
+        );
+    }
+
+    public void setStencilMask(final int mask) {
+        this.setStencilMask(mask, mask);
+    }
+
+    public void setStencilMask(final int front, final int back) {
+        if (front == back) {
+            GL11C.glStencilMask(front);
+        } else {
+            GL20C.glStencilMaskSeparate(GL11C.GL_FRONT, front);
+            GL20C.glStencilMaskSeparate(GL11C.GL_BACK, back);
+        }
     }
 
     public Scissor getScissor() {
@@ -163,6 +187,9 @@ public class GLStateManager {
     }
 
     public record ColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
+    }
+
+    public record StencilMask(int front, int back) {
     }
 
     public record Scissor(int x, int y, int width, int height) {

@@ -16,28 +16,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.raphimc.thingl.resource.renderbuffer;
+package net.raphimc.thingl.resource.image.renderbuffer;
 
+import net.raphimc.thingl.resource.image.MultisampleImageStorage2D;
 import org.lwjgl.opengl.GL30C;
 import org.lwjgl.opengl.GL45C;
 
-public class MultisampleRenderBuffer extends AbstractRenderBuffer {
-
-    private final int samples;
+public class MultisampleRenderBuffer extends RenderBuffer implements MultisampleImageStorage2D {
 
     public MultisampleRenderBuffer(final int internalFormat, final int width, final int height, final int samples) {
-        super(internalFormat, width, height);
-        this.samples = samples;
-        GL45C.glNamedRenderbufferStorageMultisample(this.getGlId(), samples, internalFormat, width, height);
+        this.initialize(internalFormat, width, height, samples);
     }
 
     protected MultisampleRenderBuffer(final int glId) {
         super(glId);
-        this.samples = GL45C.glGetNamedRenderbufferParameteri(this.getGlId(), GL30C.GL_RENDERBUFFER_SAMPLES);
     }
 
+    public void initialize(final int internalFormat, final int width, final int height, final int samples) {
+        this.parameters.clear();
+        GL45C.glNamedRenderbufferStorageMultisample(this.getGlId(), samples, internalFormat, width, height);
+    }
+
+    @Override
     public int getSamples() {
-        return this.samples;
+        return this.getParameterInt(GL30C.GL_RENDERBUFFER_SAMPLES);
     }
 
 }

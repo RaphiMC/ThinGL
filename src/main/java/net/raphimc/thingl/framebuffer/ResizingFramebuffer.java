@@ -20,7 +20,7 @@ package net.raphimc.thingl.framebuffer;
 
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.resource.framebuffer.Framebuffer;
-import net.raphimc.thingl.resource.framebuffer.FramebufferAttachment;
+import net.raphimc.thingl.resource.image.ImageStorage;
 import org.lwjgl.opengl.GL30C;
 
 import java.util.function.BiConsumer;
@@ -28,21 +28,20 @@ import java.util.function.BiFunction;
 
 public abstract class ResizingFramebuffer extends Framebuffer {
 
-    private final BiFunction<Integer, Integer, FramebufferAttachment> colorAttachmentSupplier;
-    private final BiFunction<Integer, Integer, FramebufferAttachment> depthAttachmentSupplier;
-    private final BiFunction<Integer, Integer, FramebufferAttachment> stencilAttachmentSupplier;
+    private final BiFunction<Integer, Integer, ImageStorage> colorAttachmentSupplier;
+    private final BiFunction<Integer, Integer, ImageStorage> depthAttachmentSupplier;
+    private final BiFunction<Integer, Integer, ImageStorage> stencilAttachmentSupplier;
     private final BiConsumer<Integer, Integer> framebufferResizeCallback = this::resize;
 
-    public ResizingFramebuffer(final BiFunction<Integer, Integer, FramebufferAttachment> colorAttachmentSupplier) {
+    public ResizingFramebuffer(final BiFunction<Integer, Integer, ImageStorage> colorAttachmentSupplier) {
         this(colorAttachmentSupplier, null, null);
     }
 
-    public ResizingFramebuffer(final BiFunction<Integer, Integer, FramebufferAttachment> colorAttachmentSupplier, final BiFunction<Integer, Integer, FramebufferAttachment> depthStencilAttachmentSupplier) {
+    public ResizingFramebuffer(final BiFunction<Integer, Integer, ImageStorage> colorAttachmentSupplier, final BiFunction<Integer, Integer, ImageStorage> depthStencilAttachmentSupplier) {
         this(colorAttachmentSupplier, depthStencilAttachmentSupplier, depthStencilAttachmentSupplier);
     }
 
-    public ResizingFramebuffer(final BiFunction<Integer, Integer, FramebufferAttachment> colorAttachmentSupplier, final BiFunction<Integer, Integer, FramebufferAttachment> depthAttachmentSupplier, BiFunction<Integer, Integer, FramebufferAttachment> stencilAttachmentSupplier) {
-        super(null);
+    public ResizingFramebuffer(final BiFunction<Integer, Integer, ImageStorage> colorAttachmentSupplier, final BiFunction<Integer, Integer, ImageStorage> depthAttachmentSupplier, BiFunction<Integer, Integer, ImageStorage> stencilAttachmentSupplier) {
         this.colorAttachmentSupplier = colorAttachmentSupplier;
         this.depthAttachmentSupplier = depthAttachmentSupplier;
         this.stencilAttachmentSupplier = stencilAttachmentSupplier;
@@ -64,14 +63,17 @@ public abstract class ResizingFramebuffer extends Framebuffer {
         try {
             this.freeContainingObjects();
             this.setAttachment(GL30C.GL_COLOR_ATTACHMENT0, this.colorAttachmentSupplier.apply(width, height));
-            if (this.stencilAttachmentSupplier == this.depthAttachmentSupplier && this.depthAttachmentSupplier != null) {
+            if (this.depthAttachmentSupplier == this.stencilAttachmentSupplier && this.depthAttachmentSupplier != null) {
                 this.setAttachment(GL30C.GL_DEPTH_STENCIL_ATTACHMENT, this.depthAttachmentSupplier.apply(width, height));
-            } else if (this.depthAttachmentSupplier != null) {
-                this.setAttachment(GL30C.GL_DEPTH_ATTACHMENT, this.depthAttachmentSupplier.apply(width, height));
-            } else if (this.stencilAttachmentSupplier != null) {
-                this.setAttachment(GL30C.GL_STENCIL_ATTACHMENT, this.stencilAttachmentSupplier.apply(width, height));
+            } else {
+                if (this.depthAttachmentSupplier != null) {
+                    this.setAttachment(GL30C.GL_DEPTH_ATTACHMENT, this.depthAttachmentSupplier.apply(width, height));
+                }
+                if (this.stencilAttachmentSupplier != null) {
+                    this.setAttachment(GL30C.GL_STENCIL_ATTACHMENT, this.stencilAttachmentSupplier.apply(width, height));
+                }
             }
-            this.checkFramebufferStatus();
+            this.checkStatus();
             this.clear();
         } catch (Throwable e) {
             this.freeFully();
