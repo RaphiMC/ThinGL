@@ -94,6 +94,7 @@ public class AWTUtil {
             final FramebufferRenderer frameBuilder = new FramebufferRenderer(width, height, false);
             final Texture2D frameBuilderTexture = frameBuilder.getColorAttachment();
             frameBuilder.begin();
+            DefaultGLStates.push();
             try {
                 int relativeTime = 0;
                 for (int frameIndex = 0; frameIndex < frameCount; frameIndex++) {
@@ -139,6 +140,7 @@ public class AWTUtil {
                 throw e;
             } finally {
                 frameBuilder.end();
+                DefaultGLStates.pop();
                 frameBuilder.free();
                 partialTexture.free();
             }
@@ -181,6 +183,7 @@ public class AWTUtil {
             final Texture2D partialTexture = new Texture2D(GL11C.GL_RGBA8, width, height);
             final FramebufferRenderer frameBuilder = new FramebufferRenderer(width, height, false);
             final Texture2D frameBuilderTexture = frameBuilder.getColorAttachment();
+            DefaultGLStates.push();
             frameBuilder.begin();
             try {
                 int relativeTime = 0;
@@ -215,6 +218,7 @@ public class AWTUtil {
                 throw e;
             } finally {
                 frameBuilder.end();
+                DefaultGLStates.pop();
                 frameBuilder.free();
                 partialTexture.free();
             }

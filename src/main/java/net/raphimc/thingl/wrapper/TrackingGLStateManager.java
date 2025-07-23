@@ -27,11 +27,14 @@ public class TrackingGLStateManager extends GLStateManager {
     private final Int2BooleanMap capabilities = new Int2BooleanOpenHashMap();
     private BlendFunc blendFunc;
     private Integer depthFunc;
+    private Integer blendEquation;
     private ColorMask colorMask;
     private Boolean depthMask;
     private StencilMask stencilMask;
     private Scissor scissor;
     private Viewport viewport;
+    private Integer cullFace;
+    private Integer frontFace;
     private Integer logicOp;
     private PolygonOffset polygonOffset;
     private final Int2IntMap pixelStores = new Int2IntOpenHashMap();
@@ -97,6 +100,26 @@ public class TrackingGLStateManager extends GLStateManager {
 
     public void clearDepthFuncCache() {
         this.depthFunc = null;
+    }
+
+    @Override
+    public int getBlendEquation() {
+        if (this.blendEquation == null) {
+            this.blendEquation = super.getBlendEquation();
+        }
+        return this.blendEquation;
+    }
+
+    @Override
+    public void setBlendEquation(final int mode) {
+        if (this.getBlendEquation() != mode) {
+            this.blendEquation = mode;
+            super.setBlendEquation(mode);
+        }
+    }
+
+    public void clearBlendEquationCache() {
+        this.blendEquation = null;
     }
 
     @Override
@@ -201,6 +224,46 @@ public class TrackingGLStateManager extends GLStateManager {
 
     public void clearViewportCache() {
         this.viewport = null;
+    }
+
+    @Override
+    public int getCullFace() {
+        if (this.cullFace == null) {
+            this.cullFace = super.getCullFace();
+        }
+        return this.cullFace;
+    }
+
+    @Override
+    public void setCullFace(final int mode) {
+        if (this.getCullFace() != mode) {
+            this.cullFace = mode;
+            super.setCullFace(mode);
+        }
+    }
+
+    public void clearCullFaceCache() {
+        this.cullFace = null;
+    }
+
+    @Override
+    public int getFrontFace() {
+        if (this.frontFace == null) {
+            this.frontFace = super.getFrontFace();
+        }
+        return this.frontFace;
+    }
+
+    @Override
+    public void setFrontFace(final int dir) {
+        if (this.getFrontFace() != dir) {
+            this.frontFace = dir;
+            super.setFrontFace(dir);
+        }
+    }
+
+    public void clearFrontFaceCache() {
+        this.frontFace = null;
     }
 
     @Override

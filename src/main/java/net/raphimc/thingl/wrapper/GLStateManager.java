@@ -73,6 +73,14 @@ public class GLStateManager {
         GL11C.glDepthFunc(func);
     }
 
+    public int getBlendEquation() {
+        return GL11C.glGetInteger(GL14C.GL_BLEND_EQUATION);
+    }
+
+    public void setBlendEquation(final int mode) {
+        GL14C.glBlendEquation(mode);
+    }
+
     public ColorMask getColorMask() {
         final int[] colorMask = new int[4];
         GL11C.glGetIntegerv(GL11C.GL_COLOR_WRITEMASK, colorMask);
@@ -132,6 +140,22 @@ public class GLStateManager {
 
     public void setViewport(final int x, final int y, final int width, final int height) {
         GL11C.glViewport(x, y, width, height);
+    }
+
+    public int getCullFace() {
+        return GL11C.glGetInteger(GL11C.GL_CULL_FACE_MODE);
+    }
+
+    public void setCullFace(final int mode) {
+        GL11C.glCullFace(mode);
+    }
+
+    public int getFrontFace() {
+        return GL11C.glGetInteger(GL11C.GL_FRONT_FACE);
+    }
+
+    public void setFrontFace(final int dir) {
+        GL11C.glFrontFace(dir);
     }
 
     public int getLogicOp() {

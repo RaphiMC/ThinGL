@@ -31,11 +31,14 @@ public class GLStateStack {
     private final Stack<Int2BooleanMap> capabilitiesStack = new Stack<>();
     private final Stack<GLStateManager.BlendFunc> blendFuncStack = new Stack<>();
     private final IntStack depthFuncStack = new IntArrayList();
+    private final IntStack blendEquationStack = new IntArrayList();
     private final Stack<GLStateManager.ColorMask> colorMaskStack = new Stack<>();
     private final BooleanStack depthMaskStack = new BooleanArrayList();
     private final Stack<GLStateManager.StencilMask> stencilMaskStack = new Stack<>();
     private final Stack<GLStateManager.Scissor> scissorStack = new Stack<>();
     private final Stack<GLStateManager.Viewport> viewportStack = new Stack<>();
+    private final IntStack cullFaceStack = new IntArrayList();
+    private final IntStack frontFaceStack = new IntArrayList();
     private final IntStack logicOpStack = new IntArrayList();
     private final Stack<GLStateManager.PolygonOffset> polygonOffsetStack = new Stack<>();
     private final Stack<Int2IntMap> pixelStoresStack = new Stack<>();
@@ -57,6 +60,10 @@ public class GLStateStack {
                 while (!this.depthFuncStack.isEmpty()) this.popDepthFunc();
                 ThinGL.LOGGER.warn("GLStateStack depth func stack was not empty at the end of the frame!");
             }
+            if (!this.blendEquationStack.isEmpty()) {
+                while (!this.blendEquationStack.isEmpty()) this.popBlendEquation();
+                ThinGL.LOGGER.warn("GLStateStack blend equation stack was not empty at the end of the frame!");
+            }
             if (!this.colorMaskStack.isEmpty()) {
                 while (!this.colorMaskStack.isEmpty()) this.popColorMask();
                 ThinGL.LOGGER.warn("GLStateStack color mask stack was not empty at the end of the frame!");
@@ -76,6 +83,14 @@ public class GLStateStack {
             if (!this.viewportStack.isEmpty()) {
                 while (!this.viewportStack.isEmpty()) this.popViewport();
                 ThinGL.LOGGER.warn("GLStateStack viewport stack was not empty at the end of the frame!");
+            }
+            if (!this.cullFaceStack.isEmpty()) {
+                while (!this.cullFaceStack.isEmpty()) this.popCullFace();
+                ThinGL.LOGGER.warn("GLStateStack cull face stack was not empty at the end of the frame!");
+            }
+            if (!this.frontFaceStack.isEmpty()) {
+                while (!this.frontFaceStack.isEmpty()) this.popFrontFace();
+                ThinGL.LOGGER.warn("GLStateStack front face stack was not empty at the end of the frame!");
             }
             if (!this.logicOpStack.isEmpty()) {
                 while (!this.logicOpStack.isEmpty()) this.popLogicOp();
@@ -148,6 +163,14 @@ public class GLStateStack {
         ThinGL.glStateManager().setDepthFunc(this.depthFuncStack.popInt());
     }
 
+    public void pushBlendEquation() {
+        this.blendEquationStack.push(ThinGL.glStateManager().getBlendEquation());
+    }
+
+    public void popBlendEquation() {
+        ThinGL.glStateManager().setBlendEquation(this.blendEquationStack.popInt());
+    }
+
     public void pushColorMask() {
         this.colorMaskStack.push(ThinGL.glStateManager().getColorMask());
     }
@@ -190,6 +213,22 @@ public class GLStateStack {
     public void popViewport() {
         final GLStateManager.Viewport viewport = this.viewportStack.pop();
         ThinGL.glStateManager().setViewport(viewport.x(), viewport.y(), viewport.width(), viewport.height());
+    }
+
+    public void pushCullFace() {
+        this.cullFaceStack.push(ThinGL.glStateManager().getCullFace());
+    }
+
+    public void popCullFace() {
+        ThinGL.glStateManager().setCullFace(this.cullFaceStack.popInt());
+    }
+
+    public void pushFrontFace() {
+        this.frontFaceStack.push(ThinGL.glStateManager().getFrontFace());
+    }
+
+    public void popFrontFace() {
+        ThinGL.glStateManager().setFrontFace(this.frontFaceStack.popInt());
     }
 
     public void pushLogicOp() {
