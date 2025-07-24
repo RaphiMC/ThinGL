@@ -120,7 +120,7 @@ public class AWTUtil {
                     final int imageTopPosition = Integer.parseInt(imageDescriptorNode.getAttributes().getNamedItem("imageTopPosition").getNodeValue());
 
                     AWTUtil.uploadBufferedImageToTexture2D(partialTexture, 0, 0, frame);
-                    ThinGL.renderer2D().texture(RenderMathUtil.getIdentityMatrix(), partialTexture.getGlId(), imageLeftPosition, imageTopPosition, frame.getWidth(), frame.getHeight(), 0, 0, frame.getWidth(), frame.getHeight(), partialTexture.getWidth(), partialTexture.getHeight());
+                    ThinGL.renderer2D().texture(RenderMathUtil.getIdentityMatrix(), partialTexture, imageLeftPosition, imageTopPosition, frame.getWidth(), frame.getHeight(), 0, 0, frame.getWidth(), frame.getHeight());
                     for (int y = 0; y < sequencedTexture.getHeight(); y++) { // Copy to the image while flipping it vertically
                         frameBuilderTexture.copyTo(sequencedTexture, 0, sequencedTexture.getHeight() - 1 - y, 0, y, frameIndex, sequencedTexture.getWidth(), 1);
                     }
@@ -196,7 +196,7 @@ public class AWTUtil {
 
                     AWTUtil.uploadBufferedImageToTexture2D(partialTexture, 0, 0, frame);
                     if (blend) {
-                        ThinGL.renderer2D().texture(RenderMathUtil.getIdentityMatrix(), partialTexture.getGlId(), bounds.x, bounds.y, frame.getWidth(), frame.getHeight(), 0, 0, frame.getWidth(), frame.getHeight(), partialTexture.getWidth(), partialTexture.getHeight());
+                        ThinGL.renderer2D().texture(RenderMathUtil.getIdentityMatrix(), partialTexture, bounds.x, bounds.y, frame.getWidth(), frame.getHeight(), 0, 0, frame.getWidth(), frame.getHeight());
                     } else {
                         for (int y = 0; y < frame.getHeight(); y++) { // Copy to the frame builder while flipping it vertically
                             partialTexture.copyTo(frameBuilderTexture, 0, y, bounds.x, frameBuilderTexture.getHeight() - 1 - bounds.y - y, frame.getWidth(), 1);

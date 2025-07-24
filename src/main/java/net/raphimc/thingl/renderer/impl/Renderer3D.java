@@ -25,6 +25,7 @@ import net.raphimc.thingl.drawbuilder.DrawMode;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.VertexDataHolder;
 import net.raphimc.thingl.renderer.Primitives;
 import net.raphimc.thingl.renderer.Renderer;
+import net.raphimc.thingl.resource.image.texture.CubeMapTexture;
 import net.raphimc.thingl.util.CacheUtil;
 import org.joml.Matrix4f;
 import org.joml.Vector3d;
@@ -228,8 +229,8 @@ public class Renderer3D extends Renderer {
         this.drawIfNotBuffering();
     }
 
-    public void skyBox(final int id) {
-        final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(this.skyBox.apply(id));
+    public void skyBox(final CubeMapTexture cubeMapTexture) {
+        final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(this.skyBox.apply(cubeMapTexture.getGlId()));
 
         // Right face (+X)
         vertexDataHolder.putVector3f(1F, 1F, 1F).endVertex();

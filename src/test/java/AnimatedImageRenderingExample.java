@@ -54,7 +54,7 @@ public class AnimatedImageRenderingExample extends StandaloneApplicationRunner {
     @Override
     protected void render(final Matrix4fStack positionMatrix) {
         final int time = (int) (System.currentTimeMillis() - this.startTime);
-        ThinGL.renderer2D().textureArrayLayer(positionMatrix, this.image.getGlId(), this.image.getFrame(time), 50, 50, this.image.getWidth(), this.image.getHeight());
+        ThinGL.renderer2D().textureArrayLayer(positionMatrix, this.image, this.image.getFrame(time), 50, 50);
     }
 
 }

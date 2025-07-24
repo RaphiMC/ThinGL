@@ -49,7 +49,7 @@ public class BlurExample extends StandaloneApplicationRunner {
 
     @Override
     protected void render(final Matrix4fStack positionMatrix) {
-        ThinGL.renderer2D().texture(positionMatrix, this.image.getGlId(), 50, 50, this.image.getWidth(), this.image.getHeight());
+        ThinGL.renderer2D().texture(positionMatrix, this.image, 50, 50);
 
         final float x = (System.currentTimeMillis() % 5000) / 5000F * (this.image.getWidth() * 1.25F);
         ThinGL.programs().getGaussianBlur().bindInput();

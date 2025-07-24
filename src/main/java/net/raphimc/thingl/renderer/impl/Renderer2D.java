@@ -31,6 +31,8 @@ import net.raphimc.thingl.drawbuilder.databuilder.holder.IndexDataHolder;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.VertexDataHolder;
 import net.raphimc.thingl.renderer.Primitives;
 import net.raphimc.thingl.renderer.Renderer;
+import net.raphimc.thingl.resource.image.texture.Texture2D;
+import net.raphimc.thingl.resource.image.texture.Texture2DArray;
 import net.raphimc.thingl.util.CacheUtil;
 import org.joml.Matrix4f;
 import org.joml.Vector2d;
@@ -548,21 +550,27 @@ public class Renderer2D extends Renderer {
         this.drawIfNotBuffering();
     }
 
-    public void texture(final Matrix4f positionMatrix, final int id, final float x, final float y, final float width, final float height) {
-        final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(this.textureQuad.apply(id));
+    public void texture(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y) {
+        this.texture(positionMatrix, texture, x, y, texture.getWidth(), texture.getHeight());
+    }
+
+    public void texture(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final float width, final float height) {
+        final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(this.textureQuad.apply(texture.getGlId()));
         this.texture(positionMatrix, vertexDataHolder, x, y, width, height, 0F, 0F, 1F, 1F);
         this.drawIfNotBuffering();
     }
 
-    public void texture(final Matrix4f positionMatrix, final int id, final float x, final float y, final float width, final float height, final float u, final float v, final float texWidth, final float texHeight) {
-        final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(this.textureQuad.apply(id));
-        this.texture(positionMatrix, vertexDataHolder, x, y, width, height, u / texWidth, v / texHeight, width / texWidth, height / texHeight);
-        this.drawIfNotBuffering();
+    public void texture(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final float width, final float height, final float u, final float v) {
+        this.texture(positionMatrix, texture, x, y, width, height, u, v, width, height);
     }
 
-    public void texture(final Matrix4f positionMatrix, final int id, final float x, final float y, final float width, final float height, final float u, final float v, final float uWidth, final float vHeight, final float texWidth, final float texHeight) {
-        final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(this.textureQuad.apply(id));
-        this.texture(positionMatrix, vertexDataHolder, x, y, width, height, u / texWidth, v / texHeight, uWidth / texWidth, vHeight / texHeight);
+    public void texture(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final float width, final float height, final float u, final float v, final float uWidth, final float vHeight) {
+        this.textureWithRawTexCoord(positionMatrix, texture, x, y, width, height, u / texture.getWidth(), v / texture.getHeight(), uWidth / texture.getWidth(), vHeight / texture.getHeight());
+    }
+
+    public void textureWithRawTexCoord(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final float width, final float height, final float u, final float v, final float uWidth, final float vHeight) {
+        final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(this.textureQuad.apply(texture.getGlId()));
+        this.texture(positionMatrix, vertexDataHolder, x, y, width, height, u, v, uWidth, vHeight);
         this.drawIfNotBuffering();
     }
 
@@ -573,21 +581,27 @@ public class Renderer2D extends Renderer {
         vertexDataHolder.putVector3f(positionMatrix, x, y, 0F).putTextureCoord(u, v).endVertex();
     }
 
-    public void textureArrayLayer(final Matrix4f positionMatrix, final int id, final int layer, final float x, final float y, final float width, final float height) {
-        final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(this.textureArrayLayerQuad.apply(id));
+    public void textureArrayLayer(final Matrix4f positionMatrix, final Texture2DArray texture, final int layer, final float x, final float y) {
+        this.textureArrayLayer(positionMatrix, texture, layer, x, y, texture.getWidth(), texture.getHeight());
+    }
+
+    public void textureArrayLayer(final Matrix4f positionMatrix, final Texture2DArray texture, final int layer, final float x, final float y, final float width, final float height) {
+        final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(this.textureArrayLayerQuad.apply(texture.getGlId()));
         this.textureArrayLayer(positionMatrix, vertexDataHolder, layer, x, y, width, height, 0F, 0F, 1F, 1F);
         this.drawIfNotBuffering();
     }
 
-    public void textureArrayLayer(final Matrix4f positionMatrix, final int id, final int layer, final float x, final float y, final float width, final float height, final float u, final float v, final float texWidth, final float texHeight) {
-        final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(this.textureArrayLayerQuad.apply(id));
-        this.textureArrayLayer(positionMatrix, vertexDataHolder, layer, x, y, width, height, u / texWidth, v / texHeight, width / texWidth, height / texHeight);
-        this.drawIfNotBuffering();
+    public void textureArrayLayer(final Matrix4f positionMatrix, final Texture2DArray texture, final int layer, final float x, final float y, final float width, final float height, final float u, final float v) {
+        this.textureArrayLayer(positionMatrix, texture, layer, x, y, width, height, u, v, width, height);
     }
 
-    public void textureArrayLayer(final Matrix4f positionMatrix, final int id, final int layer, final float x, final float y, final float width, final float height, final float u, final float v, final float uWidth, final float vHeight, final float texWidth, final float texHeight) {
-        final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(this.textureArrayLayerQuad.apply(id));
-        this.textureArrayLayer(positionMatrix, vertexDataHolder, layer, x, y, width, height, u / texWidth, v / texHeight, uWidth / texWidth, vHeight / texHeight);
+    public void textureArrayLayer(final Matrix4f positionMatrix, final Texture2DArray texture, final int layer, final float x, final float y, final float width, final float height, final float u, final float v, final float uWidth, final float vHeight) {
+        this.textureArrayLayerWithRawTexCoord(positionMatrix, texture, layer, x, y, width, height, u / texture.getWidth(), v / texture.getHeight(), uWidth / texture.getWidth(), vHeight / texture.getHeight());
+    }
+
+    public void textureArrayLayerWithRawTexCoord(final Matrix4f positionMatrix, final Texture2DArray texture, final int layer, final float x, final float y, final float width, final float height, final float u, final float v, final float uWidth, final float vHeight) {
+        final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(this.textureArrayLayerQuad.apply(texture.getGlId()));
+        this.textureArrayLayer(positionMatrix, vertexDataHolder, layer, x, y, width, height, u, v, uWidth, vHeight);
         this.drawIfNotBuffering();
     }
 
@@ -598,21 +612,27 @@ public class Renderer2D extends Renderer {
         vertexDataHolder.putVector3f(positionMatrix, x, y, 0F).putTextureCoord(u, v).putShort((short) layer).endVertex();
     }
 
-    public void coloredTexture(final Matrix4f positionMatrix, final int id, final float x, final float y, final float width, final float height, final Color color) {
-        final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(this.coloredTextureQuad.apply(id));
+    public void coloredTexture(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final Color color) {
+        this.coloredTexture(positionMatrix, texture, x, y, texture.getWidth(), texture.getHeight(), color);
+    }
+
+    public void coloredTexture(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final float width, final float height, final Color color) {
+        final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(this.coloredTextureQuad.apply(texture.getGlId()));
         this.coloredTexture(positionMatrix, vertexDataHolder, x, y, width, height, 0F, 0F, 1F, 1F, color);
         this.drawIfNotBuffering();
     }
 
-    public void coloredTexture(final Matrix4f positionMatrix, final int id, final float x, final float y, final float width, final float height, final float u, final float v, final float texWidth, final float texHeight, final Color color) {
-        final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(this.coloredTextureQuad.apply(id));
-        this.coloredTexture(positionMatrix, vertexDataHolder, x, y, width, height, u / texWidth, v / texHeight, width / texWidth, height / texHeight, color);
-        this.drawIfNotBuffering();
+    public void coloredTexture(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final float width, final float height, final float u, final float v, final Color color) {
+        this.coloredTexture(positionMatrix, texture, x, y, width, height, u, v, width, height, color);
     }
 
-    public void coloredTexture(final Matrix4f positionMatrix, final int id, final float x, final float y, final float width, final float height, final float u, final float v, final float uWidth, final float vHeight, final float texWidth, final float texHeight, final Color color) {
-        final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(this.coloredTextureQuad.apply(id));
-        this.coloredTexture(positionMatrix, vertexDataHolder, x, y, width, height, u / texWidth, v / texHeight, uWidth / texWidth, vHeight / texHeight, color);
+    public void coloredTexture(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final float width, final float height, final float u, final float v, final float uWidth, final float vHeight, final Color color) {
+        this.coloredTextureWithRawTexCoord(positionMatrix, texture, x, y, width, height, u / texture.getWidth(), v / texture.getHeight(), uWidth / texture.getWidth(), vHeight / texture.getHeight(), color);
+    }
+
+    public void coloredTextureWithRawTexCoord(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final float width, final float height, final float u, final float v, final float uWidth, final float vHeight, final Color color) {
+        final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(this.coloredTextureQuad.apply(texture.getGlId()));
+        this.coloredTexture(positionMatrix, vertexDataHolder, x, y, width, height, u, v, uWidth, vHeight, color);
         this.drawIfNotBuffering();
     }
 
@@ -623,21 +643,27 @@ public class Renderer2D extends Renderer {
         vertexDataHolder.putVector3f(positionMatrix, x, y, 0F).putColor(color).putTextureCoord(u, v).endVertex();
     }
 
-    public void colorizedTexture(final Matrix4f positionMatrix, final int id, final float x, final float y, final float width, final float height, final Color color) {
-        final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(this.colorizedTextureQuad.apply(id));
+    public void colorizedTexture(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final Color color) {
+        this.colorizedTexture(positionMatrix, texture, x, y, texture.getWidth(), texture.getHeight(), color);
+    }
+
+    public void colorizedTexture(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final float width, final float height, final Color color) {
+        final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(this.colorizedTextureQuad.apply(texture.getGlId()));
         this.coloredTexture(positionMatrix, vertexDataHolder, x, y, width, height, 0F, 0F, 1F, 1F, color);
         this.drawIfNotBuffering();
     }
 
-    public void colorizedTexture(final Matrix4f positionMatrix, final int id, final float x, final float y, final float width, final float height, final float u, final float v, final float texWidth, final float texHeight, final Color color) {
-        final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(this.colorizedTextureQuad.apply(id));
-        this.coloredTexture(positionMatrix, vertexDataHolder, x, y, width, height, u / texWidth, v / texHeight, width / texWidth, height / texHeight, color);
-        this.drawIfNotBuffering();
+    public void colorizedTexture(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final float width, final float height, final float u, final float v, final Color color) {
+        this.colorizedTexture(positionMatrix, texture, x, y, width, height, u, v, width, height, color);
     }
 
-    public void colorizedTexture(final Matrix4f positionMatrix, final int id, final float x, final float y, final float width, final float height, final float u, final float v, final float uWidth, final float vHeight, final float texWidth, final float texHeight, final Color color) {
-        final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(this.colorizedTextureQuad.apply(id));
-        this.coloredTexture(positionMatrix, vertexDataHolder, x, y, width, height, u / texWidth, v / texHeight, uWidth / texWidth, vHeight / texHeight, color);
+    public void colorizedTexture(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final float width, final float height, final float u, final float v, final float uWidth, final float vHeight, final Color color) {
+        this.colorizedTextureWithRawTexCoord(positionMatrix, texture, x, y, width, height, u / texture.getWidth(), v / texture.getHeight(), uWidth / texture.getWidth(), vHeight / texture.getHeight(), color);
+    }
+
+    public void colorizedTextureWithRawTexCoord(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final float width, final float height, final float u, final float v, final float uWidth, final float vHeight, final Color color) {
+        final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(this.colorizedTextureQuad.apply(texture.getGlId()));
+        this.coloredTexture(positionMatrix, vertexDataHolder, x, y, width, height, u, v, uWidth, vHeight, color);
         this.drawIfNotBuffering();
     }
 
