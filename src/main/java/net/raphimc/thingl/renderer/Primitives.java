@@ -131,7 +131,7 @@ public class Primitives {
      * </pre>
      */
     public static void filledRectangle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xbl, final float ybl, final float zbl, final float xbr, final float ybr, final float zbr, final float xtr, final float ytr, final float ztr, final float xtl, final float ytl, final float ztl, final int cbl, final int cbr, final int ctr, final int ctl) {
-        final VertexDataHolder vertexDataHolder = multiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.COLORED_QUAD);
+        final VertexDataHolder vertexDataHolder = multiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.COLOR_QUAD);
 
         vertexDataHolder.putVector3f(positionMatrix, xbl, ybl, zbl).putColor(cbl).endVertex();
         vertexDataHolder.putVector3f(positionMatrix, xbr, ybr, zbr).putColor(cbr).endVertex();
@@ -184,7 +184,7 @@ public class Primitives {
      * </pre>
      */
     public static void filledTriangle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xl, final float yl, final float zl, final float xm, final float ym, final float zm, final float xr, final float yr, final float zr, final int cl, final int cm, final int cr) {
-        final VertexDataHolder vertexDataHolder = multiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.COLORED_TRIANGLE);
+        final VertexDataHolder vertexDataHolder = multiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.COLOR_TRIANGLE);
 
         vertexDataHolder.putVector3f(positionMatrix, xl, yl, zl).putColor(cl).endVertex();
         vertexDataHolder.putVector3f(positionMatrix, xm, ym, zm).putColor(cm).endVertex();
@@ -204,7 +204,7 @@ public class Primitives {
     }
 
     public static void filledCircle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float z, final float radius, final float degStart, final float degEnd, final int c) {
-        final VertexDataHolder vertexDataHolder = multiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.COLORED_TRIANGLE_FAN);
+        final VertexDataHolder vertexDataHolder = multiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.COLOR_TRIANGLE_FAN);
 
         vertexDataHolder.putVector3f(positionMatrix, x, y, z).putColor(c).endVertex();
         _filledCircle(positionMatrix, vertexDataHolder, x, y, z, radius, degStart, degEnd, c);
@@ -224,7 +224,7 @@ public class Primitives {
     }
 
     public static void outlinedCircle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float z, final float radius, final float w, final float degStart, final float degEnd, final int c) {
-        final VertexDataHolder vertexDataHolder = multiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.COLORED_TRIANGLE_STRIP);
+        final VertexDataHolder vertexDataHolder = multiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.COLOR_TRIANGLE_STRIP);
 
         _outlinedCircle(positionMatrix, vertexDataHolder, x, y, z, radius, w, degStart, degEnd, c);
         vertexDataHolder.endConnectedPrimitive();
@@ -285,7 +285,7 @@ public class Primitives {
      * </pre>
      */
     public static void glLine(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float z1, final float x2, final float y2, final float z2, final int c1, final int c2) {
-        final VertexDataHolder vertexDataHolder = multiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.COLORED_GL_LINE);
+        final VertexDataHolder vertexDataHolder = multiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.COLOR_GL_LINE);
 
         vertexDataHolder.putVector3f(positionMatrix, x1, y1, z1).putColor(c1).endVertex();
         vertexDataHolder.putVector3f(positionMatrix, x2, y2, z2).putColor(c2).endVertex();
@@ -324,7 +324,7 @@ public class Primitives {
      * </pre>
      */
     public static void line(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float z1, final float x2, final float y2, final float z2, final float width, final int c1, final int c2) {
-        final VertexDataHolder vertexDataHolder = multiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.COLORED_LINE);
+        final VertexDataHolder vertexDataHolder = multiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.COLOR_LINE);
 
         vertexDataHolder.putVector3f(positionMatrix, x1, y1, z1).putColor(c1).putFloat(width).endVertex();
         vertexDataHolder.putVector3f(positionMatrix, x2, y2, z2).putColor(c2).putFloat(width).endVertex();
