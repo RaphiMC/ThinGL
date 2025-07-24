@@ -93,6 +93,10 @@ public class Framebuffer extends GLContainerObject {
         if (!GL30C.glIsFramebuffer(glId)) {
             throw new IllegalArgumentException("Not a framebuffer object");
         }
+        return fromGlIdUnsafe(glId);
+    }
+
+    public static Framebuffer fromGlIdUnsafe(final int glId) {
         return new Framebuffer(glId);
     }
 

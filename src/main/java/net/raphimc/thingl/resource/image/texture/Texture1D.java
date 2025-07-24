@@ -39,6 +39,10 @@ public class Texture1D extends SampledTexture implements ImageStorage1D {
         super(glId, null);
     }
 
+    public static Texture1D fromGlIdUnsafe(final int glId) {
+        return new Texture1D(glId);
+    }
+
     public void uploadPixels(final int x, final int width, final int pixelFormat, final int[] pixels) {
         this.uploadPixels(0, x, width, pixelFormat, pixels);
     }

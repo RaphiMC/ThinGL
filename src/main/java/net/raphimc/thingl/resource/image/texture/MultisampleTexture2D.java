@@ -33,6 +33,10 @@ public class MultisampleTexture2D extends MultisampleTexture implements Multisam
         super(glId, null);
     }
 
+    public static MultisampleTexture2D fromGlIdUnsafe(final int glId) {
+        return new MultisampleTexture2D(glId);
+    }
+
     public void clear(final int x, final int y, final int width, final int height, final Color color) {
         this.clear(0, x, y, 0, width, height, 1, color);
     }

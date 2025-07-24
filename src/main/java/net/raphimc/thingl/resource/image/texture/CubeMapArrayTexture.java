@@ -39,6 +39,10 @@ public class CubeMapArrayTexture extends SampledTexture implements ImageStorage3
         super(glId, null);
     }
 
+    public static CubeMapArrayTexture fromGlIdUnsafe(final int glId) {
+        return new CubeMapArrayTexture(glId);
+    }
+
     public void uploadImage(final int x, final int y, final int z, final int pixelFormat, final byte[] imageBytes) {
         this.uploadImage(0, x, y, z, pixelFormat, imageBytes);
     }

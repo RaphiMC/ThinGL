@@ -42,6 +42,10 @@ public class Texture2D extends SampledTexture implements ImageStorage2D {
         super(glId, null);
     }
 
+    public static Texture2D fromGlIdUnsafe(final int glId) {
+        return new Texture2D(glId);
+    }
+
     public static Texture2D fromImage(final byte[] imageBytes) {
         return fromImage(GL11C.GL_RGBA8, imageBytes);
     }

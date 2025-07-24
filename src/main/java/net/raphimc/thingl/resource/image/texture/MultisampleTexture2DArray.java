@@ -33,6 +33,10 @@ public class MultisampleTexture2DArray extends MultisampleTexture implements Mul
         super(glId, null);
     }
 
+    public static MultisampleTexture2DArray fromGlIdUnsafe(final int glId) {
+        return new MultisampleTexture2DArray(glId);
+    }
+
     public void clear(final int x, final int y, final int z, final int width, final int height, final int depth, final Color color) {
         this.clear(0, x, y, z, width, height, depth, color);
     }

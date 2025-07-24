@@ -45,6 +45,10 @@ public class VertexArray extends GLContainerObject {
         if (!GL30C.glIsVertexArray(glId)) {
             throw new IllegalArgumentException("Not a vertex array object");
         }
+        return fromGlIdUnsafe(glId);
+    }
+
+    public static VertexArray fromGlIdUnsafe(final int glId) {
         return new VertexArray(glId);
     }
 

@@ -29,6 +29,21 @@ public abstract class GLSyncObject {
         this.pointer = pointer;
     }
 
+    public static GLSyncObject fromPointer(final long pointer) {
+        if (!GL32C.glIsSync(pointer)) {
+            throw new IllegalArgumentException("Not a sync object");
+        }
+        return fromPointerUnsafe(pointer);
+    }
+
+    public static GLSyncObject fromPointerUnsafe(final long pointer) {
+        final int objectType = GL32C.glGetSynci(pointer, GL32C.GL_OBJECT_TYPE, null);
+        return switch (objectType) {
+            case GL32C.GL_SYNC_FENCE -> FenceSync.fromPointerUnsafe(pointer);
+            default -> throw new IllegalArgumentException("Unsupported sync object type: " + objectType);
+        };
+    }
+
     public void free() {
         if (this.isAllocated()) {
             try {

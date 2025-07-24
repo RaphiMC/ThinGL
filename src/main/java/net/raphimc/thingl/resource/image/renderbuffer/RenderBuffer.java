@@ -41,11 +41,15 @@ public abstract class RenderBuffer extends GLObject implements ImageStorage {
         if (!GL30C.glIsRenderbuffer(glId)) {
             throw new IllegalArgumentException("Not a renderbuffer object");
         }
+        return fromGlIdUnsafe(glId);
+    }
+
+    public static RenderBuffer fromGlIdUnsafe(final int glId) {
         final int samples = GL45C.glGetNamedRenderbufferParameteri(glId, GL30C.GL_RENDERBUFFER_SAMPLES);
         if (samples == 0) {
-            return new StandardRenderBuffer(glId);
+            return StandardRenderBuffer.fromGlIdUnsafe(glId);
         } else {
-            return new MultisampleRenderBuffer(glId);
+            return MultisampleRenderBuffer.fromGlIdUnsafe(glId);
         }
     }
 

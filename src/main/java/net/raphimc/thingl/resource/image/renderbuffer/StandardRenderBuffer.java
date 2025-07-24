@@ -30,6 +30,10 @@ public class StandardRenderBuffer extends RenderBuffer implements ImageStorage2D
         super(glId);
     }
 
+    public static StandardRenderBuffer fromGlIdUnsafe(final int glId) {
+        return new StandardRenderBuffer(glId);
+    }
+
     public void initialize(final int internalFormat, final int width, final int height) {
         this.parameters.clear();
         GL45C.glNamedRenderbufferStorage(this.getGlId(), internalFormat, width, height);

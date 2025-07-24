@@ -31,6 +31,10 @@ public class BufferTexture extends Texture {
         super(glId, null);
     }
 
+    public static BufferTexture fromGlIdUnsafe(final int glId) {
+        return new BufferTexture(glId);
+    }
+
     public void initialize(final int internalFormat, final Buffer buffer) {
         this.levelParameters.clear();
         GL45C.glTextureBuffer(this.getGlId(), internalFormat, buffer.getGlId());

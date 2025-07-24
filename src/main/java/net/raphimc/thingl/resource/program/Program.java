@@ -72,6 +72,10 @@ public class Program extends GLContainerObject {
         if (!GL20C.glIsProgram(glId)) {
             throw new IllegalArgumentException("Not a program object");
         }
+        return fromGlIdUnsafe(glId);
+    }
+
+    public static Program fromGlIdUnsafe(final int glId) {
         return new Program(glId);
     }
 

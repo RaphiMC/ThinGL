@@ -39,6 +39,10 @@ public class Texture2DArray extends SampledTexture implements ImageStorage3D {
         super(glId, null);
     }
 
+    public static Texture2DArray fromGlIdUnsafe(final int glId) {
+        return new Texture2DArray(glId);
+    }
+
     public void uploadImage(final int x, final int y, final int z, final int pixelFormat, final byte[] imageBytes) {
         this.uploadImage(0, x, y, z, pixelFormat, imageBytes);
     }

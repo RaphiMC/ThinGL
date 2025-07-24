@@ -40,6 +40,10 @@ public class ImmutableBuffer extends Buffer {
         super(glId);
     }
 
+    public static ImmutableBuffer fromGlIdUnsafe(final int glId) {
+        return new ImmutableBuffer(glId);
+    }
+
     public int getFlags() {
         return this.getParameterInt(GL44C.GL_BUFFER_STORAGE_FLAGS);
     }

@@ -31,6 +31,10 @@ public class MultisampleRenderBuffer extends RenderBuffer implements Multisample
         super(glId);
     }
 
+    public static MultisampleRenderBuffer fromGlIdUnsafe(final int glId) {
+        return new MultisampleRenderBuffer(glId);
+    }
+
     public void initialize(final int internalFormat, final int width, final int height, final int samples) {
         this.parameters.clear();
         GL45C.glNamedRenderbufferStorageMultisample(this.getGlId(), samples, internalFormat, width, height);

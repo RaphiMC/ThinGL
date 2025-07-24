@@ -41,18 +41,22 @@ public abstract class Texture extends GLObject {
         if (!GL11C.glIsTexture(glId)) {
             throw new IllegalArgumentException("Not a texture object");
         }
+        return fromGlIdUnsafe(glId);
+    }
+
+    public static Texture fromGlIdUnsafe(final int glId) {
         final int target = getTextureTarget(glId);
         return switch (target) {
-            case GL11C.GL_TEXTURE_1D -> new Texture1D(glId);
-            case GL30C.GL_TEXTURE_1D_ARRAY -> new Texture1DArray(glId);
-            case GL11C.GL_TEXTURE_2D -> new Texture2D(glId);
-            case GL30C.GL_TEXTURE_2D_ARRAY -> new Texture2DArray(glId);
-            case GL32C.GL_TEXTURE_2D_MULTISAMPLE -> new MultisampleTexture2D(glId);
-            case GL32C.GL_TEXTURE_2D_MULTISAMPLE_ARRAY -> new MultisampleTexture2DArray(glId);
-            case GL12C.GL_TEXTURE_3D -> new Texture3D(glId);
-            case GL13C.GL_TEXTURE_CUBE_MAP -> new CubeMapTexture(glId);
-            case GL40C.GL_TEXTURE_CUBE_MAP_ARRAY -> new CubeMapArrayTexture(glId);
-            case GL31C.GL_TEXTURE_BUFFER -> new BufferTexture(glId);
+            case GL11C.GL_TEXTURE_1D -> Texture1D.fromGlIdUnsafe(glId);
+            case GL30C.GL_TEXTURE_1D_ARRAY -> Texture1DArray.fromGlIdUnsafe(glId);
+            case GL11C.GL_TEXTURE_2D -> Texture2D.fromGlIdUnsafe(glId);
+            case GL30C.GL_TEXTURE_2D_ARRAY -> Texture2DArray.fromGlIdUnsafe(glId);
+            case GL32C.GL_TEXTURE_2D_MULTISAMPLE -> MultisampleTexture2D.fromGlIdUnsafe(glId);
+            case GL32C.GL_TEXTURE_2D_MULTISAMPLE_ARRAY -> MultisampleTexture2DArray.fromGlIdUnsafe(glId);
+            case GL12C.GL_TEXTURE_3D -> Texture3D.fromGlIdUnsafe(glId);
+            case GL13C.GL_TEXTURE_CUBE_MAP -> CubeMapTexture.fromGlIdUnsafe(glId);
+            case GL40C.GL_TEXTURE_CUBE_MAP_ARRAY -> CubeMapArrayTexture.fromGlIdUnsafe(glId);
+            case GL31C.GL_TEXTURE_BUFFER -> BufferTexture.fromGlIdUnsafe(glId);
             default -> throw new IllegalArgumentException("Unsupported texture target: " + target);
         };
     }

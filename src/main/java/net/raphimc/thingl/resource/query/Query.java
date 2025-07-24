@@ -37,6 +37,10 @@ public class Query extends GLObject {
         if (!GL15C.glIsQuery(glId)) {
             throw new IllegalArgumentException("Not a query object");
         }
+        return fromGlIdUnsafe(glId);
+    }
+
+    public static Query fromGlIdUnsafe(final int glId) {
         return new Query(glId, null);
     }
 

@@ -36,6 +36,10 @@ public class MutableBuffer extends Buffer {
         super(glId);
     }
 
+    public static MutableBuffer fromGlIdUnsafe(final int glId) {
+        return new MutableBuffer(glId);
+    }
+
     public void initialize(final long size, final int usage) {
         this.parameters.clear();
         GL45C.glNamedBufferData(this.getGlId(), size, usage);

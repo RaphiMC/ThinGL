@@ -39,6 +39,10 @@ public class Texture3D extends SampledTexture implements ImageStorage3D {
         super(glId, null);
     }
 
+    public static Texture3D fromGlIdUnsafe(final int glId) {
+        return new Texture3D(glId);
+    }
+
     public void uploadImage(final int x, final int y, final int z, final int pixelFormat, final byte[] imageBytes) {
         this.uploadImage(0, x, y, z, pixelFormat, imageBytes);
     }

@@ -38,14 +38,7 @@ public class FenceSync extends GLSyncObject {
         super(pointer);
     }
 
-    public static FenceSync fromPointer(final long pointer) {
-        if (!GL32C.glIsSync(pointer)) {
-            throw new IllegalArgumentException("Not a sync object");
-        }
-        final int objectType = GL32C.glGetSynci(pointer, GL32C.GL_OBJECT_TYPE, null);
-        if (objectType != GL32C.GL_SYNC_FENCE) {
-            throw new IllegalArgumentException("Not a fence sync object");
-        }
+    public static FenceSync fromPointerUnsafe(final long pointer) {
         return new FenceSync(pointer);
     }
 

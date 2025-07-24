@@ -44,11 +44,15 @@ public abstract class Buffer extends GLObject {
         if (!GL15C.glIsBuffer(glId)) {
             throw new IllegalArgumentException("Not a buffer object");
         }
+        return fromGlIdUnsafe(glId);
+    }
+
+    public static Buffer fromGlIdUnsafe(final int glId) {
         final boolean immutable = GL45C.glGetNamedBufferParameteri(glId, GL45C.GL_BUFFER_IMMUTABLE_STORAGE) != GL11C.GL_FALSE;
         if (immutable) {
-            return new ImmutableBuffer(glId);
+            return ImmutableBuffer.fromGlIdUnsafe(glId);
         } else {
-            return new MutableBuffer(glId);
+            return MutableBuffer.fromGlIdUnsafe(glId);
         }
     }
 

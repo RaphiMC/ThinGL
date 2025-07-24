@@ -46,6 +46,10 @@ public class Shader extends GLObject {
         if (!GL20C.glIsShader(glId)) {
             throw new IllegalArgumentException("Not a shader object");
         }
+        return fromGlIdUnsafe(glId);
+    }
+
+    public static Shader fromGlIdUnsafe(final int glId) {
         return new Shader(glId);
     }
 
