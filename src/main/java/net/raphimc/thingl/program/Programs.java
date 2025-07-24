@@ -77,9 +77,16 @@ public class Programs {
         program.setDebugName("bitmap_text");
         return program;
     });
+
     private final Lazy<RegularProgram> sdfText = Lazy.of(() -> {
         final RegularProgram program = new RegularProgram(this.getShader("regular/sdf_text", VERTEX), this.getShader("regular/sdf_text", FRAGMENT));
         program.setDebugName("sdf_text");
+        return program;
+    });
+
+    private final Lazy<RegularProgram> skyBox = Lazy.of(() -> {
+        final RegularProgram program = new RegularProgram(this.getShader("regular/sky_box", VERTEX), this.getShader("regular/sky_box", FRAGMENT));
+        program.setDebugName("sky_box");
         return program;
     });
 
@@ -172,6 +179,10 @@ public class Programs {
 
     public RegularProgram getSdfText() {
         return this.sdfText.get();
+    }
+
+    public RegularProgram getSkyBox() {
+        return this.skyBox.get();
     }
 
     public GaussianBlurProgram getGaussianBlur() {

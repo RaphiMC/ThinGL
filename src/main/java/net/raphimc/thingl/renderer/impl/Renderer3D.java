@@ -18,8 +18,14 @@
 package net.raphimc.thingl.renderer.impl;
 
 import net.lenni0451.commons.color.Color;
+import net.raphimc.thingl.ThinGL;
+import net.raphimc.thingl.drawbuilder.BuiltinDrawBatches;
+import net.raphimc.thingl.drawbuilder.DrawBatch;
+import net.raphimc.thingl.drawbuilder.DrawMode;
+import net.raphimc.thingl.drawbuilder.databuilder.holder.VertexDataHolder;
 import net.raphimc.thingl.renderer.Primitives;
 import net.raphimc.thingl.renderer.Renderer;
+import net.raphimc.thingl.util.CacheUtil;
 import org.joml.Matrix4f;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
@@ -27,6 +33,10 @@ import org.joml.Vector3i;
 import org.joml.primitives.AABBd;
 import org.joml.primitives.AABBf;
 import org.joml.primitives.AABBi;
+import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL32C;
+
+import java.util.function.IntFunction;
 
 public class Renderer3D extends Renderer {
 
@@ -37,6 +47,18 @@ public class Renderer3D extends Renderer {
     public static final byte FACE_WEST = 0b00010000;
     public static final byte FACE_EAST = 0b00100000;
     private static final byte ALL_FACES = 0b00111111;
+
+    protected final IntFunction<DrawBatch> skyBox = CacheUtil.memoizeInt(textureId -> new DrawBatch(() -> ThinGL.programs().getSkyBox(), DrawMode.QUADS, BuiltinDrawBatches.POSITION_LAYOUT, () -> {
+        ThinGL.glStateStack().push();
+        ThinGL.glStateStack().enable(GL11C.GL_BLEND);
+        ThinGL.glStateStack().enable(GL32C.GL_TEXTURE_CUBE_MAP_SEAMLESS);
+        ThinGL.glStateStack().pushDepthMask();
+        ThinGL.glStateManager().setDepthMask(false);
+        ThinGL.programs().getSkyBox().setUniformSampler("u_Texture", textureId);
+    }, () -> {
+        ThinGL.glStateStack().popDepthMask();
+        ThinGL.glStateStack().pop();
+    }));
 
     public void filledBox(final Matrix4f positionMatrix, final AABBd aabb, final Color color) {
         this.filledBox(positionMatrix, (float) aabb.minX, (float) aabb.minY, (float) aabb.minZ, (float) aabb.maxX, (float) aabb.maxY, (float) aabb.maxZ, color);
@@ -203,6 +225,48 @@ public class Renderer3D extends Renderer {
 
     public void line(final Matrix4f positionMatrix, final float x1, final float y1, final float z1, final float x2, final float y2, final float z2, final float width, final Color startColor, final Color endColor) {
         Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, x1, y1, z1, x2, y2, z2, width, startColor.toABGR(), endColor.toABGR());
+        this.drawIfNotBuffering();
+    }
+
+    public void skyBox(final int id) {
+        final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(this.skyBox.apply(id));
+
+        // Right face (+X)
+        vertexDataHolder.putVector3f(1F, 1F, 1F).endVertex();
+        vertexDataHolder.putVector3f(1F, 1F, -1F).endVertex();
+        vertexDataHolder.putVector3f(1F, -1F, -1F).endVertex();
+        vertexDataHolder.putVector3f(1F, -1F, 1F).endVertex();
+
+        // Left face (-X)
+        vertexDataHolder.putVector3f(-1F, 1F, -1F).endVertex();
+        vertexDataHolder.putVector3f(-1F, 1F, 1F).endVertex();
+        vertexDataHolder.putVector3f(-1F, -1F, 1F).endVertex();
+        vertexDataHolder.putVector3f(-1F, -1F, -1F).endVertex();
+
+        // Top face (+Y)
+        vertexDataHolder.putVector3f(-1F, 1F, -1F).endVertex();
+        vertexDataHolder.putVector3f(1F, 1F, -1F).endVertex();
+        vertexDataHolder.putVector3f(1F, 1F, 1F).endVertex();
+        vertexDataHolder.putVector3f(-1F, 1F, 1F).endVertex();
+
+        // Bottom face (-Y)
+        vertexDataHolder.putVector3f(-1F, -1F, 1F).endVertex();
+        vertexDataHolder.putVector3f(1F, -1F, 1F).endVertex();
+        vertexDataHolder.putVector3f(1F, -1F, -1F).endVertex();
+        vertexDataHolder.putVector3f(-1F, -1F, -1F).endVertex();
+
+        // Front face (+Z)
+        vertexDataHolder.putVector3f(-1F, 1F, 1F).endVertex();
+        vertexDataHolder.putVector3f(1F, 1F, 1F).endVertex();
+        vertexDataHolder.putVector3f(1F, -1F, 1F).endVertex();
+        vertexDataHolder.putVector3f(-1F, -1F, 1F).endVertex();
+
+        // Back face (-Z)
+        vertexDataHolder.putVector3f(1F, 1F, -1F).endVertex();
+        vertexDataHolder.putVector3f(-1F, 1F, -1F).endVertex();
+        vertexDataHolder.putVector3f(-1F, -1F, -1F).endVertex();
+        vertexDataHolder.putVector3f(1F, -1F, -1F).endVertex();
+
         this.drawIfNotBuffering();
     }
 
