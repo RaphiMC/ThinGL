@@ -17,6 +17,12 @@
  */
 package net.raphimc.thingl.util;
 
+import com.github.weisj.jsvg.SVGDocument;
+import com.github.weisj.jsvg.parser.DocumentLimits;
+import com.github.weisj.jsvg.parser.LoaderContext;
+import com.github.weisj.jsvg.parser.SVGLoader;
+import com.github.weisj.jsvg.renderer.SVGRenderingHints;
+import com.github.weisj.jsvg.view.ViewBox;
 import com.twelvemonkeys.imageio.plugins.webp.WebPImageReaderSpi;
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
@@ -47,26 +53,26 @@ public class AWTUtil {
         return Color.fromARGB(color.getRGB());
     }
 
-    public static Texture2D createTexture2DFromBufferedImage(final BufferedImage bufferedImage) {
-        return createTexture2DFromBufferedImage(GL11C.GL_RGBA8, bufferedImage);
+    public static Texture2D createTexture2DFromBufferedImage(final BufferedImage image) {
+        return createTexture2DFromBufferedImage(GL11C.GL_RGBA8, image);
     }
 
-    public static Texture2D createTexture2DFromBufferedImage(final int internalFormat, final BufferedImage bufferedImage) {
-        final Texture2D texture = new Texture2D(internalFormat, bufferedImage.getWidth(), bufferedImage.getHeight());
-        uploadBufferedImageToTexture2D(texture, 0, 0, bufferedImage);
+    public static Texture2D createTexture2DFromBufferedImage(final int internalFormat, final BufferedImage image) {
+        final Texture2D texture = new Texture2D(internalFormat, image.getWidth(), image.getHeight());
+        uploadBufferedImageToTexture2D(texture, 0, 0, image);
         return texture;
     }
 
-    public static void uploadBufferedImageToTexture2D(final Texture2D texture, final int x, final int y, final BufferedImage bufferedImage) {
-        final int[] pixels = new int[bufferedImage.getWidth() * bufferedImage.getHeight()];
-        bufferedImage.getRGB(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), pixels, 0, bufferedImage.getWidth());
-        texture.uploadPixels(x, y, bufferedImage.getWidth(), bufferedImage.getHeight(), GL12C.GL_BGRA, pixels, false);
+    public static void uploadBufferedImageToTexture2D(final Texture2D texture, final int x, final int y, final BufferedImage image) {
+        final int[] pixels = new int[image.getWidth() * image.getHeight()];
+        image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
+        texture.uploadPixels(x, y, image.getWidth(), image.getHeight(), GL12C.GL_BGRA, pixels, false);
     }
 
-    public static void uploadBufferedImageToTexture2DArray(final Texture2DArray texture, final int x, final int y, final int layer, final BufferedImage bufferedImage) {
-        final int[] pixels = new int[bufferedImage.getWidth() * bufferedImage.getHeight()];
-        bufferedImage.getRGB(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), pixels, 0, bufferedImage.getWidth());
-        texture.uploadPixels(x, y, layer, bufferedImage.getWidth(), bufferedImage.getHeight(), GL12C.GL_BGRA, pixels, false);
+    public static void uploadBufferedImageToTexture2DArray(final Texture2DArray texture, final int x, final int y, final int layer, final BufferedImage image) {
+        final int[] pixels = new int[image.getWidth() * image.getHeight()];
+        image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
+        texture.uploadPixels(x, y, layer, image.getWidth(), image.getHeight(), GL12C.GL_BGRA, pixels, false);
     }
 
     public static SequencedTexture createSequencedTextureFromGif(final byte[] imageBytes) throws IOException {
@@ -226,6 +232,56 @@ public class AWTUtil {
         } finally {
             webpReader.dispose();
         }
+    }
+
+    public static Texture2D createTexture2DFromSvg(final byte[] documentBytes) {
+        return createTexture2DFromSvg(new ByteArrayInputStream(documentBytes));
+    }
+
+    public static Texture2D createTexture2DFromSvg(final byte[] documentBytes, final int width, final int height) {
+        return createTexture2DFromSvg(new ByteArrayInputStream(documentBytes), width, height);
+    }
+
+    public static Texture2D createTexture2DFromSvg(final byte[] documentBytes, final float scale) {
+        return createTexture2DFromSvg(new ByteArrayInputStream(documentBytes), scale);
+    }
+
+    public static Texture2D createTexture2DFromSvg(final InputStream documentStream) {
+        return createTexture2DFromSvg(documentStream, null, null, null);
+    }
+
+    public static Texture2D createTexture2DFromSvg(final InputStream documentStream, final int width, final int height) {
+        return createTexture2DFromSvg(documentStream, width, height, null);
+    }
+
+    public static Texture2D createTexture2DFromSvg(final InputStream documentStream, final float scale) {
+        return createTexture2DFromSvg(documentStream, null, null, scale);
+    }
+
+    private static Texture2D createTexture2DFromSvg(final InputStream documentStream, final Integer targetWidth, final Integer targetHeight, final Float targetScale) {
+        ThinGL.capabilities().ensureJsvgPresent();
+        final SVGDocument document = new SVGLoader().load(documentStream, null, LoaderContext.builder().documentLimits(new DocumentLimits(DocumentLimits.DEFAULT_MAX_USE_NESTING_DEPTH, DocumentLimits.DEFAULT_MAX_NESTING_DEPTH, Integer.MAX_VALUE)).build());
+        if (document == null) {
+            throw new RuntimeException("Failed to load SVG document");
+        }
+
+        int width = targetWidth != null ? targetWidth : Math.round(document.size().width);
+        int height = targetHeight != null ? targetHeight : Math.round(document.size().height);
+        if (targetScale != null) {
+            width = Math.round(width * targetScale);
+            height = Math.round(height * targetScale);
+        }
+
+        final BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        final Graphics2D graphics = image.createGraphics();
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+        graphics.setRenderingHint(SVGRenderingHints.KEY_IMAGE_ANTIALIASING, SVGRenderingHints.VALUE_IMAGE_ANTIALIASING_ON);
+        graphics.setRenderingHint(SVGRenderingHints.KEY_CACHE_OFFSCREEN_IMAGE, SVGRenderingHints.VALUE_NO_CACHE);
+        document.render(null, graphics, new ViewBox(width, height));
+        graphics.dispose();
+
+        return createTexture2DFromBufferedImage(image);
     }
 
 }

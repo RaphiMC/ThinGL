@@ -40,7 +40,9 @@ public class ImageRenderingExample extends StandaloneApplicationRunner {
         super.init();
         try {
             final byte[] imageBytes = ImageRenderingExample.class.getResourceAsStream("/images/triangles-1430105_640.png").readAllBytes();
-            this.image = Texture2D.fromImage(imageBytes);
+            this.image = Texture2D.fromImage(imageBytes); // Standard image formats like PNG, JPEG, BMP, and GIF are supported
+            // this.image = AWTUtil.createTexture2DFromBufferedImage(...); // Its also possible to create a Texture2D from a BufferedImage directly
+            // this.image = AWTUtil.createTexture2DFromSvg(...); // SVG is also supported, but requires a library
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

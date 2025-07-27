@@ -33,6 +33,7 @@ public class Capabilities {
     private final boolean isEarcut4jPresent;
     private final boolean isGifReaderPresent;
     private final boolean isTwelveMonkeysWebpReaderPresent;
+    private final boolean isJsvgPresent;
     private final int maxSamples;
     private final int maxColorAttachments;
     private final int maxArrayTextureLayers;
@@ -48,6 +49,7 @@ public class Capabilities {
         this.isEarcut4jPresent = isClassPresent("earcut4j.Earcut");
         this.isGifReaderPresent = isClassPresent("com.ibasco.image.gif.GifImageReader");
         this.isTwelveMonkeysWebpReaderPresent = isClassPresent("com.twelvemonkeys.imageio.plugins.webp.WebPImageReader");
+        this.isJsvgPresent = isClassPresent("com.github.weisj.jsvg.SVGDocument");
 
         this.maxSamples = GL11C.glGetInteger(GL30C.GL_MAX_SAMPLES);
         this.maxColorAttachments = GL11C.glGetInteger(GL30C.GL_MAX_COLOR_ATTACHMENTS);
@@ -108,6 +110,12 @@ public class Capabilities {
         }
     }
 
+    public void ensureJsvgPresent() {
+        if (!this.isJsvgPresent) {
+            throw new UnsupportedOperationException("JSVG is not present. Please add https://github.com/weisJ/jsvg to your project.");
+        }
+    }
+
     public boolean isFreeTypePresent() {
         return this.isFreeTypePresent;
     }
@@ -134,6 +142,10 @@ public class Capabilities {
 
     public boolean isTwelveMonkeysWebpReaderPresent() {
         return this.isTwelveMonkeysWebpReaderPresent;
+    }
+
+    public boolean isJsvgPresent() {
+        return this.isJsvgPresent;
     }
 
     public int getMaxSamples() {
