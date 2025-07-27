@@ -113,7 +113,7 @@ public class Std140ShaderDataHolder extends ShaderDataHolder {
 
     @Override
     public ShaderDataHolder endArray() {
-        this.bufferBuilder.align(VEC4_BYTES);
+        this.checkArrayAlignment();
         return super.endArray();
     }
 

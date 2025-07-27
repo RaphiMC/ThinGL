@@ -43,12 +43,7 @@ public abstract class ShaderDataHolder extends BufferDataWriter<ShaderDataHolder
     public ShaderDataHolder putInt(final int i) {
         this.bufferBuilder.align(Integer.BYTES);
         super.putInt(i);
-        if (!this.structDataStack.isEmpty()) {
-            final int[] structData = this.structDataStack.top();
-            if (structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] < Integer.BYTES) {
-                structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] = Integer.BYTES;
-            }
-        }
+        this.trackStructMaxMemberAlignment(Integer.BYTES);
         return this;
     }
 
@@ -56,12 +51,7 @@ public abstract class ShaderDataHolder extends BufferDataWriter<ShaderDataHolder
     public ShaderDataHolder putFloat(final float f) {
         this.bufferBuilder.align(Float.BYTES);
         super.putFloat(f);
-        if (!this.structDataStack.isEmpty()) {
-            final int[] structData = this.structDataStack.top();
-            if (structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] < Float.BYTES) {
-                structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] = Float.BYTES;
-            }
-        }
+        this.trackStructMaxMemberAlignment(Float.BYTES);
         return this;
     }
 
@@ -69,12 +59,7 @@ public abstract class ShaderDataHolder extends BufferDataWriter<ShaderDataHolder
     public ShaderDataHolder putDouble(final double d) {
         this.bufferBuilder.align(Double.BYTES);
         super.putDouble(d);
-        if (!this.structDataStack.isEmpty()) {
-            final int[] structData = this.structDataStack.top();
-            if (structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] < Double.BYTES) {
-                structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] = Double.BYTES;
-            }
-        }
+        this.trackStructMaxMemberAlignment(Double.BYTES);
         return this;
     }
 
@@ -82,12 +67,7 @@ public abstract class ShaderDataHolder extends BufferDataWriter<ShaderDataHolder
     public ShaderDataHolder putVector2i(final int x, final int y) {
         this.bufferBuilder.align(Integer.BYTES * 2);
         super.putVector2i(x, y);
-        if (!this.structDataStack.isEmpty()) {
-            final int[] structData = this.structDataStack.top();
-            if (structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] < Integer.BYTES * 2) {
-                structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] = Integer.BYTES * 2;
-            }
-        }
+        this.trackStructMaxMemberAlignment(Integer.BYTES * 2);
         return this;
     }
 
@@ -95,12 +75,7 @@ public abstract class ShaderDataHolder extends BufferDataWriter<ShaderDataHolder
     public ShaderDataHolder putVector3i(final int x, final int y, final int z) {
         this.bufferBuilder.align(Integer.BYTES * 4);
         super.putVector3i(x, y, z);
-        if (!this.structDataStack.isEmpty()) {
-            final int[] structData = this.structDataStack.top();
-            if (structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] < Integer.BYTES * 4) {
-                structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] = Integer.BYTES * 4;
-            }
-        }
+        this.trackStructMaxMemberAlignment(Integer.BYTES * 4);
         return this;
     }
 
@@ -108,12 +83,7 @@ public abstract class ShaderDataHolder extends BufferDataWriter<ShaderDataHolder
     public ShaderDataHolder putVector4i(final int x, final int y, final int z, final int w) {
         this.bufferBuilder.align(Integer.BYTES * 4);
         super.putVector4i(x, y, z, w);
-        if (!this.structDataStack.isEmpty()) {
-            final int[] structData = this.structDataStack.top();
-            if (structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] < Integer.BYTES * 4) {
-                structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] = Integer.BYTES * 4;
-            }
-        }
+        this.trackStructMaxMemberAlignment(Integer.BYTES * 4);
         return this;
     }
 
@@ -121,12 +91,7 @@ public abstract class ShaderDataHolder extends BufferDataWriter<ShaderDataHolder
     public ShaderDataHolder putVector2f(final float x, final float y) {
         this.bufferBuilder.align(Float.BYTES * 2);
         super.putVector2f(x, y);
-        if (!this.structDataStack.isEmpty()) {
-            final int[] structData = this.structDataStack.top();
-            if (structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] < Float.BYTES * 2) {
-                structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] = Float.BYTES * 2;
-            }
-        }
+        this.trackStructMaxMemberAlignment(Float.BYTES * 2);
         return this;
     }
 
@@ -134,12 +99,7 @@ public abstract class ShaderDataHolder extends BufferDataWriter<ShaderDataHolder
     public ShaderDataHolder putVector3f(final float x, final float y, final float z) {
         this.bufferBuilder.align(Float.BYTES * 4);
         super.putVector3f(x, y, z);
-        if (!this.structDataStack.isEmpty()) {
-            final int[] structData = this.structDataStack.top();
-            if (structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] < Float.BYTES * 4) {
-                structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] = Float.BYTES * 4;
-            }
-        }
+        this.trackStructMaxMemberAlignment(Float.BYTES * 4);
         return this;
     }
 
@@ -147,12 +107,7 @@ public abstract class ShaderDataHolder extends BufferDataWriter<ShaderDataHolder
     public ShaderDataHolder putVector4f(final float x, final float y, final float z, final float w) {
         this.bufferBuilder.align(Float.BYTES * 4);
         super.putVector4f(x, y, z, w);
-        if (!this.structDataStack.isEmpty()) {
-            final int[] structData = this.structDataStack.top();
-            if (structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] < Float.BYTES * 4) {
-                structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] = Float.BYTES * 4;
-            }
-        }
+        this.trackStructMaxMemberAlignment(Float.BYTES * 4);
         return this;
     }
 
@@ -160,12 +115,7 @@ public abstract class ShaderDataHolder extends BufferDataWriter<ShaderDataHolder
     public ShaderDataHolder putVector2d(final double x, final double y) {
         this.bufferBuilder.align(Double.BYTES * 2);
         super.putVector2d(x, y);
-        if (!this.structDataStack.isEmpty()) {
-            final int[] structData = this.structDataStack.top();
-            if (structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] < Double.BYTES * 2) {
-                structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] = Double.BYTES * 2;
-            }
-        }
+        this.trackStructMaxMemberAlignment(Double.BYTES * 2);
         return this;
     }
 
@@ -173,12 +123,7 @@ public abstract class ShaderDataHolder extends BufferDataWriter<ShaderDataHolder
     public ShaderDataHolder putVector3d(final double x, final double y, final double z) {
         this.bufferBuilder.align(Double.BYTES * 4);
         super.putVector3d(x, y, z);
-        if (!this.structDataStack.isEmpty()) {
-            final int[] structData = this.structDataStack.top();
-            if (structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] < Double.BYTES * 4) {
-                structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] = Double.BYTES * 4;
-            }
-        }
+        this.trackStructMaxMemberAlignment(Double.BYTES * 4);
         return this;
     }
 
@@ -186,12 +131,7 @@ public abstract class ShaderDataHolder extends BufferDataWriter<ShaderDataHolder
     public ShaderDataHolder putVector4d(final double x, final double y, final double z, final double w) {
         this.bufferBuilder.align(Double.BYTES * 4);
         super.putVector4d(x, y, z, w);
-        if (!this.structDataStack.isEmpty()) {
-            final int[] structData = this.structDataStack.top();
-            if (structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] < Double.BYTES * 4) {
-                structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] = Double.BYTES * 4;
-            }
-        }
+        this.trackStructMaxMemberAlignment(Double.BYTES * 4);
         return this;
     }
 
@@ -207,12 +147,7 @@ public abstract class ShaderDataHolder extends BufferDataWriter<ShaderDataHolder
     public ShaderDataHolder putMatrix4f(final Matrix4f matrix) {
         this.bufferBuilder.align(Float.BYTES * 4);
         this.bufferBuilder.putMatrix4f(matrix);
-        if (!this.structDataStack.isEmpty()) {
-            final int[] structData = this.structDataStack.top();
-            if (structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] < Float.BYTES * 4) {
-                structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] = Float.BYTES * 4;
-            }
-        }
+        this.trackStructMaxMemberAlignment(Float.BYTES * 4);
         return this;
     }
 
@@ -236,7 +171,7 @@ public abstract class ShaderDataHolder extends BufferDataWriter<ShaderDataHolder
         if (this.inArrayStack.isEmpty()) {
             this.inArrayStack.push(true);
         } else if (!this.inArrayStack.topBoolean()) {
-            throw new IllegalStateException("Not on top level array");
+            throw new IllegalStateException("Not in top level array");
         }
         return this;
     }
@@ -254,18 +189,15 @@ public abstract class ShaderDataHolder extends BufferDataWriter<ShaderDataHolder
         if (this.structDataStack.isEmpty()) {
             throw new IllegalStateException("Not in a struct");
         }
-        this.inArrayStack.popBoolean();
+        if (!this.inArrayStack.isEmpty()) {
+            this.inArrayStack.popBoolean();
+        }
         final int[] structData = this.structDataStack.pop();
         if (structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] != structData[STRUCT_DATA_GIVEN_MAX_MEMBER_ALIGNMENT]) {
             throw new IllegalStateException("Struct max member alignment mismatch. Calculated " + structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] + " but got " + structData[STRUCT_DATA_GIVEN_MAX_MEMBER_ALIGNMENT]);
         }
         this.bufferBuilder.align(this.getStructAlignment(structData[STRUCT_DATA_GIVEN_MAX_MEMBER_ALIGNMENT]));
-        if (!this.structDataStack.isEmpty()) {
-            final int[] parentStructData = this.structDataStack.top();
-            if (parentStructData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] < structData[STRUCT_DATA_GIVEN_MAX_MEMBER_ALIGNMENT]) {
-                parentStructData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] = structData[STRUCT_DATA_GIVEN_MAX_MEMBER_ALIGNMENT];
-            }
-        }
+        this.trackStructMaxMemberAlignment(structData[STRUCT_DATA_GIVEN_MAX_MEMBER_ALIGNMENT]);
         return this;
     }
 
@@ -280,5 +212,14 @@ public abstract class ShaderDataHolder extends BufferDataWriter<ShaderDataHolder
     }
 
     protected abstract int getStructAlignment(final int maxMemberAlignment);
+
+    protected void trackStructMaxMemberAlignment(final int alignment) {
+        if (!this.structDataStack.isEmpty()) {
+            final int[] structData = this.structDataStack.top();
+            if (structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] < alignment) {
+                structData[STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT] = alignment;
+            }
+        }
+    }
 
 }
