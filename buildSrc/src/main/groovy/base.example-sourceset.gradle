@@ -1,0 +1,6 @@
+sourceSets {
+    example
+
+    example.compileClasspath += main.output + main.compileClasspath
+    example.runtimeClasspath += example.compileClasspath
+}

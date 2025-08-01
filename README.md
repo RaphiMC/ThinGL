@@ -33,7 +33,7 @@ You can also find instructions how to implement it into your build script there.
 If you just want the latest jar file you can download it from [GitHub Actions](https://github.com/RaphiMC/ThinGL/actions/workflows/build.yml) or [Lenni0451's Jenkins](https://build.lenni0451.net/job/ThinGL/).
 
 ## Usage and Examples
-Examples can be found in the [src/test](/src/test) directory.
+Examples can be found in the [src/example](/src/example) directory.
 
 ### Logging
 ThinGL by default uses SLF4J for logging.
