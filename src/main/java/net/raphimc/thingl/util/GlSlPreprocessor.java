@@ -18,15 +18,31 @@
 package net.raphimc.thingl.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class GlSlPreprocessor {
 
-    public static String addDefines(final String code, final Map<String, Object> defines) {
-        if (defines.isEmpty()) {
-            return code;
+    private final Map<String, Object> defines = new HashMap<>();
+
+    public void addDefines(final Map<String, Object> defines) {
+        if (defines == null) {
+            throw new IllegalArgumentException("Defines map cannot be null");
         }
+        for (Map.Entry<String, Object> entry : defines.entrySet()) {
+            this.addDefine(entry.getKey(), entry.getValue());
+        }
+    }
+
+    public void addDefine(final String name, final Object value) {
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("Define name cannot be null or empty");
+        }
+        this.defines.put(name, value);
+    }
+
+    public String process(final String code) {
         final List<String> codeLines = new ArrayList<>(code.lines().toList());
         if (codeLines.isEmpty()) {
             throw new IllegalArgumentException("Shader code cannot be empty");
@@ -35,19 +51,22 @@ public class GlSlPreprocessor {
             throw new IllegalArgumentException("Shader code must start with a #version directive");
         }
 
-        final List<String> defineLines = new ArrayList<>(defines.size());
-        defineLines.add("#line 2 1");
-        for (Map.Entry<String, Object> entry : defines.entrySet()) {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("#define ").append(entry.getKey());
-            if (entry.getValue() != null) {
-                sb.append(' ').append(entry.getValue());
+        if (!this.defines.isEmpty()) {
+            final List<String> defineLines = new ArrayList<>();
+            defineLines.add("#line 2 1");
+            for (Map.Entry<String, Object> entry : this.defines.entrySet()) {
+                final StringBuilder sb = new StringBuilder();
+                sb.append("#define ").append(entry.getKey());
+                if (entry.getValue() != null) {
+                    sb.append(' ').append(entry.getValue());
+                }
+                defineLines.add(sb.toString());
             }
-            defineLines.add(sb.toString());
-        }
-        defineLines.add("#line 2 0");
+            defineLines.add("#line 2 0");
 
-        codeLines.addAll(1, defineLines);
+            codeLines.addAll(1, defineLines);
+        }
+
         return String.join("\n", codeLines);
     }
 

@@ -38,7 +38,6 @@ public class PostProcessingProgram extends Program {
         final Framebuffer currentFramebuffer = ThinGL.applicationInterface().getCurrentFramebuffer();
         this.setUniformMatrix4f("u_ProjectionMatrix", new Matrix4f().setOrtho(0F, currentFramebuffer.getWidth(), currentFramebuffer.getHeight(), 0F, -1000F, 1000F));
         this.setUniformVector2f("u_Viewport", currentFramebuffer.getWidth(), currentFramebuffer.getHeight());
-        this.setUniformVector4f("u_Quad", 0F, 0F, currentFramebuffer.getWidth(), currentFramebuffer.getHeight());
     }
 
     public final void renderScaledQuad(final float x1, final float y1, final float x2, final float y2) {

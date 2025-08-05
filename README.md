@@ -14,12 +14,12 @@ Lightweight Java wrapper for many common OpenGL functions.
   - TrueType font support
   - Bitmap, SDF and BSDF text rendering
   - Optional HarfBuzz integration for complex text
-- Powerful rendering abstraction
+- Easy to use rendering abstraction
   - Draw call batching
   - Immediate mode rendering
   - Retained mode rendering
-  - Instancing support
-  - Multidraw support
+  - Basic Instancing support
+  - Basic Multidraw support
 - Wrapper classes for OpenGL objects and functions
 - Pretty fast (Built with performance in mind without sacrificing usability and readability)
 - And much more...
@@ -36,7 +36,7 @@ If you just want the latest jar file you can download it from [GitHub Actions](h
 Examples can be found in the [src/example](/src/example) directory.
 
 ### Logging
-ThinGL by default uses SLF4J for logging.
+ThinGL by default logs to System.out and System.err.
 You can however easily redirect the log messages to your own code by setting ``ThinGL.LOGGER`` to your own Logger.
 
 ## Contact

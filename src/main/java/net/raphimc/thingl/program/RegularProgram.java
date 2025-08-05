@@ -22,7 +22,7 @@ import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.resource.framebuffer.Framebuffer;
 import net.raphimc.thingl.resource.program.Program;
 import net.raphimc.thingl.resource.shader.Shader;
-import net.raphimc.thingl.util.RenderMathUtil;
+import org.joml.Matrix4f;
 
 public class RegularProgram extends Program {
 
@@ -36,9 +36,12 @@ public class RegularProgram extends Program {
         final Framebuffer currentFramebuffer = ThinGL.applicationInterface().getCurrentFramebuffer();
         this.setUniformMatrix4f("u_ProjectionMatrix", ThinGL.applicationInterface().getProjectionMatrix());
         this.setUniformMatrix4f("u_ViewMatrix", ThinGL.applicationInterface().getViewMatrix());
-        this.setUniformMatrix4f("u_ModelMatrix", RenderMathUtil.getIdentityMatrix());
         this.setUniformVector2f("u_Viewport", currentFramebuffer.getWidth(), currentFramebuffer.getHeight());
-        this.setUniformVector4f("u_ColorModifier", Color.WHITE);
+    }
+
+    public void configureParameters(final Matrix4f modelMatrix, final Color colorModifier) {
+        this.setUniformMatrix4f("u_ModelMatrix", modelMatrix);
+        this.setUniformVector4f("u_ColorModifier", colorModifier);
     }
 
 }

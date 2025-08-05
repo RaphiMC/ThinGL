@@ -237,9 +237,10 @@ public class Programs {
                 if (stream == null) {
                     throw new IOException("Shader " + name + " not found");
                 }
-                String source = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
-                source = GlSlPreprocessor.addDefines(source, defines);
-                final Shader shader = new Shader(type, source);
+                final String source = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+                final GlSlPreprocessor preprocessor = new GlSlPreprocessor();
+                preprocessor.addDefines(defines);
+                final Shader shader = new Shader(type, preprocessor.process(source));
                 shader.setDebugName(name);
                 return shader;
             } catch (Throwable e) {

@@ -41,7 +41,6 @@ import net.raphimc.thingl.resource.program.Program;
 import net.raphimc.thingl.resource.vertexarray.VertexArray;
 import net.raphimc.thingl.util.BufferUtil;
 import org.joml.Matrix4f;
-import org.joml.Matrix4fc;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.system.MemoryUtil;
 import org.lwjgl.util.meshoptimizer.MeshOptimizer;
@@ -54,7 +53,7 @@ import java.util.Map;
 
 public class BufferRenderer {
 
-    public static Color COLOR_MODIFIER = null;
+    public static Color COLOR_MODIFIER = Color.WHITE;
 
     public static PreparedBuffer prepareBuffer(final DrawBatch drawBatch, final DrawBatchDataHolder drawBatchDataHolder, final boolean optimizeMesh) {
         final VertexDataHolder vertexDataHolder = drawBatchDataHolder.getVertexDataHolder();
@@ -319,17 +318,11 @@ public class BufferRenderer {
         }
 
         drawBatch.setupAction().run();
-
         final Program program = drawBatch.program().get();
         if (program != null) {
             program.bind();
-            if (program instanceof RegularProgram) {
-                if ((modelMatrix.properties() & Matrix4fc.PROPERTY_IDENTITY) == 0) {
-                    program.setUniformMatrix4f("u_ModelMatrix", modelMatrix);
-                }
-                if (COLOR_MODIFIER != null) {
-                    program.setUniformVector4f("u_ColorModifier", COLOR_MODIFIER);
-                }
+            if (program instanceof RegularProgram regularProgram) {
+                regularProgram.configureParameters(modelMatrix, COLOR_MODIFIER);
                 for (Map.Entry<String, Buffer> entry : builtBuffer.shaderDataBuffers().entrySet()) {
                     program.setShaderStorageBuffer(entry.getKey(), entry.getValue());
                 }
