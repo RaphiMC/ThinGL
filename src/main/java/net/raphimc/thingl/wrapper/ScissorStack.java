@@ -39,7 +39,7 @@ public class ScissorStack {
     }
 
     public void pushOverwrite(final float x1, final float y1, final float x2, final float y2) {
-        this.pushOverwrite(null, x1, y1, x2, y2);
+        this.pushOverwrite(RenderMathUtil.getIdentityMatrix(), x1, y1, x2, y2);
     }
 
     public void pushOverwrite(final Matrix4f positionMatrix, final float x1, final float y1, final float x2, final float y2) {
@@ -48,12 +48,12 @@ public class ScissorStack {
             ThinGL.glStateStack().enable(GL11C.GL_SCISSOR_TEST);
         }
 
-        final Rectanglei rectangle = this.stack.push(RenderMathUtil.getScreenRect(positionMatrix, x1, y1, x2, y2));
+        final Rectanglei rectangle = this.stack.push(RenderMathUtil.getWindowRectangle(positionMatrix, x1, y1, x2, y2));
         ThinGL.glStateManager().setScissor(rectangle.minX, rectangle.minY, rectangle.lengthX(), rectangle.lengthY());
     }
 
     public void pushIntersection(final float x1, final float y1, final float x2, final float y2) {
-        this.pushIntersection(null, x1, y1, x2, y2);
+        this.pushIntersection(RenderMathUtil.getIdentityMatrix(), x1, y1, x2, y2);
     }
 
     public void pushIntersection(final Matrix4f positionMatrix, final float x1, final float y1, final float x2, final float y2) {
@@ -62,7 +62,7 @@ public class ScissorStack {
             return;
         }
 
-        final Rectanglei rectangle = RenderMathUtil.getScreenRect(positionMatrix, x1, y1, x2, y2);
+        final Rectanglei rectangle = RenderMathUtil.getWindowRectangle(positionMatrix, x1, y1, x2, y2);
         final Rectanglei intersection = this.stack.push(this.stack.peek().intersection(rectangle, rectangle));
         ThinGL.glStateManager().setScissor(intersection.minX, intersection.minY, intersection.lengthX(), intersection.lengthY());
     }
@@ -78,25 +78,25 @@ public class ScissorStack {
     }
 
     public boolean isAnyPointInside(final float x1, final float y1, final float x2, final float y2) {
-        return this.isAnyPointInside(null, x1, y1, x2, y2);
+        return this.isAnyPointInside(RenderMathUtil.getIdentityMatrix(), x1, y1, x2, y2);
     }
 
     public boolean isAnyPointInside(final Matrix4f positionMatrix, final float x1, final float y1, final float x2, final float y2) {
         if (this.stack.isEmpty()) return true;
 
-        final Rectanglei rectangle = RenderMathUtil.getScreenRect(positionMatrix, x1, y1, x2, y2);
+        final Rectanglei rectangle = RenderMathUtil.getWindowRectangle(positionMatrix, x1, y1, x2, y2);
         final Rectanglei intersection = this.stack.peek().intersection(rectangle, rectangle);
         return intersection.lengthX() > 0 && intersection.lengthY() > 0;
     }
 
     public boolean isFullyInside(final float x1, final float y1, final float x2, final float y2) {
-        return this.isFullyInside(null, x1, y1, x2, y2);
+        return this.isFullyInside(RenderMathUtil.getIdentityMatrix(), x1, y1, x2, y2);
     }
 
     public boolean isFullyInside(final Matrix4f positionMatrix, final float x1, final float y1, final float x2, final float y2) {
         if (this.stack.isEmpty()) return true;
 
-        final Rectanglei rectangle = RenderMathUtil.getScreenRect(positionMatrix, x1, y1, x2, y2);
+        final Rectanglei rectangle = RenderMathUtil.getWindowRectangle(positionMatrix, x1, y1, x2, y2);
         final Rectanglei intersection = this.stack.peek().intersection(rectangle, rectangle);
         return rectangle.lengthX() == intersection.lengthX() && rectangle.lengthY() == intersection.lengthY();
     }

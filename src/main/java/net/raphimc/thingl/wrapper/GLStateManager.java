@@ -125,7 +125,7 @@ public class GLStateManager {
     public Scissor getScissor() {
         final int[] scissor = new int[4];
         GL11C.glGetIntegerv(GL11C.GL_SCISSOR_BOX, scissor);
-        return new Scissor(scissor[0], scissor[1], scissor[2], scissor[3]);
+        return new Scissor(scissor);
     }
 
     public void setScissor(final int x, final int y, final int width, final int height) {
@@ -135,7 +135,7 @@ public class GLStateManager {
     public Viewport getViewport() {
         final int[] viewport = new int[4];
         GL11C.glGetIntegerv(GL11C.GL_VIEWPORT, viewport);
-        return new Viewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+        return new Viewport(viewport);
     }
 
     public void setViewport(final int x, final int y, final int width, final int height) {
@@ -211,9 +211,27 @@ public class GLStateManager {
     }
 
     public record Scissor(int x, int y, int width, int height) {
+
+        public Scissor(final int[] scissorArray) {
+            this(scissorArray[0], scissorArray[1], scissorArray[2], scissorArray[3]);
+        }
+
+        public int[] toArray() {
+            return new int[]{this.x, this.y, this.width, this.height};
+        }
+
     }
 
     public record Viewport(int x, int y, int width, int height) {
+
+        public Viewport(final int[] viewportArray) {
+            this(viewportArray[0], viewportArray[1], viewportArray[2], viewportArray[3]);
+        }
+
+        public int[] toArray() {
+            return new int[]{this.x, this.y, this.width, this.height};
+        }
+
     }
 
     public record PolygonOffset(float factor, float units) {
