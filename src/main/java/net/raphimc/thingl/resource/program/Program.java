@@ -47,7 +47,7 @@ public class Program extends GLContainerObject {
 
     private int currentTextureUnit;
     private int currentImageUnit;
-    private int currentUniformBlockIndex;
+    private int currentUniformBufferIndex;
     private int currentShaderStorageBufferIndex;
 
     public Program(final Shader... shaders) {
@@ -221,11 +221,11 @@ public class Program extends GLContainerObject {
     }
 
     public void setUniformBuffer(final String name, final Buffer buffer) {
-        GL31C.glUniformBlockBinding(this.getGlId(), this.getUniformBlockIndex(name), this.currentUniformBlockIndex);
+        GL31C.glUniformBlockBinding(this.getGlId(), this.getUniformBlockIndex(name), this.currentUniformBufferIndex);
         if (buffer != null) {
-            GL30C.glBindBufferBase(GL31C.GL_UNIFORM_BUFFER, this.currentUniformBlockIndex++, buffer.getGlId());
+            GL30C.glBindBufferBase(GL31C.GL_UNIFORM_BUFFER, this.currentUniformBufferIndex++, buffer.getGlId());
         } else {
-            GL30C.glBindBufferBase(GL31C.GL_UNIFORM_BUFFER, this.currentUniformBlockIndex++, 0);
+            GL30C.glBindBufferBase(GL31C.GL_UNIFORM_BUFFER, this.currentUniformBufferIndex++, 0);
         }
     }
 
@@ -241,9 +241,9 @@ public class Program extends GLContainerObject {
     public void bind() {
         this.currentTextureUnit = 0;
         this.currentImageUnit = 0;
-        this.currentUniformBlockIndex = 0;
+        this.currentUniformBufferIndex = 0;
         this.currentShaderStorageBufferIndex = 0;
-        if (ThinGL.applicationInterface().needsPreviousProgramRestored()) {
+        if (ThinGL.config().restoreProgramBinding()) {
             ThinGL.glStateStack().pushProgram();
         }
         ThinGL.glStateManager().setProgram(this.getGlId());
@@ -252,9 +252,9 @@ public class Program extends GLContainerObject {
     public void unbind() {
         this.currentTextureUnit = 0;
         this.currentImageUnit = 0;
-        this.currentUniformBlockIndex = 0;
+        this.currentUniformBufferIndex = 0;
         this.currentShaderStorageBufferIndex = 0;
-        if (ThinGL.applicationInterface().needsPreviousProgramRestored()) {
+        if (ThinGL.config().restoreProgramBinding()) {
             ThinGL.glStateStack().popProgram();
         }
     }

@@ -20,7 +20,6 @@ package net.raphimc.thingl.drawbuilder.builder;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.DrawBatch;
 import net.raphimc.thingl.drawbuilder.DrawMode;
@@ -52,8 +51,6 @@ import java.util.List;
 import java.util.Map;
 
 public class BufferRenderer {
-
-    public static Color COLOR_MODIFIER = Color.WHITE;
 
     public static PreparedBuffer prepareBuffer(final DrawBatch drawBatch, final DrawBatchDataHolder drawBatchDataHolder, final boolean optimizeMesh) {
         final VertexDataHolder vertexDataHolder = drawBatchDataHolder.getVertexDataHolder();
@@ -322,7 +319,7 @@ public class BufferRenderer {
         if (program != null) {
             program.bind();
             if (program instanceof RegularProgram regularProgram) {
-                regularProgram.configureParameters(modelMatrix, COLOR_MODIFIER);
+                regularProgram.configureParameters(modelMatrix);
                 for (Map.Entry<String, Buffer> entry : builtBuffer.shaderDataBuffers().entrySet()) {
                     program.setShaderStorageBuffer(entry.getKey(), entry.getValue());
                 }

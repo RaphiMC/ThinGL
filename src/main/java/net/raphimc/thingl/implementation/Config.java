@@ -15,14 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.thingl.implementation.application;
+package net.raphimc.thingl.implementation;
 
-import net.raphimc.thingl.resource.framebuffer.Framebuffer;
+public class Config {
 
-public abstract class ApplicationInterface {
+    private boolean restoreProgramBinding = false;
+    private boolean restoreVertexArrayBinding = false;
 
-    public abstract Framebuffer getCurrentFramebuffer();
+    public boolean restoreProgramBinding() {
+        return this.restoreProgramBinding;
+    }
 
-    public abstract void setCurrentFramebuffer(final Framebuffer framebuffer);
+    public void setRestoreProgramBinding(final boolean restoreProgramBinding) {
+        this.restoreProgramBinding = restoreProgramBinding;
+    }
+
+    public boolean restoreVertexArrayBinding() {
+        return this.restoreVertexArrayBinding;
+    }
+
+    public void setRestoreVertexArrayBinding(final boolean restoreVertexArrayBinding) {
+        this.restoreVertexArrayBinding = restoreVertexArrayBinding;
+    }
 
 }

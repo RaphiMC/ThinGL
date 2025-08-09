@@ -22,6 +22,8 @@ import net.lenni0451.commons.logging.LoggerFactory;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.ImmediateMultiDrawBatchDataHolder;
 import net.raphimc.thingl.drawbuilder.index.QuadIndexBuffer;
 import net.raphimc.thingl.implementation.Capabilities;
+import net.raphimc.thingl.implementation.Config;
+import net.raphimc.thingl.implementation.GlobalUniforms;
 import net.raphimc.thingl.implementation.Workarounds;
 import net.raphimc.thingl.implementation.application.ApplicationInterface;
 import net.raphimc.thingl.implementation.window.WindowInterface;
@@ -76,6 +78,10 @@ public class ThinGL {
         return get().getGLStateManager();
     }
 
+    public static Config config() {
+        return get().getConfig();
+    }
+
     public static Capabilities capabilities() {
         return get().getCapabilities();
     }
@@ -116,6 +122,10 @@ public class ThinGL {
         return get().getGlobalDrawBatch();
     }
 
+    public static GlobalUniforms globalUniforms() {
+        return get().getGlobalUniforms();
+    }
+
     public static BufferBuilderPool bufferBuilderPool() {
         return get().getBufferBuilderPool();
     }
@@ -147,6 +157,7 @@ public class ThinGL {
     private final Thread renderThread;
     private final WindowInterface windowInterface;
     private final ApplicationInterface applicationInterface;
+    private final Config config;
     private final GLStateManager glStateManager;
     private final Capabilities capabilities;
     private final Workarounds workarounds;
@@ -159,6 +170,7 @@ public class ThinGL {
     private final Renderer3D renderer3D;
     private final RendererText rendererText;
 
+    private final GlobalUniforms globalUniforms;
     private final ImmediateMultiDrawBatchDataHolder globalDrawBatch;
     private final BufferBuilderPool bufferBuilderPool;
     private final GpuBufferPool gpuBufferPool;
@@ -191,6 +203,7 @@ public class ThinGL {
         this.renderThread = Thread.currentThread();
         this.windowInterface = windowInterface;
         this.applicationInterface = applicationInterface.get();
+        this.config = new Config();
         this.glStateManager = new TrackingGLStateManager();
         this.capabilities = new Capabilities();
         this.workarounds = new Workarounds();
@@ -201,6 +214,7 @@ public class ThinGL {
         this.renderer2D = new Renderer2D();
         this.renderer3D = new Renderer3D();
         this.rendererText = new RendererText(new BSDFTextRenderer());
+        this.globalUniforms = new GlobalUniforms();
         this.globalDrawBatch = new ImmediateMultiDrawBatchDataHolder();
         this.bufferBuilderPool = new BufferBuilderPool();
         this.gpuBufferPool = new GpuBufferPool();
@@ -347,6 +361,10 @@ public class ThinGL {
         return this.glStateManager;
     }
 
+    public Config getConfig() {
+        return this.config;
+    }
+
     public Capabilities getCapabilities() {
         return this.capabilities;
     }
@@ -385,6 +403,10 @@ public class ThinGL {
 
     public ImmediateMultiDrawBatchDataHolder getGlobalDrawBatch() {
         return this.globalDrawBatch;
+    }
+
+    public GlobalUniforms getGlobalUniforms() {
+        return this.globalUniforms;
     }
 
     public BufferBuilderPool getBufferBuilderPool() {

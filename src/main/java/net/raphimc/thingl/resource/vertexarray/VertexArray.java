@@ -180,14 +180,14 @@ public class VertexArray extends GLContainerObject {
     }
 
     private void bind() {
-        if (ThinGL.applicationInterface().needsPreviousVertexArrayRestored()) {
+        if (ThinGL.config().restoreVertexArrayBinding()) {
             ThinGL.glStateStack().pushVertexArray();
         }
         ThinGL.glStateManager().setVertexArray(this.getGlId());
     }
 
     private void unbind() {
-        if (ThinGL.applicationInterface().needsPreviousVertexArrayRestored()) {
+        if (ThinGL.config().restoreVertexArrayBinding()) {
             ThinGL.glStateStack().popVertexArray();
         }
     }

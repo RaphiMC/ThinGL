@@ -20,48 +20,14 @@ package net.raphimc.thingl.implementation.application;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.framebuffer.impl.WindowFramebuffer;
 import net.raphimc.thingl.resource.framebuffer.Framebuffer;
-import org.joml.Matrix4f;
-import org.joml.Matrix4fStack;
 
 public class StandaloneApplicationInterface extends ApplicationInterface {
 
-    protected final Matrix4fStack projectionMatrixStack = new Matrix4fStack(16);
-    protected final Matrix4fStack viewMatrixStack = new Matrix4fStack(16);
     private Framebuffer framebuffer = WindowFramebuffer.INSTANCE;
 
     public StandaloneApplicationInterface() {
         ThinGL.windowInterface().addFramebufferResizeCallback(this::loadProjectionMatrix);
         this.loadProjectionMatrix(ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight());
-    }
-
-    @Override
-    public Matrix4f getProjectionMatrix() {
-        return this.projectionMatrixStack;
-    }
-
-    @Override
-    public void pushProjectionMatrix(final Matrix4f projectionMatrix) {
-        this.projectionMatrixStack.pushMatrix().set(projectionMatrix);
-    }
-
-    @Override
-    public void popProjectionMatrix() {
-        this.projectionMatrixStack.popMatrix();
-    }
-
-    @Override
-    public Matrix4f getViewMatrix() {
-        return this.viewMatrixStack;
-    }
-
-    @Override
-    public void pushViewMatrix(final Matrix4f viewMatrix) {
-        this.viewMatrixStack.pushMatrix().set(viewMatrix);
-    }
-
-    @Override
-    public void popViewMatrix() {
-        this.viewMatrixStack.popMatrix();
     }
 
     @Override
@@ -75,7 +41,7 @@ public class StandaloneApplicationInterface extends ApplicationInterface {
     }
 
     protected void loadProjectionMatrix(final float width, final float height) {
-        this.projectionMatrixStack.setOrtho(0F, width, height, 0F, -1000F, 1000F);
+        ThinGL.globalUniforms().getProjectionMatrix().setOrtho(0F, width, height, 0F, -1000F, 1000F);
     }
 
 }

@@ -22,6 +22,7 @@ import net.raphimc.thingl.drawbuilder.DrawMode;
 import net.raphimc.thingl.resource.framebuffer.Framebuffer;
 import net.raphimc.thingl.resource.program.Program;
 import net.raphimc.thingl.resource.shader.Shader;
+import net.raphimc.thingl.util.RenderMathUtil;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.lwjgl.opengl.GL11C;
@@ -41,7 +42,7 @@ public class PostProcessingProgram extends Program {
     }
 
     public final void renderScaledQuad(final float x1, final float y1, final float x2, final float y2) {
-        final Vector2f scale = ThinGL.applicationInterface().get2DScaleFactor();
+        final Vector2f scale = RenderMathUtil.get2DScaleFactor();
         this.renderQuad(x1 * scale.x, y1 * scale.y, x2 * scale.x, y2 * scale.y);
     }
 

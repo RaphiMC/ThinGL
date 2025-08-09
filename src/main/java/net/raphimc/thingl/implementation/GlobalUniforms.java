@@ -15,14 +15,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.thingl.implementation.application;
+package net.raphimc.thingl.implementation;
 
-import net.raphimc.thingl.resource.framebuffer.Framebuffer;
+import net.lenni0451.commons.color.Color;
+import org.joml.Matrix4fStack;
 
-public abstract class ApplicationInterface {
+public class GlobalUniforms {
 
-    public abstract Framebuffer getCurrentFramebuffer();
+    private final Matrix4fStack projectionMatrixStack = new Matrix4fStack(16);
+    private final Matrix4fStack viewMatrixStack = new Matrix4fStack(16);
+    private Color colorModifier = Color.WHITE;
 
-    public abstract void setCurrentFramebuffer(final Framebuffer framebuffer);
+    public Matrix4fStack getProjectionMatrix() {
+        return this.projectionMatrixStack;
+    }
+
+    public Matrix4fStack getViewMatrix() {
+        return this.viewMatrixStack;
+    }
+
+    public Color getColorModifier() {
+        return this.colorModifier;
+    }
+
+    public void setColorModifier(final Color colorModifier) {
+        this.colorModifier = colorModifier;
+    }
 
 }

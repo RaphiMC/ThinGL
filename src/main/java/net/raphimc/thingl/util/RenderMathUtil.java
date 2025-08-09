@@ -19,6 +19,7 @@ package net.raphimc.thingl.util;
 
 import net.lenni0451.commons.math.MathUtils;
 import net.raphimc.thingl.ThinGL;
+import net.raphimc.thingl.resource.framebuffer.Framebuffer;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector2f;
@@ -49,6 +50,20 @@ public class RenderMathUtil {
         return IDENTITY_MATRIX;
     }
 
+    public static Vector2f get2DScaleFactor() {
+        final Vector2f scale = new Vector2f();
+        final Matrix4f projectionMatrix = ThinGL.globalUniforms().getProjectionMatrix();
+        if ((projectionMatrix.properties() & Matrix4fc.PROPERTY_AFFINE) != 0) { // If orthographic projection
+            final Framebuffer currentFramebuffer = ThinGL.applicationInterface().getCurrentFramebuffer();
+            // Extract scale factor from orthographic projection matrix
+            scale.x = currentFramebuffer.getWidth() / (2F / projectionMatrix.m00());
+            scale.y = currentFramebuffer.getHeight() / -(2F / projectionMatrix.m11());
+        } else {
+            scale.set(1F);
+        }
+        return scale;
+    }
+
     public static Rectanglei getScreenRect(final Matrix4f positionMatrix, final float x1, final float y1, final float x2, final float y2) {
         final Vector3f start = new Vector3f(x1, y1, 0);
         final Vector3f end = new Vector3f(x2, y2, 0);
@@ -57,12 +72,13 @@ public class RenderMathUtil {
             positionMatrix.transformPosition(end);
         }
 
-        final Vector2f scale = ThinGL.applicationInterface().get2DScaleFactor();
+        final Vector2f scale = RenderMathUtil.get2DScaleFactor();
+        final int framebufferHeight = ThinGL.applicationInterface().getCurrentFramebuffer().getHeight();
         return new Rectanglei(
                 MathUtils.floorInt(start.x * scale.x),
-                MathUtils.floorInt((MathUtils.ceilInt(ThinGL.applicationInterface().getCurrentFramebuffer().getHeight() / scale.y) - end.y) * scale.y),
+                MathUtils.floorInt((MathUtils.ceilInt(framebufferHeight / scale.y) - end.y) * scale.y),
                 MathUtils.ceilInt(end.x * scale.x),
-                MathUtils.ceilInt((MathUtils.ceilInt(ThinGL.applicationInterface().getCurrentFramebuffer().getHeight() / scale.y) - start.y) * scale.y)
+                MathUtils.ceilInt((MathUtils.ceilInt(framebufferHeight / scale.y) - start.y) * scale.y)
         );
     }
 
