@@ -48,7 +48,7 @@ public abstract class MultiPassAuxInputPostProcessingProgram extends AuxInputPos
 
     @Override
     protected void renderQuad0(final float x1, final float y1, final float x2, final float y2) {
-        final Framebuffer sourceFramebuffer = ThinGL.applicationInterface().getCurrentFramebuffer();
+        final Framebuffer sourceFramebuffer = ThinGL.glStateManager().getDrawFramebuffer();
         if (this.passes == 1) { // Special case for single pass with source framebuffer read support
             final TextureFramebuffer sourceFramebufferCopy = ThinGL.framebufferPool().borrowFramebuffer(GL11C.GL_LINEAR);
             sourceFramebuffer.blitTo(sourceFramebufferCopy, true, false, false);

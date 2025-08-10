@@ -267,17 +267,16 @@ public class GLStateStack {
     }
 
     public void pushFramebuffer() {
-        this.framebufferStack.push(ThinGL.applicationInterface().getCurrentFramebuffer());
+        this.framebufferStack.push(ThinGL.glStateManager().getDrawFramebuffer());
     }
 
     public void popFramebuffer() {
-        popFramebuffer(false);
-    }
-
-    public void popFramebuffer(final boolean setViewport) {
         final Framebuffer framebuffer = this.framebufferStack.pop();
-        if (!framebuffer.isAllocated()) throw new IllegalStateException("Framebuffer is no longer available");
-        framebuffer.bind(setViewport);
+        if (framebuffer.isAllocated()) {
+            framebuffer.bind();
+        } else {
+            throw new IllegalStateException("Framebuffer is no longer available");
+        }
     }
 
     public void pushProgram() {

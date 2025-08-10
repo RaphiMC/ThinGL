@@ -13,7 +13,6 @@ struct GlyphData {
 uniform mat4 u_ProjectionMatrix;
 uniform mat4 u_ViewMatrix;
 uniform mat4 u_ModelMatrix;
-uniform vec2 u_Viewport;
 
 layout (std430) restrict readonly buffer ssbo_TextData {
     TextData textDatas[];

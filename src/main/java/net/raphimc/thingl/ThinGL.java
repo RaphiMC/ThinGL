@@ -25,7 +25,6 @@ import net.raphimc.thingl.implementation.Capabilities;
 import net.raphimc.thingl.implementation.Config;
 import net.raphimc.thingl.implementation.GlobalUniforms;
 import net.raphimc.thingl.implementation.Workarounds;
-import net.raphimc.thingl.implementation.application.ApplicationInterface;
 import net.raphimc.thingl.implementation.window.WindowInterface;
 import net.raphimc.thingl.program.Programs;
 import net.raphimc.thingl.renderer.impl.Renderer2D;
@@ -68,10 +67,6 @@ public class ThinGL {
 
     public static WindowInterface windowInterface() {
         return get().getWindowInterface();
-    }
-
-    public static ApplicationInterface applicationInterface() {
-        return get().getApplicationInterface();
     }
 
     public static GLStateManager glStateManager() {
@@ -156,7 +151,6 @@ public class ThinGL {
 
     private final Thread renderThread;
     private final WindowInterface windowInterface;
-    private final ApplicationInterface applicationInterface;
     private final Config config;
     private final GLStateManager glStateManager;
     private final Capabilities capabilities;
@@ -191,18 +185,17 @@ public class ThinGL {
     private int fpsCounter = 0;
     private int fps = 0;
 
-    public ThinGL(final Supplier<ApplicationInterface> applicationInterface, final Supplier<WindowInterface> windowInterface) {
-        this(applicationInterface, windowInterface.get());
+    public ThinGL(final Supplier<WindowInterface> windowInterface) {
+        this(windowInterface.get());
     }
 
-    public ThinGL(final Supplier<ApplicationInterface> applicationInterface, final WindowInterface windowInterface) {
+    public ThinGL(final WindowInterface windowInterface) {
         if (INSTANCE != null) {
             throw new IllegalStateException("ThinGL has already been initialized");
         }
         INSTANCE = this;
         this.renderThread = Thread.currentThread();
         this.windowInterface = windowInterface;
-        this.applicationInterface = applicationInterface.get();
         this.config = new Config();
         this.glStateManager = new TrackingGLStateManager();
         this.capabilities = new Capabilities();
@@ -351,10 +344,6 @@ public class ThinGL {
 
     public WindowInterface getWindowInterface() {
         return this.windowInterface;
-    }
-
-    public ApplicationInterface getApplicationInterface() {
-        return this.applicationInterface;
     }
 
     public GLStateManager getGLStateManager() {

@@ -19,10 +19,8 @@ package net.raphimc.thingl.util;
 
 import net.lenni0451.commons.math.MathUtils;
 import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.resource.framebuffer.Framebuffer;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.primitives.Rectanglei;
 
@@ -54,21 +52,11 @@ public class RenderMathUtil {
         return new Matrix4f().mul(ThinGL.globalUniforms().getProjectionMatrix()).mul(ThinGL.globalUniforms().getViewMatrix()).mul(positionMatrix);
     }
 
-    public static Vector2f get2DScaleFactor() {
-        final Vector2f scale = new Vector2f();
-        final Matrix4f projectionMatrix = ThinGL.globalUniforms().getProjectionMatrix();
-        if ((projectionMatrix.properties() & Matrix4fc.PROPERTY_AFFINE) != 0) { // If orthographic projection
-            final Framebuffer currentFramebuffer = ThinGL.applicationInterface().getCurrentFramebuffer();
-            // Extract scale factor from orthographic projection matrix
-            scale.x = currentFramebuffer.getWidth() / (2F / projectionMatrix.m00());
-            scale.y = currentFramebuffer.getHeight() / -(2F / projectionMatrix.m11());
-        } else {
-            scale.set(1F);
-        }
-        return scale;
+    public static Rectanglei getWindowRectangle(final Matrix4f positionMatrix, final float x1, final float y1, final float x2, final float y2) {
+        return getWindowRectangle(positionMatrix, x1, y1, x2, y2, false);
     }
 
-    public static Rectanglei getWindowRectangle(final Matrix4f positionMatrix, final float x1, final float y1, final float x2, final float y2) {
+    public static Rectanglei getWindowRectangle(final Matrix4f positionMatrix, final float x1, final float y1, final float x2, final float y2, final boolean flipY) {
         final int[] viewport = ThinGL.glStateManager().getViewport().toArray();
         final Matrix4f mvpMatrix = RenderMathUtil.getMvpMatrix(positionMatrix);
         final Vector3f topLeft = new Vector3f(x1, y1, 0F);
@@ -77,7 +65,11 @@ public class RenderMathUtil {
         mvpMatrix.project(topLeft, viewport, topLeft);
         mvpMatrix.project(bottomRight, viewport, bottomRight);
 
-        return new Rectanglei(MathUtils.floorInt(topLeft.x), MathUtils.floorInt(bottomRight.y), MathUtils.ceilInt(bottomRight.x), MathUtils.ceilInt(topLeft.y));
+        if (flipY) {
+            return new Rectanglei(MathUtils.floorInt(topLeft.x), MathUtils.floorInt(viewport[3] - topLeft.y), MathUtils.ceilInt(bottomRight.x), MathUtils.ceilInt(viewport[3] - bottomRight.y));
+        } else {
+            return new Rectanglei(MathUtils.floorInt(topLeft.x), MathUtils.floorInt(bottomRight.y), MathUtils.ceilInt(bottomRight.x), MathUtils.ceilInt(topLeft.y));
+        }
     }
 
 }

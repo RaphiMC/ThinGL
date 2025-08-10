@@ -17,13 +17,13 @@ void main() {
     vec3 i_Position = vec3(quadValues[gl_VertexID], 0);
     gl_Position = u_ProjectionMatrix * vec4(i_Position, 1);
 
-    vec2 resolution = u_Quad.zw - u_Quad.xy;
+    vec2 quadSize = u_Quad.zw - u_Quad.xy;
 
     vec2 relative = i_Position.xy - u_Quad.xy;
-    vec4 relativeCoord = u_ProjectionMatrix * vec4(relative / resolution * u_Viewport, i_Position.z, 1);
+    vec4 relativeCoord = u_ProjectionMatrix * vec4(relative / quadSize * u_Viewport, i_Position.z, 1);
 
-    v_RelPixelSize = 1 / resolution;
-    v_RelCoord = vec4(relative.x, resolution.y - relative.y, i_Position.z, 1);
+    v_RelPixelSize = 1 / quadSize;
+    v_RelCoord = vec4(relative.x, quadSize.y - relative.y, i_Position.z, 1);
     v_RelTexCoord = (relativeCoord.xy + 1) / 2;
 
     v_VpPixelSize = 1 / u_Viewport;

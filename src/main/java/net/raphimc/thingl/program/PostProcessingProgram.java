@@ -19,12 +19,12 @@ package net.raphimc.thingl.program;
 
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.DrawMode;
-import net.raphimc.thingl.resource.framebuffer.Framebuffer;
 import net.raphimc.thingl.resource.program.Program;
 import net.raphimc.thingl.resource.shader.Shader;
 import net.raphimc.thingl.util.RenderMathUtil;
+import net.raphimc.thingl.wrapper.GLStateManager;
 import org.joml.Matrix4f;
-import org.joml.Vector2f;
+import org.joml.primitives.Rectanglei;
 import org.lwjgl.opengl.GL11C;
 
 public class PostProcessingProgram extends Program {
@@ -36,14 +36,20 @@ public class PostProcessingProgram extends Program {
     @Override
     public void bind() {
         super.bind();
-        final Framebuffer currentFramebuffer = ThinGL.applicationInterface().getCurrentFramebuffer();
-        this.setUniformMatrix4f("u_ProjectionMatrix", new Matrix4f().setOrtho(0F, currentFramebuffer.getWidth(), currentFramebuffer.getHeight(), 0F, -1000F, 1000F));
-        this.setUniformVector2f("u_Viewport", currentFramebuffer.getWidth(), currentFramebuffer.getHeight());
+        final GLStateManager.Viewport viewport = ThinGL.glStateManager().getViewport();
+        this.setUniformMatrix4f("u_ProjectionMatrix", new Matrix4f().setOrtho(0F, viewport.width(), viewport.height(), 0F, -1000F, 1000F));
+        this.setUniformVector2f("u_Viewport", viewport.width(), viewport.height());
     }
 
     public final void renderScaledQuad(final float x1, final float y1, final float x2, final float y2) {
-        final Vector2f scale = RenderMathUtil.get2DScaleFactor();
-        this.renderQuad(x1 * scale.x, y1 * scale.y, x2 * scale.x, y2 * scale.y);
+        this.renderScaledQuad(RenderMathUtil.getIdentityMatrix(), x1, y1, x2, y2);
+    }
+
+    public final void renderScaledQuad(final Matrix4f positionMatrix, final float x1, final float y1, final float x2, final float y2) {
+        final Rectanglei rectangle = RenderMathUtil.getWindowRectangle(positionMatrix, x1, y1, x2, y2, true);
+        final GLStateManager.Viewport viewport = ThinGL.glStateManager().getViewport();
+        rectangle.translate(-viewport.x(), viewport.y());
+        this.renderQuad(rectangle.minX, rectangle.minY, rectangle.maxX, rectangle.maxY);
     }
 
     public final void renderQuad(final float x1, final float y1, final float x2, final float y2) {
@@ -60,8 +66,8 @@ public class PostProcessingProgram extends Program {
     }
 
     public final void renderFullscreenQuad() {
-        final Framebuffer currentFramebuffer = ThinGL.applicationInterface().getCurrentFramebuffer();
-        this.renderQuad(0F, 0F, currentFramebuffer.getWidth(), currentFramebuffer.getHeight());
+        final GLStateManager.Viewport viewport = ThinGL.glStateManager().getViewport();
+        this.renderQuad(0F, 0F, viewport.width(), viewport.height());
     }
 
     protected void renderQuad0(final float x1, final float y1, final float x2, final float y2) {

@@ -54,10 +54,9 @@ public abstract class StandaloneApplicationRunner {
         if (this.configuration.debugMode) {
             DebugMessageCallback.install(this.configuration.extendedDebugMode);
         }
+        this.init(); // Init the GL state
 
-        this.init();
         final Matrix4fStack positionMatrix = new Matrix4fStack(8);
-
         while (!GLFW.glfwWindowShouldClose(this.window)) {
             ThinGL.get().onStartFrame(); // Let ThinGL know that the current frame is starting
             this.mainFramebuffer.bind(true); // Bind the main framebuffer
@@ -105,7 +104,7 @@ public abstract class StandaloneApplicationRunner {
     }
 
     protected ThinGL createThinGL() {
-        return new ThinGL(StandaloneApplicationInterface::new, GLFWWindowInterface::new);
+        return new ThinGL(new GLFWWindowInterface());
     }
 
     protected void init() {
@@ -115,6 +114,13 @@ public abstract class StandaloneApplicationRunner {
         ThinGL.glStateManager().setDepthFunc(GL11C.GL_LEQUAL);
         ThinGL.glStateManager().enable(GL11C.GL_CULL_FACE);
         this.mainFramebuffer = new TextureFramebuffer();
+
+        ThinGL.windowInterface().addFramebufferResizeCallback(this::loadProjectionMatrix);
+        this.loadProjectionMatrix(ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight());
+    }
+
+    protected void loadProjectionMatrix(final float width, final float height) {
+        ThinGL.globalUniforms().getProjectionMatrix().setOrtho(0F, width, height, 0F, -1000F, 1000F);
     }
 
     protected abstract void render(final Matrix4fStack positionMatrix);

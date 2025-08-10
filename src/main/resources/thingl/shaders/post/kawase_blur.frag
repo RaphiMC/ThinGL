@@ -1,7 +1,6 @@
 // https://www.shadertoy.com/view/3td3W8
 #version 330 core
 
-uniform vec2 u_Viewport;
 uniform sampler2D u_Source;
 uniform sampler2D u_Input;
 uniform int u_Pass;

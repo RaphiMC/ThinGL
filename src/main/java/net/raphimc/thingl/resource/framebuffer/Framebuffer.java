@@ -87,16 +87,16 @@ public class Framebuffer extends GLContainerObject {
     }
 
     public static Framebuffer fromGlId(final int glId) {
-        if (glId == 0) {
-            return WindowFramebuffer.INSTANCE;
-        }
-        if (!GL30C.glIsFramebuffer(glId)) {
+        if (glId != 0 && !GL30C.glIsFramebuffer(glId)) {
             throw new IllegalArgumentException("Not a framebuffer object");
         }
         return fromGlIdUnsafe(glId);
     }
 
     public static Framebuffer fromGlIdUnsafe(final int glId) {
+        if (glId == 0) {
+            return WindowFramebuffer.INSTANCE;
+        }
         return new Framebuffer(glId);
     }
 
@@ -131,15 +131,14 @@ public class Framebuffer extends GLContainerObject {
     }
 
     public void bind(final boolean setViewport) {
-        GL30C.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, this.getGlId());
-        ThinGL.applicationInterface().setCurrentFramebuffer(this);
+        ThinGL.glStateManager().setDrawFramebuffer(this);
         if (setViewport) {
             ThinGL.glStateManager().setViewport(0, 0, this.getWidth(), this.getHeight());
         }
     }
 
     public void unbind() {
-        WindowFramebuffer.INSTANCE.bind(true);
+        WindowFramebuffer.INSTANCE.bind();
     }
 
     public void clear() {

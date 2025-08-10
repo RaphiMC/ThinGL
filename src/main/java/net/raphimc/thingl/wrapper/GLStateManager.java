@@ -17,6 +17,7 @@
  */
 package net.raphimc.thingl.wrapper;
 
+import net.raphimc.thingl.resource.framebuffer.Framebuffer;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL14C;
 import org.lwjgl.opengl.GL20C;
@@ -199,6 +200,14 @@ public class GLStateManager {
 
     public void setVertexArray(final int vertexArray) {
         GL30C.glBindVertexArray(vertexArray);
+    }
+
+    public Framebuffer getDrawFramebuffer() {
+        return Framebuffer.fromGlIdUnsafe(GL11C.glGetInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING));
+    }
+
+    public void setDrawFramebuffer(final Framebuffer framebuffer) {
+        GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, framebuffer.getGlId());
     }
 
     public record BlendFunc(int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) {

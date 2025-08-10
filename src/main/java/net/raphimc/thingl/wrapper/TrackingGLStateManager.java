@@ -21,6 +21,7 @@ import it.unimi.dsi.fastutil.ints.Int2BooleanMap;
 import it.unimi.dsi.fastutil.ints.Int2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import net.raphimc.thingl.resource.framebuffer.Framebuffer;
 
 public class TrackingGLStateManager extends GLStateManager {
 
@@ -40,6 +41,7 @@ public class TrackingGLStateManager extends GLStateManager {
     private final Int2IntMap pixelStores = new Int2IntOpenHashMap();
     private Integer program;
     private Integer vertexArray;
+    private Framebuffer drawFramebuffer;
 
     @Override
     public boolean getCapability(final int capability) {
@@ -365,6 +367,26 @@ public class TrackingGLStateManager extends GLStateManager {
 
     public void clearVertexArrayCache() {
         this.vertexArray = null;
+    }
+
+    @Override
+    public Framebuffer getDrawFramebuffer() {
+        if (this.drawFramebuffer == null) {
+            this.drawFramebuffer = super.getDrawFramebuffer();
+        }
+        return this.drawFramebuffer;
+    }
+
+    @Override
+    public void setDrawFramebuffer(final Framebuffer framebuffer) {
+        if (this.getDrawFramebuffer() != framebuffer) {
+            this.drawFramebuffer = framebuffer;
+            super.setDrawFramebuffer(framebuffer);
+        }
+    }
+
+    public void clearDrawFramebufferCache() {
+        this.drawFramebuffer = null;
     }
 
 }

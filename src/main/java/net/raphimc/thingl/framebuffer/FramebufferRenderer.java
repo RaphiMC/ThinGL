@@ -47,16 +47,18 @@ public class FramebufferRenderer {
     }
 
     public void begin() {
-        ThinGL.glStateStack().pushFramebuffer();
-        this.framebuffer.bind(true);
         ThinGL.globalUniforms().getProjectionMatrix().pushMatrix().setOrtho(0F, this.framebuffer.getWidth(), this.framebuffer.getHeight(), 0F, -1000F, 1000F);
         ThinGL.globalUniforms().getViewMatrix().pushMatrix().identity();
+        ThinGL.glStateStack().pushFramebuffer();
+        ThinGL.glStateStack().pushViewport();
+        this.framebuffer.bind(true);
     }
 
     public void end() {
+        ThinGL.glStateStack().popViewport();
+        ThinGL.glStateStack().popFramebuffer();
         ThinGL.globalUniforms().getViewMatrix().popMatrix();
         ThinGL.globalUniforms().getProjectionMatrix().popMatrix();
-        ThinGL.glStateStack().popFramebuffer(true);
     }
 
     public void clear() {
