@@ -37,12 +37,12 @@ public class KawaseBlurProgram extends MultiPassAuxInputPostProcessingProgram {
     }
 
     @Override
-    protected void renderQuad0(final float x1, final float y1, final float x2, final float y2) {
+    protected void renderInternal(final float x1, final float y1, final float x2, final float y2) {
         final GLStateManager.Viewport viewport = ThinGL.glStateManager().getViewport();
         if (x1 == 0 && y1 == 0 && x2 == viewport.width() && y2 == viewport.height()) {
-            super.renderQuad0(x1, y1, x2, y2);
+            super.renderInternal(x1, y1, x2, y2);
         } else {
-            throw new UnsupportedOperationException("KawaseBlurProgram does not support rendering a sub-rectangle of the framebuffer. Call renderFullscreenQuad instead.");
+            throw new UnsupportedOperationException("KawaseBlurProgram does not support rendering a sub-rectangle of the framebuffer. Call renderFullscreen instead.");
         }
     }
 

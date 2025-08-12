@@ -56,7 +56,7 @@ public class BlurExample extends StandaloneApplicationRunner {
         ThinGL.renderer2D().filledCircle(positionMatrix, x, 200, 75, Color.RED);
         ThinGL.programs().getGaussianBlur().unbindInput();
         ThinGL.programs().getGaussianBlur().configureParameters(10); // Configure the blur radius
-        ThinGL.programs().getGaussianBlur().renderScaledQuad(50, 50, 50 + this.image.getWidth(), 50 + this.image.getHeight());
+        ThinGL.programs().getGaussianBlur().render(50, 50, 50 + this.image.getWidth(), 50 + this.image.getHeight());
         ThinGL.programs().getGaussianBlur().clearInput();
     }
 

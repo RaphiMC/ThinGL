@@ -50,7 +50,7 @@ public class AntiAliasingExample extends StandaloneApplicationRunner {
         ThinGL.renderer2D().filledRoundedRectangle(positionMatrix, 0, 0, rectW, rectH, 40, Color.GRAY);
 
         ThinGL.programs().getMsaa().unbindInput();
-        ThinGL.programs().getMsaa().renderFullscreenQuad();
+        ThinGL.programs().getMsaa().renderFullscreen();
         ThinGL.programs().getMsaa().clearInput();
     }
 

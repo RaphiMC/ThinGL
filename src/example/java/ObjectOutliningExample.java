@@ -38,7 +38,7 @@ public class ObjectOutliningExample extends StandaloneApplicationRunner {
         this.renderScene(positionMatrix);
         ThinGL.programs().getOutline().unbindInput();
         ThinGL.programs().getOutline().configureParameters(1, OutlineProgram.STYLE_OUTER_BIT); // Configure the outline
-        ThinGL.programs().getOutline().renderFullscreenQuad();
+        ThinGL.programs().getOutline().renderFullscreen();
         ThinGL.programs().getOutline().clearInput();
 
         positionMatrix.translate(0, 200, 0);
