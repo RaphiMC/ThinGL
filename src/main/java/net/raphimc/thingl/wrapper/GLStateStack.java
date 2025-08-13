@@ -150,8 +150,7 @@ public class GLStateStack {
     }
 
     public void popBlendFunc() {
-        final GLStateManager.BlendFunc blendFunc = this.blendFuncStack.pop();
-        ThinGL.glStateManager().setBlendFunc(blendFunc.srcRGB(), blendFunc.dstRGB(), blendFunc.srcAlpha(), blendFunc.dstAlpha());
+        ThinGL.glStateManager().setBlendFunc(this.blendFuncStack.pop());
     }
 
     public void pushDepthFunc() {
@@ -175,8 +174,7 @@ public class GLStateStack {
     }
 
     public void popColorMask() {
-        final GLStateManager.ColorMask colorMask = this.colorMaskStack.pop();
-        ThinGL.glStateManager().setColorMask(colorMask.red(), colorMask.green(), colorMask.blue(), colorMask.alpha());
+        ThinGL.glStateManager().setColorMask(this.colorMaskStack.pop());
     }
 
     public void pushDepthMask() {
@@ -192,8 +190,7 @@ public class GLStateStack {
     }
 
     public void popStencilMask() {
-        final GLStateManager.StencilMask stencilMask = this.stencilMaskStack.pop();
-        ThinGL.glStateManager().setStencilMask(stencilMask.front(), stencilMask.back());
+        ThinGL.glStateManager().setStencilMask(this.stencilMaskStack.pop());
     }
 
     public void pushScissor() {
@@ -201,8 +198,7 @@ public class GLStateStack {
     }
 
     public void popScissor() {
-        final GLStateManager.Scissor scissor = this.scissorStack.pop();
-        ThinGL.glStateManager().setScissor(scissor.x(), scissor.y(), scissor.width(), scissor.height());
+        ThinGL.glStateManager().setScissor(this.scissorStack.pop());
     }
 
     public void pushViewport() {
@@ -210,8 +206,7 @@ public class GLStateStack {
     }
 
     public void popViewport() {
-        final GLStateManager.Viewport viewport = this.viewportStack.pop();
-        ThinGL.glStateManager().setViewport(viewport.x(), viewport.y(), viewport.width(), viewport.height());
+        ThinGL.glStateManager().setViewport(this.viewportStack.pop());
     }
 
     public void pushCullFace() {
@@ -243,8 +238,7 @@ public class GLStateStack {
     }
 
     public void popPolygonOffset() {
-        final GLStateManager.PolygonOffset polygonOffset = this.polygonOffsetStack.pop();
-        ThinGL.glStateManager().setPolygonOffset(polygonOffset.factor(), polygonOffset.units());
+        ThinGL.glStateManager().setPolygonOffset(this.polygonOffsetStack.pop());
     }
 
     public void pushPixelStore() {

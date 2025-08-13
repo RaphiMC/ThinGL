@@ -49,7 +49,7 @@ public class ScissorStack {
         }
 
         final Rectanglei rectangle = this.stack.push(RenderMathUtil.getWindowRectangle(positionMatrix, xtl, ytl, xbr, ybr));
-        ThinGL.glStateManager().setScissor(rectangle.minX, rectangle.minY, rectangle.lengthX(), rectangle.lengthY());
+        ThinGL.glStateManager().setScissor(rectangle);
     }
 
     public void pushIntersection(final float xtl, final float ytl, final float xbr, final float ybr) {
@@ -64,7 +64,7 @@ public class ScissorStack {
 
         final Rectanglei rectangle = RenderMathUtil.getWindowRectangle(positionMatrix, xtl, ytl, xbr, ybr);
         final Rectanglei intersection = this.stack.push(this.stack.peek().intersection(rectangle, rectangle));
-        ThinGL.glStateManager().setScissor(intersection.minX, intersection.minY, intersection.lengthX(), intersection.lengthY());
+        ThinGL.glStateManager().setScissor(intersection);
     }
 
     public void pop() {
@@ -72,8 +72,7 @@ public class ScissorStack {
         if (this.stack.isEmpty()) {
             ThinGL.glStateStack().pop();
         } else {
-            final Rectanglei rectangle = this.stack.peek();
-            ThinGL.glStateManager().setScissor(rectangle.minX, rectangle.minY, rectangle.lengthX(), rectangle.lengthY());
+            ThinGL.glStateManager().setScissor(this.stack.peek());
         }
     }
 

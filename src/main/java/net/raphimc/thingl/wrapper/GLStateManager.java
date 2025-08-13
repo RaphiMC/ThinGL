@@ -18,6 +18,7 @@
 package net.raphimc.thingl.wrapper;
 
 import net.raphimc.thingl.resource.framebuffer.Framebuffer;
+import org.joml.primitives.Rectanglei;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL14C;
 import org.lwjgl.opengl.GL20C;
@@ -52,6 +53,10 @@ public class GLStateManager {
                 GL11C.glGetInteger(GL14C.GL_BLEND_SRC_ALPHA),
                 GL11C.glGetInteger(GL14C.GL_BLEND_DST_ALPHA)
         );
+    }
+
+    public void setBlendFunc(final BlendFunc blendFunc) {
+        this.setBlendFunc(blendFunc.srcRGB, blendFunc.dstRGB, blendFunc.srcAlpha, blendFunc.dstAlpha);
     }
 
     public void setBlendFunc(final int src, final int dst) {
@@ -91,6 +96,10 @@ public class GLStateManager {
                 colorMask[3] != GL11C.GL_FALSE);
     }
 
+    public void setColorMask(final ColorMask colorMask) {
+        this.setColorMask(colorMask.red, colorMask.green, colorMask.blue, colorMask.alpha);
+    }
+
     public void setColorMask(final boolean red, final boolean green, final boolean blue, final boolean alpha) {
         GL11C.glColorMask(red, green, blue, alpha);
     }
@@ -108,6 +117,10 @@ public class GLStateManager {
                 GL11C.glGetInteger(GL11C.GL_STENCIL_WRITEMASK),
                 GL11C.glGetInteger(GL20C.GL_STENCIL_BACK_WRITEMASK)
         );
+    }
+
+    public void setStencilMask(final StencilMask stencilMask) {
+        this.setStencilMask(stencilMask.front, stencilMask.back);
     }
 
     public void setStencilMask(final int mask) {
@@ -129,6 +142,14 @@ public class GLStateManager {
         return new Scissor(scissor);
     }
 
+    public void setScissor(final Rectanglei scissorRectangle) {
+        this.setScissor(scissorRectangle.minX, scissorRectangle.minY, scissorRectangle.lengthX(), scissorRectangle.lengthY());
+    }
+
+    public void setScissor(final Scissor scissor) {
+        this.setScissor(scissor.x, scissor.y, scissor.width, scissor.height);
+    }
+
     public void setScissor(final int x, final int y, final int width, final int height) {
         GL11C.glScissor(x, y, width, height);
     }
@@ -137,6 +158,14 @@ public class GLStateManager {
         final int[] viewport = new int[4];
         GL11C.glGetIntegerv(GL11C.GL_VIEWPORT, viewport);
         return new Viewport(viewport);
+    }
+
+    public void setViewport(final Rectanglei viewportRectangle) {
+        this.setViewport(viewportRectangle.minX, viewportRectangle.minY, viewportRectangle.lengthX(), viewportRectangle.lengthY());
+    }
+
+    public void setViewport(final Viewport viewport) {
+        this.setViewport(viewport.x, viewport.y, viewport.width, viewport.height);
     }
 
     public void setViewport(final int x, final int y, final int width, final int height) {
@@ -172,6 +201,10 @@ public class GLStateManager {
                 GL11C.glGetFloat(GL11C.GL_POLYGON_OFFSET_FACTOR),
                 GL11C.glGetFloat(GL11C.GL_POLYGON_OFFSET_UNITS)
         );
+    }
+
+    public void setPolygonOffset(final PolygonOffset polygonOffset) {
+        this.setPolygonOffset(polygonOffset.factor, polygonOffset.units);
     }
 
     public void setPolygonOffset(final float factor, final float units) {
