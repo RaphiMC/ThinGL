@@ -52,15 +52,15 @@ public class RenderMathUtil {
         return new Matrix4f().mul(ThinGL.globalUniforms().getProjectionMatrix()).mul(ThinGL.globalUniforms().getViewMatrix()).mul(positionMatrix);
     }
 
-    public static Rectanglei getWindowRectangle(final Matrix4f positionMatrix, final float x1, final float y1, final float x2, final float y2) {
-        return getWindowRectangle(positionMatrix, x1, y1, x2, y2, false);
+    public static Rectanglei getWindowRectangle(final Matrix4f positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr) {
+        return getWindowRectangle(positionMatrix, xtl, ytl, xbr, ybr, false);
     }
 
-    public static Rectanglei getWindowRectangle(final Matrix4f positionMatrix, final float x1, final float y1, final float x2, final float y2, final boolean flipY) {
+    public static Rectanglei getWindowRectangle(final Matrix4f positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr, final boolean flipY) {
         final int[] viewport = ThinGL.glStateManager().getViewport().toArray();
         final Matrix4f mvpMatrix = RenderMathUtil.getMvpMatrix(positionMatrix);
-        final Vector3f topLeft = new Vector3f(x1, y1, 0F);
-        final Vector3f bottomRight = new Vector3f(x2, y2, 0F);
+        final Vector3f topLeft = new Vector3f(xtl, ytl, 0F);
+        final Vector3f bottomRight = new Vector3f(xbr, ybr, 0F);
 
         mvpMatrix.project(topLeft, viewport, topLeft);
         mvpMatrix.project(bottomRight, viewport, bottomRight);

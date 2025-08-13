@@ -78,10 +78,10 @@ public abstract class AuxInputPostProcessingProgram extends PostProcessingProgra
     }
 
     @Override
-    protected void prepareAndRenderInternal(final float x1, final float y1, final float x2, final float y2) {
+    protected void prepareAndRenderInternal(final float xtl, final float ytl, final float xbr, final float ybr) {
         ThinGL.glStateStack().pushViewport();
         this.inputFramebuffer.configureViewport();
-        super.prepareAndRenderInternal(x1, y1, x2, y2);
+        super.prepareAndRenderInternal(xtl, ytl, xbr, ybr);
         ThinGL.glStateStack().popViewport();
     }
 

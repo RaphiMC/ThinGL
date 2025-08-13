@@ -47,12 +47,12 @@ public abstract class MultiPassAuxInputPostProcessingProgram extends AuxInputPos
     }
 
     @Override
-    protected void renderInternal(final float x1, final float y1, final float x2, final float y2) {
+    protected void renderInternal(final float xtl, final float ytl, final float xbr, final float ybr) {
         final Framebuffer sourceFramebuffer = ThinGL.glStateManager().getDrawFramebuffer();
         if (this.passes == 1) { // Special case for single pass with source framebuffer read support
             final TextureFramebuffer sourceFramebufferCopy = ThinGL.framebufferPool().borrowFramebuffer(GL11C.GL_LINEAR);
             sourceFramebuffer.blitTo(sourceFramebufferCopy, true, false, false);
-            this.renderPass(0, sourceFramebufferCopy, x1, y1, x2, y2);
+            this.renderPass(0, sourceFramebufferCopy, xtl, ytl, xbr, ybr);
             ThinGL.framebufferPool().returnFramebuffer(sourceFramebufferCopy);
         } else {
             final TextureFramebuffer[] framebuffers = new TextureFramebuffer[this.passes - 1];
@@ -69,25 +69,25 @@ public abstract class MultiPassAuxInputPostProcessingProgram extends AuxInputPos
             framebuffers[0].bind();
             if (this.needsSourceFramebufferRead) {
                 if (sourceFramebuffer.getColorAttachment(0) instanceof Texture2D) {
-                    this.renderPass(0, sourceFramebuffer, x1, y1, x2, y2);
+                    this.renderPass(0, sourceFramebuffer, xtl, ytl, xbr, ybr);
                 } else { // Temp copy to ensure the source framebuffer color attachment is a Texture2D
                     final TextureFramebuffer sourceFramebufferCopy = ThinGL.framebufferPool().borrowFramebuffer(GL11C.GL_LINEAR);
                     sourceFramebuffer.blitTo(sourceFramebufferCopy, true, false, false);
-                    this.renderPass(0, sourceFramebufferCopy, x1, y1, x2, y2);
+                    this.renderPass(0, sourceFramebufferCopy, xtl, ytl, xbr, ybr);
                     ThinGL.framebufferPool().returnFramebuffer(sourceFramebufferCopy);
                 }
             } else {
-                this.renderPass(0, null, x1, y1, x2, y2);
+                this.renderPass(0, null, xtl, ytl, xbr, ybr);
             }
             for (int i = 1; i < this.passes - 1; i++) {
                 framebuffers[i].bind();
-                this.renderPass(i, framebuffers[i - 1], x1, y1, x2, y2);
+                this.renderPass(i, framebuffers[i - 1], xtl, ytl, xbr, ybr);
             }
 
             ThinGL.glStateStack().popFramebuffer();
             ThinGL.glStateStack().pop();
 
-            this.renderPass(this.passes - 1, framebuffers[framebuffers.length - 1], x1, y1, x2, y2);
+            this.renderPass(this.passes - 1, framebuffers[framebuffers.length - 1], xtl, ytl, xbr, ybr);
 
             for (TextureFramebuffer framebuffer : framebuffers) {
                 ThinGL.framebufferPool().returnFramebuffer(framebuffer);
@@ -95,10 +95,10 @@ public abstract class MultiPassAuxInputPostProcessingProgram extends AuxInputPos
         }
     }
 
-    protected void renderPass(final int pass, final Framebuffer sourceFramebuffer, final float x1, final float y1, final float x2, final float y2) {
+    protected void renderPass(final int pass, final Framebuffer sourceFramebuffer, final float xtl, final float ytl, final float xbr, final float ybr) {
         this.setUniformInt("u_Pass", pass);
         this.setUniformSampler("u_Source", sourceFramebuffer);
-        super.renderInternal(x1, y1, x2, y2);
+        super.renderInternal(xtl, ytl, xbr, ybr);
     }
 
 }

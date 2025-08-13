@@ -46,32 +46,32 @@ public class PostProcessingProgram extends Program {
         this.prepareAndRenderInternal(0F, 0F, viewport.width(), viewport.height());
     }
 
-    public final void render(final float x1, final float y1, final float x2, final float y2) {
-        this.render(RenderMathUtil.getIdentityMatrix(), x1, y1, x2, y2);
+    public final void render(final float xtl, final float ytl, final float xbr, final float ybr) {
+        this.render(RenderMathUtil.getIdentityMatrix(), xtl, ytl, xbr, ybr);
     }
 
-    public final void render(final Matrix4f positionMatrix, final float x1, final float y1, final float x2, final float y2) {
-        final Rectanglei rectangle = RenderMathUtil.getWindowRectangle(positionMatrix, x1, y1, x2, y2, true);
+    public final void render(final Matrix4f positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr) {
+        final Rectanglei rectangle = RenderMathUtil.getWindowRectangle(positionMatrix, xtl, ytl, xbr, ybr, true);
         final GLStateManager.Viewport viewport = ThinGL.glStateManager().getViewport();
         rectangle.translate(-viewport.x(), viewport.y());
         this.prepareAndRenderInternal(rectangle.minX, rectangle.minY, rectangle.maxX, rectangle.maxY);
     }
 
-    protected void prepareAndRenderInternal(final float x1, final float y1, final float x2, final float y2) {
+    protected void prepareAndRenderInternal(final float xtl, final float ytl, final float xbr, final float ybr) {
         this.bind();
         ThinGL.glStateStack().push();
         ThinGL.glStateStack().enable(GL11C.GL_BLEND);
         ThinGL.glStateStack().disable(GL11C.GL_DEPTH_TEST);
         ThinGL.glStateStack().pushDepthMask();
         ThinGL.glStateManager().setDepthMask(false);
-        this.renderInternal(x1, y1, x2, y2);
+        this.renderInternal(xtl, ytl, xbr, ybr);
         ThinGL.glStateStack().popDepthMask();
         ThinGL.glStateStack().pop();
         this.unbind();
     }
 
-    protected void renderInternal(final float x1, final float y1, final float x2, final float y2) {
-        this.setUniformVector4f("u_Rectangle", x1, y1, x2, y2);
+    protected void renderInternal(final float xtl, final float ytl, final float xbr, final float ybr) {
+        this.setUniformVector4f("u_Rectangle", xtl, ytl, xbr, ybr);
         ThinGL.immediateVertexArrays().getPostProcessingVao().drawArrays(DrawMode.TRIANGLES, 6, 0);
     }
 
