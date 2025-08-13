@@ -51,7 +51,7 @@ public class FramebufferRenderer {
         ThinGL.globalUniforms().getViewMatrix().pushMatrix().identity();
         ThinGL.glStateStack().pushFramebuffer();
         ThinGL.glStateStack().pushViewport();
-        this.framebuffer.bind(true);
+        this.framebuffer.bindAndConfigureViewport();
     }
 
     public void end() {

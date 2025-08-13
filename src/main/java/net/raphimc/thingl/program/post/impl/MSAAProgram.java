@@ -37,6 +37,9 @@ public class MSAAProgram extends PostProcessingProgram {
     }
 
     public void bindInput() {
+        if (this.inputFramebuffer == null) {
+            this.inputFramebuffer = new MSAATextureFramebuffer(this.samples);
+        }
         ThinGL.glStateStack().push();
         ThinGL.glStateStack().disable(GL11C.GL_DEPTH_TEST);
         ThinGL.glStateStack().disable(GL11C.GL_STENCIL_TEST);
@@ -44,9 +47,6 @@ public class MSAAProgram extends PostProcessingProgram {
         ThinGL.glStateStack().pushBlendFunc();
         Blending.alphaWithAdditiveAlphaBlending();
         ThinGL.glStateStack().pushFramebuffer();
-        if (this.inputFramebuffer == null) {
-            this.inputFramebuffer = new MSAATextureFramebuffer(this.samples);
-        }
         this.inputFramebuffer.bind();
     }
 
@@ -69,11 +69,14 @@ public class MSAAProgram extends PostProcessingProgram {
     }
 
     @Override
-    protected void renderInternal(final float x1, final float y1, final float x2, final float y2) {
+    protected void prepareAndRenderInternal(final float x1, final float y1, final float x2, final float y2) {
+        ThinGL.glStateStack().pushViewport();
+        this.inputFramebuffer.configureViewport();
         ThinGL.glStateStack().pushBlendFunc();
         Blending.premultipliedAlphaBlending();
-        super.renderInternal(x1, y1, x2, y2);
+        super.prepareAndRenderInternal(x1, y1, x2, y2);
         ThinGL.glStateStack().popBlendFunc();
+        ThinGL.glStateStack().popViewport();
     }
 
     @Override

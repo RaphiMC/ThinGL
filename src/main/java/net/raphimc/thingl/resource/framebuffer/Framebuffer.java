@@ -126,15 +126,17 @@ public class Framebuffer extends GLContainerObject {
         }
     }
 
-    public void bind() {
-        this.bind(false);
+    public void bindAndConfigureViewport() {
+        this.bind();
+        this.configureViewport();
     }
 
-    public void bind(final boolean setViewport) {
+    public void bind() {
         ThinGL.glStateManager().setDrawFramebuffer(this);
-        if (setViewport) {
-            ThinGL.glStateManager().setViewport(0, 0, this.getWidth(), this.getHeight());
-        }
+    }
+
+    public void configureViewport() {
+        ThinGL.glStateManager().setViewport(0, 0, this.getWidth(), this.getHeight());
     }
 
     public void unbind() {

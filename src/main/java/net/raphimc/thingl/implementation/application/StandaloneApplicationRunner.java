@@ -59,7 +59,7 @@ public abstract class StandaloneApplicationRunner {
         final Matrix4fStack positionMatrix = new Matrix4fStack(8);
         while (!GLFW.glfwWindowShouldClose(this.window)) {
             ThinGL.get().onStartFrame(); // Let ThinGL know that the current frame is starting
-            this.mainFramebuffer.bind(true); // Bind the main framebuffer
+            this.mainFramebuffer.bindAndConfigureViewport(); // Bind the main framebuffer
             this.mainFramebuffer.clear(); // Clear the main framebuffer
 
             positionMatrix.identity();
