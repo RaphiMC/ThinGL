@@ -47,9 +47,6 @@ public class GlSlPreprocessor {
         if (codeLines.isEmpty()) {
             throw new IllegalArgumentException("Shader code cannot be empty");
         }
-        if (!codeLines.get(0).startsWith("#version")) {
-            throw new IllegalArgumentException("Shader code must start with a #version directive");
-        }
 
         if (!this.defines.isEmpty()) {
             final List<String> defineLines = new ArrayList<>();
