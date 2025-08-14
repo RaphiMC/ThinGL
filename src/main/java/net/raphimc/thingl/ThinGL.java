@@ -25,6 +25,8 @@ import net.raphimc.thingl.implementation.Capabilities;
 import net.raphimc.thingl.implementation.Config;
 import net.raphimc.thingl.implementation.GlobalUniforms;
 import net.raphimc.thingl.implementation.Workarounds;
+import net.raphimc.thingl.implementation.instance.InstanceManager;
+import net.raphimc.thingl.implementation.instance.SingleInstanceManager;
 import net.raphimc.thingl.implementation.window.WindowInterface;
 import net.raphimc.thingl.program.Programs;
 import net.raphimc.thingl.renderer.impl.Renderer2D;
@@ -52,17 +54,25 @@ public class ThinGL {
     public static final String IMPL_VERSION = "${version}+${commit_hash}";
     public static final Logger LOGGER = LoggerFactory.getLogger("ThinGL");
 
-    private static ThinGL INSTANCE;
+    private static InstanceManager INSTANCE_MANAGER = new SingleInstanceManager();
 
     public static ThinGL get() {
-        if (INSTANCE == null) {
+        final ThinGL instance = INSTANCE_MANAGER.get();
+        if (instance == null) {
             throw new IllegalStateException("ThinGL has not been initialized yet");
         }
-        return INSTANCE;
+        return instance;
     }
 
     public static boolean isInitialized() {
-        return INSTANCE != null;
+        return INSTANCE_MANAGER.get() != null;
+    }
+
+    public static void setInstanceManager(final InstanceManager instanceManager) {
+        if (ThinGL.isInitialized()) {
+            throw new IllegalStateException("ThinGL has already been initialized");
+        }
+        INSTANCE_MANAGER = instanceManager;
     }
 
     public static WindowInterface windowInterface() {
@@ -190,10 +200,10 @@ public class ThinGL {
     }
 
     public ThinGL(final WindowInterface windowInterface) {
-        if (INSTANCE != null) {
+        if (ThinGL.isInitialized()) {
             throw new IllegalStateException("ThinGL has already been initialized");
         }
-        INSTANCE = this;
+        INSTANCE_MANAGER.set(this);
         this.renderThread = Thread.currentThread();
         this.windowInterface = windowInterface;
         this.config = this.createConfig();
@@ -329,9 +339,7 @@ public class ThinGL {
         if (this.freeTypeLibrary != null) {
             this.freeTypeLibrary.free();
         }
-        if (INSTANCE == this) {
-            INSTANCE = null;
-        }
+        INSTANCE_MANAGER.set(null);
     }
 
     public Thread getRenderThread() {
