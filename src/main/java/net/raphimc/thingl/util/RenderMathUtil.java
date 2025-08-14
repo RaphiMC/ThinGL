@@ -72,4 +72,16 @@ public class RenderMathUtil {
         }
     }
 
+    public static Vector3f projectToWindowCoordinates(final Matrix4f positionMatrix, final Vector3f position) {
+        final int[] viewport = ThinGL.glStateManager().getViewport().toArray();
+        final Matrix4f mvpMatrix = RenderMathUtil.getMvpMatrix(positionMatrix);
+        return mvpMatrix.project(position, viewport, new Vector3f());
+    }
+
+    public static Vector3f unprojectFromWindowCoordinates(final Matrix4f positionMatrix, final Vector3f windowPosition) {
+        final int[] viewport = ThinGL.glStateManager().getViewport().toArray();
+        final Matrix4f mvpMatrix = RenderMathUtil.getMvpMatrix(positionMatrix);
+        return mvpMatrix.unproject(windowPosition, viewport, new Vector3f());
+    }
+
 }
