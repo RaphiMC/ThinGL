@@ -76,28 +76,26 @@ public class ScissorStack {
         }
     }
 
-    public boolean isAnyPointInside(final float xtl, final float ytl, final float xbr, final float ybr) {
-        return this.isAnyPointInside(RenderMathUtil.getIdentityMatrix(), xtl, ytl, xbr, ybr);
+    public boolean intersectsRectangle(final float xtl, final float ytl, final float xbr, final float ybr) {
+        return this.intersectsRectangle(RenderMathUtil.getIdentityMatrix(), xtl, ytl, xbr, ybr);
     }
 
-    public boolean isAnyPointInside(final Matrix4f positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr) {
+    public boolean intersectsRectangle(final Matrix4f positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr) {
         if (this.stack.isEmpty()) return true;
 
         final Rectanglei rectangle = RenderMathUtil.getWindowRectangle(positionMatrix, xtl, ytl, xbr, ybr);
-        final Rectanglei intersection = this.stack.peek().intersection(rectangle, rectangle);
-        return intersection.lengthX() > 0 && intersection.lengthY() > 0;
+        return this.stack.peek().intersectsRectangle(rectangle);
     }
 
-    public boolean isFullyInside(final float xtl, final float ytl, final float xbr, final float ybr) {
-        return this.isFullyInside(RenderMathUtil.getIdentityMatrix(), xtl, ytl, xbr, ybr);
+    public boolean containsRectangle(final float xtl, final float ytl, final float xbr, final float ybr) {
+        return this.containsRectangle(RenderMathUtil.getIdentityMatrix(), xtl, ytl, xbr, ybr);
     }
 
-    public boolean isFullyInside(final Matrix4f positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr) {
+    public boolean containsRectangle(final Matrix4f positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr) {
         if (this.stack.isEmpty()) return true;
 
         final Rectanglei rectangle = RenderMathUtil.getWindowRectangle(positionMatrix, xtl, ytl, xbr, ybr);
-        final Rectanglei intersection = this.stack.peek().intersection(rectangle, rectangle);
-        return rectangle.lengthX() == intersection.lengthX() && rectangle.lengthY() == intersection.lengthY();
+        return this.stack.peek().containsRectangle(rectangle);
     }
 
 }
