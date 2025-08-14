@@ -22,6 +22,7 @@ import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 
 public class GLFWWindowInterface extends WindowInterface {
 
+    private final Thread windowThread;
     private final long windowHandle;
     private final GLFWFramebufferSizeCallback originalFramebufferSizeCallback;
 
@@ -30,6 +31,7 @@ public class GLFWWindowInterface extends WindowInterface {
     }
 
     public GLFWWindowInterface(final long windowHandle) {
+        this.windowThread = Thread.currentThread();
         this.windowHandle = windowHandle;
 
         final int[] framebufferWidth = new int[1];
@@ -42,10 +44,18 @@ public class GLFWWindowInterface extends WindowInterface {
 
     @Override
     public void responsiveSleep(final float millis) {
-        final double endTime = GLFW.glfwGetTime() + millis / 1_000;
-        for (double time = GLFW.glfwGetTime(); time < endTime; time = GLFW.glfwGetTime()) {
-            GLFW.glfwWaitEventsTimeout(endTime - time);
+        if (Thread.currentThread() == this.windowThread) {
+            final double endTime = GLFW.glfwGetTime() + millis / 1_000;
+            for (double time = GLFW.glfwGetTime(); time < endTime; time = GLFW.glfwGetTime()) {
+                GLFW.glfwWaitEventsTimeout(endTime - time);
+            }
+        } else {
+            super.responsiveSleep(millis);
         }
+    }
+
+    public Thread getWindowThread() {
+        return this.windowThread;
     }
 
     public long getWindowHandle() {
@@ -54,7 +64,9 @@ public class GLFWWindowInterface extends WindowInterface {
 
     @Override
     public void free() {
-        GLFW.glfwSetFramebufferSizeCallback(this.windowHandle, this.originalFramebufferSizeCallback);
+        if (Thread.currentThread() == this.windowThread) {
+            GLFW.glfwSetFramebufferSizeCallback(this.windowHandle, this.originalFramebufferSizeCallback);
+        }
     }
 
     private void onSetFramebufferSize(final long windowHandle, final int width, final int height) {

@@ -115,7 +115,7 @@ public abstract class StandaloneApplicationRunner {
         ThinGL.glStateManager().enable(GL11C.GL_CULL_FACE);
         this.mainFramebuffer = new TextureFramebuffer();
 
-        ThinGL.windowInterface().addFramebufferResizeCallback(this::loadProjectionMatrix);
+        ThinGL.windowInterface().addRenderThreadFramebufferResizeCallback(this::loadProjectionMatrix);
         this.loadProjectionMatrix(ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight());
     }
 

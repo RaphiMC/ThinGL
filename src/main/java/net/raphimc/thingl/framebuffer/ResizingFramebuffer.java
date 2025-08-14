@@ -44,7 +44,7 @@ public abstract class ResizingFramebuffer extends Framebuffer {
         this.colorAttachmentSupplier = colorAttachmentSupplier;
         this.depthAttachmentSupplier = depthAttachmentSupplier;
         this.stencilAttachmentSupplier = stencilAttachmentSupplier;
-        ThinGL.windowInterface().addFramebufferResizeCallback(this.framebufferResizeCallback);
+        ThinGL.windowInterface().addRenderThreadFramebufferResizeCallback(this.framebufferResizeCallback);
     }
 
     protected void init() {

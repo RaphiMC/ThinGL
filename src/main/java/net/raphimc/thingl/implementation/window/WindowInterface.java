@@ -37,6 +37,11 @@ public abstract class WindowInterface {
         });
     }
 
+    public void addRenderThreadFramebufferResizeCallback(final BiConsumer<Integer, Integer> callback) {
+        final ThinGL thinGL = ThinGL.get();
+        this.addFramebufferResizeCallback((width, height) -> thinGL.runOnRenderThread(() -> callback.accept(width, height)));
+    }
+
     public synchronized void addFramebufferResizeCallback(final BiConsumer<Integer, Integer> callback) {
         if (this.framebufferResizeCallbacks.contains(callback)) {
             throw new RuntimeException("Framebuffer resize callback already registered");
