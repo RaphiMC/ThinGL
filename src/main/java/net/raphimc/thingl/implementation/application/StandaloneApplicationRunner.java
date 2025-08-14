@@ -42,10 +42,18 @@ public abstract class StandaloneApplicationRunner {
     }
 
     protected void launch() {
+        this.launchWindowSystem();
+        this.launchGL();
+        this.free();
+    }
+
+    protected void launchWindowSystem() {
         this.initGLFW();
         this.setWindowFlags();
         this.createWindow();
+    }
 
+    protected void launchGL() {
         GLFW.glfwMakeContextCurrent(this.window);
         GLFW.glfwSwapInterval(this.configuration.shouldUseVSync() ? 1 : 0);
         GL.createCapabilities();
@@ -69,14 +77,14 @@ public abstract class StandaloneApplicationRunner {
             this.mainFramebuffer.blitTo(WindowFramebuffer.INSTANCE, true, false, false); // Blit the main framebuffer to the window framebuffer
             ThinGL.get().onFinishFrame(); // Let ThinGL know that the current frame is done rendering and ready to be presented
             GLFW.glfwSwapBuffers(this.window);
-            GLFW.glfwPollEvents();
+            if (ThinGL.windowInterface().isOnWindowThread()) {
+                GLFW.glfwPollEvents();
+            }
             ThinGL.get().onEndFrame(); // Let ThinGL know that the current frame is done and the next frame can start
             if (this.configuration.fpsLimit > 0) {
                 FPSLimiter.limitFPS(this.configuration.fpsLimit);
             }
         }
-
-        this.free();
     }
 
     protected void initGLFW() {

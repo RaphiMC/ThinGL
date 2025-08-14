@@ -26,11 +26,13 @@ import java.util.function.BiConsumer;
 
 public abstract class WindowInterface {
 
+    private final Thread windowThread;
     private final List<BiConsumer<Integer, Integer>> framebufferResizeCallbacks = new ArrayList<>();
     private int framebufferWidth;
     private int framebufferHeight;
 
     public WindowInterface() {
+        this.windowThread = Thread.currentThread();
         this.addFramebufferResizeCallback((width, height) -> {
             this.framebufferWidth = width;
             this.framebufferHeight = height;
@@ -59,6 +61,20 @@ public abstract class WindowInterface {
         final long ms = (long) millis;
         final long ns = (long) ((millis - ms) * 1_000_000);
         ThreadUtils.hybridSleep(ms, ns);
+    }
+
+    public void assertOnWindowThread() {
+        if (!this.isOnWindowThread()) {
+            throw new RuntimeException("Not on window thread");
+        }
+    }
+
+    public boolean isOnWindowThread() {
+        return Thread.currentThread() == this.windowThread;
+    }
+
+    public Thread getWindowThread() {
+        return this.windowThread;
     }
 
     public int getFramebufferWidth() {
