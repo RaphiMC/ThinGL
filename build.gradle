@@ -20,6 +20,14 @@ repositories {
             includeGroup "com.github.RaphiMC"
         }
     }
+    maven {
+        name = "Sonatype Snapshots"
+        url = "https://central.sonatype.com/repository/maven-snapshots"
+
+        content {
+            includeModule "org.lwjgl", "lwjgl-sdl"
+        }
+    }
 }
 
 dependencies {
@@ -41,6 +49,9 @@ dependencies {
 
     // Optional dependencies
     compileOnly "org.lwjgl:lwjgl-glfw:3.3.6"
+    compileOnly("org.lwjgl:lwjgl-sdl:3.4.0-SNAPSHOT") {
+        transitive = false
+    }
     compileOnly "org.lwjgl:lwjgl-freetype:3.3.6"
     compileOnly "org.lwjgl:lwjgl-harfbuzz:3.3.6"
     compileOnly "org.lwjgl:lwjgl-meshoptimizer:3.3.6"
@@ -54,6 +65,9 @@ dependencies {
     ["natives-windows", "natives-windows-arm64", "natives-linux", "natives-linux-arm64"].each {
         exampleImplementation "org.lwjgl:lwjgl:3.3.6:$it"
         exampleImplementation "org.lwjgl:lwjgl-glfw:3.3.6:$it"
+        exampleImplementation("org.lwjgl:lwjgl-sdl:3.4.0-SNAPSHOT:$it") {
+            transitive = false
+        }
         exampleImplementation "org.lwjgl:lwjgl-opengl:3.3.6:$it"
         exampleImplementation "org.lwjgl:lwjgl-stb:3.3.6:$it"
         exampleImplementation "org.lwjgl:lwjgl-freetype:3.3.6:$it"

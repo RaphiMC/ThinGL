@@ -5,6 +5,7 @@ Lightweight Java wrapper for many common OpenGL functions.
 - Easy to integrate in any LWJGL3 (>= 3.3.3) project
   - ThinGL reverts all OpenGL states to the previous state after rendering
   - Confirmed to work in Minecraft and Cosmic Reach
+  - Supports GLFW and SDL3
 - Uses modern OpenGL (OpenGL 4.5)
 - Builtin shaders
   - Simple color and texture shaders
