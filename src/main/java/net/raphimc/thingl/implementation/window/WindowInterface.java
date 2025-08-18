@@ -17,6 +17,8 @@
  */
 package net.raphimc.thingl.implementation.window;
 
+import it.unimi.dsi.fastutil.objects.Reference2ReferenceMap;
+import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
 import net.lenni0451.commons.threading.ThreadUtils;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.util.TimerHack;
@@ -29,6 +31,7 @@ public abstract class WindowInterface {
 
     private final Thread windowThread;
     private final List<BiConsumer<Integer, Integer>> framebufferResizeCallbacks = new ArrayList<>();
+    private final Reference2ReferenceMap<BiConsumer<Integer, Integer>, BiConsumer<Integer, Integer>> renderThreadFramebufferResizeCallbacksMap = new Reference2ReferenceOpenHashMap<>();
     private final List<Runnable> actions = new ArrayList<>();
     private int framebufferWidth;
     private int framebufferHeight;
@@ -52,9 +55,14 @@ public abstract class WindowInterface {
         this.actions.clear();
     }
 
-    public void addRenderThreadFramebufferResizeCallback(final BiConsumer<Integer, Integer> callback) {
+    public synchronized void addRenderThreadFramebufferResizeCallback(final BiConsumer<Integer, Integer> callback) {
         final ThinGL thinGL = ThinGL.get();
-        this.addFramebufferResizeCallback((width, height) -> thinGL.runOnRenderThread(() -> callback.accept(width, height)));
+        final BiConsumer<Integer, Integer> wrappedCallback = (width, height) -> thinGL.runOnRenderThread(() -> callback.accept(width, height));
+        if (this.renderThreadFramebufferResizeCallbacksMap.containsKey(callback)) {
+            throw new RuntimeException("Render thread framebuffer resize callback already registered");
+        }
+        this.renderThreadFramebufferResizeCallbacksMap.put(callback, wrappedCallback);
+        this.addFramebufferResizeCallback(wrappedCallback);
     }
 
     public synchronized void addFramebufferResizeCallback(final BiConsumer<Integer, Integer> callback) {
@@ -65,9 +73,10 @@ public abstract class WindowInterface {
     }
 
     public synchronized void removeFramebufferResizeCallback(final BiConsumer<Integer, Integer> callback) {
-        if (!this.framebufferResizeCallbacks.remove(callback)) {
+        if (!this.framebufferResizeCallbacks.remove(this.renderThreadFramebufferResizeCallbacksMap.getOrDefault(callback, callback))) {
             throw new RuntimeException("Framebuffer resize callback not registered");
         }
+        this.renderThreadFramebufferResizeCallbacksMap.remove(callback);
     }
 
     public void runOnWindowThread(final Runnable action) {
