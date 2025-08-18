@@ -46,7 +46,7 @@ public class GLStateStack {
     private final IntStack vertexArrayStack = new IntArrayList();
 
     public GLStateStack() {
-        ThinGL.get().addFinishFrameCallback(() -> {
+        ThinGL.get().addFrameFinishedCallback(() -> {
             if (!this.capabilitiesStack.isEmpty()) {
                 while (!this.capabilitiesStack.isEmpty()) this.pop();
                 ThinGL.LOGGER.warn("GLStateStack capabilities stack was not empty at the end of the frame!");

@@ -17,13 +17,13 @@
  */
 
 import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.implementation.application.StandaloneApplicationRunner;
+import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
 import net.raphimc.thingl.resource.image.texture.Texture2D;
 import org.joml.Matrix4fStack;
 
 import java.io.IOException;
 
-public class ImageRenderingExample extends StandaloneApplicationRunner {
+public class ImageRenderingExample extends GLFWApplicationRunner {
 
     public static void main(String[] args) {
         new ImageRenderingExample().launch();

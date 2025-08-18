@@ -18,19 +18,19 @@
 
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.implementation.application.StandaloneApplicationRunner;
+import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
 import net.raphimc.thingl.implementation.instance.ThreadLocalInstanceManager;
+import net.raphimc.thingl.implementation.window.GLFWWindowInterface;
 import net.raphimc.thingl.text.TextRun;
 import net.raphimc.thingl.text.font.Font;
 import org.joml.Matrix4fStack;
-import org.lwjgl.glfw.GLFW;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class MultiWindowExample extends StandaloneApplicationRunner {
+public class MultiWindowExample extends GLFWApplicationRunner {
 
     public static void main(String[] args) {
         new MultiWindowExample().launch();
@@ -45,7 +45,7 @@ public class MultiWindowExample extends StandaloneApplicationRunner {
         ThinGL.setInstanceManager(new ThreadLocalInstanceManager());
 
         this.initGLFW();
-        this.setWindowFlags();
+        this.setWindowHints();
 
         final List<Window> windows = new ArrayList<>();
         for (int i = 0; i < 2; i++) {
@@ -53,14 +53,18 @@ public class MultiWindowExample extends StandaloneApplicationRunner {
         }
 
         while (!windows.isEmpty()) {
-            GLFW.glfwWaitEvents();
             final Iterator<Window> it = windows.iterator();
             while (it.hasNext()) {
                 final Window window = it.next();
-                if (GLFW.glfwWindowShouldClose(window.getWindow())) {
-                    GLFW.glfwDestroyWindow(window.getWindow());
+                if (window.isRenderThreadAlive()) {
+                    window.tickWindow();
+                } else {
+                    window.freeWindow();
                     it.remove();
                 }
+            }
+            if (!windows.isEmpty()) {
+                windows.get(0).getWindowInterface().responsiveSleep(1F);
             }
         }
     }
@@ -71,7 +75,7 @@ public class MultiWindowExample extends StandaloneApplicationRunner {
     }
 
 
-    private static class Window extends StandaloneApplicationRunner {
+    private static class Window extends GLFWApplicationRunner {
 
         private final int num;
         private Font robotoRegular;
@@ -80,7 +84,21 @@ public class MultiWindowExample extends StandaloneApplicationRunner {
             super(new Configuration().setWindowTitle("ThinGL Example - Multi Window Example | Window #" + num).setExtendedDebugMode(true));
             this.num = num;
             this.createWindow();
-            new Thread(this::launchGL, "Window #" + num + " Render Thread").start();
+            this.windowInterface = new GLFWWindowInterface(this.window);
+            new Thread(() -> {
+                try {
+                    this.launchGL();
+                    try {
+                        this.runRenderLoop();
+                    } finally {
+                        this.freeGL();
+                    }
+                } catch (Throwable e) {
+                    this.initializationFuture.completeExceptionally(e);
+                    throw e;
+                }
+            }, "Window #" + num + " Render Thread").start();
+            this.initializationFuture.join();
         }
 
         @Override
@@ -99,8 +117,22 @@ public class MultiWindowExample extends StandaloneApplicationRunner {
             ThinGL.rendererText().textRun(positionMatrix, TextRun.fromString(this.robotoRegular, "Window #" + this.num, Color.WHITE), 5, 5);
         }
 
-        public long getWindow() {
-            return this.window;
+        public GLFWWindowInterface getWindowInterface() {
+            return (GLFWWindowInterface) this.windowInterface;
+        }
+
+        public boolean isRenderThreadAlive() {
+            return this.thinGL != null && this.thinGL.getRenderThread().isAlive();
+        }
+
+        @Override
+        public void tickWindow() {
+            super.tickWindow();
+        }
+
+        @Override
+        public void freeWindow() {
+            super.freeWindow();
         }
 
     }

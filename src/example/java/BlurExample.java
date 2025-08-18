@@ -18,13 +18,13 @@
 
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.implementation.application.StandaloneApplicationRunner;
+import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
 import net.raphimc.thingl.resource.image.texture.Texture2D;
 import org.joml.Matrix4fStack;
 
 import java.io.IOException;
 
-public class BlurExample extends StandaloneApplicationRunner {
+public class BlurExample extends GLFWApplicationRunner {
 
     public static void main(String[] args) {
         new BlurExample().launch();

@@ -32,7 +32,7 @@ public class SyncManager {
     private final List<Pair<Query, Consumer<Query>>> pendingQueries = new ArrayList<>();
 
     public SyncManager() {
-        ThinGL.get().addFinishFrameCallback(() -> {
+        ThinGL.get().addFrameFinishedCallback(() -> {
             for (int i = 0; i < this.pendingFenceSyncs.size(); i++) {
                 final Pair<FenceSync, Consumer<FenceSync>> pair = this.pendingFenceSyncs.get(i);
                 if (pair.key().isSignaled()) {

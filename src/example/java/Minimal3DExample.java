@@ -18,11 +18,11 @@
 
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.implementation.application.StandaloneApplicationRunner;
+import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
 import org.joml.Matrix4fStack;
 import org.joml.primitives.AABBf;
 
-public class Minimal3DExample extends StandaloneApplicationRunner {
+public class Minimal3DExample extends GLFWApplicationRunner {
 
     public static void main(String[] args) {
         new Minimal3DExample().launch();

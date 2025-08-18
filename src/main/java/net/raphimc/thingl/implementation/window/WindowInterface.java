@@ -19,6 +19,7 @@ package net.raphimc.thingl.implementation.window;
 
 import net.lenni0451.commons.threading.ThreadUtils;
 import net.raphimc.thingl.ThinGL;
+import net.raphimc.thingl.util.TimerHack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,7 @@ public abstract class WindowInterface {
 
     private final Thread windowThread;
     private final List<BiConsumer<Integer, Integer>> framebufferResizeCallbacks = new ArrayList<>();
+    private final List<Runnable> actions = new ArrayList<>();
     private int framebufferWidth;
     private int framebufferHeight;
 
@@ -37,6 +39,17 @@ public abstract class WindowInterface {
             this.framebufferWidth = width;
             this.framebufferHeight = height;
         });
+    }
+
+    public synchronized void runActions() {
+        for (Runnable action : this.actions) {
+            try {
+                action.run();
+            } catch (Throwable e) {
+                ThinGL.LOGGER.error("Exception while invoking action", e);
+            }
+        }
+        this.actions.clear();
     }
 
     public void addRenderThreadFramebufferResizeCallback(final BiConsumer<Integer, Integer> callback) {
@@ -57,7 +70,18 @@ public abstract class WindowInterface {
         }
     }
 
+    public void runOnWindowThread(final Runnable action) {
+        if (this.isOnWindowThread()) {
+            action.run();
+        } else {
+            synchronized (this) {
+                this.actions.add(action);
+            }
+        }
+    }
+
     public void responsiveSleep(final float millis) {
+        TimerHack.ensureRunning();
         final long ms = (long) millis;
         final long ns = (long) ((millis - ms) * 1_000_000);
         ThreadUtils.hybridSleep(ms, ns);

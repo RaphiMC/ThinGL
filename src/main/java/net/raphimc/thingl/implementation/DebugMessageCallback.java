@@ -22,6 +22,7 @@ import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL43C;
 import org.lwjgl.opengl.GLUtil;
 import org.lwjgl.system.APIUtil;
+import org.lwjgl.system.Callback;
 
 import java.io.PrintStream;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,8 +30,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class DebugMessageCallback {
 
-    public static void install(final boolean appendStackTrace) {
-        GLUtil.setupDebugMessageCallback(new PrintStream(APIUtil.DEBUG_STREAM) {
+    public static Callback install(final boolean appendStackTrace) {
+        final Callback callback = GLUtil.setupDebugMessageCallback(new PrintStream(APIUtil.DEBUG_STREAM) {
             private final AtomicInteger messagesPerSecond = new AtomicInteger();
             private final AtomicLong lastMessageTime = new AtomicLong();
 
@@ -61,6 +62,8 @@ public class DebugMessageCallback {
         GL43C.glDebugMessageControl(GL43C.GL_DEBUG_SOURCE_API, GL43C.GL_DEBUG_TYPE_OTHER, GL11C.GL_DONT_CARE, 0x20084, false);
         // NVIDIA: Framebuffer detailed info: The driver allocated storage for renderbuffer 1.
         GL43C.glDebugMessageControl(GL43C.GL_DEBUG_SOURCE_API, GL43C.GL_DEBUG_TYPE_OTHER, GL11C.GL_DONT_CARE, 0x20061, false);
+
+        return callback;
     }
 
 }

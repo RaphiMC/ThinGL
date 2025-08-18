@@ -17,6 +17,7 @@
  */
 package net.raphimc.thingl.implementation.window;
 
+import net.raphimc.thingl.util.TimerHack;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 
@@ -43,6 +44,7 @@ public class GLFWWindowInterface extends WindowInterface {
     @Override
     public void responsiveSleep(final float millis) {
         if (this.isOnWindowThread()) {
+            TimerHack.ensureRunning();
             final double endTime = GLFW.glfwGetTime() + millis / 1_000;
             for (double time = GLFW.glfwGetTime(); time < endTime; time = GLFW.glfwGetTime()) {
                 GLFW.glfwWaitEventsTimeout(endTime - time);
@@ -58,9 +60,8 @@ public class GLFWWindowInterface extends WindowInterface {
 
     @Override
     public void free() {
-        if (this.isOnWindowThread()) {
-            GLFW.glfwSetFramebufferSizeCallback(this.windowHandle, this.originalFramebufferSizeCallback);
-        }
+        this.assertOnWindowThread();
+        GLFW.glfwSetFramebufferSizeCallback(this.windowHandle, this.originalFramebufferSizeCallback).free();
     }
 
     private void onSetFramebufferSize(final long windowHandle, final int width, final int height) {

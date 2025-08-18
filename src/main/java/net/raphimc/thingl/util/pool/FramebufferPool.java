@@ -32,7 +32,7 @@ public class FramebufferPool {
     private final Reference2LongMap<TextureFramebuffer> framebufferAccessTime = new Reference2LongOpenHashMap<>();
 
     public FramebufferPool() {
-        ThinGL.get().addFinishFrameCallback(() -> {
+        ThinGL.get().addFrameFinishedCallback(() -> {
             if (!this.inUse.isEmpty()) {
                 ThinGL.LOGGER.warn(this.inUse.size() + " Framebuffer(s) were not returned to the pool. Forcibly reclaiming them.");
                 this.free.addAll(this.inUse);

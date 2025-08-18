@@ -18,7 +18,7 @@
 
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.implementation.application.StandaloneApplicationRunner;
+import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
 import net.raphimc.thingl.renderer.impl.RendererText;
 import net.raphimc.thingl.text.TextRun;
 import net.raphimc.thingl.text.TextSegment;
@@ -32,7 +32,7 @@ import org.joml.Matrix4fStack;
 
 import java.io.IOException;
 
-public class TextRenderingExample extends StandaloneApplicationRunner {
+public class TextRenderingExample extends GLFWApplicationRunner {
 
     public static void main(String[] args) {
         new TextRenderingExample().launch();

@@ -31,7 +31,7 @@ public class BufferBuilderPool {
     private final Reference2LongMap<BufferBuilder> bufferBuilderAccessTime = new Reference2LongOpenHashMap<>();
 
     public BufferBuilderPool() {
-        ThinGL.get().addFinishFrameCallback(() -> {
+        ThinGL.get().addFrameFinishedCallback(() -> {
             if (!this.inUse.isEmpty()) {
                 ThinGL.LOGGER.warn(this.inUse.size() + " BufferBuilder(s) were not returned to the pool. Forcibly reclaiming them.");
                 for (BufferBuilder bufferBuilder : this.inUse) {

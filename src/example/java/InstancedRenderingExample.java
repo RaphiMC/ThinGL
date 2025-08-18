@@ -20,11 +20,11 @@ import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.BuiltinDrawBatches;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.VertexDataHolder;
-import net.raphimc.thingl.implementation.application.StandaloneApplicationRunner;
+import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
 import net.raphimc.thingl.util.RenderMathUtil;
 import org.joml.Matrix4fStack;
 
-public class InstancedRenderingExample extends StandaloneApplicationRunner {
+public class InstancedRenderingExample extends GLFWApplicationRunner {
 
     public static void main(String[] args) {
         new InstancedRenderingExample().launch();

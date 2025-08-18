@@ -18,11 +18,11 @@
 
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.implementation.application.StandaloneApplicationRunner;
+import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
 import net.raphimc.thingl.program.post.impl.OutlineProgram;
 import org.joml.Matrix4fStack;
 
-public class ObjectOutliningExample extends StandaloneApplicationRunner {
+public class ObjectOutliningExample extends GLFWApplicationRunner {
 
     public static void main(String[] args) {
         new ObjectOutliningExample().launch();

@@ -35,7 +35,7 @@ public class ImmediateVertexArrays {
     private final VertexArray postProcessingVao;
 
     public ImmediateVertexArrays() {
-        ThinGL.get().addFinishFrameCallback(() -> {
+        ThinGL.get().addFrameFinishedCallback(() -> {
             if (this.vertexArrayCache.size() > 64) {
                 ThinGL.LOGGER.warn("ImmediateVertexArrays cache has grown to " + this.vertexArrayCache.size() + " entries. Clearing the cache to prevent memory starvation.");
                 this.vertexArrayCache.values().forEach(VertexArray::freeFully);

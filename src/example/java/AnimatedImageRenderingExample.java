@@ -17,14 +17,14 @@
  */
 
 import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.implementation.application.StandaloneApplicationRunner;
+import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
 import net.raphimc.thingl.texture.SequencedTexture;
 import net.raphimc.thingl.util.AWTUtil;
 import org.joml.Matrix4fStack;
 
 import java.io.IOException;
 
-public class AnimatedImageRenderingExample extends StandaloneApplicationRunner {
+public class AnimatedImageRenderingExample extends GLFWApplicationRunner {
 
     public static void main(String[] args) {
         new AnimatedImageRenderingExample().launch();

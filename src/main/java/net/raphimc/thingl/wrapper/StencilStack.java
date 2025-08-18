@@ -30,7 +30,7 @@ public class StencilStack {
     private final Stack<Mode> stack = new Stack<>();
 
     public StencilStack() {
-        ThinGL.get().addFinishFrameCallback(() -> {
+        ThinGL.get().addFrameFinishedCallback(() -> {
             if (!this.stack.isEmpty()) {
                 while (!this.stack.isEmpty()) this.pop();
                 ThinGL.LOGGER.warn("StencilStack was not empty at the end of the frame!");

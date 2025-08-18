@@ -33,7 +33,7 @@ public class GpuBufferPool {
     private final Reference2LongMap<MutableBuffer> bufferAccessTime = new Reference2LongOpenHashMap<>();
 
     public GpuBufferPool() {
-        ThinGL.get().addFinishFrameCallback(() -> {
+        ThinGL.get().addFrameFinishedCallback(() -> {
             if (!this.inUse.isEmpty()) {
                 ThinGL.LOGGER.warn(this.inUse.size() + " GPU Buffer(s) were not returned to the pool. Forcibly reclaiming them.");
                 this.free.addAll(this.inUse);

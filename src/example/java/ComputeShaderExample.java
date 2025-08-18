@@ -17,7 +17,7 @@
  */
 
 import net.raphimc.thingl.drawbuilder.builder.BufferBuilder;
-import net.raphimc.thingl.implementation.application.StandaloneApplicationRunner;
+import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
 import net.raphimc.thingl.resource.buffer.Buffer;
 import net.raphimc.thingl.resource.buffer.ImmutableBuffer;
 import net.raphimc.thingl.resource.program.Program;
@@ -30,7 +30,7 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
 
-public class ComputeShaderExample extends StandaloneApplicationRunner {
+public class ComputeShaderExample extends GLFWApplicationRunner {
 
     private static final int COUNT = 10;
     private static final String SHADER_SOURCE = """

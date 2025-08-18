@@ -18,10 +18,10 @@
 
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.implementation.application.StandaloneApplicationRunner;
+import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
 import org.joml.Matrix4fStack;
 
-public class AntiAliasingExample extends StandaloneApplicationRunner {
+public class AntiAliasingExample extends GLFWApplicationRunner {
 
     public static void main(String[] args) {
         new AntiAliasingExample().launch();
