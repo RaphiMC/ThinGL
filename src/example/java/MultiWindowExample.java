@@ -88,17 +88,19 @@ public class MultiWindowExample extends GLFWApplicationRunner {
             new Thread(() -> {
                 try {
                     this.launchGL();
+                    this.launchFuture.complete(null);
                     try {
                         this.runRenderLoop();
                     } finally {
                         this.freeGL();
                     }
                 } catch (Throwable e) {
-                    this.initializationFuture.completeExceptionally(e);
+                    this.launchFuture.completeExceptionally(e);
+                    this.freeFuture.completeExceptionally(e);
                     throw e;
                 }
             }, "Window #" + num + " Render Thread").start();
-            this.initializationFuture.join();
+            this.launchFuture.join();
         }
 
         @Override

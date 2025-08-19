@@ -34,7 +34,8 @@ import java.util.concurrent.CompletableFuture;
 public abstract class ApplicationRunner {
 
     protected final Configuration configuration;
-    protected final CompletableFuture<Void> initializationFuture = new CompletableFuture<>();
+    protected final CompletableFuture<Void> launchFuture = new CompletableFuture<>();
+    protected final CompletableFuture<Void> freeFuture = new CompletableFuture<>();
     protected WindowInterface windowInterface;
     protected ThinGL thinGL;
     private Callback debugMessageCallback;
@@ -50,6 +51,7 @@ public abstract class ApplicationRunner {
                 this.launchWindowSystem();
                 try {
                     this.launchGL();
+                    this.launchFuture.complete(null);
                     try {
                         this.runRenderLoop();
                     } finally {
@@ -58,8 +60,10 @@ public abstract class ApplicationRunner {
                 } finally {
                     this.freeWindowSystem();
                 }
+                this.freeFuture.complete(null);
             } catch (Throwable e) {
-                this.initializationFuture.completeExceptionally(e);
+                this.launchFuture.completeExceptionally(e);
+                this.freeFuture.completeExceptionally(e);
                 throw e;
             }
         } else {
@@ -69,24 +73,28 @@ public abstract class ApplicationRunner {
                     new Thread(() -> {
                         try {
                             this.launchGL();
+                            this.launchFuture.complete(null);
                             try {
                                 this.runRenderLoop();
                             } finally {
                                 this.freeGL();
                             }
                         } catch (Throwable e) {
-                            this.initializationFuture.completeExceptionally(e);
+                            this.launchFuture.completeExceptionally(e);
+                            this.freeFuture.completeExceptionally(e);
                             throw e;
                         }
                     }, this.getClass().getSimpleName() + " Render Thread").start();
                     try {
-                        this.initializationFuture.join();
+                        this.launchFuture.join();
                         this.runWindowLoop();
                     } finally {
                         this.freeWindowSystem();
                     }
+                    this.freeFuture.complete(null);
                 } catch (Throwable e) {
-                    this.initializationFuture.completeExceptionally(e);
+                    this.launchFuture.completeExceptionally(e);
+                    this.freeFuture.completeExceptionally(e);
                     throw e;
                 }
             }, this.getClass().getSimpleName() + " Window Thread").start();
@@ -103,7 +111,6 @@ public abstract class ApplicationRunner {
             this.debugMessageCallback = DebugMessageCallback.install(this.configuration.isExtendedDebugMode());
         }
         this.init();
-        this.initializationFuture.complete(null);
     }
 
     protected abstract void configureGLContext();
