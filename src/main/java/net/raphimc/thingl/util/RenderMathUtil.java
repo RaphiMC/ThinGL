@@ -17,7 +17,6 @@
  */
 package net.raphimc.thingl.util;
 
-import net.lenni0451.commons.math.MathUtils;
 import net.raphimc.thingl.ThinGL;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
@@ -66,9 +65,9 @@ public class RenderMathUtil {
         mvpMatrix.project(bottomRight, viewport, bottomRight);
 
         if (flipY) {
-            return new Rectanglei(MathUtils.floorInt(topLeft.x), MathUtils.floorInt(viewport[3] - topLeft.y), MathUtils.ceilInt(bottomRight.x), MathUtils.ceilInt(viewport[3] - bottomRight.y));
+            return new Rectanglei(Math.round(topLeft.x), Math.round(viewport[3] - topLeft.y), Math.round(bottomRight.x), Math.round(viewport[3] - bottomRight.y));
         } else {
-            return new Rectanglei(MathUtils.floorInt(topLeft.x), MathUtils.floorInt(bottomRight.y), MathUtils.ceilInt(bottomRight.x), MathUtils.ceilInt(topLeft.y));
+            return new Rectanglei(Math.round(topLeft.x), Math.round(bottomRight.y), Math.round(bottomRight.x), Math.round(topLeft.y));
         }
     }
 
