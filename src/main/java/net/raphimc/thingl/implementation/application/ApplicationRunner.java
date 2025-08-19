@@ -28,7 +28,6 @@ import org.joml.Matrix4fStack;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.system.Callback;
-import org.lwjgl.system.MemoryUtil;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -180,7 +179,6 @@ public abstract class ApplicationRunner {
             this.thinGL.free();
             this.thinGL = null;
         }
-        MemoryUtil.memFree(GL.getCapabilities().getAddressBuffer());
         GL.setCapabilities(null);
         if (this.debugMessageCallback != null) {
             this.debugMessageCallback.free();
