@@ -137,7 +137,7 @@ public abstract class ApplicationRunner {
 
     protected void runRenderLoop() {
         while (!this.thinGL.getRenderThread().isInterrupted() && !this.windowInterface.getWindowThread().isInterrupted() && this.windowInterface.getWindowThread().isAlive()) {
-            this.renderFrame();
+            this.renderFrame(true);
             if (this.configuration.getFpsLimit() > 0) {
                 final float timeToSleep = 1000F / this.configuration.getFpsLimit() - ThinGL.get().getFullFrameTime();
                 if (timeToSleep > 0) {
@@ -154,10 +154,10 @@ public abstract class ApplicationRunner {
         }
     }
 
-    protected void renderFrame() {
+    protected void renderFrame(final boolean tickWindow) {
         this.thinGL.onFrameBegin();
-        if (this.windowInterface.isOnWindowThread()) {
-            this.pollWindowEvents();
+        if (tickWindow && this.windowInterface.isOnWindowThread()) {
+            this.tickWindow();
         }
         this.thinGL.onFrameStart();
         this.mainFramebuffer.bindAndConfigureViewport();
@@ -175,9 +175,9 @@ public abstract class ApplicationRunner {
         this.windowInterface.runActions();
     }
 
-    protected abstract void pollWindowEvents();
-
     protected abstract void render(final Matrix4fStack positionMatrix);
+
+    protected abstract void pollWindowEvents();
 
     protected abstract void swapWindowBuffers();
 
