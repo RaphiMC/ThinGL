@@ -185,7 +185,10 @@ public class ThinGL {
 
     private final FreeTypeLibrary freeTypeLibrary;
 
+    private final List<Runnable> frameBeginActions = new ArrayList<>();
     private final List<Runnable> frameStartActions = new ArrayList<>();
+    private final List<Runnable> frameFinishedActions = new ArrayList<>();
+    private final List<Runnable> frameEndActions = new ArrayList<>();
     private final List<Runnable> frameFinishedCallbacks = new ArrayList<>();
 
     private long frameBeginTime;
@@ -246,6 +249,15 @@ public class ThinGL {
 
     public synchronized void onFrameBegin() {
         this.frameBeginTime = System.nanoTime();
+
+        for (Runnable action : this.frameBeginActions) {
+            try {
+                action.run();
+            } catch (Throwable e) {
+                LOGGER.error("Exception while invoking frame begin action", e);
+            }
+        }
+        this.frameBeginActions.clear();
     }
 
     public synchronized void onFrameStart() {
@@ -262,6 +274,14 @@ public class ThinGL {
     }
 
     public synchronized void onFrameFinished() {
+        for (Runnable action : this.frameFinishedActions) {
+            try {
+                action.run();
+            } catch (Throwable e) {
+                LOGGER.error("Exception while invoking frame finished action", e);
+            }
+        }
+        this.frameFinishedActions.clear();
         for (Runnable callback : this.frameFinishedCallbacks) {
             try {
                 callback.run();
@@ -281,6 +301,15 @@ public class ThinGL {
     }
 
     public synchronized void onFrameEnd() {
+        for (Runnable action : this.frameEndActions) {
+            try {
+                action.run();
+            } catch (Throwable e) {
+                LOGGER.error("Exception while invoking frame end action", e);
+            }
+        }
+        this.frameEndActions.clear();
+
         this.fullFrameTime = (System.nanoTime() - this.frameBeginTime) / 1_000_000F;
     }
 
@@ -297,13 +326,27 @@ public class ThinGL {
         }
     }
 
+    public synchronized void runOnFrameBegin(final Runnable action) {
+        this.frameBeginActions.add(action);
+    }
+
+    public synchronized void runOnFrameStart(final Runnable action) {
+        this.frameStartActions.add(action);
+    }
+
+    public synchronized void runOnFrameFinished(final Runnable action) {
+        this.frameFinishedActions.add(action);
+    }
+
+    public synchronized void runOnFrameEnd(final Runnable action) {
+        this.frameEndActions.add(action);
+    }
+
     public void runOnRenderThread(final Runnable action) {
         if (this.isOnRenderThread()) {
             action.run();
         } else {
-            synchronized (this) {
-                this.frameStartActions.add(action);
-            }
+            this.runOnFrameStart(action);
         }
     }
 
