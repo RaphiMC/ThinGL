@@ -21,26 +21,29 @@ import org.joml.primitives.Rectanglef;
 
 import java.util.List;
 
-public record ShapedTextBuffer(List<ShapedTextRun> runs, Rectanglef bounds) {
+public record ShapedTextBuffer(List<ShapedTextRun> runs, Rectanglef bounds, Rectanglef fontBounds) {
 
     public ShapedTextBuffer(final List<ShapedTextRun> runs) {
-        this(runs, new Rectanglef());
+        this(runs, new Rectanglef(), new Rectanglef());
         this.calculateBounds();
     }
 
     public void calculateBounds() {
         if (this.runs.isEmpty()) {
             this.bounds.setMin(0F, 0F).setMax(0F, 0F);
+            this.fontBounds.setMin(0F, 0F).setMax(0F, 0F);
             return;
         }
 
         this.bounds.setMin(Float.MAX_VALUE, Float.MAX_VALUE).setMax(-Float.MAX_VALUE, -Float.MAX_VALUE);
+        this.fontBounds.setMin(Float.MAX_VALUE, Float.MAX_VALUE).setMax(-Float.MAX_VALUE, -Float.MAX_VALUE);
         float x = 0F;
         float y = 0F;
         for (ShapedTextRun run : this.runs) {
             x += run.xOffset();
             y += run.yOffset();
             this.bounds.union(run.bounds().translate(x, y, new Rectanglef()));
+            this.fontBounds.union(run.fontBounds().translate(x, y, new Rectanglef()));
             x += run.nextRunX();
             y += run.nextRunY();
         }

@@ -35,7 +35,7 @@ public record ShapedTextSegment(List<TextShaper.Glyph> glyphs, Color color, int 
     public void calculateBounds() {
         if (this.glyphs.isEmpty()) {
             this.bounds.setMin(0F, 0F).setMax(0F, 0F);
-            this.extendedBounds.set(this.bounds);
+            this.extendedBounds.setMin(0F, 0F).setMax(0F, 0F);
             return;
         }
 

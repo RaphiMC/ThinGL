@@ -49,8 +49,6 @@ import java.util.function.Supplier;
 
 public abstract class TextRenderer {
 
-    public static final int FLAG_ORIGIN_BASELINE_BIT = 1 << 16;
-    public static final int FLAG_NO_BEARING_BIT = 1 << 17;
     public static final float ITALIC_SHEAR_FACTOR = (float) Math.tan(Math.toRadians(14)); // 14 degrees
     public static final float SHADOW_OFFSET_FACTOR = 0.075F;
     public static final float BOLD_OFFSET_DIVIDER = 64F;
@@ -74,23 +72,17 @@ public abstract class TextRenderer {
         }, () -> ThinGL.glStateStack().pop());
     }
 
-    public void renderTextBuffer(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextBuffer textBuffer, float x, float y, final float z, final int flags) {
-        if ((flags & TextRenderer.FLAG_NO_BEARING_BIT) == 0) {
-            x -= textBuffer.bounds().minX * this.globalScale;
+    public void renderTextBuffer(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextBuffer textBuffer, float x, float y, final float z) {
+        for (ShapedTextRun textRun : textBuffer.runs()) {
+            x += textRun.xOffset() * this.globalScale;
+            y += textRun.yOffset() * this.globalScale;
+            this.renderTextRun(positionMatrix, multiDrawBatchDataHolder, textRun, x, y, z, textBuffer.runs().get(0).font());
+            x += textRun.nextRunX() * this.globalScale;
+            y += textRun.nextRunY() * this.globalScale;
         }
-        if ((flags & TextRenderer.FLAG_ORIGIN_BASELINE_BIT) == 0) {
-            y -= textBuffer.bounds().minY * this.globalScale;
-        }
-        this.renderTextBuffer(positionMatrix, multiDrawBatchDataHolder, textBuffer, x, y, z);
     }
 
-    public void renderTextRun(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextRun textRun, float x, float y, final float z, final int flags) {
-        if ((flags & TextRenderer.FLAG_NO_BEARING_BIT) == 0) {
-            x -= textRun.bounds().minX * this.globalScale;
-        }
-        if ((flags & TextRenderer.FLAG_ORIGIN_BASELINE_BIT) == 0) {
-            y -= textRun.bounds().minY * this.globalScale;
-        }
+    public void renderTextRun(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextRun textRun, final float x, final float y, final float z) {
         this.renderTextRun(positionMatrix, multiDrawBatchDataHolder, textRun, x, y, z, textRun.font());
     }
 
@@ -108,16 +100,6 @@ public abstract class TextRenderer {
 
     public void setGlobalScale(final float globalScale) {
         this.globalScale = globalScale;
-    }
-
-    protected void renderTextBuffer(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextBuffer textBuffer, float x, float y, final float z) {
-        for (ShapedTextRun textRun : textBuffer.runs()) {
-            x += textRun.xOffset() * this.globalScale;
-            y += textRun.yOffset() * this.globalScale;
-            this.renderTextRun(positionMatrix, multiDrawBatchDataHolder, textRun, x, y, z, textBuffer.runs().get(0).font());
-            x += textRun.nextRunX() * this.globalScale;
-            y += textRun.nextRunY() * this.globalScale;
-        }
     }
 
     protected void renderTextRun(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextRun textRun, final float x, final float y, final float z, final Font decorationFont) {

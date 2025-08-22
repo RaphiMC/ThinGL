@@ -22,16 +22,17 @@ import org.joml.primitives.Rectanglef;
 
 import java.util.List;
 
-public record ShapedTextRun(Font font, List<ShapedTextSegment> segments, Rectanglef bounds, float xOffset, float yOffset, float nextRunX, float nextRunY) {
+public record ShapedTextRun(Font font, List<ShapedTextSegment> segments, Rectanglef bounds, Rectanglef fontBounds, float xOffset, float yOffset, float nextRunX, float nextRunY) {
 
     public ShapedTextRun(final Font font, final List<ShapedTextSegment> segments, final float xOffset, final float yOffset, final float nextRunX, final float nextRunY) {
-        this(font, segments, new Rectanglef(), xOffset, yOffset, nextRunX, nextRunY);
+        this(font, segments, new Rectanglef(), new Rectanglef(), xOffset, yOffset, nextRunX, nextRunY);
         this.calculateBounds();
     }
 
     public void calculateBounds() {
         if (this.segments.isEmpty()) {
             this.bounds.setMin(0F, 0F).setMax(0F, 0F);
+            this.fontBounds.setMin(0F, 0F).setMax(0F, 0F);
             return;
         }
 
@@ -39,6 +40,7 @@ public record ShapedTextRun(Font font, List<ShapedTextSegment> segments, Rectang
         for (ShapedTextSegment textSegment : this.segments) {
             bounds.union(textSegment.bounds());
         }
+        this.fontBounds.setMin(this.bounds.minX, -this.font.getAscent()).setMax(this.bounds.maxX, this.font.getDescent());
     }
 
 }

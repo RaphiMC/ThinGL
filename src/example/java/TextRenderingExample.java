@@ -42,7 +42,7 @@ public class TextRenderingExample extends GLFWApplicationRunner {
         super(new Configuration().setWindowTitle("ThinGL Example - Text rendering").setExtendedDebugMode(true));
     }
 
-    // Instead of creating a new RendererText instance, you can use ThinGL.rendererText() to get the default text renderer (Currently BSDF).
+    // Instead of creating a new RendererText instance, you can use ThinGL.rendererText() to get the default text renderer.
     private RendererText bitmapTextRenderer = new RendererText(new BitmapTextRenderer());
     private RendererText sdfTextRenderer = new RendererText(new BSDFTextRenderer());
     private Font robotoRegular;
@@ -81,31 +81,31 @@ public class TextRenderingExample extends GLFWApplicationRunner {
             this.sdfTextRenderer.textRun(positionMatrix, this.multiColoredText, 0, 0);
         }
         { // Text outline
-            positionMatrix.translate(0, 32, 0);
+            positionMatrix.translate(0, this.robotoRegular.getSize(), 0);
             this.sdfTextRenderer.textRun(positionMatrix, new TextRun(robotoRegular, new TextSegment("Outlined Text", Color.WHITE, 0, Color.RED)), 0, 0);
         }
         { // Bold text
-            positionMatrix.translate(0, 32, 0);
+            positionMatrix.translate(0, this.robotoRegular.getSize(), 0);
             this.sdfTextRenderer.textRun(positionMatrix, TextRun.fromString(robotoRegular, "Bold Text", Color.WHITE, TextSegment.STYLE_BOLD_BIT), 0, 0);
         }
         { // Shadowed text
-            positionMatrix.translate(0, 32, 0);
+            positionMatrix.translate(0, this.robotoRegular.getSize(), 0);
             this.sdfTextRenderer.textRun(positionMatrix, TextRun.fromString(robotoRegular, "Shadowed Text", Color.WHITE, TextSegment.STYLE_SHADOW_BIT), 0, 0);
         }
         { // Italic text
-            positionMatrix.translate(0, 32, 0);
+            positionMatrix.translate(0, this.robotoRegular.getSize(), 0);
             this.sdfTextRenderer.textRun(positionMatrix, TextRun.fromString(robotoRegular, "Italic Text", Color.WHITE, TextSegment.STYLE_ITALIC_BIT), 0, 0);
         }
         { // Underline text
-            positionMatrix.translate(0, 32, 0);
+            positionMatrix.translate(0, this.robotoRegular.getSize(), 0);
             this.sdfTextRenderer.textRun(positionMatrix, TextRun.fromString(robotoRegular, "Underlined Text", Color.WHITE, TextSegment.STYLE_UNDERLINE_BIT), 0, 0);
         }
         { // Strikethrough text
-            positionMatrix.translate(0, 32, 0);
+            positionMatrix.translate(0, this.robotoRegular.getSize(), 0);
             this.sdfTextRenderer.textRun(positionMatrix, TextRun.fromString(robotoRegular, "Strikethrough Text", Color.WHITE, TextSegment.STYLE_STRIKETHROUGH_BIT), 0, 0);
         }
         { // Multiple styles text
-            positionMatrix.translate(0, 32, 0);
+            positionMatrix.translate(0, this.robotoRegular.getSize(), 0);
             final TextRun textRun = new TextRun(robotoRegular, new TextSegment("Multiple Styles", Color.WHITE, TextSegment.STYLE_SHADOW_BIT | TextSegment.STYLE_BOLD_BIT | TextSegment.STYLE_ITALIC_BIT, Color.BLUE));
             this.sdfTextRenderer.textRun(positionMatrix, textRun, 0, 0);
         }
