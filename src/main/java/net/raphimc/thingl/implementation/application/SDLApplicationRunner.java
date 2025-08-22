@@ -19,7 +19,6 @@ package net.raphimc.thingl.implementation.application;
 
 import net.raphimc.thingl.implementation.window.SDLWindowInterface;
 import net.raphimc.thingl.util.SDLErrorUtil;
-import org.lwjgl.opengl.GL;
 import org.lwjgl.sdl.*;
 import org.lwjgl.system.MemoryStack;
 
@@ -114,7 +113,6 @@ public abstract class SDLApplicationRunner extends ApplicationRunner {
             this.windowInterface = null;
         }
         if (this.openGLContext != 0L) {
-            GL.destroy();
             SDLVideo.SDL_GL_DestroyContext(this.openGLContext);
             this.openGLContext = 0L;
         }
