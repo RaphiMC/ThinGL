@@ -134,7 +134,7 @@ public abstract class TextRenderer {
     protected void renderTextSegment(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextSegment textSegment, final float x, final float y, final float z, final int textDataIndex) {
         final DrawBatchDataHolder drawBatchDataHolder = multiDrawBatchDataHolder.getDrawBatchDataHolder(this.textDrawBatch);
         final VertexDataHolder vertexDataHolder = drawBatchDataHolder.getVertexDataHolder();
-        final ShaderDataHolder glyphDataHolder = drawBatchDataHolder.getShaderDataHolder("ssbo_GlyphData", Std430ShaderDataHolder.SUPPLIER).ensureInTopLevelArray();
+        final ShaderDataHolder glyphDataHolder = drawBatchDataHolder.getShaderStorageDataHolder("ssbo_GlyphData", Std430ShaderDataHolder.SUPPLIER).ensureInTopLevelArray();
 
         for (TextShaper.Glyph shapedGlyph : textSegment.glyphs()) {
             final Font.Glyph fontGlyph = shapedGlyph.fontGlyph();

@@ -35,7 +35,7 @@ public class SDFTextRenderer extends TextRenderer {
 
     @Override
     protected void renderTextSegment(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextSegment textSegment, final float x, final float y, final float z) {
-        final ShaderDataHolder textDataHolder = multiDrawBatchDataHolder.getShaderDataHolder(this.getTextDrawBatch(), "ssbo_TextData", Std430ShaderDataHolder.SUPPLIER).ensureInTopLevelArray();
+        final ShaderDataHolder textDataHolder = multiDrawBatchDataHolder.getShaderStorageDataHolder(this.getTextDrawBatch(), "ssbo_TextData", Std430ShaderDataHolder.SUPPLIER).ensureInTopLevelArray();
         final int fontSize = textSegment.glyphs().get(0).fontGlyph().font().getSize();
         final int textDataIndex = textDataHolder.beginStruct(Integer.BYTES).putInt(fontSize).putColor(textSegment.color()).putColor(textSegment.outlineColor()).putInt(textSegment.styleFlags()).endStructAndGetTopLevelArrayIndex();
         this.renderTextSegment(positionMatrix, multiDrawBatchDataHolder, textSegment, x, y, z, textDataIndex);

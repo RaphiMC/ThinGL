@@ -67,8 +67,8 @@ public abstract class MultiDrawBatchDataHolder {
         return this.getDrawBatchDataHolder(drawBatch).getIndexDataHolder();
     }
 
-    public ShaderDataHolder getShaderDataHolder(final DrawBatch drawBatch, final String name, final Function<BufferBuilder, ? extends ShaderDataHolder> shaderDataHolderSupplier) {
-        return this.getDrawBatchDataHolder(drawBatch).getShaderDataHolder(name, shaderDataHolderSupplier);
+    public ShaderDataHolder getShaderStorageDataHolder(final DrawBatch drawBatch, final String name, final Function<BufferBuilder, ? extends ShaderDataHolder> shaderStorageDataHolderSupplier) {
+        return this.getDrawBatchDataHolder(drawBatch).getShaderStorageDataHolder(name, shaderStorageDataHolderSupplier);
     }
 
     public void draw() {

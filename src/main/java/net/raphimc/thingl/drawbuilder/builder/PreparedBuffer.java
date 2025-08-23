@@ -28,7 +28,7 @@ import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
 
-public record PreparedBuffer(DrawBatch drawBatch, DrawBatchDataHolder drawBatchDataHolder, ByteBuffer vertexBuffer, ByteBuffer instanceVertexBuffer, IndexByteBuffer indexBuffer, Map<String, ByteBuffer> shaderDataBuffers, List<DrawCommand> drawCommands) {
+public record PreparedBuffer(DrawBatch drawBatch, DrawBatchDataHolder drawBatchDataHolder, ByteBuffer vertexBuffer, ByteBuffer instanceVertexBuffer, IndexByteBuffer indexBuffer, Map<String, ByteBuffer> shaderStorageBuffers, List<DrawCommand> drawCommands) {
 
     public void free() {
         if (!this.drawBatchDataHolder.hasIndexDataHolder() && this.indexBuffer != null) {

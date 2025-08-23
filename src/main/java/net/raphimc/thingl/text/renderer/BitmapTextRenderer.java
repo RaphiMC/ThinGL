@@ -34,7 +34,7 @@ public class BitmapTextRenderer extends TextRenderer {
 
     @Override
     protected void renderTextSegment(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextSegment textSegment, final float x, final float y, float z) {
-        final ShaderDataHolder textDataHolder = multiDrawBatchDataHolder.getShaderDataHolder(this.getTextDrawBatch(), "ssbo_TextData", Std430ShaderDataHolder.SUPPLIER).ensureInTopLevelArray();
+        final ShaderDataHolder textDataHolder = multiDrawBatchDataHolder.getShaderStorageDataHolder(this.getTextDrawBatch(), "ssbo_TextData", Std430ShaderDataHolder.SUPPLIER).ensureInTopLevelArray();
         final int regularTextDataIndex = textDataHolder.beginStruct(Integer.BYTES).putColor(textSegment.color()).endStructAndGetTopLevelArrayIndex();
 
         if ((textSegment.styleFlags() & TextSegment.STYLE_BOLD_BIT) != 0) {

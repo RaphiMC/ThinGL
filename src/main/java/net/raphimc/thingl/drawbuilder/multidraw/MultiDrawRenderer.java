@@ -160,9 +160,9 @@ public class MultiDrawRenderer {
     public void draw(final DrawBatch drawBatch, final Matrix4f modelMatrix, final Buffer drawDataBuffer) {
         final MultiDrawBuilder multiDrawBuilder = this.drawBatches.get(drawBatch);
         if (multiDrawBuilder != null) {
-            multiDrawBuilder.getBuiltBuffer().shaderDataBuffers().put("ssbo_DrawData", drawDataBuffer);
+            multiDrawBuilder.getBuiltBuffer().shaderStorageBuffers().put("ssbo_DrawData", drawDataBuffer);
             BufferRenderer.render(multiDrawBuilder.getBuiltBuffer(), modelMatrix);
-            multiDrawBuilder.getBuiltBuffer().shaderDataBuffers().remove("ssbo_DrawData");
+            multiDrawBuilder.getBuiltBuffer().shaderStorageBuffers().remove("ssbo_DrawData");
         }
     }
 

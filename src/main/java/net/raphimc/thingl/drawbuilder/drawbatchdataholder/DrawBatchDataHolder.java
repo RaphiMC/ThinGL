@@ -36,7 +36,7 @@ public class DrawBatchDataHolder {
     private VertexDataHolder vertexDataHolder;
     private VertexDataHolder instanceVertexDataHolder;
     private IndexDataHolder indexDataHolder;
-    private final Object2ObjectMap<String, ShaderDataHolder> shaderDataHolders = new Object2ObjectOpenHashMap<>();
+    private final Object2ObjectMap<String, ShaderDataHolder> shaderStorageDataHolders = new Object2ObjectOpenHashMap<>();
 
     public DrawBatchDataHolder(final Supplier<BufferBuilder> bufferBuilderSupplier, final Consumer<BufferBuilder> bufferBuilderDisposer) {
         this.bufferBuilderSupplier = bufferBuilderSupplier;
@@ -53,8 +53,8 @@ public class DrawBatchDataHolder {
         if (this.indexDataHolder != null) {
             this.bufferBuilderDisposer.accept(this.indexDataHolder.getBufferBuilder());
         }
-        for (ShaderDataHolder shaderDataHolder : this.shaderDataHolders.values()) {
-            this.bufferBuilderDisposer.accept(shaderDataHolder.getBufferBuilder());
+        for (ShaderDataHolder shaderStorageDataHolder : this.shaderStorageDataHolders.values()) {
+            this.bufferBuilderDisposer.accept(shaderStorageDataHolder.getBufferBuilder());
         }
     }
 
@@ -94,16 +94,16 @@ public class DrawBatchDataHolder {
         return this.indexDataHolder;
     }
 
-    public boolean hasShaderDataHolder(final String name) {
-        return this.shaderDataHolders.containsKey(name);
+    public boolean hasShaderStorageDataHolder(final String name) {
+        return this.shaderStorageDataHolders.containsKey(name);
     }
 
-    public ShaderDataHolder getShaderDataHolder(final String name, final Function<BufferBuilder, ? extends ShaderDataHolder> shaderDataHolderSupplier) {
-        return this.shaderDataHolders.computeIfAbsent(name, key -> shaderDataHolderSupplier.apply(this.bufferBuilderSupplier.get()));
+    public ShaderDataHolder getShaderStorageDataHolder(final String name, final Function<BufferBuilder, ? extends ShaderDataHolder> shaderStorageDataHolderSupplier) {
+        return this.shaderStorageDataHolders.computeIfAbsent(name, key -> shaderStorageDataHolderSupplier.apply(this.bufferBuilderSupplier.get()));
     }
 
-    public Map<String, ShaderDataHolder> getShaderDataHolders() {
-        return this.shaderDataHolders;
+    public Map<String, ShaderDataHolder> getShaderStorageDataHolders() {
+        return this.shaderStorageDataHolders;
     }
 
 }

@@ -89,8 +89,8 @@ public class MultiDrawBuilder {
             throw new IllegalArgumentException("BuiltBuffer has more than one vertex buffer");
         }
         final Buffer vertexBuffer = vertexArray.getVertexBuffers().get(0);
-        if (!builtBuffer.shaderDataBuffers().isEmpty()) {
-            throw new IllegalArgumentException("BuiltBuffer has shader data buffers");
+        if (!builtBuffer.shaderStorageBuffers().isEmpty()) {
+            throw new IllegalArgumentException("BuiltBuffer has shader storage buffers");
         }
         for (DrawCommand drawCommand : drawCommands) {
             if (drawCommand.instanceCount() != 1 || drawCommand.baseInstance() != 0) {
