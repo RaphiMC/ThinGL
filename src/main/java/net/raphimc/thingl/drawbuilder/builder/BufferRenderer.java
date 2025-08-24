@@ -148,7 +148,12 @@ public class BufferRenderer {
             throw new IllegalStateException("Draw batch does not use instancing but instance data was provided");
         }
 
-        final Object2ObjectMap<String, ByteBuffer> shaderStorageBuffers = new Object2ObjectOpenHashMap<>();
+        final Object2ObjectMap<String, ByteBuffer> uniformBuffers = new Object2ObjectOpenHashMap<>(drawBatchDataHolder.getUniformDataHolders().size());
+        for (Map.Entry<String, ShaderDataHolder> entry : drawBatchDataHolder.getUniformDataHolders().entrySet()) {
+            uniformBuffers.put(entry.getKey(), entry.getValue().getBufferBuilder().finish());
+        }
+
+        final Object2ObjectMap<String, ByteBuffer> shaderStorageBuffers = new Object2ObjectOpenHashMap<>(drawBatchDataHolder.getShaderStorageDataHolders().size());
         for (Map.Entry<String, ShaderDataHolder> entry : drawBatchDataHolder.getShaderStorageDataHolders().entrySet()) {
             shaderStorageBuffers.put(entry.getKey(), entry.getValue().getBufferBuilder().finish());
         }
@@ -186,7 +191,7 @@ public class BufferRenderer {
             }
         }
 
-        return new PreparedBuffer(drawBatch, drawBatchDataHolder, vertexBufferBuilder.finish(), instanceVertexBuffer, indexBuffer, shaderStorageBuffers, drawCommands);
+        return new PreparedBuffer(drawBatch, drawBatchDataHolder, vertexBufferBuilder.finish(), instanceVertexBuffer, indexBuffer, uniformBuffers, shaderStorageBuffers, drawCommands);
     }
 
     public static BuiltBuffer buildTemporaryBuffer(final PreparedBuffer preparedBuffer) {
@@ -217,7 +222,16 @@ public class BufferRenderer {
             instanceVertexBuffer.upload(instanceVertexData);
         }
 
-        final Object2ObjectMap<String, Buffer> shaderStorageBuffers = new Object2ObjectOpenHashMap<>();
+        final Object2ObjectMap<String, Buffer> uniformBuffers = new Object2ObjectOpenHashMap<>(preparedBuffer.uniformBuffers().size());
+        for (Map.Entry<String, ByteBuffer> entry : preparedBuffer.uniformBuffers().entrySet()) {
+            final ByteBuffer uniformData = entry.getValue();
+            final MutableBuffer uniformBuffer = ThinGL.gpuBufferPool().borrowBuffer();
+            uniformBuffer.ensureSize(uniformData.remaining());
+            uniformBuffer.upload(uniformData);
+            uniformBuffers.put(entry.getKey(), uniformBuffer);
+        }
+
+        final Object2ObjectMap<String, Buffer> shaderStorageBuffers = new Object2ObjectOpenHashMap<>(preparedBuffer.shaderStorageBuffers().size());
         for (Map.Entry<String, ByteBuffer> entry : preparedBuffer.shaderStorageBuffers().entrySet()) {
             final ByteBuffer shaderStorageData = entry.getValue();
             final MutableBuffer shaderStorageBuffer = ThinGL.gpuBufferPool().borrowBuffer();
@@ -241,7 +255,7 @@ public class BufferRenderer {
         }
 
         preparedBuffer.free();
-        return new BuiltBuffer(preparedBuffer.drawBatch(), vertexArray, shaderStorageBuffers, commandBuffer, preparedBuffer.drawCommands());
+        return new BuiltBuffer(preparedBuffer.drawBatch(), vertexArray, uniformBuffers, shaderStorageBuffers, commandBuffer, preparedBuffer.drawCommands());
     }
 
     public static void freeTemporaryBuffer(final BuiltBuffer builtBuffer) {
@@ -253,6 +267,9 @@ public class BufferRenderer {
             vertexArray.setIndexBuffer(0, null);
         }
 
+        for (Buffer buffer : builtBuffer.uniformBuffers().values()) {
+            ThinGL.gpuBufferPool().returnBuffer((MutableBuffer) buffer);
+        }
         for (Buffer buffer : builtBuffer.shaderStorageBuffers().values()) {
             ThinGL.gpuBufferPool().returnBuffer((MutableBuffer) buffer);
         }
@@ -285,7 +302,12 @@ public class BufferRenderer {
             vertexArray.configureVertexDataLayout(1, drawBatch.vertexDataLayout().getElements().length, drawBatch.instanceVertexDataLayout(), 1);
         }
 
-        final Object2ObjectMap<String, Buffer> shaderStorageBuffers = new Object2ObjectOpenHashMap<>();
+        final Object2ObjectMap<String, Buffer> uniformBuffers = new Object2ObjectOpenHashMap<>(preparedBuffer.uniformBuffers().size());
+        for (Map.Entry<String, ByteBuffer> entry : preparedBuffer.uniformBuffers().entrySet()) {
+            uniformBuffers.put(entry.getKey(), new ImmutableBuffer(entry.getValue(), 0));
+        }
+
+        final Object2ObjectMap<String, Buffer> shaderStorageBuffers = new Object2ObjectOpenHashMap<>(preparedBuffer.shaderStorageBuffers().size());
         for (Map.Entry<String, ByteBuffer> entry : preparedBuffer.shaderStorageBuffers().entrySet()) {
             shaderStorageBuffers.put(entry.getKey(), new ImmutableBuffer(entry.getValue(), 0));
         }
@@ -302,7 +324,7 @@ public class BufferRenderer {
         }
 
         preparedBuffer.free();
-        return new BuiltBuffer(preparedBuffer.drawBatch(), vertexArray, shaderStorageBuffers, commandBuffer, preparedBuffer.drawCommands());
+        return new BuiltBuffer(preparedBuffer.drawBatch(), vertexArray, shaderStorageBuffers, uniformBuffers, commandBuffer, preparedBuffer.drawCommands());
     }
 
     public static void render(final BuiltBuffer builtBuffer, final Matrix4f modelMatrix) {
@@ -320,6 +342,9 @@ public class BufferRenderer {
             program.bind();
             if (program instanceof RegularProgram regularProgram) {
                 regularProgram.configureParameters(modelMatrix);
+                for (Map.Entry<String, Buffer> entry : builtBuffer.uniformBuffers().entrySet()) {
+                    program.setUniformBuffer(entry.getKey(), entry.getValue());
+                }
                 for (Map.Entry<String, Buffer> entry : builtBuffer.shaderStorageBuffers().entrySet()) {
                     program.setShaderStorageBuffer(entry.getKey(), entry.getValue());
                 }

@@ -36,6 +36,7 @@ public class DrawBatchDataHolder {
     private VertexDataHolder vertexDataHolder;
     private VertexDataHolder instanceVertexDataHolder;
     private IndexDataHolder indexDataHolder;
+    private final Object2ObjectMap<String, ShaderDataHolder> uniformDataHolders = new Object2ObjectOpenHashMap<>();
     private final Object2ObjectMap<String, ShaderDataHolder> shaderStorageDataHolders = new Object2ObjectOpenHashMap<>();
 
     public DrawBatchDataHolder(final Supplier<BufferBuilder> bufferBuilderSupplier, final Consumer<BufferBuilder> bufferBuilderDisposer) {
@@ -52,6 +53,9 @@ public class DrawBatchDataHolder {
         }
         if (this.indexDataHolder != null) {
             this.bufferBuilderDisposer.accept(this.indexDataHolder.getBufferBuilder());
+        }
+        for (ShaderDataHolder uniformDataHolder : this.uniformDataHolders.values()) {
+            this.bufferBuilderDisposer.accept(uniformDataHolder.getBufferBuilder());
         }
         for (ShaderDataHolder shaderStorageDataHolder : this.shaderStorageDataHolders.values()) {
             this.bufferBuilderDisposer.accept(shaderStorageDataHolder.getBufferBuilder());
@@ -92,6 +96,18 @@ public class DrawBatchDataHolder {
             this.indexDataHolder.applyVertexOffset(this.vertexDataHolder);
         }
         return this.indexDataHolder;
+    }
+
+    public boolean hasUniformDataHolder(final String name) {
+        return this.uniformDataHolders.containsKey(name);
+    }
+
+    public ShaderDataHolder getUniformDataHolder(final String name, final Function<BufferBuilder, ? extends ShaderDataHolder> uniformDataHolderSupplier) {
+        return this.uniformDataHolders.computeIfAbsent(name, key -> uniformDataHolderSupplier.apply(this.bufferBuilderSupplier.get()));
+    }
+
+    public Map<String, ShaderDataHolder> getUniformDataHolders() {
+        return this.uniformDataHolders;
     }
 
     public boolean hasShaderStorageDataHolder(final String name) {

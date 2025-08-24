@@ -25,10 +25,13 @@ import net.raphimc.thingl.resource.vertexarray.VertexArray;
 import java.util.List;
 import java.util.Map;
 
-public record BuiltBuffer(DrawBatch drawBatch, VertexArray vertexArray, Map<String, Buffer> shaderStorageBuffers, Buffer commandBuffer, List<DrawCommand> drawCommands) {
+public record BuiltBuffer(DrawBatch drawBatch, VertexArray vertexArray, Map<String, Buffer> uniformBuffers, Map<String, Buffer> shaderStorageBuffers, Buffer commandBuffer, List<DrawCommand> drawCommands) {
 
     public void free() {
         this.vertexArray.freeFully();
+        for (Buffer buffer : this.uniformBuffers.values()) {
+            buffer.free();
+        }
         for (Buffer buffer : this.shaderStorageBuffers.values()) {
             buffer.free();
         }
