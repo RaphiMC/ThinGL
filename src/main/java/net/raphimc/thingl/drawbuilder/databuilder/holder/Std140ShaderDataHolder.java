@@ -23,7 +23,7 @@ import org.joml.Matrix4f;
 
 import java.util.function.Function;
 
-public class Std140ShaderDataHolder extends ShaderDataHolder {
+public class Std140ShaderDataHolder extends StdShaderDataHolder {
 
     public static final Function<BufferBuilder, Std140ShaderDataHolder> SUPPLIER = Std140ShaderDataHolder::new;
 

@@ -21,7 +21,7 @@ import net.raphimc.thingl.drawbuilder.builder.BufferBuilder;
 
 import java.util.function.Function;
 
-public class Std430ShaderDataHolder extends ShaderDataHolder {
+public class Std430ShaderDataHolder extends StdShaderDataHolder {
 
     public static final Function<BufferBuilder, Std430ShaderDataHolder> SUPPLIER = Std430ShaderDataHolder::new;
 
