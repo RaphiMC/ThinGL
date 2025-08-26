@@ -324,7 +324,7 @@ public class BufferRenderer {
         }
 
         preparedBuffer.free();
-        return new BuiltBuffer(preparedBuffer.drawBatch(), vertexArray, shaderStorageBuffers, uniformBuffers, commandBuffer, preparedBuffer.drawCommands());
+        return new BuiltBuffer(preparedBuffer.drawBatch(), vertexArray, uniformBuffers, shaderStorageBuffers, commandBuffer, preparedBuffer.drawCommands());
     }
 
     public static void render(final BuiltBuffer builtBuffer, final Matrix4f modelMatrix) {
