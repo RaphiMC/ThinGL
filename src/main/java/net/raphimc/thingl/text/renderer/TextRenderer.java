@@ -20,10 +20,8 @@ package net.raphimc.thingl.text.renderer;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.lenni0451.commons.color.Color;
-import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.BuiltinDrawBatches;
 import net.raphimc.thingl.drawbuilder.DrawBatch;
-import net.raphimc.thingl.drawbuilder.DrawMode;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.ShaderDataHolder;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.Std430ShaderDataHolder;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.VertexDataHolder;
@@ -61,15 +59,16 @@ public abstract class TextRenderer {
     private float globalScale = 1F;
 
     public TextRenderer(final Supplier<Program> program) {
-        this.textDrawBatch = new DrawBatch(program, DrawMode.QUADS, BuiltinDrawBatches.POSITION_TEXTURE_LAYOUT, () -> {
-            ThinGL.glStateStack().push();
-            ThinGL.glStateStack().enable(GL11C.GL_BLEND);
-            final int[] textureIds = new int[this.glyphAtlases.size()];
-            for (int i = 0; i < this.glyphAtlases.size(); i++) {
-                textureIds[i] = this.glyphAtlases.get(i).getGlId();
-            }
-            program.get().setUniformSamplerArray("u_Textures", textureIds);
-        }, () -> ThinGL.glStateStack().pop());
+        this.textDrawBatch = new DrawBatch.Builder(BuiltinDrawBatches.TEXTURE_SNIPPET)
+                .program(program)
+                .appendSetupAction(p -> {
+                    final int[] textureIds = new int[this.glyphAtlases.size()];
+                    for (int i = 0; i < this.glyphAtlases.size(); i++) {
+                        textureIds[i] = this.glyphAtlases.get(i).getGlId();
+                    }
+                    p.setUniformSamplerArray("u_Textures", textureIds);
+                })
+                .build();
     }
 
     public void renderTextBuffer(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextBuffer textBuffer, float x, float y, final float z) {

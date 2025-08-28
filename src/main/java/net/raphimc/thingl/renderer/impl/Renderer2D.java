@@ -25,7 +25,6 @@ import net.lenni0451.commons.math.shapes.triangle.TriangleI;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.BuiltinDrawBatches;
 import net.raphimc.thingl.drawbuilder.DrawBatch;
-import net.raphimc.thingl.drawbuilder.DrawMode;
 import net.raphimc.thingl.drawbuilder.builder.BufferBuilder;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.IndexDataHolder;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.VertexDataHolder;
@@ -39,7 +38,6 @@ import org.joml.Vector2d;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.primitives.*;
-import org.lwjgl.opengl.GL11C;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.util.par.*;
 
@@ -52,29 +50,27 @@ public class Renderer2D extends Renderer {
     public static final int OUTLINE_STYLE_OUTER_BIT = 1 << 0;
     public static final int OUTLINE_STYLE_INNER_BIT = 1 << 1;
 
-    protected final IntFunction<DrawBatch> textureQuad = CacheUtil.memoizeInt(textureId -> new DrawBatch(() -> ThinGL.programs().getTexture(), DrawMode.QUADS, BuiltinDrawBatches.POSITION_TEXTURE_LAYOUT, () -> {
-        ThinGL.glStateStack().push();
-        ThinGL.glStateStack().enable(GL11C.GL_BLEND);
-        ThinGL.programs().getTexture().setUniformSampler("u_Texture", textureId);
-    }, () -> ThinGL.glStateStack().pop()));
+    protected final IntFunction<DrawBatch> textureQuad = CacheUtil.memoizeInt(textureId -> new DrawBatch.Builder(BuiltinDrawBatches.TEXTURE_SNIPPET)
+            .appendSetupAction(p -> p.setUniformSampler("u_Texture", textureId))
+            .build());
 
-    protected final IntFunction<DrawBatch> coloredTextureQuad = CacheUtil.memoizeInt(textureId -> new DrawBatch(() -> ThinGL.programs().getColoredTexture(), DrawMode.QUADS, BuiltinDrawBatches.POSITION_COLOR_TEXTURE_LAYOUT, () -> {
-        ThinGL.glStateStack().push();
-        ThinGL.glStateStack().enable(GL11C.GL_BLEND);
-        ThinGL.programs().getColoredTexture().setUniformSampler("u_Texture", textureId);
-    }, () -> ThinGL.glStateStack().pop()));
+    protected final IntFunction<DrawBatch> coloredTextureQuad = CacheUtil.memoizeInt(textureId -> new DrawBatch.Builder(BuiltinDrawBatches.TEXTURE_SNIPPET)
+            .program(() -> ThinGL.programs().getColoredTexture())
+            .vertexDataLayout(BuiltinDrawBatches.POSITION_COLOR_TEXTURE_LAYOUT)
+            .appendSetupAction(p -> p.setUniformSampler("u_Texture", textureId))
+            .build());
 
-    protected final IntFunction<DrawBatch> colorizedTextureQuad = CacheUtil.memoizeInt(textureId -> new DrawBatch(() -> ThinGL.programs().getColorizedTexture(), DrawMode.QUADS, BuiltinDrawBatches.POSITION_COLOR_TEXTURE_LAYOUT, () -> {
-        ThinGL.glStateStack().push();
-        ThinGL.glStateStack().enable(GL11C.GL_BLEND);
-        ThinGL.programs().getColorizedTexture().setUniformSampler("u_Texture", textureId);
-    }, () -> ThinGL.glStateStack().pop()));
+    protected final IntFunction<DrawBatch> colorizedTextureQuad = CacheUtil.memoizeInt(textureId -> new DrawBatch.Builder(BuiltinDrawBatches.TEXTURE_SNIPPET)
+            .program(() -> ThinGL.programs().getColorizedTexture())
+            .vertexDataLayout(BuiltinDrawBatches.POSITION_COLOR_TEXTURE_LAYOUT)
+            .appendSetupAction(p -> p.setUniformSampler("u_Texture", textureId))
+            .build());
 
-    protected final IntFunction<DrawBatch> textureArrayLayerQuad = CacheUtil.memoizeInt(textureId -> new DrawBatch(() -> ThinGL.programs().getTextureArrayLayer(), DrawMode.QUADS, BuiltinDrawBatches.POSITION_TEXTURE_ARRAY_LAYER_LAYOUT, () -> {
-        ThinGL.glStateStack().push();
-        ThinGL.glStateStack().enable(GL11C.GL_BLEND);
-        ThinGL.programs().getTextureArrayLayer().setUniformSampler("u_Texture", textureId);
-    }, () -> ThinGL.glStateStack().pop()));
+    protected final IntFunction<DrawBatch> textureArrayLayerQuad = CacheUtil.memoizeInt(textureId -> new DrawBatch.Builder(BuiltinDrawBatches.TEXTURE_SNIPPET)
+            .program(() -> ThinGL.programs().getTextureArrayLayer())
+            .vertexDataLayout(BuiltinDrawBatches.POSITION_TEXTURE_ARRAY_LAYER_LAYOUT)
+            .appendSetupAction(p -> p.setUniformSampler("u_Texture", textureId))
+            .build());
 
     public void filledRectangle(final Matrix4f positionMatrix, final Rectangled rectangle, final Color color) {
         this.filledRectangle(positionMatrix, rectangle, color, color, color, color);
