@@ -27,11 +27,6 @@ public record DrawBatch(Supplier<Program> program, DrawMode drawMode, VertexData
 
     public static final DrawBatch[] EMPTY_ARRAY = new DrawBatch[0];
 
-    @Deprecated(forRemoval = true)
-    public DrawBatch(final Supplier<Program> program, final DrawMode drawMode, final VertexDataLayout vertexDataLayout, final Runnable setupAction, final Runnable cleanupAction) {
-        this(program, drawMode, vertexDataLayout, null, setupAction, cleanupAction);
-    }
-
     public record Snippet(Supplier<Program> program, DrawMode drawMode, VertexDataLayout vertexDataLayout, VertexDataLayout instanceVertexDataLayout, Runnable setupAction, Runnable cleanupAction) {
     }
 
@@ -41,8 +36,10 @@ public record DrawBatch(Supplier<Program> program, DrawMode drawMode, VertexData
         private DrawMode drawMode;
         private VertexDataLayout vertexDataLayout;
         private VertexDataLayout instanceVertexDataLayout;
-        private Runnable setupAction = () -> {};
-        private Runnable cleanupAction = () -> {};
+        private Runnable setupAction = () -> {
+        };
+        private Runnable cleanupAction = () -> {
+        };
 
         public Builder() {
         }

@@ -191,6 +191,7 @@ public class ThinGL {
     private final List<Runnable> frameEndActions = new ArrayList<>();
     private final List<Runnable> frameFinishedCallbacks = new ArrayList<>();
 
+    private boolean allocated = true;
     private long frameBeginTime;
     private long frameStartTime;
     private float frameTime;
@@ -372,8 +373,13 @@ public class ThinGL {
         return this.fps;
     }
 
+    public boolean isAllocated() {
+        return this.allocated;
+    }
+
     public void free() {
         this.assertOnRenderThread();
+        this.allocated = false;
         this.programs.free();
         this.renderer2D.free();
         this.renderer3D.free();

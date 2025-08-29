@@ -91,9 +91,7 @@ public abstract class WindowInterface {
 
     public void responsiveSleep(final float millis) {
         TimerHack.ensureRunning();
-        final long ms = (long) millis;
-        final long ns = (long) ((millis - ms) * 1_000_000);
-        ThreadUtils.hybridSleep(ms, ns);
+        ThreadUtils.hybridSleep(millis);
     }
 
     public void assertOnWindowThread() {

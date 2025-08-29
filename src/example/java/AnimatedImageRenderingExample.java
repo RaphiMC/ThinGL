@@ -17,9 +17,9 @@
  */
 
 import net.raphimc.thingl.ThinGL;
+import net.raphimc.thingl.awt.texture.frameprovider.AwtGifFrameProvider;
 import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
-import net.raphimc.thingl.texture.SequencedTexture;
-import net.raphimc.thingl.util.AWTUtil;
+import net.raphimc.thingl.texture.animated.SequencedTexture;
 import org.joml.Matrix4fStack;
 
 import java.io.IOException;
@@ -42,9 +42,9 @@ public class AnimatedImageRenderingExample extends GLFWApplicationRunner {
         super.init();
         try {
             final byte[] imageBytes = AnimatedImageRenderingExample.class.getResourceAsStream("/images/hand.gif").readAllBytes();
-            this.image = AWTUtil.createSequencedTextureFromGif(imageBytes);
-            // this.image = SequencedTexture.fromGif(imageBytes); // Alternative method which uses a library. This is faster than using AWT
-            // this.image = AWTUtil.createSequencedTextureFromWebp(imageBytes); // WebP is also supported, but requires a library
+            this.image = new SequencedTexture(new AwtGifFrameProvider(imageBytes));
+            // this.image = new SequencedTexture(new GifFrameProvider(imageBytes)); // Alternative method which uses a library. This is faster than using AWT
+            // this.image = new SequencedTexture(new AwtWebpFrameProvider(imageBytes)); // WebP is also supported, but requires a library
             this.startTime = System.currentTimeMillis();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -54,7 +54,7 @@ public class AnimatedImageRenderingExample extends GLFWApplicationRunner {
     @Override
     protected void render(final Matrix4fStack positionMatrix) {
         final int time = (int) (System.currentTimeMillis() - this.startTime);
-        ThinGL.renderer2D().textureArrayLayer(positionMatrix, this.image, this.image.getFrame(time), 50, 50);
+        ThinGL.renderer2D().textureArrayLayer(positionMatrix, this.image, this.image.getFrameIndex(time), 50, 50);
     }
 
 }
