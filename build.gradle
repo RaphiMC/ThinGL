@@ -39,8 +39,8 @@ dependencies {
         exclude group: "org.joml", module: "joml"
     }
     api "it.unimi.dsi:fastutil:8.5.16"
-    api "net.lenni0451.commons:core:1.7.1"
-    api "net.lenni0451.commons:logging:1.7.1"
+    api "net.lenni0451.commons:core:1.8.0"
+    api "net.lenni0451.commons:logging:1.8.0"
 
     // LWJGL needs to be provided by the application using ThinGL
     compileOnly "org.lwjgl:lwjgl:3.3.6"
