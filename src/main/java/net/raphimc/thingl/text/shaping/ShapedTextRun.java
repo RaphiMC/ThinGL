@@ -15,32 +15,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.thingl.text.shaper;
+package net.raphimc.thingl.text.shaping;
 
 import net.raphimc.thingl.text.font.Font;
 import org.joml.primitives.Rectanglef;
 
 import java.util.List;
 
-public record ShapedTextRun(Font font, List<ShapedTextSegment> segments, Rectanglef bounds, Rectanglef fontBounds, float xOffset, float yOffset, float nextRunX, float nextRunY) {
+public record ShapedTextRun(Font font, List<ShapedTextSegment> segments, Rectanglef visualBounds, Rectanglef logicalBounds) {
 
-    public ShapedTextRun(final Font font, final List<ShapedTextSegment> segments, final float xOffset, final float yOffset, final float nextRunX, final float nextRunY) {
-        this(font, segments, new Rectanglef(), new Rectanglef(), xOffset, yOffset, nextRunX, nextRunY);
+    public ShapedTextRun(final Font font, final List<ShapedTextSegment> segments) {
+        this(font, segments, new Rectanglef(), new Rectanglef());
         this.calculateBounds();
     }
 
     public void calculateBounds() {
         if (this.segments.isEmpty()) {
-            this.bounds.setMin(0F, 0F).setMax(0F, 0F);
-            this.fontBounds.setMin(0F, 0F).setMax(0F, 0F);
+            this.visualBounds.setMin(0F, 0F).setMax(0F, 0F);
+            this.logicalBounds.setMin(0F, 0F).setMax(0F, 0F);
             return;
         }
 
-        this.bounds.setMin(Float.MAX_VALUE, Float.MAX_VALUE).setMax(-Float.MAX_VALUE, -Float.MAX_VALUE);
-        for (ShapedTextSegment textSegment : this.segments) {
-            bounds.union(textSegment.bounds());
+        this.visualBounds.setMin(Float.MAX_VALUE, Float.MAX_VALUE).setMax(-Float.MAX_VALUE, -Float.MAX_VALUE);
+        this.logicalBounds.setMin(Float.MAX_VALUE, Float.MAX_VALUE).setMax(-Float.MAX_VALUE, -Float.MAX_VALUE);
+        for (ShapedTextSegment segment : this.segments) {
+            this.visualBounds.union(segment.visualBounds());
+            this.logicalBounds.union(segment.logicalBounds());
         }
-        this.fontBounds.setMin(this.bounds.minX, -this.font.getAscent()).setMax(this.bounds.maxX, this.font.getDescent());
     }
 
 }

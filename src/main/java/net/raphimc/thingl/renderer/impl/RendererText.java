@@ -20,11 +20,13 @@ package net.raphimc.thingl.renderer.impl;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import it.unimi.dsi.fastutil.floats.FloatStack;
 import net.raphimc.thingl.renderer.Renderer;
-import net.raphimc.thingl.text.TextBuffer;
+import net.raphimc.thingl.text.TextBlock;
+import net.raphimc.thingl.text.TextLine;
 import net.raphimc.thingl.text.TextRun;
 import net.raphimc.thingl.text.renderer.TextRenderer;
-import net.raphimc.thingl.text.shaper.ShapedTextBuffer;
-import net.raphimc.thingl.text.shaper.ShapedTextRun;
+import net.raphimc.thingl.text.shaping.ShapedTextBlock;
+import net.raphimc.thingl.text.shaping.ShapedTextLine;
+import net.raphimc.thingl.text.shaping.ShapedTextRun;
 import org.joml.Matrix4f;
 
 import java.util.Stack;
@@ -38,56 +40,105 @@ public class RendererText extends Renderer {
 
     public RendererText(final TextRenderer textRenderer) {
         this.textRenderer = textRenderer;
-        this.verticalOriginStack.push(VerticalOrigin.EXACT_TOP);
-        this.horizontalOriginStack.push(HorizontalOrigin.EXACT_LEFT);
+        this.verticalOriginStack.push(VerticalOrigin.VISUAL_TOP);
+        this.horizontalOriginStack.push(HorizontalOrigin.VISUAL_LEFT);
     }
 
-    public void textBuffer(final Matrix4f positionMatrix, final TextBuffer textBuffer, final float x, final float y) {
-        this.textBuffer(positionMatrix, textBuffer.shape(), x, y);
+    public void textBlock(final Matrix4f positionMatrix, final TextBlock textBlock, final float x, final float y) {
+        this.textBlock(positionMatrix, textBlock.shape(), x, y);
     }
 
-    public void textBuffer(final Matrix4f positionMatrix, final TextBuffer textBuffer, final float x, final float y, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
-        this.textBuffer(positionMatrix, textBuffer.shape(), x, y, verticalOrigin, horizontalOrigin);
+    public void textBlock(final Matrix4f positionMatrix, final TextBlock textBlock, final float x, final float y, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        this.textBlock(positionMatrix, textBlock.shape(), x, y, verticalOrigin, horizontalOrigin);
     }
 
-    public void textBuffer(final Matrix4f positionMatrix, final TextBuffer textBuffer, final float x, final float y, final float z) {
-        this.textBuffer(positionMatrix, textBuffer.shape(), x, y, z);
+    public void textBlock(final Matrix4f positionMatrix, final TextBlock textBlock, final float x, final float y, final float z) {
+        this.textBlock(positionMatrix, textBlock.shape(), x, y, z);
     }
 
-    public void textBuffer(final Matrix4f positionMatrix, final TextBuffer textBuffer, final float x, final float y, final float z, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
-        this.textBuffer(positionMatrix, textBuffer.shape(), x, y, z, verticalOrigin, horizontalOrigin);
+    public void textBlock(final Matrix4f positionMatrix, final TextBlock textBlock, final float x, final float y, final float z, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        this.textBlock(positionMatrix, textBlock.shape(), x, y, z, verticalOrigin, horizontalOrigin);
     }
 
-    public void textBuffer(final Matrix4f positionMatrix, final ShapedTextBuffer textBuffer, final float x, final float y) {
-        this.textBuffer(positionMatrix, textBuffer, x, y, this.getVerticalOrigin(), this.getHorizontalOrigin());
+    public void textBlock(final Matrix4f positionMatrix, final ShapedTextBlock textBlock, final float x, final float y) {
+        this.textBlock(positionMatrix, textBlock, x, y, this.getVerticalOrigin(), this.getHorizontalOrigin());
     }
 
-    public void textBuffer(final Matrix4f positionMatrix, final ShapedTextBuffer textBuffer, final float x, final float y, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
-        this.textBuffer(positionMatrix, textBuffer, x, y, 0, verticalOrigin, horizontalOrigin);
+    public void textBlock(final Matrix4f positionMatrix, final ShapedTextBlock textBlock, final float x, final float y, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        this.textBlock(positionMatrix, textBlock, x, y, 0, verticalOrigin, horizontalOrigin);
     }
 
-    public void textBuffer(final Matrix4f positionMatrix, final ShapedTextBuffer textBuffer, final float x, final float y, final float z) {
-        this.textBuffer(positionMatrix, textBuffer, x, y, z, this.getVerticalOrigin(), this.getHorizontalOrigin());
+    public void textBlock(final Matrix4f positionMatrix, final ShapedTextBlock textBlock, final float x, final float y, final float z) {
+        this.textBlock(positionMatrix, textBlock, x, y, z, this.getVerticalOrigin(), this.getHorizontalOrigin());
     }
 
-    public void textBuffer(final Matrix4f positionMatrix, final ShapedTextBuffer textBuffer, float x, float y, final float z, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+    public void textBlock(final Matrix4f positionMatrix, final ShapedTextBlock textBlock, float x, float y, final float z, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
         y -= switch (verticalOrigin) {
             case BASELINE -> 0;
-            case TOP -> textBuffer.fontBounds().minY;
-            case CENTER -> textBuffer.fontBounds().minY + textBuffer.fontBounds().lengthY() / 2F;
-            case BOTTOM -> textBuffer.fontBounds().maxY;
-            case EXACT_TOP -> textBuffer.bounds().minY;
-            case EXACT_CENTER -> textBuffer.bounds().minY + textBuffer.bounds().lengthY() / 2F;
-            case EXACT_BOTTOM -> textBuffer.bounds().maxY;
+            case LOGICAL_TOP -> textBlock.logicalBounds().minY;
+            case LOGICAL_CENTER -> textBlock.logicalBounds().minY + textBlock.logicalBounds().lengthY() / 2F;
+            case LOGICAL_BOTTOM -> textBlock.logicalBounds().maxY;
+            case VISUAL_TOP -> textBlock.visualBounds().minY;
+            case VISUAL_CENTER -> textBlock.visualBounds().minY + textBlock.visualBounds().lengthY() / 2F;
+            case VISUAL_BOTTOM -> textBlock.visualBounds().maxY;
         } * this.textRenderer.getGlobalScale();
         x -= switch (horizontalOrigin) {
-            case LEFT -> 0;
-            case EXACT_LEFT -> textBuffer.bounds().minX;
-            case EXACT_CENTER -> textBuffer.bounds().lengthX() / 2F;
-            case EXACT_RIGHT -> textBuffer.bounds().maxX;
+            case LOGICAL_LEFT -> 0;
+            case VISUAL_LEFT -> textBlock.visualBounds().minX;
+            case VISUAL_CENTER -> textBlock.visualBounds().lengthX() / 2F;
+            case VISUAL_RIGHT -> textBlock.visualBounds().maxX;
         } * this.textRenderer.getGlobalScale();
 
-        this.textRenderer.renderTextBuffer(positionMatrix, this.targetMultiDrawBatchDataHolder, textBuffer, x, y, z);
+        this.textRenderer.renderTextBlock(positionMatrix, this.targetMultiDrawBatchDataHolder, textBlock, x, y, z);
+        this.drawIfNotBuffering();
+    }
+
+    public void textLine(final Matrix4f positionMatrix, final TextLine textLine, final float x, final float y) {
+        this.textLine(positionMatrix, textLine.shape(), x, y);
+    }
+
+    public void textLine(final Matrix4f positionMatrix, final TextLine textLine, final float x, final float y, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        this.textLine(positionMatrix, textLine.shape(), x, y, verticalOrigin, horizontalOrigin);
+    }
+
+    public void textLine(final Matrix4f positionMatrix, final TextLine textLine, final float x, final float y, final float z) {
+        this.textLine(positionMatrix, textLine.shape(), x, y, z);
+    }
+
+    public void textLine(final Matrix4f positionMatrix, final TextLine textLine, final float x, final float y, final float z, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        this.textLine(positionMatrix, textLine.shape(), x, y, z, verticalOrigin, horizontalOrigin);
+    }
+
+    public void textLine(final Matrix4f positionMatrix, final ShapedTextLine textLine, final float x, final float y) {
+        this.textLine(positionMatrix, textLine, x, y, this.getVerticalOrigin(), this.getHorizontalOrigin());
+    }
+
+    public void textLine(final Matrix4f positionMatrix, final ShapedTextLine textLine, final float x, final float y, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        this.textLine(positionMatrix, textLine, x, y, 0, verticalOrigin, horizontalOrigin);
+    }
+
+    public void textLine(final Matrix4f positionMatrix, final ShapedTextLine textLine, final float x, final float y, final float z) {
+        this.textLine(positionMatrix, textLine, x, y, z, this.getVerticalOrigin(), this.getHorizontalOrigin());
+    }
+
+    public void textLine(final Matrix4f positionMatrix, final ShapedTextLine textLine, float x, float y, final float z, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        y -= switch (verticalOrigin) {
+            case BASELINE -> 0;
+            case LOGICAL_TOP -> textLine.logicalBounds().minY;
+            case LOGICAL_CENTER -> textLine.logicalBounds().minY + textLine.logicalBounds().lengthY() / 2F;
+            case LOGICAL_BOTTOM -> textLine.logicalBounds().maxY;
+            case VISUAL_TOP -> textLine.visualBounds().minY;
+            case VISUAL_CENTER -> textLine.visualBounds().minY + textLine.visualBounds().lengthY() / 2F;
+            case VISUAL_BOTTOM -> textLine.visualBounds().maxY;
+        } * this.textRenderer.getGlobalScale();
+        x -= switch (horizontalOrigin) {
+            case LOGICAL_LEFT -> 0;
+            case VISUAL_LEFT -> textLine.visualBounds().minX;
+            case VISUAL_CENTER -> textLine.visualBounds().lengthX() / 2F;
+            case VISUAL_RIGHT -> textLine.visualBounds().maxX;
+        } * this.textRenderer.getGlobalScale();
+
+        this.textRenderer.renderTextLine(positionMatrix, this.targetMultiDrawBatchDataHolder, textLine, x, y, z);
         this.drawIfNotBuffering();
     }
 
@@ -122,46 +173,46 @@ public class RendererText extends Renderer {
     public void textRun(final Matrix4f positionMatrix, final ShapedTextRun textRun, float x, float y, final float z, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
         y -= switch (verticalOrigin) {
             case BASELINE -> 0;
-            case TOP -> textRun.fontBounds().minY;
-            case CENTER -> textRun.fontBounds().minY + textRun.fontBounds().lengthY() / 2F;
-            case BOTTOM -> textRun.fontBounds().maxY;
-            case EXACT_TOP -> textRun.bounds().minY;
-            case EXACT_CENTER -> textRun.bounds().minY + textRun.bounds().lengthY() / 2F;
-            case EXACT_BOTTOM -> textRun.bounds().maxY;
+            case LOGICAL_TOP -> textRun.logicalBounds().minY;
+            case LOGICAL_CENTER -> textRun.logicalBounds().minY + textRun.logicalBounds().lengthY() / 2F;
+            case LOGICAL_BOTTOM -> textRun.logicalBounds().maxY;
+            case VISUAL_TOP -> textRun.visualBounds().minY;
+            case VISUAL_CENTER -> textRun.visualBounds().minY + textRun.visualBounds().lengthY() / 2F;
+            case VISUAL_BOTTOM -> textRun.visualBounds().maxY;
         } * this.textRenderer.getGlobalScale();
         x -= switch (horizontalOrigin) {
-            case LEFT -> 0;
-            case EXACT_LEFT -> textRun.bounds().minX;
-            case EXACT_CENTER -> textRun.bounds().lengthX() / 2F;
-            case EXACT_RIGHT -> textRun.bounds().maxX;
+            case LOGICAL_LEFT -> 0;
+            case VISUAL_LEFT -> textRun.visualBounds().minX;
+            case VISUAL_CENTER -> textRun.visualBounds().lengthX() / 2F;
+            case VISUAL_RIGHT -> textRun.visualBounds().maxX;
         } * this.textRenderer.getGlobalScale();
 
         this.textRenderer.renderTextRun(positionMatrix, this.targetMultiDrawBatchDataHolder, textRun, x, y, z);
         this.drawIfNotBuffering();
     }
 
-    public float getExactWidth(final ShapedTextBuffer textBuffer) {
-        return textBuffer.bounds().lengthX() * this.textRenderer.getGlobalScale();
+    public float getVisualWidth(final ShapedTextLine textLine) {
+        return textLine.visualBounds().lengthX() * this.textRenderer.getGlobalScale();
     }
 
-    public float getExactWidth(final ShapedTextRun textRun) {
-        return textRun.bounds().lengthX() * this.textRenderer.getGlobalScale();
+    public float getVisualWidth(final ShapedTextRun textRun) {
+        return textRun.visualBounds().lengthX() * this.textRenderer.getGlobalScale();
     }
 
-    public float getExactHeight(final ShapedTextBuffer textBuffer) {
-        return textBuffer.bounds().lengthY() * this.textRenderer.getGlobalScale();
+    public float getVisualHeight(final ShapedTextLine textLine) {
+        return textLine.visualBounds().lengthY() * this.textRenderer.getGlobalScale();
     }
 
-    public float getExactHeight(final ShapedTextRun textRun) {
-        return textRun.bounds().lengthY() * this.textRenderer.getGlobalScale();
+    public float getVisualHeight(final ShapedTextRun textRun) {
+        return textRun.visualBounds().lengthY() * this.textRenderer.getGlobalScale();
     }
 
-    public float getFontHeight(final ShapedTextBuffer textBuffer) {
-        return textBuffer.fontBounds().lengthY() * this.textRenderer.getGlobalScale();
+    public float getLogicalHeight(final ShapedTextLine textLine) {
+        return textLine.logicalBounds().lengthY() * this.textRenderer.getGlobalScale();
     }
 
-    public float getFontHeight(final ShapedTextRun textRun) {
-        return textRun.fontBounds().lengthY() * this.textRenderer.getGlobalScale();
+    public float getLogicalHeight(final ShapedTextRun textRun) {
+        return textRun.logicalBounds().lengthY() * this.textRenderer.getGlobalScale();
     }
 
     public void pushGlobalScale(final float scale) {
@@ -210,21 +261,21 @@ public class RendererText extends Renderer {
     public enum VerticalOrigin {
 
         BASELINE,
-        TOP,
-        CENTER,
-        BOTTOM,
-        EXACT_TOP,
-        EXACT_CENTER,
-        EXACT_BOTTOM,
+        LOGICAL_TOP,
+        LOGICAL_CENTER,
+        LOGICAL_BOTTOM,
+        VISUAL_TOP,
+        VISUAL_CENTER,
+        VISUAL_BOTTOM,
 
     }
 
     public enum HorizontalOrigin {
 
-        LEFT,
-        EXACT_LEFT,
-        EXACT_CENTER,
-        EXACT_RIGHT,
+        LOGICAL_LEFT,
+        VISUAL_LEFT,
+        VISUAL_CENTER,
+        VISUAL_RIGHT,
 
     }
 

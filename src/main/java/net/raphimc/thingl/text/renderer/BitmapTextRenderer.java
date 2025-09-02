@@ -23,7 +23,7 @@ import net.raphimc.thingl.drawbuilder.databuilder.holder.Std430ShaderDataHolder;
 import net.raphimc.thingl.drawbuilder.drawbatchdataholder.MultiDrawBatchDataHolder;
 import net.raphimc.thingl.text.TextSegment;
 import net.raphimc.thingl.text.font.Font;
-import net.raphimc.thingl.text.shaper.ShapedTextSegment;
+import net.raphimc.thingl.text.shaping.ShapedTextSegment;
 import org.joml.Matrix4f;
 
 public class BitmapTextRenderer extends TextRenderer {

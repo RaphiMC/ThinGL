@@ -15,15 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.thingl.text.shaper.impl;
+package net.raphimc.thingl.text.shaping.impl;
 
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.text.TextRun;
 import net.raphimc.thingl.text.TextSegment;
 import net.raphimc.thingl.text.font.Font;
-import net.raphimc.thingl.text.shaper.ShapedTextRun;
-import net.raphimc.thingl.text.shaper.ShapedTextSegment;
-import net.raphimc.thingl.text.shaper.TextShaper;
+import net.raphimc.thingl.text.shaping.ShapedTextRun;
+import net.raphimc.thingl.text.shaping.ShapedTextSegment;
+import net.raphimc.thingl.text.shaping.TextShaper;
 import org.lwjgl.util.harfbuzz.HarfBuzz;
 import org.lwjgl.util.harfbuzz.hb_glyph_info_t;
 import org.lwjgl.util.harfbuzz.hb_glyph_position_t;
@@ -71,7 +71,7 @@ public class HarfBuzzTextShaper extends TextShaper {
         }
         final List<ShapedTextSegment> shapedTextSegments = new ArrayList<>(textRun.segments().size());
         for (TextSegment textSegment : textRun.segments()) {
-            shapedTextSegments.add(new ShapedTextSegment(new ArrayList<>(textSegment.text().length()), textSegment.color(), textSegment.styleFlags(), textSegment.outlineColor(), textSegment.xVisualOffset(), textSegment.yVisualOffset()));
+            shapedTextSegments.add(new ShapedTextSegment(new ArrayList<>(textSegment.text().length()), textSegment.color(), textSegment.styleFlags(), textSegment.outlineColor(), textSegment.visualOffset()));
         }
         float x = 0F;
         float y = 0F;
@@ -79,16 +79,16 @@ public class HarfBuzzTextShaper extends TextShaper {
             final hb_glyph_info_t info = infos.get(i);
             final hb_glyph_position_t position = positions.get(i);
             final Font.Glyph fontGlyph = textRun.font().getGlyphByIndex(info.codepoint());
-            shapedTextSegments.get(info.cluster()).glyphs().add(new Glyph(fontGlyph, x + position.x_offset() / 64F, y + position.y_offset() / 64F));
+            shapedTextSegments.get(info.cluster()).glyphs().add(new Glyph(fontGlyph, x + position.x_offset() / 64F, y - position.y_offset() / 64F));
             x += position.x_advance() / 64F;
-            y += position.y_advance() / 64F;
+            y -= position.y_advance() / 64F;
         }
-        for (ShapedTextSegment shapedTextSegment : shapedTextSegments) {
-            shapedTextSegment.calculateBounds();
+        for (ShapedTextSegment textSegment : shapedTextSegments) {
+            textSegment.calculateBounds();
         }
 
         HarfBuzz.hb_buffer_destroy(hbBuffer);
-        return new ShapedTextRun(textRun.font(), shapedTextSegments, textRun.xOffset(), textRun.yOffset(), x, y);
+        return new ShapedTextRun(textRun.font(), shapedTextSegments);
     }
 
 }

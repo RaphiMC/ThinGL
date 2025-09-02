@@ -15,37 +15,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.thingl.text.shaper;
+package net.raphimc.thingl.text.shaping;
 
 import org.joml.primitives.Rectanglef;
 
 import java.util.List;
 
-public record ShapedTextBuffer(List<ShapedTextRun> runs, Rectanglef bounds, Rectanglef fontBounds) {
+public record ShapedTextBlock(List<ShapedTextLine> lines, Rectanglef visualBounds, Rectanglef logicalBounds) {
 
-    public ShapedTextBuffer(final List<ShapedTextRun> runs) {
-        this(runs, new Rectanglef(), new Rectanglef());
+    public ShapedTextBlock(final List<ShapedTextLine> lines) {
+        this(lines, new Rectanglef(), new Rectanglef());
         this.calculateBounds();
     }
 
     public void calculateBounds() {
-        if (this.runs.isEmpty()) {
-            this.bounds.setMin(0F, 0F).setMax(0F, 0F);
-            this.fontBounds.setMin(0F, 0F).setMax(0F, 0F);
+        if (this.lines.isEmpty()) {
+            this.visualBounds.setMin(0F, 0F).setMax(0F, 0F);
+            this.logicalBounds.setMin(0F, 0F).setMax(0F, 0F);
             return;
         }
 
-        this.bounds.setMin(Float.MAX_VALUE, Float.MAX_VALUE).setMax(-Float.MAX_VALUE, -Float.MAX_VALUE);
-        this.fontBounds.setMin(Float.MAX_VALUE, Float.MAX_VALUE).setMax(-Float.MAX_VALUE, -Float.MAX_VALUE);
-        float x = 0F;
+        this.visualBounds.setMin(Float.MAX_VALUE, Float.MAX_VALUE).setMax(-Float.MAX_VALUE, -Float.MAX_VALUE);
+        this.logicalBounds.setMin(Float.MAX_VALUE, Float.MAX_VALUE).setMax(-Float.MAX_VALUE, -Float.MAX_VALUE);
         float y = 0F;
-        for (ShapedTextRun run : this.runs) {
-            x += run.xOffset();
-            y += run.yOffset();
-            this.bounds.union(run.bounds().translate(x, y, new Rectanglef()));
-            this.fontBounds.union(run.fontBounds().translate(x, y, new Rectanglef()));
-            x += run.nextRunX();
-            y += run.nextRunY();
+        for (ShapedTextLine line : this.lines) {
+            this.visualBounds.union(line.visualBounds().translate(0F, y, new Rectanglef()));
+            this.logicalBounds.union(line.logicalBounds().translate(0F, y, new Rectanglef()));
+            y += line.logicalBounds().lengthY();
         }
     }
 

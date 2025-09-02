@@ -18,8 +18,9 @@
 package net.raphimc.thingl.text;
 
 import net.lenni0451.commons.color.Color;
+import org.joml.Vector2f;
 
-public record TextSegment(String text, Color color, int styleFlags, Color outlineColor, float xVisualOffset, float yVisualOffset) {
+public record TextSegment(String text, Color color, int styleFlags, Color outlineColor, Vector2f visualOffset) {
 
     public static final int STYLE_SHADOW_BIT = 1 << 0;
     public static final int STYLE_BOLD_BIT = 1 << 1;
@@ -48,7 +49,7 @@ public record TextSegment(String text, Color color, int styleFlags, Color outlin
     }
 
     public TextSegment(final String text, final Color color, final int styleFlags, final Color outlineColor) {
-        this(text, color, styleFlags, outlineColor, 0F, 0F);
+        this(text, color, styleFlags, outlineColor, new Vector2f());
     }
 
     public TextSegment(final String text, final Color color, final int styleFlags) {

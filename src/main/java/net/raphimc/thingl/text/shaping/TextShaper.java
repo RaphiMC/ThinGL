@@ -15,9 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.thingl.text.shaper;
+package net.raphimc.thingl.text.shaping;
 
-import net.raphimc.thingl.text.TextBuffer;
+import net.raphimc.thingl.text.TextBlock;
+import net.raphimc.thingl.text.TextLine;
 import net.raphimc.thingl.text.TextRun;
 import net.raphimc.thingl.text.font.Font;
 
@@ -26,12 +27,20 @@ import java.util.List;
 
 public abstract class TextShaper {
 
-    public ShapedTextBuffer shape(final TextBuffer textBuffer) {
-        final List<ShapedTextRun> shapedTextRuns = new ArrayList<>(textBuffer.runs().size());
-        for (TextRun textRun : textBuffer.runs()) {
+    public ShapedTextBlock shape(final TextBlock textBlock) {
+        final List<ShapedTextLine> shapedTextLines = new ArrayList<>(textBlock.lines().size());
+        for (TextLine textLine : textBlock.lines()) {
+            shapedTextLines.add(this.shape(textLine));
+        }
+        return new ShapedTextBlock(shapedTextLines);
+    }
+
+    public ShapedTextLine shape(final TextLine textLine) {
+        final List<ShapedTextRun> shapedTextRuns = new ArrayList<>(textLine.runs().size());
+        for (TextRun textRun : textLine.runs()) {
             shapedTextRuns.add(this.shape(textRun));
         }
-        return new ShapedTextBuffer(shapedTextRuns);
+        return new ShapedTextLine(shapedTextRuns);
     }
 
     public abstract ShapedTextRun shape(final TextRun textRun);

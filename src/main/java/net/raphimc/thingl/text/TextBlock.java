@@ -18,46 +18,32 @@
 package net.raphimc.thingl.text;
 
 import net.lenni0451.commons.collections.Lists;
-import net.lenni0451.commons.color.Color;
-import net.raphimc.thingl.text.font.Font;
-import net.raphimc.thingl.text.shaping.ShapedTextRun;
+import net.raphimc.thingl.text.shaping.ShapedTextBlock;
 import net.raphimc.thingl.text.shaping.TextShaper;
 import net.raphimc.thingl.text.shaping.impl.BasicTextShaper;
 
 import java.util.List;
 
-public record TextRun(Font font, List<TextSegment> segments) {
+public record TextBlock(List<TextLine> lines) {
 
-    public static TextRun fromString(final Font font, final String text) {
-        return fromString(font, text, Color.WHITE);
+    public TextBlock(final TextLine... lines) {
+        this(Lists.arrayList(lines));
     }
 
-    public static TextRun fromString(final Font font, final String text, final Color color) {
-        return fromString(font, text, color, 0);
-    }
-
-    public static TextRun fromString(final Font font, final String text, final Color color, final int styleFlags) {
-        return new TextRun(font, new TextSegment(text, color, styleFlags));
-    }
-
-    public TextRun(final Font font, final TextSegment... segments) {
-        this(font, Lists.arrayList(segments));
-    }
-
-    public TextRun addSegment(final TextSegment segment) {
-        this.segments.add(segment);
+    public TextBlock addLine(final TextLine line) {
+        this.lines.add(line);
         return this;
     }
 
-    public TextRun add(final TextSegment segment) {
-        return this.addSegment(segment);
+    public TextBlock add(final TextLine line) {
+        return this.addLine(line);
     }
 
-    public ShapedTextRun shape() {
+    public ShapedTextBlock shape() {
         return this.shape(BasicTextShaper.INSTANCE);
     }
 
-    public ShapedTextRun shape(final TextShaper shaper) {
+    public ShapedTextBlock shape(final TextShaper shaper) {
         return shaper.shape(this);
     }
 

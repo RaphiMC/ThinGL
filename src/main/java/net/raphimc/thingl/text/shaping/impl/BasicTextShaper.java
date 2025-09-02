@@ -15,14 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.thingl.text.shaper.impl;
+package net.raphimc.thingl.text.shaping.impl;
 
 import net.raphimc.thingl.text.TextRun;
 import net.raphimc.thingl.text.TextSegment;
 import net.raphimc.thingl.text.font.Font;
-import net.raphimc.thingl.text.shaper.ShapedTextRun;
-import net.raphimc.thingl.text.shaper.ShapedTextSegment;
-import net.raphimc.thingl.text.shaper.TextShaper;
+import net.raphimc.thingl.text.shaping.ShapedTextRun;
+import net.raphimc.thingl.text.shaping.ShapedTextSegment;
+import net.raphimc.thingl.text.shaping.TextShaper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,6 @@ public class BasicTextShaper extends TextShaper {
     @Override
     public ShapedTextRun shape(final TextRun textRun) {
         float x = 0F;
-        final float y = 0F;
         final List<ShapedTextSegment> shapedTextSegments = new ArrayList<>(textRun.segments().size());
         for (TextSegment textSegment : textRun.segments()) {
             final String text = textSegment.text();
@@ -45,12 +44,12 @@ public class BasicTextShaper extends TextShaper {
                     i++;
                 }
                 final Font.Glyph fontGlyph = textRun.font().getGlyphByCodePoint(codePoint);
-                glyphs.add(new Glyph(fontGlyph, x, y));
+                glyphs.add(new Glyph(fontGlyph, x, 0F));
                 x += fontGlyph.xAdvance();
             }
-            shapedTextSegments.add(new ShapedTextSegment(glyphs, textSegment.color(), textSegment.styleFlags(), textSegment.outlineColor(), textSegment.xVisualOffset(), textSegment.yVisualOffset()));
+            shapedTextSegments.add(new ShapedTextSegment(glyphs, textSegment.color(), textSegment.styleFlags(), textSegment.outlineColor(), textSegment.visualOffset()));
         }
-        return new ShapedTextRun(textRun.font(), shapedTextSegments, textRun.xOffset(), textRun.yOffset(), x, y);
+        return new ShapedTextRun(textRun.font(), shapedTextSegments);
     }
 
 }

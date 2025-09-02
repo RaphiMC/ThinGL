@@ -21,36 +21,36 @@ import net.lenni0451.commons.collections.Lists;
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.text.font.Font;
 import net.raphimc.thingl.text.font.FontSet;
-import net.raphimc.thingl.text.shaper.ShapedTextBuffer;
-import net.raphimc.thingl.text.shaper.TextShaper;
-import net.raphimc.thingl.text.shaper.impl.BasicTextShaper;
+import net.raphimc.thingl.text.shaping.ShapedTextLine;
+import net.raphimc.thingl.text.shaping.TextShaper;
+import net.raphimc.thingl.text.shaping.impl.BasicTextShaper;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public record TextBuffer(List<TextRun> runs) {
+public record TextLine(List<TextRun> runs) {
 
-    public static TextBuffer fromString(final Font font, final String text) {
-        return new TextBuffer(TextRun.fromString(font, text));
+    public static TextLine fromString(final Font font, final String text) {
+        return new TextLine(TextRun.fromString(font, text));
     }
 
-    public static TextBuffer fromString(final Font font, final String text, final Color color) {
-        return new TextBuffer(TextRun.fromString(font, text, color));
+    public static TextLine fromString(final Font font, final String text, final Color color) {
+        return new TextLine(TextRun.fromString(font, text, color));
     }
 
-    public static TextBuffer fromString(final Font font, final String text, final Color color, final int styleFlags) {
-        return new TextBuffer(TextRun.fromString(font, text, color, styleFlags));
+    public static TextLine fromString(final Font font, final String text, final Color color, final int styleFlags) {
+        return new TextLine(TextRun.fromString(font, text, color, styleFlags));
     }
 
-    public static TextBuffer fromString(final FontSet fontSet, final String text) {
+    public static TextLine fromString(final FontSet fontSet, final String text) {
         return fromString(fontSet, text, Color.WHITE);
     }
 
-    public static TextBuffer fromString(final FontSet fontSet, final String text, final Color color) {
+    public static TextLine fromString(final FontSet fontSet, final String text, final Color color) {
         return fromString(fontSet, text, color, 0);
     }
 
-    public static TextBuffer fromString(final FontSet fontSet, final String text, final Color color, final int styleFlags) {
+    public static TextLine fromString(final FontSet fontSet, final String text, final Color color, final int styleFlags) {
         Font currentFont = fontSet.getMainFont();
         final StringBuilder currentText = new StringBuilder(text.length());
         final List<TextRun> runs = new ArrayList<>();
@@ -75,27 +75,27 @@ public record TextBuffer(List<TextRun> runs) {
         if (!currentText.isEmpty()) {
             runs.add(new TextRun(currentFont, new TextSegment(currentText.toString(), color, styleFlags)));
         }
-        return new TextBuffer(runs);
+        return new TextLine(runs);
     }
 
-    public TextBuffer(final TextRun... run) {
-        this(Lists.arrayList(run));
+    public TextLine(final TextRun... runs) {
+        this(Lists.arrayList(runs));
     }
 
-    public TextBuffer addRun(final TextRun run) {
+    public TextLine addRun(final TextRun run) {
         this.runs.add(run);
         return this;
     }
 
-    public TextBuffer add(final TextRun run) {
+    public TextLine add(final TextRun run) {
         return this.addRun(run);
     }
 
-    public ShapedTextBuffer shape() {
-        return BasicTextShaper.INSTANCE.shape(this);
+    public ShapedTextLine shape() {
+        return this.shape(BasicTextShaper.INSTANCE);
     }
 
-    public ShapedTextBuffer shape(final TextShaper shaper) {
+    public ShapedTextLine shape(final TextShaper shaper) {
         return shaper.shape(this);
     }
 

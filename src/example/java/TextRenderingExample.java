@@ -25,8 +25,8 @@ import net.raphimc.thingl.text.TextSegment;
 import net.raphimc.thingl.text.font.Font;
 import net.raphimc.thingl.text.renderer.BSDFTextRenderer;
 import net.raphimc.thingl.text.renderer.BitmapTextRenderer;
-import net.raphimc.thingl.text.shaper.ShapedTextRun;
-import net.raphimc.thingl.text.shaper.impl.HarfBuzzTextShaper;
+import net.raphimc.thingl.text.shaping.ShapedTextRun;
+import net.raphimc.thingl.text.shaping.impl.HarfBuzzTextShaper;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 
