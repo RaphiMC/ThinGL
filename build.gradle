@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly "org.jetbrains:annotations:26.0.2"
+    compileOnly "org.jetbrains:annotations:26.0.2-1"
     api("org.joml:joml:1.10.8") {
         exclude group: "org.jetbrains.kotlin" // https://github.com/JOML-CI/JOML/issues/352
     }
