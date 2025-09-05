@@ -9,7 +9,7 @@ plugins {
 
 repositories {
     maven {
-        name = "Lenni0451 Snapshots"
+        name = "Lenni0451"
         url = "https://maven.lenni0451.net/snapshots"
     }
     maven {
@@ -17,7 +17,7 @@ repositories {
         url = "https://jitpack.io"
 
         content {
-            includeGroup "com.github.RaphiMC"
+            includeGroupByRegex "com\\.github\\..+"
         }
     }
     maven {
