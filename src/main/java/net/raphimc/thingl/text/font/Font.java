@@ -19,11 +19,16 @@ package net.raphimc.thingl.text.font;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntObjectPair;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.text.FreeTypeLibrary;
 import net.raphimc.thingl.util.BufferUtil;
+import net.raphimc.thingl.util.ImageUtil;
 import org.joml.Vector2f;
 import org.lwjgl.PointerBuffer;
+import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL12C;
+import org.lwjgl.opengl.GL30C;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import org.lwjgl.util.freetype.*;
@@ -62,7 +67,7 @@ public class Font {
             try (MemoryStack memoryStack = MemoryStack.stackPush()) {
                 final PointerBuffer fontFaceBuffer = memoryStack.mallocPointer(1);
                 FreeTypeLibrary.checkError(FreeType.FT_New_Memory_Face(ThinGL.freeTypeLibrary().getPointer(), this.fontDataBuffer, 0L, fontFaceBuffer), "Failed to load font face");
-                this.fontFace = FT_Face.create(fontFaceBuffer.get());
+                this.fontFace = FT_Face.create(fontFaceBuffer.get(0));
 
                 FreeTypeLibrary.checkError(FreeType.FT_Set_Pixel_Sizes(this.fontFace, 0, size), "Failed to set font size");
                 FreeType.FT_Set_Transform(this.fontFace, null, FT_Vector.malloc(memoryStack).set(Math.round(shift.x * 64F), Math.round(-shift.y * 64F)));
@@ -110,27 +115,78 @@ public class Font {
         }
     }
 
-    public GlyphBitmap loadGlyphBitmap(final int glyphIndex, final boolean normal, final boolean sdf) {
-        FreeTypeLibrary.checkError(FreeType.FT_Load_Glyph(this.fontFace, glyphIndex, FreeType.FT_LOAD_DEFAULT), "Failed to load glyph");
+    public GlyphBitmap createGlyphBitmap(final int glyphIndex, final GlyphBitmap.RenderMode renderMode) {
+        int loadFlags = FreeType.FT_LOAD_DEFAULT;
+        if (renderMode == GlyphBitmap.RenderMode.PIXELATED || renderMode == GlyphBitmap.RenderMode.COLORED_PIXELATED) {
+            loadFlags |= FreeType.FT_FT_LOAD_TARGET_MONO;
+        }
+        if (renderMode == GlyphBitmap.RenderMode.COLORED_PIXELATED || renderMode == GlyphBitmap.RenderMode.COLORED_ANTIALIASED) {
+            loadFlags |= FreeType.FT_LOAD_COLOR;
+        }
+        FreeTypeLibrary.checkError(FreeType.FT_Load_Glyph(this.fontFace, glyphIndex, loadFlags), "Failed to load glyph");
         final FT_GlyphSlot glyphSlot = this.fontFace.glyph();
+        switch (renderMode) {
+            case PIXELATED, COLORED_PIXELATED -> FreeTypeLibrary.checkError(FreeType.FT_Render_Glyph(glyphSlot, FreeType.FT_RENDER_MODE_MONO), "Failed to render glyph");
+            case ANTIALIASED, COLORED_ANTIALIASED -> FreeTypeLibrary.checkError(FreeType.FT_Render_Glyph(glyphSlot, FreeType.FT_RENDER_MODE_NORMAL), "Failed to render glyph");
+            case BSDF -> {
+                FreeTypeLibrary.checkError(FreeType.FT_Render_Glyph(glyphSlot, FreeType.FT_RENDER_MODE_NORMAL), "Failed to render glyph");
+                FreeTypeLibrary.checkError(FreeType.FT_Render_Glyph(glyphSlot, FreeType.FT_RENDER_MODE_SDF), "Failed to render glyph");
+            }
+            case SDF -> FreeTypeLibrary.checkError(FreeType.FT_Render_Glyph(glyphSlot, FreeType.FT_RENDER_MODE_SDF), "Failed to render glyph");
+            default -> throw new IllegalArgumentException("Unsupported render mode: " + renderMode);
+        }
 
-        if (normal) {
-            FreeTypeLibrary.checkError(FreeType.FT_Render_Glyph(glyphSlot, FreeType.FT_RENDER_MODE_NORMAL), "Failed to render glyph");
-        }
-        if (sdf) {
-            FreeTypeLibrary.checkError(FreeType.FT_Render_Glyph(glyphSlot, FreeType.FT_RENDER_MODE_SDF), "Failed to render glyph");
-        }
         final FT_Bitmap bitmap = glyphSlot.bitmap();
-        if (bitmap.pixel_mode() != FreeType.FT_PIXEL_MODE_NONE && bitmap.pixel_mode() != FreeType.FT_PIXEL_MODE_GRAY) {
-            throw new IllegalStateException("Unsupported pixel mode: " + bitmap.pixel_mode());
+        final int pixelMode = bitmap.pixel_mode();
+        final int pitch = bitmap.pitch();
+        final int width = bitmap.width();
+        final int rows = bitmap.rows();
+        if (pixelMode == FreeType.FT_PIXEL_MODE_NONE || width <= 0 || rows <= 0) {
+            return null;
+        }
+        final ByteBuffer buffer = bitmap.buffer(Math.abs(pitch) * rows);
+        if (buffer == null) {
+            return null;
         }
 
-        final int width = bitmap.width();
-        final int height = bitmap.rows();
+        final IntObjectPair<ByteBuffer> pixelData = switch (pixelMode) {
+            case FreeType.FT_PIXEL_MODE_MONO -> switch (renderMode) {
+                case PIXELATED -> IntObjectPair.of(GL11C.GL_RED, ImageUtil.convertMonochromeToGrayscale(buffer, width, rows, pitch));
+                case COLORED_PIXELATED -> {
+                    final ByteBuffer grayscaleBuffer = ImageUtil.convertMonochromeToGrayscale(buffer, width, rows, pitch);
+                    final ByteBuffer argbBuffer = ImageUtil.convertGrayscaleToARGB(grayscaleBuffer, width, rows);
+                    MemoryUtil.memFree(grayscaleBuffer);
+                    yield IntObjectPair.of(GL12C.GL_BGRA, argbBuffer);
+                }
+                default -> throw new IllegalStateException("Unsupported render mode for monochrome glyph: " + renderMode);
+            };
+            case FreeType.FT_PIXEL_MODE_GRAY -> switch (renderMode) {
+                case ANTIALIASED, BSDF, SDF -> {
+                    if (pitch == width) {
+                        yield IntObjectPair.of(GL11C.GL_RED, BufferUtil.createCopy(buffer));
+                    } else {
+                        throw new IllegalStateException("Unsupported pitch: " + pitch + " (width: " + width + ")");
+                    }
+                }
+                case COLORED_ANTIALIASED -> IntObjectPair.of(GL12C.GL_BGRA, ImageUtil.convertGrayscaleToARGB(buffer, width, rows, pitch));
+                default -> throw new IllegalStateException("Unsupported render mode for grayscale glyph: " + renderMode);
+            };
+            case FreeType.FT_PIXEL_MODE_BGRA -> switch (renderMode) {
+                case COLORED_PIXELATED, COLORED_ANTIALIASED -> {
+                    if (pitch == width * 4) {
+                        yield IntObjectPair.of(GL12C.GL_BGRA, BufferUtil.createCopy(buffer));
+                    } else {
+                        throw new IllegalStateException("Unsupported pitch: " + pitch + " (width: " + width + ")");
+                    }
+                }
+                default -> throw new IllegalStateException("Unsupported render mode for color glyph: " + renderMode);
+            };
+            default -> throw new IllegalStateException("Unsupported pixel mode: " + pixelMode);
+        };
+
         final int xOffset = glyphSlot.bitmap_left();
         final int yOffset = -glyphSlot.bitmap_top();
-        final ByteBuffer pixelBuffer = bitmap.buffer(width * height);
-        return new GlyphBitmap(pixelBuffer, width, height, xOffset, yOffset);
+        return new GlyphBitmap(width, rows, xOffset, yOffset, pixelData.leftInt(), pixelData.right());
     }
 
     public void free() {
@@ -220,7 +276,36 @@ public class Font {
     public record Glyph(Font font, int glyphIndex, float width, float height, float xAdvance, float bearingX, float bearingY) {
     }
 
-    public record GlyphBitmap(ByteBuffer pixelBuffer, int width, int height, int xOffset, int yOffset) {
+    public record GlyphBitmap(int width, int height, int xOffset, int yOffset, int pixelFormat, ByteBuffer pixelBuffer) {
+
+        public enum RenderMode {
+
+            PIXELATED(GL30C.GL_R8, GL11C.GL_NEAREST),
+            COLORED_PIXELATED(GL11C.GL_RGBA8, GL11C.GL_NEAREST),
+            ANTIALIASED(GL30C.GL_R8, GL11C.GL_LINEAR),
+            COLORED_ANTIALIASED(GL11C.GL_RGBA8, GL11C.GL_LINEAR),
+            BSDF(GL30C.GL_R8, GL11C.GL_LINEAR),
+            SDF(GL30C.GL_R8, GL11C.GL_LINEAR),
+            ;
+
+            private final int textureFormat;
+            private final int textureFilter;
+
+            RenderMode(final int textureFormat, final int textureFilter) {
+                this.textureFormat = textureFormat;
+                this.textureFilter = textureFilter;
+            }
+
+            public int getTextureFormat() {
+                return this.textureFormat;
+            }
+
+            public int getTextureFilter() {
+                return this.textureFilter;
+            }
+
+        }
+
     }
 
 }

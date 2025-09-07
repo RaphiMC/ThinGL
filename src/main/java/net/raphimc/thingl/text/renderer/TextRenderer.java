@@ -35,8 +35,7 @@ import net.raphimc.thingl.text.shaping.*;
 import net.raphimc.thingl.texture.StaticAtlasTexture;
 import net.raphimc.thingl.util.rectpack.Slot;
 import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL11C;
-import org.lwjgl.opengl.GL30C;
+import org.lwjgl.system.MemoryUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,14 +49,18 @@ public abstract class TextRenderer {
 
     private static final int ATLAS_SIZE = 1024;
 
-    private final DrawBatch textDrawBatch;
+    private final DrawBatch drawBatch;
+    private final Font.GlyphBitmap.RenderMode glyphRenderMode;
     private final List<StaticAtlasTexture> glyphAtlases = new ArrayList<>();
     private final Reference2ObjectMap<Font.Glyph, AtlasGlyph> atlasGlyphs = new Reference2ObjectOpenHashMap<>();
     private float globalScale = 1F;
 
-    public TextRenderer(final Supplier<Program> program) {
-        this.textDrawBatch = new DrawBatch.Builder(BuiltinDrawBatches.TEXTURE_SNIPPET)
-                .program(program)
+    public TextRenderer(final Supplier<Program> program, final Font.GlyphBitmap.RenderMode glyphRenderMode) {
+        this(new DrawBatch.Builder(BuiltinDrawBatches.TEXTURE_SNIPPET).program(program).build(), glyphRenderMode);
+    }
+
+    public TextRenderer(final DrawBatch drawBatch, final Font.GlyphBitmap.RenderMode glyphRenderMode) {
+        this.drawBatch = new DrawBatch.Builder(drawBatch)
                 .appendSetupAction(p -> {
                     final int[] textureIds = new int[this.glyphAtlases.size()];
                     for (int i = 0; i < this.glyphAtlases.size(); i++) {
@@ -66,6 +69,7 @@ public abstract class TextRenderer {
                     p.setUniformSamplerArray("u_Textures", textureIds);
                 })
                 .build();
+        this.glyphRenderMode = glyphRenderMode;
     }
 
     public void renderTextBlock(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextBlock textBlock, final float x, float y, final float z) {
@@ -96,8 +100,12 @@ public abstract class TextRenderer {
         this.glyphAtlases.forEach(StaticAtlasTexture::free);
     }
 
-    public DrawBatch getTextDrawBatch() {
-        return this.textDrawBatch;
+    public DrawBatch getDrawBatch() {
+        return this.drawBatch;
+    }
+
+    public Font.GlyphBitmap.RenderMode getGlyphRenderMode() {
+        return this.glyphRenderMode;
     }
 
     public float getGlobalScale() {
@@ -138,14 +146,14 @@ public abstract class TextRenderer {
     protected abstract void renderTextSegment(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextSegment textSegment, final float x, final float y, final float z);
 
     protected void renderTextSegment(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextSegment textSegment, final float x, final float y, final float z, final int textDataIndex) {
-        final DrawBatchDataHolder drawBatchDataHolder = multiDrawBatchDataHolder.getDrawBatchDataHolder(this.textDrawBatch);
+        final DrawBatchDataHolder drawBatchDataHolder = multiDrawBatchDataHolder.getDrawBatchDataHolder(this.drawBatch);
         final VertexDataHolder vertexDataHolder = drawBatchDataHolder.getVertexDataHolder();
         final ShaderDataHolder glyphDataHolder = drawBatchDataHolder.getShaderStorageDataHolder("ssbo_GlyphData", Std430ShaderDataHolder.SUPPLIER).ensureInTopLevelArray();
 
         for (TextShaper.Glyph shapedGlyph : textSegment.glyphs()) {
             final Font.Glyph fontGlyph = shapedGlyph.fontGlyph();
             final AtlasGlyph atlasGlyph = this.getAtlasGlyph(fontGlyph);
-            if (atlasGlyph.atlasIndex() != -1) {
+            if (atlasGlyph != null) {
                 final float glyphX = shapedGlyph.x() * this.globalScale;
                 final float glyphY = shapedGlyph.y() * this.globalScale;
                 this.renderGlyph(positionMatrix, vertexDataHolder, glyphDataHolder, atlasGlyph, x + glyphX, y + glyphY, z, textSegment.styleFlags(), textDataIndex);
@@ -202,25 +210,26 @@ public abstract class TextRenderer {
     }
 
     private AtlasGlyph createAtlasGlyph(final Font.Glyph fontGlyph) {
-        final Font.GlyphBitmap glyphBitmap = this.createGlyphBitmap(fontGlyph);
-
-        if (glyphBitmap.pixelBuffer() == null) {
-            return new AtlasGlyph(-1, 0F, 0F, 0F, 0F, glyphBitmap.width(), glyphBitmap.height(), glyphBitmap.xOffset(), glyphBitmap.yOffset());
+        final Font.GlyphBitmap glyphBitmap = fontGlyph.font().createGlyphBitmap(fontGlyph.glyphIndex(), this.glyphRenderMode);
+        if (glyphBitmap == null) {
+            return null;
         }
 
         Slot atlasSlot = null;
         StaticAtlasTexture atlas = null;
         for (int i = 0; i <= this.glyphAtlases.size(); i++) {
             if (i == this.glyphAtlases.size()) {
-                atlas = new StaticAtlasTexture(GL30C.GL_R8, ATLAS_SIZE, ATLAS_SIZE);
+                atlas = new StaticAtlasTexture(this.glyphRenderMode.getTextureFormat(), ATLAS_SIZE, ATLAS_SIZE);
+                atlas.setFilter(this.glyphRenderMode.getTextureFilter());
             } else {
                 atlas = this.glyphAtlases.get(i);
             }
-            atlasSlot = atlas.addSlot(glyphBitmap.width(), glyphBitmap.height(), GL11C.GL_RED, glyphBitmap.pixelBuffer());
+            atlasSlot = atlas.addSlot(glyphBitmap.width(), glyphBitmap.height(), glyphBitmap.pixelFormat(), glyphBitmap.pixelBuffer());
             if (atlasSlot != null) {
                 break;
             }
         }
+        MemoryUtil.memFree(glyphBitmap.pixelBuffer());
         if (atlasSlot == null) { // Should never happen
             throw new IllegalStateException("Failed to find a free slot for glyph in atlas");
         }
@@ -230,8 +239,6 @@ public abstract class TextRenderer {
 
         return new AtlasGlyph(this.glyphAtlases.indexOf(atlas), atlasSlot.u1(), atlasSlot.v1(), atlasSlot.u2(), atlasSlot.v2(), glyphBitmap.width(), glyphBitmap.height(), glyphBitmap.xOffset(), glyphBitmap.yOffset());
     }
-
-    protected abstract Font.GlyphBitmap createGlyphBitmap(final Font.Glyph fontGlyph);
 
     private record AtlasGlyph(int atlasIndex, float u1, float v1, float u2, float v2, float width, float height, float xOffset, float yOffset) {
     }

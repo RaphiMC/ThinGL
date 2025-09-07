@@ -23,8 +23,8 @@ import net.raphimc.thingl.renderer.impl.RendererText;
 import net.raphimc.thingl.text.TextRun;
 import net.raphimc.thingl.text.TextSegment;
 import net.raphimc.thingl.text.font.Font;
-import net.raphimc.thingl.text.renderer.BSDFTextRenderer;
 import net.raphimc.thingl.text.renderer.BitmapTextRenderer;
+import net.raphimc.thingl.text.renderer.SDFTextRenderer;
 import net.raphimc.thingl.text.shaping.ShapedTextRun;
 import net.raphimc.thingl.text.shaping.impl.HarfBuzzTextShaper;
 import org.joml.Matrix4f;
@@ -44,7 +44,7 @@ public class TextRenderingExample extends GLFWApplicationRunner {
 
     // Instead of creating a new RendererText instance, you can use ThinGL.rendererText() to get the default text renderer.
     private RendererText bitmapTextRenderer = new RendererText(new BitmapTextRenderer());
-    private RendererText sdfTextRenderer = new RendererText(new BSDFTextRenderer());
+    private RendererText sdfTextRenderer = new RendererText(new SDFTextRenderer());
     private Font robotoRegular;
     private ShapedTextRun multiColoredText;
 

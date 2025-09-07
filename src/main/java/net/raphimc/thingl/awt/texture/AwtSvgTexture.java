@@ -80,7 +80,7 @@ public class AwtSvgTexture extends AwtTexture2D {
         graphics.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
         graphics.setRenderingHint(SVGRenderingHints.KEY_IMAGE_ANTIALIASING, SVGRenderingHints.VALUE_IMAGE_ANTIALIASING_ON);
         graphics.setRenderingHint(SVGRenderingHints.KEY_CACHE_OFFSCREEN_IMAGE, SVGRenderingHints.VALUE_NO_CACHE);
-        document.render(null, graphics, new ViewBox(width, height));
+        document.render(null, graphics, new ViewBox(image.getWidth(), image.getHeight()));
         graphics.dispose();
         return image;
     }

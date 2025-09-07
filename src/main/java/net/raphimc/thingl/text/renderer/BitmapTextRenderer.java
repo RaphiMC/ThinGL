@@ -29,19 +29,23 @@ import org.joml.Matrix4f;
 public class BitmapTextRenderer extends TextRenderer {
 
     public BitmapTextRenderer() {
-        super(() -> ThinGL.programs().getBitmapText());
+        this(Font.GlyphBitmap.RenderMode.ANTIALIASED);
+    }
+
+    public BitmapTextRenderer(final Font.GlyphBitmap.RenderMode glyphRenderMode) {
+        super(() -> ThinGL.programs().getBitmapText(), glyphRenderMode);
     }
 
     @Override
     protected void renderTextSegment(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextSegment textSegment, final float x, final float y, float z) {
-        final ShaderDataHolder textDataHolder = multiDrawBatchDataHolder.getShaderStorageDataHolder(this.getTextDrawBatch(), "ssbo_TextData", Std430ShaderDataHolder.SUPPLIER).ensureInTopLevelArray();
+        final ShaderDataHolder textDataHolder = multiDrawBatchDataHolder.getShaderStorageDataHolder(this.getDrawBatch(), "ssbo_TextData", Std430ShaderDataHolder.SUPPLIER).ensureInTopLevelArray();
         final int regularTextDataIndex = textDataHolder.beginStruct(Integer.BYTES).putColor(textSegment.color()).endStructAndGetTopLevelArrayIndex();
 
         if ((textSegment.styleFlags() & TextSegment.STYLE_BOLD_BIT) != 0) {
             if (textSegment.outlineColor().getAlpha() == 0) {
                 this.renderTextSegmentOutline(positionMatrix, multiDrawBatchDataHolder, textSegment, x, y, z, regularTextDataIndex);
             } else {
-                // bold and outline isn't supported at the same time (yet). Use SDFTextRenderer/BSDFTextRenderer for that.
+                // bold and outline isn't supported at the same time (yet). Use SDFTextRenderer for that.
                 final int outlineTextDataIndex = textDataHolder.beginStruct(Integer.BYTES).putColor(textSegment.outlineColor()).endStructAndGetTopLevelArrayIndex();
                 this.renderTextSegmentOutline(positionMatrix, multiDrawBatchDataHolder, textSegment, x, y, z, outlineTextDataIndex);
             }
@@ -62,11 +66,6 @@ public class BitmapTextRenderer extends TextRenderer {
                 }
             }
         }
-    }
-
-    @Override
-    protected Font.GlyphBitmap createGlyphBitmap(final Font.Glyph fontGlyph) {
-        return fontGlyph.font().loadGlyphBitmap(fontGlyph.glyphIndex(), true, false);
     }
 
 }

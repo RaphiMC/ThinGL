@@ -33,7 +33,7 @@ import net.raphimc.thingl.renderer.impl.Renderer2D;
 import net.raphimc.thingl.renderer.impl.Renderer3D;
 import net.raphimc.thingl.renderer.impl.RendererText;
 import net.raphimc.thingl.text.FreeTypeLibrary;
-import net.raphimc.thingl.text.renderer.BSDFTextRenderer;
+import net.raphimc.thingl.text.renderer.SDFTextRenderer;
 import net.raphimc.thingl.util.SyncManager;
 import net.raphimc.thingl.util.pool.BufferBuilderPool;
 import net.raphimc.thingl.util.pool.FramebufferPool;
@@ -525,7 +525,7 @@ public class ThinGL {
     }
 
     protected RendererText createRendererText() {
-        return new RendererText(new BSDFTextRenderer());
+        return new RendererText(new SDFTextRenderer());
     }
 
     protected GlobalUniforms createGlobalUniforms() {

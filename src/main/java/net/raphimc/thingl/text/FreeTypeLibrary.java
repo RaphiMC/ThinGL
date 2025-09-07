@@ -47,12 +47,12 @@ public class FreeTypeLibrary {
         try (MemoryStack memoryStack = MemoryStack.stackPush()) {
             final PointerBuffer instanceBuffer = memoryStack.mallocPointer(1);
             checkError(FreeType.FT_Init_FreeType(instanceBuffer), "Failed to initialize FreeType library");
-            this.pointer = instanceBuffer.get();
+            this.pointer = instanceBuffer.get(0);
 
-            final ByteBuffer propertyBuffer = memoryStack.malloc(Integer.BYTES);
-            propertyBuffer.putInt(0, SDFTextRenderer.DF_PX_RANGE);
-            checkError(FreeType.FT_Property_Set(this.pointer, "sdf", "spread", propertyBuffer), "Failed to set SDF spread property");
-            checkError(FreeType.FT_Property_Set(this.pointer, "bsdf", "spread", propertyBuffer), "Failed to set BSDF spread property");
+            final ByteBuffer sdfSpreadPropertyBuffer = memoryStack.malloc(Integer.BYTES);
+            sdfSpreadPropertyBuffer.putInt(0, SDFTextRenderer.DF_PX_RANGE);
+            checkError(FreeType.FT_Property_Set(this.pointer, "sdf", "spread", sdfSpreadPropertyBuffer), "Failed to set SDF spread property");
+            checkError(FreeType.FT_Property_Set(this.pointer, "bsdf", "spread", sdfSpreadPropertyBuffer), "Failed to set BSDF spread property");
         }
     }
 

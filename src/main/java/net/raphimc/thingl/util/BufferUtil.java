@@ -83,4 +83,16 @@ public class BufferUtil {
         MemoryUtil.memFree(buffer);
     }
 
+    public static ByteBuffer createCopy(final ByteBuffer source) {
+        if (source == null) {
+            return null;
+        }
+        if (!source.isDirect()) {
+            throw new IllegalArgumentException("Source buffer must be a direct buffer");
+        }
+        final ByteBuffer copy = MemoryUtil.memAlloc(source.remaining());
+        MemoryUtil.memCopy(source, copy);
+        return copy;
+    }
+
 }
