@@ -17,12 +17,11 @@
  */
 package net.raphimc.thingl.implementation;
 
-import net.raphimc.thingl.util.RenderMathUtil;
+import org.joml.Options;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL30C;
 import org.lwjgl.opengl.NVFramebufferMixedSamples;
-import org.lwjgl.system.MemoryStack;
 
 public class Capabilities {
 
@@ -61,11 +60,10 @@ public class Capabilities {
             this.nvFramebufferMixedSamplesMaxRasterSamples = 0;
         }
 
-        this.supportsJomlUnsafe = tryRun(() -> {
-            try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-                RenderMathUtil.getIdentityMatrix().getToAddress(memoryStack.nmalloc(Float.BYTES * 4 * 4));
-            }
-        });
+        if (System.getProperty("os.name").startsWith("Mac")) {
+            System.setProperty("joml.nounsafe", "true");
+        }
+        this.supportsJomlUnsafe = !Options.NO_UNSAFE;
     }
 
     public void ensureFreeTypePresent() {
