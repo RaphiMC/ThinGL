@@ -21,9 +21,25 @@ import net.raphimc.thingl.resource.image.texture.Texture2D;
 import net.raphimc.thingl.resource.image.texture.Texture2DArray;
 import org.lwjgl.opengl.GL12C;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class AwtUtil {
+
+    public static void configureGraphics2DForMaximumQuality(final Graphics2D graphics) {
+        // General
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        graphics.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+        graphics.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+
+        // Shapes
+        graphics.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+
+        // Text
+        graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+    }
 
     public static void uploadBufferedImageToTexture2D(final Texture2D texture, final int x, final int y, final BufferedImage image) {
         final int[] pixels = new int[image.getWidth() * image.getHeight()];

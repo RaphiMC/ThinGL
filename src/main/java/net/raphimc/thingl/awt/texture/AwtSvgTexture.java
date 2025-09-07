@@ -24,6 +24,7 @@ import com.github.weisj.jsvg.parser.SVGLoader;
 import com.github.weisj.jsvg.renderer.SVGRenderingHints;
 import com.github.weisj.jsvg.view.ViewBox;
 import net.raphimc.thingl.ThinGL;
+import net.raphimc.thingl.awt.AwtUtil;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -76,8 +77,7 @@ public class AwtSvgTexture extends AwtTexture2D {
 
         final BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         final Graphics2D graphics = image.createGraphics();
-        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        graphics.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+        AwtUtil.configureGraphics2DForMaximumQuality(graphics);
         graphics.setRenderingHint(SVGRenderingHints.KEY_IMAGE_ANTIALIASING, SVGRenderingHints.VALUE_IMAGE_ANTIALIASING_ON);
         graphics.setRenderingHint(SVGRenderingHints.KEY_CACHE_OFFSCREEN_IMAGE, SVGRenderingHints.VALUE_NO_CACHE);
         document.render(null, graphics, new ViewBox(image.getWidth(), image.getHeight()));

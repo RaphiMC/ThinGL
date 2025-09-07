@@ -23,6 +23,7 @@ import net.raphimc.thingl.renderer.impl.RendererText;
 import net.raphimc.thingl.text.TextRun;
 import net.raphimc.thingl.text.TextSegment;
 import net.raphimc.thingl.text.font.Font;
+import net.raphimc.thingl.text.font.impl.FreeTypeFont;
 import net.raphimc.thingl.text.renderer.BitmapTextRenderer;
 import net.raphimc.thingl.text.renderer.SDFTextRenderer;
 import net.raphimc.thingl.text.shaping.ShapedTextRun;
@@ -53,7 +54,7 @@ public class TextRenderingExample extends GLFWApplicationRunner {
         super.init();
         try {
             final byte[] fontData = TextRenderingExample.class.getResourceAsStream("/fonts/Roboto-Regular.ttf").readAllBytes();
-            this.robotoRegular = new Font(fontData, 32);
+            this.robotoRegular = new FreeTypeFont(fontData, 32);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

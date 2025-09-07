@@ -23,6 +23,7 @@ import net.raphimc.thingl.implementation.instance.ThreadLocalInstanceManager;
 import net.raphimc.thingl.implementation.window.GLFWWindowInterface;
 import net.raphimc.thingl.text.TextRun;
 import net.raphimc.thingl.text.font.Font;
+import net.raphimc.thingl.text.font.impl.FreeTypeFont;
 import org.joml.Matrix4fStack;
 
 import java.io.IOException;
@@ -108,7 +109,7 @@ public class MultiWindowExample extends GLFWApplicationRunner {
             super.init();
             try {
                 final byte[] fontData = MultiWindowExample.class.getResourceAsStream("/fonts/Roboto-Regular.ttf").readAllBytes();
-                this.robotoRegular = new Font(fontData, 32);
+                this.robotoRegular = new FreeTypeFont(fontData, 32);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

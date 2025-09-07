@@ -174,12 +174,12 @@ public abstract class TextRenderer {
                 Primitives.filledRectangle(positionMatrix, multiDrawBatchDataHolder, x + textSegment.logicalBounds().minX * this.globalScale, lineY - halfLineThickness, x + textSegment.logicalBounds().maxX * this.globalScale, lineY + halfLineThickness, z, textColor);
             }
             if ((styleFlags & TextSegment.STYLE_STRIKETHROUGH_BIT) != 0) {
-                float lineThickness = font.getStrikethroughThickness() * this.globalScale;
+                float halfLineThickness = (font.getStrikethroughThickness() * this.globalScale) / 2F;
                 if ((styleFlags & TextSegment.STYLE_BOLD_BIT) != 0) {
-                    lineThickness *= 1.5F;
+                    halfLineThickness *= 1.5F;
                 }
                 final float lineY = y + font.getStrikethroughPosition() * this.globalScale;
-                Primitives.filledRectangle(positionMatrix, multiDrawBatchDataHolder, x + textSegment.logicalBounds().minX * this.globalScale, lineY, x + textSegment.logicalBounds().maxX * this.globalScale, lineY + lineThickness, z, textColor);
+                Primitives.filledRectangle(positionMatrix, multiDrawBatchDataHolder, x + textSegment.logicalBounds().minX * this.globalScale, lineY - halfLineThickness, x + textSegment.logicalBounds().maxX * this.globalScale, lineY + halfLineThickness, z, textColor);
             }
         }
     }
