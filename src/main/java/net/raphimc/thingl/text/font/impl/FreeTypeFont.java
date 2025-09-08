@@ -138,7 +138,7 @@ public class FreeTypeFont extends Font {
                 case COLORED_PIXELATED -> {
                     final ByteBuffer grayscaleBuffer = ImageUtil.convertMonochromeToGrayscale(buffer, width, rows, pitch);
                     final ByteBuffer argbBuffer = ImageUtil.convertGrayscaleToARGB(grayscaleBuffer, width, rows);
-                    MemoryUtil.memFree(grayscaleBuffer);
+                    BufferUtil.memFree(grayscaleBuffer);
                     yield IntObjectPair.of(GL12C.GL_BGRA, argbBuffer);
                 }
                 default -> throw new IllegalStateException("Unsupported render mode for monochrome glyph: " + renderMode);
