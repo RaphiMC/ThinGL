@@ -170,4 +170,25 @@ public class ImageUtil {
         return destinationPixelBuffer;
     }
 
+    public static ByteBuffer thresholdGrayscale(final ByteBuffer sourcePixelBuffer, final int alphaThreshold) {
+        return thresholdGrayscale(sourcePixelBuffer, alphaThreshold, true);
+    }
+
+    public static ByteBuffer thresholdGrayscale(final ByteBuffer sourcePixelBuffer, final int alphaThreshold, final boolean freeSource) {
+        return thresholdGrayscale(sourcePixelBuffer, alphaThreshold, freeSource, sourcePixelBuffer.isDirect());
+    }
+
+    public static ByteBuffer thresholdGrayscale(final ByteBuffer sourcePixelBuffer, final int alphaThreshold, final boolean freeSource, final boolean allocateDirect) {
+        final ByteBuffer destinationPixelBuffer = BufferUtil.memAlloc(sourcePixelBuffer.remaining(), allocateDirect);
+        for (int i = 0; i < sourcePixelBuffer.remaining(); i++) {
+            final int grayValue = sourcePixelBuffer.get(i) & 0xFF;
+            final byte newGrayValue = (byte) (grayValue >= alphaThreshold ? 255 : 0);
+            destinationPixelBuffer.put(i, newGrayValue);
+        }
+        if (freeSource && sourcePixelBuffer.isDirect()) {
+            BufferUtil.memFree(sourcePixelBuffer);
+        }
+        return destinationPixelBuffer;
+    }
+
 }
