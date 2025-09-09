@@ -9,8 +9,8 @@ flat in vec4 v_TextColor;
 out vec4 o_Color;
 
 void main() {
-    float intensity = texture(u_Textures[v_TextureIndex], v_TexCoord).r;
-    o_Color = vec4(v_TextColor.rgb, v_TextColor.a * intensity) * u_ColorModifier;
+    vec4 textureColor = texture(u_Textures[v_TextureIndex], v_TexCoord);
+    o_Color = textureColor * v_TextColor * u_ColorModifier;
     if (o_Color.a == 0) {
         discard;
     }

@@ -20,8 +20,6 @@ package net.raphimc.thingl.text.font;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.raphimc.thingl.ThinGL;
-import org.lwjgl.opengl.GL11C;
-import org.lwjgl.opengl.GL30C;
 import org.lwjgl.util.harfbuzz.HarfBuzz;
 
 import java.nio.ByteBuffer;
@@ -106,29 +104,12 @@ public abstract class Font {
 
         public enum RenderMode {
 
-            PIXELATED(GL30C.GL_R8, GL11C.GL_NEAREST),
-            COLORED_PIXELATED(GL11C.GL_RGBA8, GL11C.GL_NEAREST),
-            ANTIALIASED(GL30C.GL_R8, GL11C.GL_LINEAR),
-            COLORED_ANTIALIASED(GL11C.GL_RGBA8, GL11C.GL_LINEAR),
-            BSDF(GL30C.GL_R8, GL11C.GL_LINEAR),
-            SDF(GL30C.GL_R8, GL11C.GL_LINEAR),
-            ;
-
-            private final int textureFormat;
-            private final int textureFilter;
-
-            RenderMode(final int textureFormat, final int textureFilter) {
-                this.textureFormat = textureFormat;
-                this.textureFilter = textureFilter;
-            }
-
-            public int getTextureFormat() {
-                return this.textureFormat;
-            }
-
-            public int getTextureFilter() {
-                return this.textureFilter;
-            }
+            PIXELATED,
+            COLORED_PIXELATED,
+            ANTIALIASED,
+            COLORED_ANTIALIASED,
+            BSDF,
+            SDF,
 
         }
 

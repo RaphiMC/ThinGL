@@ -36,6 +36,9 @@ import net.raphimc.thingl.texture.StaticAtlasTexture;
 import net.raphimc.thingl.util.BufferUtil;
 import net.raphimc.thingl.util.rectpack.Slot;
 import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL30C;
+import org.lwjgl.opengl.GL33C;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -219,8 +222,26 @@ public abstract class TextRenderer {
         StaticAtlasTexture atlas = null;
         for (int i = 0; i <= this.glyphAtlases.size(); i++) {
             if (i == this.glyphAtlases.size()) {
-                atlas = new StaticAtlasTexture(this.glyphRenderMode.getTextureFormat(), ATLAS_SIZE, ATLAS_SIZE);
-                atlas.setFilter(this.glyphRenderMode.getTextureFilter());
+                atlas = switch (this.glyphRenderMode) {
+                    case PIXELATED -> {
+                        final StaticAtlasTexture atlasTexture = new StaticAtlasTexture(GL30C.GL_R8, ATLAS_SIZE, ATLAS_SIZE);
+                        atlasTexture.setFilter(GL11C.GL_NEAREST);
+                        atlasTexture.setParameterIntArray(GL33C.GL_TEXTURE_SWIZZLE_RGBA, new int[]{GL11C.GL_ONE, GL11C.GL_ONE, GL11C.GL_ONE, GL11C.GL_RED});
+                        yield atlasTexture;
+                    }
+                    case COLORED_PIXELATED -> {
+                        final StaticAtlasTexture atlasTexture = new StaticAtlasTexture(GL11C.GL_RGBA8, ATLAS_SIZE, ATLAS_SIZE);
+                        atlasTexture.setFilter(GL11C.GL_NEAREST);
+                        yield atlasTexture;
+                    }
+                    case ANTIALIASED -> {
+                        final StaticAtlasTexture atlasTexture = new StaticAtlasTexture(GL30C.GL_R8, ATLAS_SIZE, ATLAS_SIZE);
+                        atlasTexture.setParameterIntArray(GL33C.GL_TEXTURE_SWIZZLE_RGBA, new int[]{GL11C.GL_ONE, GL11C.GL_ONE, GL11C.GL_ONE, GL11C.GL_RED});
+                        yield atlasTexture;
+                    }
+                    case COLORED_ANTIALIASED -> new StaticAtlasTexture(GL11C.GL_RGBA8, ATLAS_SIZE, ATLAS_SIZE);
+                    case BSDF, SDF -> new StaticAtlasTexture(GL30C.GL_R8, ATLAS_SIZE, ATLAS_SIZE);
+                };
             } else {
                 atlas = this.glyphAtlases.get(i);
             }
