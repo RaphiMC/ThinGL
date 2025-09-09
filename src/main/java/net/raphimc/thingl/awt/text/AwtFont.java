@@ -17,8 +17,11 @@
  */
 package net.raphimc.thingl.awt.text;
 
+import it.unimi.dsi.fastutil.ints.IntObjectPair;
 import net.raphimc.thingl.awt.AwtUtil;
 import net.raphimc.thingl.text.font.Font;
+import net.raphimc.thingl.util.ImageUtil;
+import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL12C;
 import org.lwjgl.system.MemoryUtil;
 
@@ -56,6 +59,7 @@ public class AwtFont extends Font {
             this.graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
         }
         this.graphics.setFont(font);
+        this.graphics.setColor(Color.WHITE);
         this.fontMetrics = this.font.getLineMetrics("", this.graphics.getFontRenderContext());
         this.postScriptName = font.getPSName();
         this.familyName = font.getFamily();
@@ -75,18 +79,30 @@ public class AwtFont extends Font {
             default -> throw new IllegalArgumentException("Unsupported render mode: " + renderMode);
         }
 
-        this.graphics.setColor(Color.BLACK);
-        this.graphics.clearRect(0, 0, this.drawImage.getWidth(), this.drawImage.getHeight());
-        this.graphics.setColor(Color.WHITE);
+        this.graphics.setComposite(AlphaComposite.Clear);
+        this.graphics.fillRect(0, 0, this.drawImage.getWidth(), this.drawImage.getHeight());
+        this.graphics.setComposite(AlphaComposite.Src);
         this.graphics.drawGlyphVector(glyphVector, -glyph.bearingX(), -glyph.bearingY());
 
         final int width = (int) Math.ceil(glyph.width());
         final int height = (int) Math.ceil(glyph.height());
         final int[] pixels = new int[width * height];
         this.drawImage.getRGB(0, 0, width, height, pixels, 0, width);
-        final ByteBuffer pixelBuffer = MemoryUtil.memAlloc(pixels.length * Integer.BYTES);
-        pixelBuffer.order(ByteOrder.LITTLE_ENDIAN).asIntBuffer().put(pixels).flip();
-        return new GlyphBitmap(width, height, glyph.bearingX(), glyph.bearingY(), GL12C.GL_BGRA, pixelBuffer);
+        final IntObjectPair<ByteBuffer> pixelData = switch (renderMode) {
+            case PIXELATED, ANTIALIASED -> {
+                final ByteBuffer pixelBuffer = ByteBuffer.allocate(pixels.length * Integer.BYTES);
+                pixelBuffer.order(ByteOrder.BIG_ENDIAN).asIntBuffer().put(pixels).flip();
+                yield IntObjectPair.of(GL11C.GL_RED, ImageUtil.convertColorToGrayscale(pixelBuffer, width, height, 0, false, true));
+            }
+            case COLORED_PIXELATED, COLORED_ANTIALIASED -> {
+                final ByteBuffer pixelBuffer = MemoryUtil.memAlloc(pixels.length * Integer.BYTES);
+                pixelBuffer.order(ByteOrder.LITTLE_ENDIAN).asIntBuffer().put(pixels).flip();
+                yield IntObjectPair.of(GL12C.GL_BGRA, pixelBuffer);
+            }
+            default -> throw new IllegalArgumentException("Unsupported render mode: " + renderMode);
+        };
+
+        return new GlyphBitmap(width, height, glyph.bearingX(), glyph.bearingY(), pixelData.leftInt(), pixelData.right());
     }
 
     @Override

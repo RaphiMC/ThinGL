@@ -77,21 +77,38 @@ public class BufferUtil {
 
     /**
      * Wrapper method to call {@link MemoryUtil#memFree}. Needed for LWJGL 3.3.3 support.
+     *
      * @param buffer The buffer to free
      */
     public static void memFree(final java.nio.Buffer buffer) {
         MemoryUtil.memFree(buffer);
     }
 
-    public static ByteBuffer createCopy(final ByteBuffer source) {
+    public static ByteBuffer memAlloc(final int size, final boolean direct) {
+        if (direct) {
+            return MemoryUtil.memAlloc(size);
+        } else {
+            return ByteBuffer.allocate(size);
+        }
+    }
+
+    public static ByteBuffer memCopy(final ByteBuffer source) {
+        return memCopy(source, source.isDirect());
+    }
+
+    public static ByteBuffer memCopy(final ByteBuffer source, final boolean direct) {
         if (source == null) {
             return null;
         }
-        if (!source.isDirect()) {
-            throw new IllegalArgumentException("Source buffer must be a direct buffer");
+        final ByteBuffer copy = memAlloc(source.remaining(), direct);
+        if (source.isDirect() && direct) {
+            MemoryUtil.memCopy(source, copy);
+        } else {
+            final int position = source.position();
+            copy.put(source);
+            source.position(position);
+            copy.flip();
         }
-        final ByteBuffer copy = MemoryUtil.memAlloc(source.remaining());
-        MemoryUtil.memCopy(source, copy);
         return copy;
     }
 

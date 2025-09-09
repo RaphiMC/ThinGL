@@ -134,32 +134,45 @@ public class FreeTypeFont extends Font {
 
         final IntObjectPair<ByteBuffer> pixelData = switch (pixelMode) {
             case FreeType.FT_PIXEL_MODE_MONO -> switch (renderMode) {
-                case PIXELATED -> IntObjectPair.of(GL11C.GL_RED, ImageUtil.convertMonochromeToGrayscale(buffer, width, rows, pitch));
+                case PIXELATED -> {
+                    if (pitch == (width + 7) / 8) {
+                        yield IntObjectPair.of(GL11C.GL_RED, ImageUtil.convertMonochromeToGrayscale(buffer, width, rows, false));
+                    } else {
+                        yield IntObjectPair.of(GL11C.GL_RED, ImageUtil.convertMonochromeToGrayscale(ImageUtil.packMonochromeTightly(buffer, width, rows, pitch, false), width, rows));
+                    }
+                }
                 case COLORED_PIXELATED -> {
-                    final ByteBuffer grayscaleBuffer = ImageUtil.convertMonochromeToGrayscale(buffer, width, rows, pitch);
-                    final ByteBuffer argbBuffer = ImageUtil.convertGrayscaleToARGB(grayscaleBuffer, width, rows);
-                    BufferUtil.memFree(grayscaleBuffer);
-                    yield IntObjectPair.of(GL12C.GL_BGRA, argbBuffer);
+                    if (pitch == (width + 7) / 8) {
+                        yield IntObjectPair.of(GL12C.GL_BGRA, ImageUtil.convertGrayscaleToColor(ImageUtil.convertMonochromeToGrayscale(buffer, width, rows, false), width, rows, 3));
+                    } else {
+                        yield IntObjectPair.of(GL12C.GL_BGRA, ImageUtil.convertGrayscaleToColor(ImageUtil.convertMonochromeToGrayscale(ImageUtil.packMonochromeTightly(buffer, width, rows, pitch, false), width, rows), width, rows, 3));
+                    }
                 }
                 default -> throw new IllegalStateException("Unsupported render mode for monochrome glyph: " + renderMode);
             };
             case FreeType.FT_PIXEL_MODE_GRAY -> switch (renderMode) {
                 case ANTIALIASED, BSDF, SDF -> {
                     if (pitch == width) {
-                        yield IntObjectPair.of(GL11C.GL_RED, BufferUtil.createCopy(buffer));
+                        yield IntObjectPair.of(GL11C.GL_RED, BufferUtil.memCopy(buffer));
                     } else {
-                        throw new IllegalStateException("Unsupported pitch: " + pitch + " (width: " + width + ")");
+                        yield IntObjectPair.of(GL11C.GL_RED, ImageUtil.packTightly(buffer, width, rows, 1, pitch, false));
                     }
                 }
-                case COLORED_ANTIALIASED -> IntObjectPair.of(GL12C.GL_BGRA, ImageUtil.convertGrayscaleToARGB(buffer, width, rows, pitch));
+                case COLORED_ANTIALIASED -> {
+                    if (pitch == width) {
+                        yield IntObjectPair.of(GL12C.GL_BGRA, ImageUtil.convertGrayscaleToColor(buffer, width, rows, 3, false));
+                    } else {
+                        yield IntObjectPair.of(GL12C.GL_BGRA, ImageUtil.convertGrayscaleToColor(ImageUtil.packTightly(buffer, width, rows, 1, pitch, false), width, rows, 3));
+                    }
+                }
                 default -> throw new IllegalStateException("Unsupported render mode for grayscale glyph: " + renderMode);
             };
             case FreeType.FT_PIXEL_MODE_BGRA -> switch (renderMode) {
                 case COLORED_PIXELATED, COLORED_ANTIALIASED -> {
-                    if (pitch == width * 4) {
-                        yield IntObjectPair.of(GL12C.GL_BGRA, BufferUtil.createCopy(buffer));
+                    if (pitch == width * Integer.BYTES) {
+                        yield IntObjectPair.of(GL12C.GL_BGRA, ImageUtil.revertPreMultipliedAlphaBGRA(buffer, false));
                     } else {
-                        throw new IllegalStateException("Unsupported pitch: " + pitch + " (width: " + width + ")");
+                        yield IntObjectPair.of(GL12C.GL_BGRA, ImageUtil.revertPreMultipliedAlphaBGRA(ImageUtil.packTightly(buffer, width, rows, Integer.BYTES, pitch, false)));
                     }
                 }
                 default -> throw new IllegalStateException("Unsupported render mode for color glyph: " + renderMode);
@@ -167,9 +180,7 @@ public class FreeTypeFont extends Font {
             default -> throw new IllegalStateException("Unsupported pixel mode: " + pixelMode);
         };
 
-        final int xOffset = glyphSlot.bitmap_left();
-        final int yOffset = -glyphSlot.bitmap_top();
-        return new GlyphBitmap(width, rows, xOffset, yOffset, pixelData.leftInt(), pixelData.right());
+        return new GlyphBitmap(width, rows, glyphSlot.bitmap_left(), -glyphSlot.bitmap_top(), pixelData.leftInt(), pixelData.right());
     }
 
     @Override
