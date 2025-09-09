@@ -66,12 +66,11 @@ public class AwtFont extends Font {
     }
 
     @Override
-    public GlyphBitmap createGlyphBitmap(final int glyphIndex, final GlyphBitmap.RenderMode renderMode) {
-        final GlyphVector glyphVector = this.font.createGlyphVector(this.graphics.getFontRenderContext(), new int[]{glyphIndex});
+    public GlyphBitmap createGlyphBitmap(final Glyph glyph, final GlyphBitmap.RenderMode renderMode) {
+        final GlyphVector glyphVector = this.font.createGlyphVector(this.graphics.getFontRenderContext(), new int[]{glyph.glyphIndex()});
         if (glyphVector.getNumGlyphs() != 1) {
-            throw new IllegalStateException("Glyph vector for glyph index " + glyphIndex + " does not map to exactly one glyph");
+            throw new IllegalStateException("Glyph vector for glyph index " + glyph.glyphIndex() + " does not map to exactly one glyph");
         }
-        final Glyph glyph = this.getGlyphByIndex(glyphIndex);
 
         switch (renderMode) {
             case PIXELATED, COLORED_PIXELATED -> this.graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);

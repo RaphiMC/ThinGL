@@ -213,7 +213,7 @@ public abstract class TextRenderer {
     }
 
     private AtlasGlyph createAtlasGlyph(final Font.Glyph fontGlyph) {
-        final Font.GlyphBitmap glyphBitmap = fontGlyph.font().createGlyphBitmap(fontGlyph.glyphIndex(), this.glyphRenderMode);
+        final Font.GlyphBitmap glyphBitmap = fontGlyph.font().createGlyphBitmap(fontGlyph, this.glyphRenderMode);
         if (glyphBitmap == null) {
             return null;
         }

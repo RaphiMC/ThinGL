@@ -98,7 +98,7 @@ public class FreeTypeFont extends Font {
     }
 
     @Override
-    public GlyphBitmap createGlyphBitmap(final int glyphIndex, final GlyphBitmap.RenderMode renderMode) {
+    public GlyphBitmap createGlyphBitmap(final Glyph glyph, final GlyphBitmap.RenderMode renderMode) {
         int loadFlags = this.glyphLoadFlags;
         if (renderMode == GlyphBitmap.RenderMode.PIXELATED || renderMode == GlyphBitmap.RenderMode.COLORED_PIXELATED) {
             loadFlags |= FreeType.FT_FT_LOAD_TARGET_MONO;
@@ -106,7 +106,7 @@ public class FreeTypeFont extends Font {
         if (renderMode == GlyphBitmap.RenderMode.COLORED_PIXELATED || renderMode == GlyphBitmap.RenderMode.COLORED_ANTIALIASED) {
             loadFlags |= FreeType.FT_LOAD_COLOR;
         }
-        FreeTypeLibrary.checkError(FreeType.FT_Load_Glyph(this.fontFace, glyphIndex, loadFlags), "Failed to load glyph");
+        FreeTypeLibrary.checkError(FreeType.FT_Load_Glyph(this.fontFace, glyph.glyphIndex(), loadFlags), "Failed to load glyph");
         final FT_GlyphSlot glyphSlot = this.fontFace.glyph();
         switch (renderMode) {
             case PIXELATED, COLORED_PIXELATED -> FreeTypeLibrary.checkError(FreeType.FT_Render_Glyph(glyphSlot, FreeType.FT_RENDER_MODE_MONO), "Failed to render glyph");

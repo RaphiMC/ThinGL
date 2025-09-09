@@ -53,7 +53,7 @@ public abstract class Font {
         }
     }
 
-    public abstract GlyphBitmap createGlyphBitmap(final int glyphIndex, final GlyphBitmap.RenderMode renderMode);
+    public abstract GlyphBitmap createGlyphBitmap(final Glyph glyph, final GlyphBitmap.RenderMode renderMode);
 
     public void free() {
         if (this.harfBuzzInstance != 0L) {
