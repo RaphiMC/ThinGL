@@ -25,7 +25,6 @@ import net.lenni0451.commons.math.shapes.triangle.TriangleI;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.drawbuilder.BuiltinDrawBatches;
 import net.raphimc.thingl.drawbuilder.DrawBatch;
-import net.raphimc.thingl.drawbuilder.builder.BufferBuilder;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.IndexDataHolder;
 import net.raphimc.thingl.drawbuilder.databuilder.holder.VertexDataHolder;
 import net.raphimc.thingl.renderer.Primitives;
@@ -38,10 +37,8 @@ import org.joml.Vector2d;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.primitives.*;
-import org.lwjgl.system.MemoryStack;
-import org.lwjgl.util.par.*;
 
-import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.IntFunction;
 
@@ -484,42 +481,46 @@ public class Renderer2D extends Renderer {
         this.drawIfNotBuffering();
     }
 
-    public void connectedLine(final Matrix4f positionMatrix, final List<Vector2f> points, final float width, final Color color) {
-        this.connectedLine(positionMatrix, points, width, color, false);
-    }
-
-    public void connectedLine(final Matrix4f positionMatrix, final List<Vector2f> points, final float width, final Color color, final boolean closedLoop) {
-        ThinGL.capabilities().ensureParPresent();
+    public void polyLine(final Matrix4f positionMatrix, final List<Vector2f> points, final float width, final Color color) {
         final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(BuiltinDrawBatches.INDEXED_COLOR_TRIANGLE);
         final IndexDataHolder indexDataHolder = this.targetMultiDrawBatchDataHolder.getIndexDataHolder(BuiltinDrawBatches.INDEXED_COLOR_TRIANGLE);
+        float halfWidth = width * 0.5F;
+        float maxMiterLength = halfWidth * 10F;
         final int abgrColor = color.toABGR();
 
-        try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-            final ParSLConfig config = ParSLConfig.calloc(memoryStack).thickness(width).miter_limit(width * 10F);
-            final long ctx = ParStreamlines.parsl_create_context(config);
-
-            final BufferBuilder positionsBuilder = new BufferBuilder(memoryStack, points.size() * Float.BYTES * 2);
-            for (Vector2f point : points) {
-                positionsBuilder.putVector2f(point);
+        for (int i = 0; i < points.size(); i++) {
+            final Vector2f curr = points.get(i);
+            int prevIndex = i - 1;
+            while (prevIndex >= 0 && points.get(prevIndex).equals(curr)) {
+                prevIndex--;
             }
-
-            final ParSLSpineList lineList = ParSLSpineList.malloc(memoryStack).set(new ParSLPosition.Buffer(positionsBuilder.finish()), memoryStack.shorts((short) points.size()), closedLoop);
-            final ParSLMesh mesh = ParStreamlines.parsl_mesh_from_lines(ctx, lineList);
-
-            final int vertexCount = mesh.num_vertices();
-            final ParSLPosition.Buffer verticesBuffer = mesh.positions();
-            for (int i = 0; i < vertexCount; i++) {
-                final ParSLPosition position = verticesBuffer.get(i);
-                vertexDataHolder.putVector3f(positionMatrix, position.x(), position.y(), 0F).putColor(abgrColor).endVertex();
+            final Vector2f prev = prevIndex >= 0 ? points.get(prevIndex) : curr;
+            int nextIndex = i + 1;
+            while (nextIndex < points.size() && points.get(nextIndex).equals(curr)) {
+                nextIndex++;
             }
+            final Vector2f next = nextIndex < points.size() ? points.get(nextIndex) : curr;
+            final Vector2f dirPrev = (prev.equals(curr) ? new Vector2f(next).sub(curr) : new Vector2f(curr).sub(prev)).normalize();
+            final Vector2f dirNext = (next.equals(curr) ? new Vector2f(curr).sub(prev) : new Vector2f(next).sub(curr)).normalize();
 
-            final int triangleCount = mesh.num_triangles();
-            final IntBuffer indicesBuffer = mesh.triangle_indices(triangleCount * 3);
-            for (int i = 0; i < indicesBuffer.capacity(); i++) {
-                indexDataHolder.putIndex(indicesBuffer.get(i));
-            }
+            final Vector2f tangent = new Vector2f(dirPrev).add(dirNext).normalize().perpendicular().mul(-1F);
+            final float dot = tangent.dot(dirPrev.perpendicular().mul(-1F));
+            tangent.mul(Math.min(halfWidth / dot, maxMiterLength));
 
-            ParStreamlines.parsl_destroy_context(ctx);
+            vertexDataHolder.putVector3f(positionMatrix, curr.x + tangent.x, curr.y + tangent.y, 0F).putColor(abgrColor).endVertex();
+            vertexDataHolder.putVector3f(positionMatrix, curr.x - tangent.x, curr.y - tangent.y, 0F).putColor(abgrColor).endVertex();
+        }
+        for (int i = 0; i < points.size() - 1; i++) {
+            final int i0 = i * 2;
+            final int i1 = i0 + 1;
+            final int i2 = i0 + 2;
+            final int i3 = i0 + 3;
+            indexDataHolder.putIndex(i0);
+            indexDataHolder.putIndex(i2);
+            indexDataHolder.putIndex(i1);
+            indexDataHolder.putIndex(i2);
+            indexDataHolder.putIndex(i3);
+            indexDataHolder.putIndex(i1);
         }
 
         this.drawIfNotBuffering();
@@ -661,6 +662,27 @@ public class Renderer2D extends Renderer {
         final VertexDataHolder vertexDataHolder = this.targetMultiDrawBatchDataHolder.getVertexDataHolder(this.colorizedTextureQuad.apply(texture.getGlId()));
         this.coloredTexture(positionMatrix, vertexDataHolder, x, y, width, height, u, v, uWidth, vHeight, color);
         this.drawIfNotBuffering();
+    }
+
+    @Deprecated(forRemoval = true)
+    public void connectedLine(final Matrix4f positionMatrix, final List<Vector2f> points, final float width, final Color color) {
+        this.connectedLine(positionMatrix, points, width, color, false);
+    }
+
+    @Deprecated(forRemoval = true)
+    public void connectedLine(final Matrix4f positionMatrix, final List<Vector2f> points, final float width, final Color color, final boolean closedLoop) {
+        if (points.isEmpty()) {
+            return;
+        }
+
+        if (closedLoop) {
+            final List<Vector2f> newPoints = new ArrayList<>(points.size() + 1);
+            newPoints.addAll(points);
+            newPoints.add(points.get(0));
+            this.polyLine(positionMatrix, newPoints, width, color);
+        } else {
+            this.polyLine(positionMatrix, points, width, color);
+        }
     }
 
 }

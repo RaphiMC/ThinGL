@@ -28,7 +28,6 @@ public class Capabilities {
     private final boolean isFreeTypePresent;
     private final boolean isHarfBuzzPresent;
     private final boolean isMeshOptimizerPresent;
-    private final boolean isParPresent;
     private final boolean isEarcut4jPresent;
     private final boolean isGifReaderPresent;
     private final boolean isTwelveMonkeysWebpReaderPresent;
@@ -44,7 +43,6 @@ public class Capabilities {
         this.isFreeTypePresent = isClassPresent("org.lwjgl.util.freetype.FreeType");
         this.isHarfBuzzPresent = isClassPresent("org.lwjgl.util.harfbuzz.HarfBuzz");
         this.isMeshOptimizerPresent = isClassPresent("org.lwjgl.util.meshoptimizer.LibMeshOptimizer");
-        this.isParPresent = isClassPresent("org.lwjgl.util.par.LibPar");
         this.isEarcut4jPresent = isClassPresent("earcut4j.Earcut");
         this.isGifReaderPresent = isClassPresent("com.ibasco.image.gif.GifImageReader");
         this.isTwelveMonkeysWebpReaderPresent = isClassPresent("com.twelvemonkeys.imageio.plugins.webp.WebPImageReader");
@@ -84,12 +82,6 @@ public class Capabilities {
         }
     }
 
-    public void ensureParPresent() {
-        if (!this.isParPresent) {
-            throw new UnsupportedOperationException("Par is not present. Please add the LWJGL Par module to your project.");
-        }
-    }
-
     public void ensureEarcut4jPresent() {
         if (!this.isEarcut4jPresent) {
             throw new UnsupportedOperationException("Earcut4j is not present. Please add https://github.com/earcut4j/earcut4j to your project.");
@@ -124,10 +116,6 @@ public class Capabilities {
 
     public boolean isMeshOptimizerPresent() {
         return this.isMeshOptimizerPresent;
-    }
-
-    public boolean isParPresent() {
-        return this.isParPresent;
     }
 
     public boolean isEarcut4jPresent() {

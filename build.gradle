@@ -55,7 +55,6 @@ dependencies {
     compileOnly "org.lwjgl:lwjgl-freetype:3.3.6"
     compileOnly "org.lwjgl:lwjgl-harfbuzz:3.3.6"
     compileOnly "org.lwjgl:lwjgl-meshoptimizer:3.3.6"
-    compileOnly "org.lwjgl:lwjgl-par:3.3.6"
     compileOnly "io.github.earcut4j:earcut4j:2.2.2"
     compileOnly "com.github.RaphiMC:gif-reader:0bdb781a96"
     compileOnly "com.twelvemonkeys.imageio:imageio-webp:3.12.0"
@@ -73,6 +72,5 @@ dependencies {
         exampleImplementation "org.lwjgl:lwjgl-freetype:3.3.6:$it"
         // exampleImplementation "org.lwjgl:lwjgl-harfbuzz:3.3.6:$it" // Already included in FreeType
         exampleImplementation "org.lwjgl:lwjgl-meshoptimizer:3.3.6:$it"
-        exampleImplementation "org.lwjgl:lwjgl-par:3.3.6:$it"
     }
 }
