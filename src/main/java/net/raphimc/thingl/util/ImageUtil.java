@@ -144,11 +144,11 @@ public class ImageUtil {
     }
 
     public static ByteBuffer revertPreMultipliedAlphaBGRA(final ByteBuffer sourcePixelBuffer, final boolean freeSource, final boolean allocateDirect) {
-        if (sourcePixelBuffer.remaining() % Integer.BYTES != 0) {
+        if (sourcePixelBuffer.limit() % Integer.BYTES != 0) {
             throw new IllegalArgumentException("Source pixel buffer size must be a multiple of 4");
         }
-        final int pixelCount = sourcePixelBuffer.remaining() / Integer.BYTES;
-        final ByteBuffer destinationPixelBuffer = BufferUtil.memAlloc(sourcePixelBuffer.remaining(), allocateDirect);
+        final int pixelCount = sourcePixelBuffer.limit() / Integer.BYTES;
+        final ByteBuffer destinationPixelBuffer = BufferUtil.memAlloc(sourcePixelBuffer.limit(), allocateDirect);
         for (int i = 0; i < pixelCount; i++) {
             final int index = i * Integer.BYTES;
             final int b = sourcePixelBuffer.get(index) & 0xFF;
@@ -179,8 +179,8 @@ public class ImageUtil {
     }
 
     public static ByteBuffer thresholdGrayscale(final ByteBuffer sourcePixelBuffer, final int alphaThreshold, final boolean freeSource, final boolean allocateDirect) {
-        final ByteBuffer destinationPixelBuffer = BufferUtil.memAlloc(sourcePixelBuffer.remaining(), allocateDirect);
-        for (int i = 0; i < sourcePixelBuffer.remaining(); i++) {
+        final ByteBuffer destinationPixelBuffer = BufferUtil.memAlloc(sourcePixelBuffer.limit(), allocateDirect);
+        for (int i = 0; i < sourcePixelBuffer.limit(); i++) {
             final int grayValue = sourcePixelBuffer.get(i) & 0xFF;
             final byte newGrayValue = (byte) (grayValue >= alphaThreshold ? 255 : 0);
             destinationPixelBuffer.put(i, newGrayValue);

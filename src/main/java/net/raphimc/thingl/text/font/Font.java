@@ -83,6 +83,8 @@ public abstract class Font {
 
     public abstract String getFamilyName();
 
+    public abstract String getSubFamilyName();
+
     public long getHarfBuzzInstance() {
         if (this.harfBuzzInstance == 0L) {
             ThinGL.capabilities().ensureHarfBuzzPresent();

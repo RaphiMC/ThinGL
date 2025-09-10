@@ -75,7 +75,7 @@ public class StbFont extends Font {
         final int[] height = new int[1];
         final int[] xOffset = new int[1];
         final int[] yOffset = new int[1];
-        final ByteBuffer bitmapBuffer = switch (renderMode) {
+        final ByteBuffer buffer = switch (renderMode) {
             case PIXELATED, COLORED_PIXELATED, ANTIALIASED, COLORED_ANTIALIASED -> STBTruetype.stbtt_GetGlyphBitmap(this.fontInfo, 0F, this.scale, glyph.glyphIndex(), width, height, xOffset, yOffset);
             case SDF -> {
                 final int padding = SDFTextRenderer.DF_PX_RANGE;
@@ -85,15 +85,18 @@ public class StbFont extends Font {
             }
             default -> throw new IllegalArgumentException("Unsupported render mode: " + renderMode);
         };
-        if (bitmapBuffer == null) {
+        if (buffer == null) {
             return null;
         }
 
         final IntObjectPair<ByteBuffer> pixelData = switch (renderMode) {
-            case PIXELATED -> IntObjectPair.of(GL11C.GL_RED, ImageUtil.thresholdGrayscale(bitmapBuffer, 127));
-            case COLORED_PIXELATED -> IntObjectPair.of(GL12C.GL_BGRA, ImageUtil.convertGrayscaleToColor(ImageUtil.thresholdGrayscale(bitmapBuffer, 127), width[0], height[0], 3));
-            case ANTIALIASED, SDF -> IntObjectPair.of(GL11C.GL_RED, bitmapBuffer);
-            case COLORED_ANTIALIASED -> IntObjectPair.of(GL12C.GL_BGRA, ImageUtil.convertGrayscaleToColor(bitmapBuffer, width[0], height[0], 3));
+            case PIXELATED -> IntObjectPair.of(GL11C.GL_RED, ImageUtil.thresholdGrayscale(buffer, 127));
+            case COLORED_PIXELATED -> {
+                final ByteBuffer thresholded = ImageUtil.thresholdGrayscale(buffer, 127);
+                yield IntObjectPair.of(GL12C.GL_BGRA, ImageUtil.convertGrayscaleToColor(thresholded, width[0], height[0], 3));
+            }
+            case ANTIALIASED, SDF -> IntObjectPair.of(GL11C.GL_RED, buffer);
+            case COLORED_ANTIALIASED -> IntObjectPair.of(GL12C.GL_BGRA, ImageUtil.convertGrayscaleToColor(buffer, width[0], height[0], 3));
             default -> throw new IllegalArgumentException("Unsupported render mode: " + renderMode);
         };
 
@@ -152,12 +155,17 @@ public class StbFont extends Font {
 
     @Override
     public String getPostScriptName() {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     @Override
     public String getFamilyName() {
-        throw new UnsupportedOperationException();
+        return null;
+    }
+
+    @Override
+    public String getSubFamilyName() {
+        return null;
     }
 
     @Override

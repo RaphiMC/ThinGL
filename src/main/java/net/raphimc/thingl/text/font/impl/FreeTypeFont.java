@@ -48,7 +48,7 @@ public class FreeTypeFont extends Font {
     private final float strikethroughThickness;
     private final String postScriptName;
     private final String familyName;
-    private final String styleName;
+    private final String subFamilyName;
 
     public FreeTypeFont(final byte[] fontData, final int size) {
         this(fontData, size, new Vector2f());
@@ -81,7 +81,7 @@ public class FreeTypeFont extends Font {
             this.underlineThickness = FreeType.FT_MulFix(this.fontFace.underline_thickness(), yScale) / 64F;
             this.postScriptName = FreeType.FT_Get_Postscript_Name(this.fontFace);
             this.familyName = this.fontFace.family_nameString();
-            this.styleName = this.fontFace.style_nameString();
+            this.subFamilyName = this.fontFace.style_nameString();
 
             final TT_OS2 os2Table = TT_OS2.createSafe(FreeType.FT_Get_Sfnt_Table(this.fontFace, FreeType.FT_SFNT_OS2));
             if (os2Table != null) {
@@ -138,14 +138,18 @@ public class FreeTypeFont extends Font {
                     if (pitch == (width + 7) / 8) {
                         yield IntObjectPair.of(GL11C.GL_RED, ImageUtil.convertMonochromeToGrayscale(buffer, width, rows, false));
                     } else {
-                        yield IntObjectPair.of(GL11C.GL_RED, ImageUtil.convertMonochromeToGrayscale(ImageUtil.packMonochromeTightly(buffer, width, rows, pitch, false), width, rows));
+                        final ByteBuffer packedBuffer = ImageUtil.packMonochromeTightly(buffer, width, rows, pitch, false);
+                        yield IntObjectPair.of(GL11C.GL_RED, ImageUtil.convertMonochromeToGrayscale(packedBuffer, width, rows));
                     }
                 }
                 case COLORED_PIXELATED -> {
                     if (pitch == (width + 7) / 8) {
-                        yield IntObjectPair.of(GL12C.GL_BGRA, ImageUtil.convertGrayscaleToColor(ImageUtil.convertMonochromeToGrayscale(buffer, width, rows, false), width, rows, 3));
+                        final ByteBuffer grayscaleBuffer = ImageUtil.convertMonochromeToGrayscale(buffer, width, rows, false);
+                        yield IntObjectPair.of(GL12C.GL_BGRA, ImageUtil.convertGrayscaleToColor(grayscaleBuffer, width, rows, 3));
                     } else {
-                        yield IntObjectPair.of(GL12C.GL_BGRA, ImageUtil.convertGrayscaleToColor(ImageUtil.convertMonochromeToGrayscale(ImageUtil.packMonochromeTightly(buffer, width, rows, pitch, false), width, rows), width, rows, 3));
+                        final ByteBuffer packedBuffer = ImageUtil.packMonochromeTightly(buffer, width, rows, pitch, false);
+                        final ByteBuffer grayscaleBuffer = ImageUtil.convertMonochromeToGrayscale(packedBuffer, width, rows);
+                        yield IntObjectPair.of(GL12C.GL_BGRA, ImageUtil.convertGrayscaleToColor(grayscaleBuffer, width, rows, 3));
                     }
                 }
                 default -> throw new IllegalStateException("Unsupported render mode for monochrome glyph: " + renderMode);
@@ -162,7 +166,8 @@ public class FreeTypeFont extends Font {
                     if (pitch == width) {
                         yield IntObjectPair.of(GL12C.GL_BGRA, ImageUtil.convertGrayscaleToColor(buffer, width, rows, 3, false));
                     } else {
-                        yield IntObjectPair.of(GL12C.GL_BGRA, ImageUtil.convertGrayscaleToColor(ImageUtil.packTightly(buffer, width, rows, 1, pitch, false), width, rows, 3));
+                        final ByteBuffer packedBuffer = ImageUtil.packTightly(buffer, width, rows, 1, pitch, false);
+                        yield IntObjectPair.of(GL12C.GL_BGRA, ImageUtil.convertGrayscaleToColor(packedBuffer, width, rows, 3));
                     }
                 }
                 default -> throw new IllegalStateException("Unsupported render mode for grayscale glyph: " + renderMode);
@@ -172,7 +177,8 @@ public class FreeTypeFont extends Font {
                     if (pitch == width * Integer.BYTES) {
                         yield IntObjectPair.of(GL12C.GL_BGRA, ImageUtil.revertPreMultipliedAlphaBGRA(buffer, false));
                     } else {
-                        yield IntObjectPair.of(GL12C.GL_BGRA, ImageUtil.revertPreMultipliedAlphaBGRA(ImageUtil.packTightly(buffer, width, rows, Integer.BYTES, pitch, false)));
+                        final ByteBuffer packedBuffer = ImageUtil.packTightly(buffer, width, rows, Integer.BYTES, pitch, false);
+                        yield IntObjectPair.of(GL12C.GL_BGRA, ImageUtil.revertPreMultipliedAlphaBGRA(packedBuffer));
                     }
                 }
                 default -> throw new IllegalStateException("Unsupported render mode for color glyph: " + renderMode);
@@ -241,8 +247,9 @@ public class FreeTypeFont extends Font {
         return this.familyName;
     }
 
-    public String getStyleName() {
-        return this.styleName;
+    @Override
+    public String getSubFamilyName() {
+        return this.subFamilyName;
     }
 
     @Override
