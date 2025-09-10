@@ -42,6 +42,7 @@ import org.lwjgl.opengl.GL33C;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public abstract class TextRenderer {
@@ -59,11 +60,14 @@ public abstract class TextRenderer {
     private float globalScale = 1F;
 
     public TextRenderer(final Supplier<Program> program, final Font.GlyphBitmap.RenderMode glyphRenderMode) {
-        this(new DrawBatch.Builder(BuiltinDrawBatches.TEXTURE_SNIPPET).program(program).build(), glyphRenderMode);
+        this(program, glyphRenderMode, p -> {
+        });
     }
 
-    public TextRenderer(final DrawBatch drawBatch, final Font.GlyphBitmap.RenderMode glyphRenderMode) {
-        this.drawBatch = new DrawBatch.Builder(drawBatch)
+    public TextRenderer(final Supplier<Program> program, final Font.GlyphBitmap.RenderMode glyphRenderMode, final Consumer<Program> programSetup) {
+        this.drawBatch = new DrawBatch.Builder(BuiltinDrawBatches.TEXTURE_SNIPPET)
+                .program(program)
+                .appendSetupAction(programSetup)
                 .appendSetupAction(p -> {
                     final int[] textureIds = new int[this.glyphAtlases.size()];
                     for (int i = 0; i < this.glyphAtlases.size(); i++) {

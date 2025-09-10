@@ -55,6 +55,9 @@ public class TextRenderingExample extends GLFWApplicationRunner {
         try {
             final byte[] fontData = TextRenderingExample.class.getResourceAsStream("/fonts/Roboto-Regular.ttf").readAllBytes();
             this.robotoRegular = new FreeTypeFont(fontData, 32);
+
+            // this.robotoRegular = new StbFont(fontData, 32); // Its also possible to use STB for font rendering, but it has less features than FreeType
+            // this.robotoRegular = new AwtFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 32)); // Or use AWT to load system fonts (AWT only work with the BitmapTextRenderer)
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -78,7 +81,7 @@ public class TextRenderingExample extends GLFWApplicationRunner {
     protected void render(final Matrix4fStack positionMatrix) {
         positionMatrix.pushMatrix();
         { // Multi color text
-            positionMatrix.translate(ThinGL.windowInterface().getFramebufferWidth() / 2F, 10, 0);
+            positionMatrix.translate(ThinGL.windowInterface().getFramebufferWidth() / 1.5F, 10, 0);
             this.sdfTextRenderer.textRun(positionMatrix, this.multiColoredText, 0, 0);
         }
         { // Text outline
@@ -115,7 +118,7 @@ public class TextRenderingExample extends GLFWApplicationRunner {
         { // Bitmap text renderer
             positionMatrix.pushMatrix();
             this.animatedScale(positionMatrix);
-            this.bitmapTextRenderer.textRun(positionMatrix, TextRun.fromString(robotoRegular, "Bitmap Rendering!"), 0, 0);
+            this.bitmapTextRenderer.textRun(positionMatrix, TextRun.fromString(robotoRegular, "Bitmap Text"), 0, 0);
             positionMatrix.popMatrix();
         }
 
@@ -124,14 +127,14 @@ public class TextRenderingExample extends GLFWApplicationRunner {
         { // SDF text renderer
             positionMatrix.pushMatrix();
             this.animatedScale(positionMatrix);
-            this.sdfTextRenderer.textRun(positionMatrix, TextRun.fromString(robotoRegular, "SDF Rendering!"), 0, 0);
+            this.sdfTextRenderer.textRun(positionMatrix, TextRun.fromString(robotoRegular, "SDF Text!"), 0, 0);
             positionMatrix.popMatrix();
         }
     }
 
     private void animatedScale(final Matrix4f positionMatrix) {
         final float elapsedTime = (System.currentTimeMillis() % 20000) / 10000F;
-        final float scale = 0.2F + 4.8F * Math.abs((float) Math.sin(Math.PI * elapsedTime));
+        final float scale = 0.5F + 4.5F * Math.abs((float) Math.sin(Math.PI * elapsedTime));
         positionMatrix.scaleXY(scale, scale);
     }
 

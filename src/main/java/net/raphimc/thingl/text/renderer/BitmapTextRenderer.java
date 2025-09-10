@@ -33,7 +33,11 @@ public class BitmapTextRenderer extends TextRenderer {
     }
 
     public BitmapTextRenderer(final Font.GlyphBitmap.RenderMode glyphRenderMode) {
-        super(() -> ThinGL.programs().getBitmapText(), glyphRenderMode);
+        this(glyphRenderMode, glyphRenderMode == Font.GlyphBitmap.RenderMode.ANTIALIASED);
+    }
+
+    public BitmapTextRenderer(final Font.GlyphBitmap.RenderMode glyphRenderMode, final boolean edgeSharpening) {
+        super(() -> ThinGL.programs().getBitmapText(), glyphRenderMode, p -> p.setUniformBoolean("u_EdgeSharpening", edgeSharpening));
     }
 
     @Override
