@@ -540,8 +540,8 @@ public class Renderer2D extends Renderer {
             vertexDataHolder.putVector3f(positionMatrix, point.x, point.y, 0F).putColor(abgrColor).endVertex();
         }
         final List<Integer> indices = Earcut.earcut(data);
-        for (int index : indices) {
-            indexDataHolder.putIndex(index);
+        for (int i = indices.size() - 1; i >= 0; i--) {
+            indexDataHolder.putIndex(indices.get(i));
         }
 
         this.drawIfNotBuffering();
