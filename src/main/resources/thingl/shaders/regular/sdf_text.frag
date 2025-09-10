@@ -13,8 +13,11 @@ flat in vec4 v_OutlineColor;
 flat in uint v_StyleFlags;
 out vec4 o_Color;
 
+float median(float r, float g, float b);
+
 void main() {
-    float dist = texture(u_Textures[v_TextureIndex], v_TexCoord).r;
+    vec3 msd = texture(u_Textures[v_TextureIndex], v_TexCoord).rgb;
+    float dist = median(msd.r, msd.g, msd.b);
     if ((v_StyleFlags & STYLE_BOLD_BIT) == 0 && v_OutlineColor.a == 0) { // High quality text rendering
         vec2 unitRange = vec2(DF_PX_RANGE) / vec2(textureSize(u_Textures[v_TextureIndex], 0));
         vec2 screenTexSize = vec2(1) / fwidth(v_TexCoord);
@@ -43,4 +46,8 @@ void main() {
     if (o_Color.a == 0) {
         discard;
     }
+}
+
+float median(float r, float g, float b) {
+    return max(min(r, g), min(max(r, g), b));
 }

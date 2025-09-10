@@ -112,6 +112,7 @@ public abstract class Font {
             COLORED_ANTIALIASED,
             BSDF,
             SDF,
+            MSDF,
 
         }
 

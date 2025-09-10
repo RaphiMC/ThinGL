@@ -240,7 +240,12 @@ public abstract class TextRenderer {
                         yield atlasTexture;
                     }
                     case COLORED_ANTIALIASED -> new StaticAtlasTexture(GL11C.GL_RGBA8, ATLAS_SIZE, ATLAS_SIZE);
-                    case BSDF, SDF -> new StaticAtlasTexture(GL30C.GL_R8, ATLAS_SIZE, ATLAS_SIZE);
+                    case BSDF, SDF -> {
+                        final StaticAtlasTexture atlasTexture = new StaticAtlasTexture(GL30C.GL_R8, ATLAS_SIZE, ATLAS_SIZE);
+                        atlasTexture.setParameterIntArray(GL33C.GL_TEXTURE_SWIZZLE_RGBA, new int[]{GL11C.GL_RED, GL11C.GL_RED, GL11C.GL_RED, GL11C.GL_ONE});
+                        yield atlasTexture;
+                    }
+                    case MSDF -> new StaticAtlasTexture(GL11C.GL_RGB8, ATLAS_SIZE, ATLAS_SIZE);
                 };
             } else {
                 atlas = this.glyphAtlases.get(i);
