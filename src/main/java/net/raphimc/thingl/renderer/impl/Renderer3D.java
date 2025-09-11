@@ -113,35 +113,35 @@ public class Renderer3D extends Renderer {
         this.drawIfNotBuffering();
     }
 
-    public void outlineBox(final Matrix4f positionMatrix, final AABBd aabb, final float lineWidth, final Color color) {
-        this.outlineBox(positionMatrix, (float) aabb.minX, (float) aabb.minY, (float) aabb.minZ, (float) aabb.maxX, (float) aabb.maxY, (float) aabb.maxZ, lineWidth, color);
+    public void outlinedBox(final Matrix4f positionMatrix, final AABBd aabb, final float lineWidth, final Color color) {
+        this.outlinedBox(positionMatrix, (float) aabb.minX, (float) aabb.minY, (float) aabb.minZ, (float) aabb.maxX, (float) aabb.maxY, (float) aabb.maxZ, lineWidth, color);
     }
 
-    public void outlineBox(final Matrix4f positionMatrix, final AABBf aabb, final float lineWidth, final Color color) {
-        this.outlineBox(positionMatrix, aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, lineWidth, color);
+    public void outlinedBox(final Matrix4f positionMatrix, final AABBf aabb, final float lineWidth, final Color color) {
+        this.outlinedBox(positionMatrix, aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, lineWidth, color);
     }
 
-    public void outlineBox(final Matrix4f positionMatrix, final AABBi aabb, final float lineWidth, final Color color) {
-        this.outlineBox(positionMatrix, aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, lineWidth, color);
+    public void outlinedBox(final Matrix4f positionMatrix, final AABBi aabb, final float lineWidth, final Color color) {
+        this.outlinedBox(positionMatrix, aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, lineWidth, color);
     }
 
-    public void outlineBox(final Matrix4f positionMatrix, final float minX, float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final float lineWidth, final Color color) {
-        this.outlineBox(positionMatrix, minX, minY, minZ, maxX, maxY, maxZ, lineWidth, color, (byte) 0);
+    public void outlinedBox(final Matrix4f positionMatrix, final float minX, float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final float lineWidth, final Color color) {
+        this.outlinedBox(positionMatrix, minX, minY, minZ, maxX, maxY, maxZ, lineWidth, color, (byte) 0);
     }
 
-    public void outlineBox(final Matrix4f positionMatrix, final AABBd aabb, final float lineWidth, final Color color, final byte excludedFaces) {
-        this.outlineBox(positionMatrix, (float) aabb.minX, (float) aabb.minY, (float) aabb.minZ, (float) aabb.maxX, (float) aabb.maxY, (float) aabb.maxZ, lineWidth, color, excludedFaces);
+    public void outlinedBox(final Matrix4f positionMatrix, final AABBd aabb, final float lineWidth, final Color color, final byte excludedFaces) {
+        this.outlinedBox(positionMatrix, (float) aabb.minX, (float) aabb.minY, (float) aabb.minZ, (float) aabb.maxX, (float) aabb.maxY, (float) aabb.maxZ, lineWidth, color, excludedFaces);
     }
 
-    public void outlineBox(final Matrix4f positionMatrix, final AABBf aabb, final float lineWidth, final Color color, final byte excludedFaces) {
-        this.outlineBox(positionMatrix, aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, lineWidth, color, excludedFaces);
+    public void outlinedBox(final Matrix4f positionMatrix, final AABBf aabb, final float lineWidth, final Color color, final byte excludedFaces) {
+        this.outlinedBox(positionMatrix, aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, lineWidth, color, excludedFaces);
     }
 
-    public void outlineBox(final Matrix4f positionMatrix, final AABBi aabb, final float lineWidth, final Color color, final byte excludedFaces) {
-        this.outlineBox(positionMatrix, aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, lineWidth, color, excludedFaces);
+    public void outlinedBox(final Matrix4f positionMatrix, final AABBi aabb, final float lineWidth, final Color color, final byte excludedFaces) {
+        this.outlinedBox(positionMatrix, aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, lineWidth, color, excludedFaces);
     }
 
-    public void outlineBox(final Matrix4f positionMatrix, final float minX, float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final float lineWidth, final Color color, final byte excludedFaces) {
+    public void outlinedBox(final Matrix4f positionMatrix, final float minX, float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final float lineWidth, final Color color, final byte excludedFaces) {
         if (excludedFaces == ALL_FACES) return;
         final int abgrColor = color.toABGR();
 
@@ -267,6 +267,46 @@ public class Renderer3D extends Renderer {
         vertexDataHolder.putVector3f(1F, -1F, -1F).endVertex();
 
         this.drawIfNotBuffering();
+    }
+
+    @Deprecated(forRemoval = true)
+    public void outlineBox(final Matrix4f positionMatrix, final AABBd aabb, final float lineWidth, final Color color) {
+        this.outlineBox(positionMatrix, (float) aabb.minX, (float) aabb.minY, (float) aabb.minZ, (float) aabb.maxX, (float) aabb.maxY, (float) aabb.maxZ, lineWidth, color);
+    }
+
+    @Deprecated(forRemoval = true)
+    public void outlineBox(final Matrix4f positionMatrix, final AABBf aabb, final float lineWidth, final Color color) {
+        this.outlineBox(positionMatrix, aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, lineWidth, color);
+    }
+
+    @Deprecated(forRemoval = true)
+    public void outlineBox(final Matrix4f positionMatrix, final AABBi aabb, final float lineWidth, final Color color) {
+        this.outlineBox(positionMatrix, aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, lineWidth, color);
+    }
+
+    @Deprecated(forRemoval = true)
+    public void outlineBox(final Matrix4f positionMatrix, final float minX, float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final float lineWidth, final Color color) {
+        this.outlineBox(positionMatrix, minX, minY, minZ, maxX, maxY, maxZ, lineWidth, color, (byte) 0);
+    }
+
+    @Deprecated(forRemoval = true)
+    public void outlineBox(final Matrix4f positionMatrix, final AABBd aabb, final float lineWidth, final Color color, final byte excludedFaces) {
+        this.outlineBox(positionMatrix, (float) aabb.minX, (float) aabb.minY, (float) aabb.minZ, (float) aabb.maxX, (float) aabb.maxY, (float) aabb.maxZ, lineWidth, color, excludedFaces);
+    }
+
+    @Deprecated(forRemoval = true)
+    public void outlineBox(final Matrix4f positionMatrix, final AABBf aabb, final float lineWidth, final Color color, final byte excludedFaces) {
+        this.outlineBox(positionMatrix, aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, lineWidth, color, excludedFaces);
+    }
+
+    @Deprecated(forRemoval = true)
+    public void outlineBox(final Matrix4f positionMatrix, final AABBi aabb, final float lineWidth, final Color color, final byte excludedFaces) {
+        this.outlineBox(positionMatrix, aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, lineWidth, color, excludedFaces);
+    }
+
+    @Deprecated(forRemoval = true)
+    public void outlineBox(final Matrix4f positionMatrix, final float minX, float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final float lineWidth, final Color color, final byte excludedFaces) {
+        this.outlinedBox(positionMatrix, minX, minY, minZ, maxX, maxY, maxZ, lineWidth, color, excludedFaces);
     }
 
 }

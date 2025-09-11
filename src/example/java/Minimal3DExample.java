@@ -37,7 +37,7 @@ public class Minimal3DExample extends GLFWApplicationRunner {
         positionMatrix.rotateY((float) Math.toRadians((System.currentTimeMillis() % 3600L) / 10F));
 
         final AABBf box = new AABBf(-0.5F, -0.5F, -0.5F, 0.5F, 0.5F, 0.5F);
-        ThinGL.renderer3D().outlineBox(positionMatrix, box, 2, Color.GREEN);
+        ThinGL.renderer3D().outlinedBox(positionMatrix, box, 2, Color.GREEN);
     }
 
     @Override
