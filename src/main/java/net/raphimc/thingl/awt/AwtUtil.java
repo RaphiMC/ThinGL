@@ -19,10 +19,14 @@ package net.raphimc.thingl.awt;
 
 import net.raphimc.thingl.resource.image.texture.Texture2D;
 import net.raphimc.thingl.resource.image.texture.Texture2DArray;
+import org.joml.Vector2f;
 import org.lwjgl.opengl.GL12C;
 
 import java.awt.*;
+import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AwtUtil {
 
@@ -51,6 +55,38 @@ public class AwtUtil {
         final int[] pixels = new int[image.getWidth() * image.getHeight()];
         image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
         texture.uploadPixels(x, y, layer, image.getWidth(), image.getHeight(), GL12C.GL_BGRA, pixels, false);
+    }
+
+    public static List<List<Vector2f>> convertShapeToPolyLines(final Shape shape) {
+        return convertShapeToPolyLines(shape, 1F);
+    }
+
+    public static List<List<Vector2f>> convertShapeToPolyLines(final Shape shape, final float flatness) {
+        final PathIterator pathIterator = shape.getPathIterator(null, flatness);
+        final List<List<Vector2f>> polyLines = new ArrayList<>();
+        final List<Vector2f> pathPoints = new ArrayList<>();
+        final Vector2f pathStart = new Vector2f();
+        final float[] coords = new float[6];
+        while (!pathIterator.isDone()) {
+            switch (pathIterator.currentSegment(coords)) {
+                case PathIterator.SEG_MOVETO -> {
+                    if (!pathPoints.isEmpty()) {
+                        polyLines.add(new ArrayList<>(pathPoints));
+                        pathPoints.clear();
+                    }
+                    pathPoints.add(new Vector2f(coords[0], coords[1]));
+                    pathStart.set(coords[0], coords[1]);
+                }
+                case PathIterator.SEG_LINETO -> pathPoints.add(new Vector2f(coords[0], coords[1]));
+                case PathIterator.SEG_CLOSE -> pathPoints.add(new Vector2f(pathStart));
+                default -> throw new IllegalStateException("Unexpected segment type");
+            }
+            pathIterator.next();
+        }
+        if (!pathPoints.isEmpty()) {
+            polyLines.add(pathPoints);
+        }
+        return polyLines;
     }
 
 }
