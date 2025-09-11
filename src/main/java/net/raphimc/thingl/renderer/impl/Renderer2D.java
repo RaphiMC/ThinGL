@@ -511,16 +511,9 @@ public class Renderer2D extends Renderer {
             vertexDataHolder.putVector3f(positionMatrix, curr.x - tangent.x, curr.y - tangent.y, 0F).putColor(abgrColor).endVertex();
         }
         for (int i = 0; i < points.size() - 1; i++) {
-            final int i0 = i * 2;
-            final int i1 = i0 + 1;
-            final int i2 = i0 + 2;
-            final int i3 = i0 + 3;
-            indexDataHolder.putIndex(i0);
-            indexDataHolder.putIndex(i2);
-            indexDataHolder.putIndex(i1);
-            indexDataHolder.putIndex(i2);
-            indexDataHolder.putIndex(i3);
-            indexDataHolder.putIndex(i1);
+            final int base = i * 2;
+            indexDataHolder.putRelativeIndex(base).putRelativeIndex(base + 2).putRelativeIndex(base + 1);
+            indexDataHolder.putRelativeIndex(base + 2).putRelativeIndex(base + 3).putRelativeIndex(base + 1);
         }
 
         this.drawIfNotBuffering();
@@ -541,7 +534,7 @@ public class Renderer2D extends Renderer {
         }
         final List<Integer> indices = Earcut.earcut(data);
         for (int i = indices.size() - 1; i >= 0; i--) {
-            indexDataHolder.putIndex(indices.get(i));
+            indexDataHolder.putRelativeIndex(indices.get(i));
         }
 
         this.drawIfNotBuffering();

@@ -34,8 +34,14 @@ public class IndexDataHolder extends BufferWriter<IndexDataHolder> {
         this.vertexOffset = vertexDataHolder.getVertexCount();
     }
 
-    public IndexDataHolder putIndex(final int i) {
+    public IndexDataHolder putRelativeIndex(final int i) {
         this.bufferBuilder.putInt(this.vertexOffset + i);
+        this.indexCount++;
+        return this;
+    }
+
+    public IndexDataHolder putAbsoluteIndex(final int i) {
+        this.bufferBuilder.putInt(i);
         this.indexCount++;
         return this;
     }
@@ -53,6 +59,11 @@ public class IndexDataHolder extends BufferWriter<IndexDataHolder> {
 
     public int getIndexCount() {
         return this.indexCount;
+    }
+
+    @Deprecated(forRemoval = true)
+    public IndexDataHolder putIndex(final int i) {
+        return this.putRelativeIndex(i);
     }
 
 }

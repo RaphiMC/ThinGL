@@ -51,8 +51,8 @@ public class VertexDataHolder extends BufferDataWriter<VertexDataHolder> {
         return this;
     }
 
-    public void endVertex() {
-        this.vertexCount++;
+    public int endVertex() {
+        return this.vertexCount++;
     }
 
     public void endConnectedPrimitive() {
