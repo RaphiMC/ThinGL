@@ -18,9 +18,9 @@
 package net.raphimc.thingl.text.shaping;
 
 import net.lenni0451.commons.color.Color;
+import net.raphimc.thingl.gl.text.TextRenderer;
+import net.raphimc.thingl.resource.font.Font;
 import net.raphimc.thingl.text.TextSegment;
-import net.raphimc.thingl.text.font.Font;
-import net.raphimc.thingl.text.renderer.TextRenderer;
 import org.joml.Vector2f;
 import org.joml.primitives.Rectanglef;
 

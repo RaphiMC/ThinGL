@@ -17,7 +17,7 @@
  */
 package net.raphimc.thingl.text.shaping;
 
-import net.raphimc.thingl.text.font.Font;
+import net.raphimc.thingl.resource.font.Font;
 import org.joml.primitives.Rectanglef;
 
 import java.util.List;

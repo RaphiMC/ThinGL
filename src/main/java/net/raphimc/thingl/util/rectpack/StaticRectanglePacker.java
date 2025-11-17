@@ -17,6 +17,7 @@
  */
 package net.raphimc.thingl.util.rectpack;
 
+import net.raphimc.thingl.implementation.Capabilities;
 import org.lwjgl.stb.STBRPContext;
 import org.lwjgl.stb.STBRPNode;
 import org.lwjgl.stb.STBRPRect;
@@ -24,6 +25,10 @@ import org.lwjgl.stb.STBRectPack;
 import org.lwjgl.system.MemoryStack;
 
 public class StaticRectanglePacker {
+
+    static {
+        Capabilities.assertStbAvailable();
+    }
 
     private final STBRPContext rectPackContext;
     private final STBRPNode.Buffer rectPackNodes;

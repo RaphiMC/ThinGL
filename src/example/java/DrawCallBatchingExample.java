@@ -18,9 +18,9 @@
 
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.drawbuilder.drawbatchdataholder.ImmediateMultiDrawBatchDataHolder;
-import net.raphimc.thingl.drawbuilder.drawbatchdataholder.MultiDrawBatchDataHolder;
+import net.raphimc.thingl.gl.rendering.dataholder.ImmediateMultiDrawBatchDataHolder;
 import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
+import net.raphimc.thingl.rendering.dataholder.MultiDrawBatchDataHolder;
 import org.joml.Matrix4fStack;
 
 public class DrawCallBatchingExample extends GLFWApplicationRunner {

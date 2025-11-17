@@ -18,7 +18,7 @@
 
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.drawbuilder.drawbatchdataholder.PersistentMultiDrawBatchDataHolder;
+import net.raphimc.thingl.gl.rendering.dataholder.PersistentMultiDrawBatchDataHolder;
 import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
 import net.raphimc.thingl.util.RenderMathUtil;
 import org.joml.Matrix4fStack;

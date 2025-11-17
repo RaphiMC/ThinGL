@@ -18,14 +18,14 @@
 
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
+import net.raphimc.thingl.gl.renderer.impl.RendererText;
+import net.raphimc.thingl.gl.text.BitmapTextRenderer;
+import net.raphimc.thingl.gl.text.SDFTextRenderer;
 import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
-import net.raphimc.thingl.renderer.impl.RendererText;
+import net.raphimc.thingl.resource.font.Font;
+import net.raphimc.thingl.resource.font.impl.FreeTypeFont;
 import net.raphimc.thingl.text.TextRun;
 import net.raphimc.thingl.text.TextSegment;
-import net.raphimc.thingl.text.font.Font;
-import net.raphimc.thingl.text.font.impl.FreeTypeFont;
-import net.raphimc.thingl.text.renderer.BitmapTextRenderer;
-import net.raphimc.thingl.text.renderer.SDFTextRenderer;
 import net.raphimc.thingl.text.shaping.ShapedTextRun;
 import net.raphimc.thingl.text.shaping.impl.HarfBuzzTextShaper;
 import org.joml.Matrix4f;

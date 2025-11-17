@@ -19,7 +19,7 @@ package net.raphimc.thingl.text;
 
 import net.lenni0451.commons.collections.Lists;
 import net.lenni0451.commons.color.Color;
-import net.raphimc.thingl.text.font.Font;
+import net.raphimc.thingl.resource.font.Font;
 import net.raphimc.thingl.text.font.FontSet;
 import net.raphimc.thingl.text.shaping.ShapedTextLine;
 import net.raphimc.thingl.text.shaping.TextShaper;

@@ -17,9 +17,9 @@
  */
 
 import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.awt.texture.frameprovider.AwtGifFrameProvider;
+import net.raphimc.thingl.gl.texture.animated.SequencedTexture;
+import net.raphimc.thingl.image.animated.impl.AwtGifImage;
 import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
-import net.raphimc.thingl.texture.animated.SequencedTexture;
 import org.joml.Matrix4fStack;
 
 import java.io.IOException;
@@ -34,7 +34,7 @@ public class AnimatedImageRenderingExample extends GLFWApplicationRunner {
         super(new Configuration().setWindowTitle("ThinGL Example - Animated Image rendering").setExtendedDebugMode(true));
     }
 
-    private SequencedTexture image;
+    private SequencedTexture texture;
     private long startTime;
 
     @Override
@@ -42,9 +42,9 @@ public class AnimatedImageRenderingExample extends GLFWApplicationRunner {
         super.init();
         try {
             final byte[] imageBytes = AnimatedImageRenderingExample.class.getResourceAsStream("/images/hand.gif").readAllBytes();
-            this.image = new SequencedTexture(new AwtGifFrameProvider(imageBytes));
-            // this.image = new SequencedTexture(new GifFrameProvider(imageBytes)); // Alternative method which uses a library. This is faster than using AWT
-            // this.image = new SequencedTexture(new AwtWebpFrameProvider(imageBytes)); // WebP is also supported, but requires a library
+            this.texture = new SequencedTexture(new AwtGifImage(imageBytes));
+            // this.texture = new SequencedTexture(new GifImage(imageBytes)); // Alternative method which uses a library. This is faster than using AWT
+            // this.texture = new SequencedTexture(new AwtWebpImage(imageBytes)); // WebP is also supported, but requires a library
             this.startTime = System.currentTimeMillis();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -54,7 +54,7 @@ public class AnimatedImageRenderingExample extends GLFWApplicationRunner {
     @Override
     protected void render(final Matrix4fStack positionMatrix) {
         final int time = (int) (System.currentTimeMillis() - this.startTime);
-        ThinGL.renderer2D().textureArrayLayer(positionMatrix, this.image, this.image.getFrameIndex(time), 50, 50);
+        ThinGL.renderer2D().textureArrayLayer(positionMatrix, this.texture, this.texture.getFrameIndex(time), 50, 50);
     }
 
 }

@@ -18,8 +18,8 @@
 
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
+import net.raphimc.thingl.gl.resource.image.texture.impl.Texture2D;
 import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
-import net.raphimc.thingl.resource.image.texture.Texture2D;
 import org.joml.Matrix4fStack;
 
 import java.io.IOException;
@@ -34,14 +34,14 @@ public class BlurExample extends GLFWApplicationRunner {
         super(new Configuration().setWindowTitle("ThinGL Example - Blur").setExtendedDebugMode(true));
     }
 
-    private Texture2D image;
+    private Texture2D texture;
 
     @Override
     protected void init() {
         super.init();
         try {
             final byte[] imageBytes = BlurExample.class.getResourceAsStream("/images/triangles-1430105_640.png").readAllBytes();
-            this.image = Texture2D.fromImage(imageBytes);
+            this.texture = Texture2D.fromImage(imageBytes);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -49,14 +49,14 @@ public class BlurExample extends GLFWApplicationRunner {
 
     @Override
     protected void render(final Matrix4fStack positionMatrix) {
-        ThinGL.renderer2D().texture(positionMatrix, this.image, 50, 50);
+        ThinGL.renderer2D().texture(positionMatrix, this.texture, 50, 50);
 
-        final float x = (System.currentTimeMillis() % 5000) / 5000F * (this.image.getWidth() * 1.25F);
+        final float x = (System.currentTimeMillis() % 5000) / 5000F * (this.texture.getWidth() * 1.25F);
         ThinGL.programs().getGaussianBlur().bindInput();
         ThinGL.renderer2D().filledCircle(positionMatrix, x, 200, 75, Color.RED);
         ThinGL.programs().getGaussianBlur().unbindInput();
         ThinGL.programs().getGaussianBlur().configureParameters(10); // Configure the blur radius
-        ThinGL.programs().getGaussianBlur().render(50, 50, 50 + this.image.getWidth(), 50 + this.image.getHeight());
+        ThinGL.programs().getGaussianBlur().render(50, 50, 50 + this.texture.getWidth(), 50 + this.texture.getHeight());
         ThinGL.programs().getGaussianBlur().clearInput();
     }
 

@@ -17,37 +17,141 @@
  */
 package net.raphimc.thingl.implementation;
 
-import org.joml.Options;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL30C;
 import org.lwjgl.opengl.NVFramebufferMixedSamples;
+import org.lwjgl.system.Configuration;
+import org.lwjgl.util.freetype.FreeType;
 
 public class Capabilities {
 
-    private final boolean isFreeTypePresent;
-    private final boolean isHarfBuzzPresent;
-    private final boolean isMeshOptimizerPresent;
-    private final boolean isEarcut4jPresent;
-    private final boolean isGifReaderPresent;
-    private final boolean isTwelveMonkeysWebpReaderPresent;
-    private final boolean isJsvgPresent;
+    private static final boolean STB_AVAILABLE;
+    private static final boolean FREE_TYPE_AVAILABLE;
+    private static final boolean HARF_BUZZ_AVAILABLE;
+    private static final boolean SPNG_AVAILABLE;
+    private static final boolean MESH_OPTIMIZER_AVAILABLE;
+    private static final boolean EARCUT4J_AVAILABLE;
+    private static final boolean GIF_READER_AVAILABLE;
+    private static final boolean TWELVE_MONKEYS_WEBP_READER_AVAILABLE;
+    private static final boolean JSVG_AVAILABLE;
+
+    static {
+        STB_AVAILABLE = isClassPresent("org.lwjgl.stb.LibSTB");
+        FREE_TYPE_AVAILABLE = isClassPresent("org.lwjgl.util.freetype.FreeType");
+        HARF_BUZZ_AVAILABLE = isClassPresent("org.lwjgl.util.harfbuzz.HarfBuzz");
+        SPNG_AVAILABLE = isClassPresent("org.lwjgl.util.spng.SPNG");
+        MESH_OPTIMIZER_AVAILABLE = isClassPresent("org.lwjgl.util.meshoptimizer.LibMeshOptimizer");
+        EARCUT4J_AVAILABLE = isClassPresent("earcut4j.Earcut");
+        GIF_READER_AVAILABLE = isClassPresent("com.ibasco.image.gif.GifImageReader");
+        TWELVE_MONKEYS_WEBP_READER_AVAILABLE = isClassPresent("com.twelvemonkeys.imageio.plugins.webp.WebPImageReader");
+        JSVG_AVAILABLE = isClassPresent("com.github.weisj.jsvg.SVGDocument");
+
+        if (FREE_TYPE_AVAILABLE && HARF_BUZZ_AVAILABLE) {
+            Configuration.HARFBUZZ_LIBRARY_NAME.set(FreeType.getLibrary());
+        }
+        if (System.getProperty("os.name").startsWith("Mac")) {
+            System.setProperty("joml.nounsafe", "true");
+        }
+    }
+
+    public static void assertStbAvailable() {
+        if (!STB_AVAILABLE) {
+            throw new IllegalStateException("STB is not available. Please add the LWJGL STB module to your project.");
+        }
+    }
+
+    public static void assertFreeTypeAvailable() {
+        if (!FREE_TYPE_AVAILABLE) {
+            throw new IllegalStateException("FreeType is not available. Please add the LWJGL FreeType module to your project.");
+        }
+    }
+
+    public static void assertHarfBuzzAvailable() {
+        if (!HARF_BUZZ_AVAILABLE) {
+            throw new IllegalStateException("HarfBuzz is not available. Please add the LWJGL HarfBuzz module to your project.");
+        }
+    }
+
+    public static void assertSpngAvailable() {
+        if (!SPNG_AVAILABLE) {
+            throw new IllegalStateException("SPNG is not available. Please add the LWJGL SPNG module to your project.");
+        }
+    }
+
+    public static void assertMeshOptimizerAvailable() {
+        if (!MESH_OPTIMIZER_AVAILABLE) {
+            throw new IllegalStateException("MeshOptimizer is not available. Please add the LWJGL MeshOptimizer module to your project.");
+        }
+    }
+
+    public static void assertEarcut4jAvailable() {
+        if (!EARCUT4J_AVAILABLE) {
+            throw new IllegalStateException("Earcut4j is not available. Please add https://github.com/earcut4j/earcut4j to your project.");
+        }
+    }
+
+    public static void assertGifReaderAvailable() {
+        if (!GIF_READER_AVAILABLE) {
+            throw new IllegalStateException("GIF Reader is not available. Please add https://github.com/RaphiMC/gif-reader to your project.");
+        }
+    }
+
+    public static void assertTwelveMonkeysWebpReaderAvailable() {
+        if (!TWELVE_MONKEYS_WEBP_READER_AVAILABLE) {
+            throw new IllegalStateException("TwelveMonkeys WebP Reader is not available. Please add https://github.com/haraldk/TwelveMonkeys to your project.");
+        }
+    }
+
+    public static void assertJsvgAvailable() {
+        if (!JSVG_AVAILABLE) {
+            throw new IllegalStateException("JSVG is not available. Please add https://github.com/weisJ/jsvg to your project.");
+        }
+    }
+
+    public static boolean isStbAvailable() {
+        return STB_AVAILABLE;
+    }
+
+    public static boolean isFreeTypeAvailable() {
+        return FREE_TYPE_AVAILABLE;
+    }
+
+    public static boolean isHarfBuzzAvailable() {
+        return HARF_BUZZ_AVAILABLE;
+    }
+
+    public static boolean isSpngAvailable() {
+        return SPNG_AVAILABLE;
+    }
+
+    public static boolean isMeshOptimizerAvailable() {
+        return MESH_OPTIMIZER_AVAILABLE;
+    }
+
+    public static boolean isEarcut4jAvailable() {
+        return EARCUT4J_AVAILABLE;
+    }
+
+    public static boolean isGifReaderAvailable() {
+        return GIF_READER_AVAILABLE;
+    }
+
+    public static boolean isTwelveMonkeysWebpReaderAvailable() {
+        return TWELVE_MONKEYS_WEBP_READER_AVAILABLE;
+    }
+
+    public static boolean isJsvgAvailable() {
+        return JSVG_AVAILABLE;
+    }
+
     private final int maxSamples;
     private final int maxColorAttachments;
     private final int maxArrayTextureLayers;
     private final boolean supportsNVFramebufferMixedSamples;
     private final int nvFramebufferMixedSamplesMaxRasterSamples;
-    private final boolean supportsJomlUnsafe;
 
     public Capabilities() {
-        this.isFreeTypePresent = isClassPresent("org.lwjgl.util.freetype.FreeType");
-        this.isHarfBuzzPresent = isClassPresent("org.lwjgl.util.harfbuzz.HarfBuzz");
-        this.isMeshOptimizerPresent = isClassPresent("org.lwjgl.util.meshoptimizer.LibMeshOptimizer");
-        this.isEarcut4jPresent = isClassPresent("earcut4j.Earcut");
-        this.isGifReaderPresent = isClassPresent("com.ibasco.image.gif.GifImageReader");
-        this.isTwelveMonkeysWebpReaderPresent = isClassPresent("com.twelvemonkeys.imageio.plugins.webp.WebPImageReader");
-        this.isJsvgPresent = isClassPresent("com.github.weisj.jsvg.SVGDocument");
-
         this.maxSamples = GL11C.glGetInteger(GL30C.GL_MAX_SAMPLES);
         this.maxColorAttachments = GL11C.glGetInteger(GL30C.GL_MAX_COLOR_ATTACHMENTS);
         this.maxArrayTextureLayers = GL11C.glGetInteger(GL30C.GL_MAX_ARRAY_TEXTURE_LAYERS);
@@ -57,81 +161,6 @@ public class Capabilities {
         } else {
             this.nvFramebufferMixedSamplesMaxRasterSamples = 0;
         }
-
-        if (System.getProperty("os.name").startsWith("Mac")) {
-            System.setProperty("joml.nounsafe", "true");
-        }
-        this.supportsJomlUnsafe = !Options.NO_UNSAFE;
-    }
-
-    public void ensureFreeTypePresent() {
-        if (!this.isFreeTypePresent) {
-            throw new UnsupportedOperationException("FreeType is not present. Please add the LWJGL FreeType module to your project.");
-        }
-    }
-
-    public void ensureHarfBuzzPresent() {
-        if (!this.isHarfBuzzPresent) {
-            throw new UnsupportedOperationException("HarfBuzz is not present. Please add the LWJGL HarfBuzz module to your project.");
-        }
-    }
-
-    public void ensureMeshOptimizerPresent() {
-        if (!this.isMeshOptimizerPresent) {
-            throw new UnsupportedOperationException("MeshOptimizer is not present. Please add the LWJGL MeshOptimizer module to your project.");
-        }
-    }
-
-    public void ensureEarcut4jPresent() {
-        if (!this.isEarcut4jPresent) {
-            throw new UnsupportedOperationException("Earcut4j is not present. Please add https://github.com/earcut4j/earcut4j to your project.");
-        }
-    }
-
-    public void ensureGifReaderPresent() {
-        if (!this.isGifReaderPresent) {
-            throw new UnsupportedOperationException("GIF Reader is not present. Please add https://github.com/RaphiMC/gif-reader to your project.");
-        }
-    }
-
-    public void ensureTwelveMonkeysWebpReaderPresent() {
-        if (!this.isTwelveMonkeysWebpReaderPresent) {
-            throw new UnsupportedOperationException("TwelveMonkeys WebP Reader is not present. Please add https://github.com/haraldk/TwelveMonkeys to your project.");
-        }
-    }
-
-    public void ensureJsvgPresent() {
-        if (!this.isJsvgPresent) {
-            throw new UnsupportedOperationException("JSVG is not present. Please add https://github.com/weisJ/jsvg to your project.");
-        }
-    }
-
-    public boolean isFreeTypePresent() {
-        return this.isFreeTypePresent;
-    }
-
-    public boolean isHarfBuzzPresent() {
-        return this.isHarfBuzzPresent;
-    }
-
-    public boolean isMeshOptimizerPresent() {
-        return this.isMeshOptimizerPresent;
-    }
-
-    public boolean isEarcut4jPresent() {
-        return this.isEarcut4jPresent;
-    }
-
-    public boolean isGifReaderPresent() {
-        return this.isGifReaderPresent;
-    }
-
-    public boolean isTwelveMonkeysWebpReaderPresent() {
-        return this.isTwelveMonkeysWebpReaderPresent;
-    }
-
-    public boolean isJsvgPresent() {
-        return this.isJsvgPresent;
     }
 
     public int getMaxSamples() {
@@ -152,10 +181,6 @@ public class Capabilities {
 
     public int getNVFramebufferMixedSamplesMaxRasterSamples() {
         return this.nvFramebufferMixedSamplesMaxRasterSamples;
-    }
-
-    public boolean supportsJomlUnsafe() {
-        return this.supportsJomlUnsafe;
     }
 
     private static boolean isClassPresent(final String className) {
