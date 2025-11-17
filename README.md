@@ -38,7 +38,7 @@ Examples can be found in the [src/example](/src/example) directory.
 
 ### Logging
 ThinGL by default logs to System.out and System.err.
-You can however easily change this by calling ``LoggerFactory.setBuilder(Slf4jLogger::new);`` to for example log using SLF4J.
+You can however easily change this by calling ``LoggerFactory.setBuilder(Slf4jLogger::new);`` to for example log through SLF4J.
 
 ## Contact
 If you encounter any issues, please report them on the

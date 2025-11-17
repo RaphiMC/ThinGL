@@ -18,6 +18,7 @@
 package net.raphimc.thingl.text.font;
 
 import it.unimi.dsi.fastutil.Pair;
+import net.raphimc.thingl.resource.font.Font;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,8 +67,8 @@ public class FontSet {
 
     public Font getFont(final int codePoint) {
         for (Pair<Font, GlyphPredicate> pair : this.fonts) {
-            final Font font = pair.first();
-            final GlyphPredicate predicate = pair.second();
+            final Font font = pair.left();
+            final GlyphPredicate predicate = pair.right();
             if (predicate.test(codePoint) && font.getGlyphByCodePoint(codePoint).glyphIndex() != 0) {
                 return font;
             }
@@ -77,7 +78,7 @@ public class FontSet {
 
     public void free() {
         for (Pair<Font, GlyphPredicate> pair : this.fonts) {
-            pair.first().free();
+            pair.left().free();
         }
     }
 

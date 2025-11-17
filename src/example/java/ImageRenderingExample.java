@@ -17,8 +17,8 @@
  */
 
 import net.raphimc.thingl.ThinGL;
+import net.raphimc.thingl.gl.resource.image.texture.impl.Texture2D;
 import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
-import net.raphimc.thingl.resource.image.texture.Texture2D;
 import org.joml.Matrix4fStack;
 
 import java.io.IOException;
@@ -33,16 +33,16 @@ public class ImageRenderingExample extends GLFWApplicationRunner {
         super(new Configuration().setWindowTitle("ThinGL Example - Image rendering").setExtendedDebugMode(true));
     }
 
-    private Texture2D image;
+    private Texture2D texture;
 
     @Override
     protected void init() {
         super.init();
         try {
             final byte[] imageBytes = ImageRenderingExample.class.getResourceAsStream("/images/triangles-1430105_640.png").readAllBytes();
-            this.image = Texture2D.fromImage(imageBytes); // Standard image formats like PNG, JPEG, BMP, and GIF are supported
-            // this.image = AWTUtil.createTexture2DFromBufferedImage(...); // Its also possible to create a Texture2D from a BufferedImage directly
-            // this.image = AWTUtil.createTexture2DFromSvg(...); // SVG is also supported, but requires a library
+            this.texture = Texture2D.fromImage(imageBytes); // Standard image formats like PNG, JPEG, BMP, and GIF are supported
+            // this.texture = Texture2D.fromImage(AwtImageIO.INSTANCE.createByteImage2D(...)); // Its also possible to create a Texture2D from a BufferedImage directly
+            // this.texture = Texture2D.fromImage(AwtSvgImageIO.INSTANCE.readByteImage2D(...); // SVG is also supported, but requires a library
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -50,7 +50,7 @@ public class ImageRenderingExample extends GLFWApplicationRunner {
 
     @Override
     protected void render(final Matrix4fStack positionMatrix) {
-        ThinGL.renderer2D().texture(positionMatrix, this.image, 50, 50);
+        ThinGL.renderer2D().texture(positionMatrix, this.texture, 50, 50);
     }
 
 }

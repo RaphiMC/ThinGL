@@ -21,9 +21,9 @@ import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
 import net.raphimc.thingl.implementation.instance.ThreadLocalInstanceManager;
 import net.raphimc.thingl.implementation.window.GLFWWindowInterface;
+import net.raphimc.thingl.resource.font.Font;
+import net.raphimc.thingl.resource.font.impl.FreeTypeFont;
 import net.raphimc.thingl.text.TextRun;
-import net.raphimc.thingl.text.font.Font;
-import net.raphimc.thingl.text.font.impl.FreeTypeFont;
 import org.joml.Matrix4fStack;
 
 import java.io.IOException;

@@ -17,10 +17,10 @@
  */
 package net.raphimc.thingl.text.shaping;
 
+import net.raphimc.thingl.resource.font.Font;
 import net.raphimc.thingl.text.TextBlock;
 import net.raphimc.thingl.text.TextLine;
 import net.raphimc.thingl.text.TextRun;
-import net.raphimc.thingl.text.font.Font;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -26,6 +26,7 @@ repositories {
 
         content {
             includeModule "org.lwjgl", "lwjgl-sdl"
+            includeModule "org.lwjgl", "lwjgl-spng"
         }
     }
 }
@@ -45,15 +46,18 @@ dependencies {
     // LWJGL needs to be provided by the application using ThinGL
     compileOnly "org.lwjgl:lwjgl:3.3.6"
     compileOnly "org.lwjgl:lwjgl-opengl:3.3.6"
-    compileOnly "org.lwjgl:lwjgl-stb:3.3.6"
 
     // Optional dependencies
     compileOnly "org.lwjgl:lwjgl-glfw:3.3.6"
     compileOnly("org.lwjgl:lwjgl-sdl:3.4.0-SNAPSHOT") {
         transitive = false
     }
+    compileOnly "org.lwjgl:lwjgl-stb:3.3.6"
     compileOnly "org.lwjgl:lwjgl-freetype:3.3.6"
     compileOnly "org.lwjgl:lwjgl-harfbuzz:3.3.6"
+    compileOnly("org.lwjgl:lwjgl-spng:3.4.0-SNAPSHOT") {
+        transitive = false
+    }
     compileOnly "org.lwjgl:lwjgl-meshoptimizer:3.3.6"
     compileOnly "io.github.earcut4j:earcut4j:2.2.2"
     compileOnly "com.github.RaphiMC:gif-reader:0bdb781a96"
@@ -63,14 +67,17 @@ dependencies {
     // Example dependencies
     ["natives-windows", "natives-windows-arm64", "natives-linux", "natives-linux-arm64"].each {
         exampleImplementation "org.lwjgl:lwjgl:3.3.6:$it"
+        exampleImplementation "org.lwjgl:lwjgl-opengl:3.3.6:$it"
         exampleImplementation "org.lwjgl:lwjgl-glfw:3.3.6:$it"
         exampleImplementation("org.lwjgl:lwjgl-sdl:3.4.0-SNAPSHOT:$it") {
             transitive = false
         }
-        exampleImplementation "org.lwjgl:lwjgl-opengl:3.3.6:$it"
         exampleImplementation "org.lwjgl:lwjgl-stb:3.3.6:$it"
         exampleImplementation "org.lwjgl:lwjgl-freetype:3.3.6:$it"
         // exampleImplementation "org.lwjgl:lwjgl-harfbuzz:3.3.6:$it" // Already included in FreeType
+        exampleImplementation("org.lwjgl:lwjgl-spng:3.4.0-SNAPSHOT:$it") {
+            transitive = false
+        }
         exampleImplementation "org.lwjgl:lwjgl-meshoptimizer:3.3.6:$it"
     }
 }

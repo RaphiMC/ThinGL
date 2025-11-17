@@ -19,8 +19,19 @@ package net.raphimc.thingl;
 
 import net.lenni0451.commons.logging.Logger;
 import net.lenni0451.commons.logging.LoggerFactory;
-import net.raphimc.thingl.drawbuilder.drawbatchdataholder.ImmediateMultiDrawBatchDataHolder;
-import net.raphimc.thingl.drawbuilder.index.QuadIndexBuffer;
+import net.raphimc.thingl.gl.program.Programs;
+import net.raphimc.thingl.gl.renderer.impl.Renderer2D;
+import net.raphimc.thingl.gl.renderer.impl.Renderer3D;
+import net.raphimc.thingl.gl.renderer.impl.RendererText;
+import net.raphimc.thingl.gl.rendering.dataholder.ImmediateMultiDrawBatchDataHolder;
+import net.raphimc.thingl.gl.text.SDFTextRenderer;
+import net.raphimc.thingl.gl.util.QuadIndexBuffer;
+import net.raphimc.thingl.gl.util.SyncManager;
+import net.raphimc.thingl.gl.util.pool.FramebufferPool;
+import net.raphimc.thingl.gl.util.pool.GpuBufferPool;
+import net.raphimc.thingl.gl.util.pool.ImmediateVertexArrays;
+import net.raphimc.thingl.gl.util.pool.MemoryBufferPool;
+import net.raphimc.thingl.gl.wrapper.*;
 import net.raphimc.thingl.implementation.Capabilities;
 import net.raphimc.thingl.implementation.Config;
 import net.raphimc.thingl.implementation.GlobalUniforms;
@@ -28,21 +39,8 @@ import net.raphimc.thingl.implementation.Workarounds;
 import net.raphimc.thingl.implementation.instance.InstanceManager;
 import net.raphimc.thingl.implementation.instance.SingleInstanceManager;
 import net.raphimc.thingl.implementation.window.WindowInterface;
-import net.raphimc.thingl.program.Programs;
-import net.raphimc.thingl.renderer.impl.Renderer2D;
-import net.raphimc.thingl.renderer.impl.Renderer3D;
-import net.raphimc.thingl.renderer.impl.RendererText;
-import net.raphimc.thingl.text.FreeTypeLibrary;
-import net.raphimc.thingl.text.renderer.SDFTextRenderer;
-import net.raphimc.thingl.util.SyncManager;
-import net.raphimc.thingl.util.pool.BufferBuilderPool;
-import net.raphimc.thingl.util.pool.FramebufferPool;
-import net.raphimc.thingl.util.pool.GpuBufferPool;
-import net.raphimc.thingl.util.pool.ImmediateVertexArrays;
-import net.raphimc.thingl.wrapper.*;
+import net.raphimc.thingl.text.util.FreeTypeLibrary;
 import org.lwjgl.opengl.GL11C;
-import org.lwjgl.system.Configuration;
-import org.lwjgl.util.freetype.FreeType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,8 +129,8 @@ public class ThinGL {
         return get().getGlobalUniforms();
     }
 
-    public static BufferBuilderPool bufferBuilderPool() {
-        return get().getBufferBuilderPool();
+    public static MemoryBufferPool memoryBufferPool() {
+        return get().getMemoryBufferPool();
     }
 
     public static GpuBufferPool gpuBufferPool() {
@@ -176,7 +174,7 @@ public class ThinGL {
 
     private final GlobalUniforms globalUniforms;
     private final ImmediateMultiDrawBatchDataHolder globalDrawBatch;
-    private final BufferBuilderPool bufferBuilderPool;
+    private final MemoryBufferPool memoryBufferPool;
     private final GpuBufferPool gpuBufferPool;
     private final FramebufferPool framebufferPool;
     private final ImmediateVertexArrays immediateVertexArrays;
@@ -224,17 +222,18 @@ public class ThinGL {
         this.rendererText = this.createRendererText();
         this.globalUniforms = this.createGlobalUniforms();
         this.globalDrawBatch = this.createGlobalDrawBatch();
-        this.bufferBuilderPool = this.createBufferBuilderPool();
+        this.memoryBufferPool = this.createMemoryBufferPool();
         this.gpuBufferPool = this.createGpuBufferPool();
         this.framebufferPool = this.createFramebufferPool();
         this.immediateVertexArrays = this.createImmediateVertexArrays();
         this.quadIndexBuffer = this.createQuadIndexBuffer();
         this.syncManager = this.createSyncManager();
-        this.freeTypeLibrary = this.createFreeTypeLibrary();
-
-        if (this.capabilities.isFreeTypePresent() && this.capabilities.isHarfBuzzPresent()) {
-            Configuration.HARFBUZZ_LIBRARY_NAME.set(FreeType.getLibrary());
+        if (Capabilities.isFreeTypeAvailable()) {
+            this.freeTypeLibrary = this.createFreeTypeLibrary();
+        } else {
+            this.freeTypeLibrary = null;
         }
+
         this.addFrameFinishedCallback(() -> {
             if (this.globalDrawBatch.hasDrawBatches()) {
                 this.globalDrawBatch.free();
@@ -385,7 +384,7 @@ public class ThinGL {
         this.renderer3D.free();
         this.rendererText.free();
         this.globalDrawBatch.free();
-        this.bufferBuilderPool.free();
+        this.memoryBufferPool.free();
         this.gpuBufferPool.free();
         this.framebufferPool.free();
         this.immediateVertexArrays.free();
@@ -456,8 +455,8 @@ public class ThinGL {
         return this.globalUniforms;
     }
 
-    public BufferBuilderPool getBufferBuilderPool() {
-        return this.bufferBuilderPool;
+    public MemoryBufferPool getMemoryBufferPool() {
+        return this.memoryBufferPool;
     }
 
     public GpuBufferPool getGpuBufferPool() {
@@ -536,8 +535,8 @@ public class ThinGL {
         return new ImmediateMultiDrawBatchDataHolder();
     }
 
-    protected BufferBuilderPool createBufferBuilderPool() {
-        return new BufferBuilderPool();
+    protected MemoryBufferPool createMemoryBufferPool() {
+        return new MemoryBufferPool();
     }
 
     protected GpuBufferPool createGpuBufferPool() {
@@ -561,11 +560,7 @@ public class ThinGL {
     }
 
     protected FreeTypeLibrary createFreeTypeLibrary() {
-        if (this.capabilities.isFreeTypePresent()) {
-            return new FreeTypeLibrary();
-        } else {
-            return null;
-        }
+        return new FreeTypeLibrary();
     }
 
 }

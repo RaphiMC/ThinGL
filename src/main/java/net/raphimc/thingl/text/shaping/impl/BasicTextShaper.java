@@ -17,9 +17,9 @@
  */
 package net.raphimc.thingl.text.shaping.impl;
 
+import net.raphimc.thingl.resource.font.Font;
 import net.raphimc.thingl.text.TextRun;
 import net.raphimc.thingl.text.TextSegment;
-import net.raphimc.thingl.text.font.Font;
 import net.raphimc.thingl.text.shaping.ShapedTextRun;
 import net.raphimc.thingl.text.shaping.ShapedTextSegment;
 import net.raphimc.thingl.text.shaping.TextShaper;

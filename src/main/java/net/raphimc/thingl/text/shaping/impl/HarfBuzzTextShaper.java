@@ -17,10 +17,10 @@
  */
 package net.raphimc.thingl.text.shaping.impl;
 
-import net.raphimc.thingl.ThinGL;
+import net.raphimc.thingl.implementation.Capabilities;
+import net.raphimc.thingl.resource.font.Font;
 import net.raphimc.thingl.text.TextRun;
 import net.raphimc.thingl.text.TextSegment;
-import net.raphimc.thingl.text.font.Font;
 import net.raphimc.thingl.text.shaping.ShapedTextRun;
 import net.raphimc.thingl.text.shaping.ShapedTextSegment;
 import net.raphimc.thingl.text.shaping.TextShaper;
@@ -33,11 +33,14 @@ import java.util.List;
 
 public class HarfBuzzTextShaper extends TextShaper {
 
+    static {
+        Capabilities.assertHarfBuzzAvailable();
+    }
+
     public static final HarfBuzzTextShaper INSTANCE = new HarfBuzzTextShaper();
 
     @Override
     public ShapedTextRun shape(final TextRun textRun) {
-        ThinGL.capabilities().ensureHarfBuzzPresent();
         final long hbBuffer = HarfBuzz.hb_buffer_create();
         if (!HarfBuzz.hb_buffer_allocation_successful(hbBuffer)) {
             throw new IllegalStateException("Failed to allocate buffer");

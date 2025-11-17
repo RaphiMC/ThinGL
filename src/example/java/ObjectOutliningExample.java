@@ -18,8 +18,8 @@
 
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
+import net.raphimc.thingl.gl.program.post.impl.OutlineProgram;
 import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
-import net.raphimc.thingl.program.post.impl.OutlineProgram;
 import org.joml.Matrix4fStack;
 
 public class ObjectOutliningExample extends GLFWApplicationRunner {
