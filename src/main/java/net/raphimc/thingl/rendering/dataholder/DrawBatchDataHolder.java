@@ -20,7 +20,6 @@ package net.raphimc.thingl.rendering.dataholder;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.raphimc.thingl.memory.MemoryBuffer;
-import net.raphimc.thingl.rendering.DrawBatch;
 import net.raphimc.thingl.rendering.bufferbuilder.ShaderBufferBuilder;
 import net.raphimc.thingl.rendering.bufferbuilder.impl.IndexBufferBuilder;
 import net.raphimc.thingl.rendering.bufferbuilder.impl.VertexBufferBuilder;
@@ -32,7 +31,6 @@ import java.util.function.Supplier;
 
 public class DrawBatchDataHolder {
 
-    private final DrawBatch drawBatch;
     private final Supplier<MemoryBuffer> memoryBufferSupplier;
     private final Consumer<MemoryBuffer> memoryBufferDisposer;
     private VertexBufferBuilder vertexBufferBuilder;
@@ -41,14 +39,9 @@ public class DrawBatchDataHolder {
     private final Object2ObjectMap<String, ShaderBufferBuilder> uniformBufferBuilders = new Object2ObjectOpenHashMap<>();
     private final Object2ObjectMap<String, ShaderBufferBuilder> shaderStorageBufferBuilders = new Object2ObjectOpenHashMap<>();
 
-    public DrawBatchDataHolder(final DrawBatch drawBatch, final Supplier<MemoryBuffer> memoryBufferSupplier, final Consumer<MemoryBuffer> memoryBufferDisposer) {
-        this.drawBatch = drawBatch;
+    public DrawBatchDataHolder(final Supplier<MemoryBuffer> memoryBufferSupplier, final Consumer<MemoryBuffer> memoryBufferDisposer) {
         this.memoryBufferSupplier = memoryBufferSupplier;
         this.memoryBufferDisposer = memoryBufferDisposer;
-    }
-
-    public DrawBatch getDrawBatch() {
-        return this.drawBatch;
     }
 
     public VertexBufferBuilder getVertexBufferBuilder() {

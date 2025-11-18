@@ -60,7 +60,7 @@ public class ImmediateMultiDrawBatchDataHolder extends MultiDrawBatchDataHolder 
         final DrawBatchDataHolder drawBatchDataHolder = this.drawBatches.remove(drawBatch);
         if (drawBatchDataHolder != null) {
             this.invalidateCache();
-            final PreparedDrawBatchData preparedDrawBatchData = DrawBatchDataPreparer.prepareDrawBatchData(drawBatchDataHolder);
+            final PreparedDrawBatchData preparedDrawBatchData = DrawBatchDataPreparer.prepareDrawBatchData(drawBatch, drawBatchDataHolder);
             final UploadedDrawBatchData uploadedDrawBatchData = DrawBatchDataUploader.uploadTemporary(preparedDrawBatchData);
             DrawBatchDataPreparer.freePreparedDrawBatchData(preparedDrawBatchData);
             DrawBatchRenderer.render(uploadedDrawBatchData, modelMatrix);
@@ -70,7 +70,7 @@ public class ImmediateMultiDrawBatchDataHolder extends MultiDrawBatchDataHolder 
 
     @Override
     protected DrawBatchDataHolder createDrawBatchDataHolder(final DrawBatch drawBatch) {
-        return new DrawBatchDataHolder(drawBatch, ThinGL.memoryBufferPool()::borrowMemoryBuffer, ThinGL.memoryBufferPool()::returnMemoryBuffer);
+        return new DrawBatchDataHolder(ThinGL.memoryBufferPool()::borrowMemoryBuffer, ThinGL.memoryBufferPool()::returnMemoryBuffer);
     }
 
 }

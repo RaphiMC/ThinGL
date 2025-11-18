@@ -54,7 +54,7 @@ public class PersistentMultiDrawBatchDataHolder extends MultiDrawBatchDataHolder
     public void prepare() {
         this.freePreparedBatches();
         for (Map.Entry<DrawBatch, DrawBatchDataHolder> entry : this.drawBatches.entrySet()) {
-            this.preparedDrawBatches.put(entry.getKey(), DrawBatchDataPreparer.prepareDrawBatchData(entry.getValue()));
+            this.preparedDrawBatches.put(entry.getKey(), DrawBatchDataPreparer.prepareDrawBatchData(entry.getKey(), entry.getValue()));
         }
         this.drawBatches.clear();
         this.invalidateCache();
@@ -127,7 +127,7 @@ public class PersistentMultiDrawBatchDataHolder extends MultiDrawBatchDataHolder
 
     @Override
     protected DrawBatchDataHolder createDrawBatchDataHolder(final DrawBatch drawBatch) {
-        return new DrawBatchDataHolder(drawBatch, MemoryBuffer::new, MemoryBuffer::free);
+        return new DrawBatchDataHolder(MemoryBuffer::new, MemoryBuffer::free);
     }
 
     private void freePreparedBatches() {

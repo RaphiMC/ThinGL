@@ -41,8 +41,7 @@ import java.util.Map;
 
 public class DrawBatchDataPreparer {
 
-    public static PreparedDrawBatchData prepareDrawBatchData(final DrawBatchDataHolder drawBatchDataHolder) {
-        final DrawBatch drawBatch = drawBatchDataHolder.getDrawBatch();
+    public static PreparedDrawBatchData prepareDrawBatchData(final DrawBatch drawBatch, final DrawBatchDataHolder drawBatchDataHolder) {
         final VertexBufferBuilder vertexBufferBuilder = drawBatchDataHolder.getVertexBufferBuilder();
         final MemoryBuffer vertexMemoryBuffer = vertexBufferBuilder.getMemoryBuffer();
         if (vertexBufferBuilder.getVertexCount() == 0 && vertexMemoryBuffer.getWritePosition() != 0) {
