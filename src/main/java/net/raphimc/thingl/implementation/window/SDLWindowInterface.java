@@ -20,6 +20,7 @@ package net.raphimc.thingl.implementation.window;
 import net.raphimc.thingl.util.SDLErrorUtil;
 import org.lwjgl.sdl.*;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.libffi.FFICIF;
 
 import java.nio.IntBuffer;
 
@@ -27,7 +28,17 @@ public class SDLWindowInterface extends WindowInterface {
 
     private final long windowHandle;
     private final int windowId;
-    private final SDL_EventFilterI eventWatch = this::onEvent;
+    // private final SDL_EventFilterI eventWatch = this::onEvent;
+    private final SDL_EventFilterI eventWatch = new SDL_EventFilterI() { // TODO: Remove when updating to LWJGL 3.4.0
+        @Override
+        public boolean invoke(long userdata, long event) {
+            return onEvent(userdata, event);
+        }
+
+        public FFICIF getCallInterface() {
+            return null;
+        }
+    };
 
     public SDLWindowInterface() {
         this(SDLVideo.SDL_GL_GetCurrentWindow());
