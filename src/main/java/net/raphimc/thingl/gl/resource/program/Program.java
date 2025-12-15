@@ -183,11 +183,13 @@ public class Program extends GLContainerObject {
 
     public void setUniformSampler(final String name, final int textureId) {
         GL45C.glBindTextureUnit(this.currentTextureUnit, textureId);
+        GL33C.glBindSampler(this.currentTextureUnit, 0);
         this.setUniformInt(name, this.currentTextureUnit++);
     }
 
     public void setUniformSamplerArray(final String name, final int... textureIds) {
         GL44C.glBindTextures(this.currentTextureUnit, textureIds);
+        GL44C.nglBindSamplers(this.currentTextureUnit, textureIds.length, 0L);
         final int[] textureUnits = new int[textureIds.length];
         for (int i = 0; i < textureIds.length; i++) {
             textureUnits[i] = this.currentTextureUnit + i;
