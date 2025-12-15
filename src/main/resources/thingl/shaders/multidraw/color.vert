@@ -15,9 +15,9 @@ out vec4 v_Color;
 
 void main() {
     if (positionOffsets.length() == 0) {
-        gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * vec4(a_Position, 1);
+        gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * vec4(a_Position, 1.0);
     } else {
-        gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * vec4(a_Position + positionOffsets[gl_DrawIDARB], 1);
+        gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * vec4(a_Position + positionOffsets[gl_DrawIDARB], 1.0);
     }
 
     v_Color = a_Color;

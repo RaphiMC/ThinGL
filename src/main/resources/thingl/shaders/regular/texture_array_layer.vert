@@ -11,7 +11,7 @@ out vec2 v_TexCoord;
 flat out uint v_Layer;
 
 void main() {
-    gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * vec4(a_Position, 1);
+    gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * vec4(a_Position, 1.0);
 
     v_TexCoord = a_TexCoord;
     v_Layer = a_Layer;

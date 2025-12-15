@@ -11,5 +11,5 @@ void main() {
     gl_Position = u_ProjectionMatrix * mat4(mat3(u_ViewMatrix)) * mat4(mat3(u_ModelMatrix)) * vec4(a_Position, 1.0);
     gl_Position.z = gl_Position.w;
 
-    v_TexCoord = a_Position * vec3(1, 1, -1);
+    v_TexCoord = a_Position * vec3(1.0, 1.0, -1.0);
 }

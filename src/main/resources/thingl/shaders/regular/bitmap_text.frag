@@ -16,7 +16,7 @@ void main() {
         textureColor.a = smoothstep(0.5 - alphaWidth, 0.5 + alphaWidth, textureColor.a);
     }
     o_Color = textureColor * v_TextColor * u_ColorModifier;
-    if (o_Color.a == 0) {
+    if (o_Color.a == 0.0) {
         discard;
     }
 }

@@ -17,21 +17,21 @@ void main() {
     if (shouldBlur(v_VpTexCoord)) {
         float o = u_Offset;
         if (u_Pass < 2) { /* Downsample */
-            vec4 col = getPixel(v_VpTexCoord) * 4;
+            vec4 col = getPixel(v_VpTexCoord) * 4.0;
             col += getPixel(v_VpTexCoord + vec2(-o, -o) * v_VpPixelSize);
             col += getPixel(v_VpTexCoord + vec2(o, o) * v_VpPixelSize);
             col += getPixel(v_VpTexCoord + vec2(o, -o) * v_VpPixelSize);
             col += getPixel(v_VpTexCoord + vec2(-o, o) * v_VpPixelSize);
             o_Color = col / col.a;
         } else { /* Upsample */
-            vec4 col = getPixel(v_VpTexCoord + vec2(-o, 0) * v_VpPixelSize);
-            col += getPixel(v_VpTexCoord + vec2(-o, o) * v_VpPixelSize) * 2;
-            col += getPixel(v_VpTexCoord + vec2(0, o) * v_VpPixelSize);
-            col += getPixel(v_VpTexCoord + vec2(o, o) * v_VpPixelSize) * 2;
-            col += getPixel(v_VpTexCoord + vec2(o, 0) * v_VpPixelSize);
-            col += getPixel(v_VpTexCoord + vec2(o, -o) * v_VpPixelSize) * 2;
-            col += getPixel(v_VpTexCoord + vec2(0, -o) * v_VpPixelSize);
-            col += getPixel(v_VpTexCoord + vec2(-o, -o) * v_VpPixelSize) * 2;
+            vec4 col = getPixel(v_VpTexCoord + vec2(-o, 0.0) * v_VpPixelSize);
+            col += getPixel(v_VpTexCoord + vec2(-o, o) * v_VpPixelSize) * 2.0;
+            col += getPixel(v_VpTexCoord + vec2(0.0, o) * v_VpPixelSize);
+            col += getPixel(v_VpTexCoord + vec2(o, o) * v_VpPixelSize) * 2.0;
+            col += getPixel(v_VpTexCoord + vec2(o, 0.0) * v_VpPixelSize);
+            col += getPixel(v_VpTexCoord + vec2(o, -o) * v_VpPixelSize) * 2.0;
+            col += getPixel(v_VpTexCoord + vec2(0.0, -o) * v_VpPixelSize);
+            col += getPixel(v_VpTexCoord + vec2(-o, -o) * v_VpPixelSize) * 2.0;
             o_Color = col / col.a;
         }
     } else {
@@ -41,12 +41,12 @@ void main() {
 
 vec4 getPixel(vec2 pos) {
     if (shouldBlur(pos)) {
-        return vec4(texture(u_Source, pos).rgb, 1);
+        return vec4(texture(u_Source, pos).rgb, 1.0);
     } else {
-        return vec4(0);
+        return vec4(0.0);
     }
 }
 
 bool shouldBlur(vec2 pos) {
-    return u_Pass != 3 || texture(u_Input, pos).a != 0;
+    return u_Pass != 3 || texture(u_Input, pos).a != 0.0;
 }

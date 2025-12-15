@@ -9,7 +9,7 @@ out vec4 o_Color;
 void main() {
     o_Color = texture(u_Input, v_VpTexCoord) * u_Color;
     o_Color.rgb *= u_Color.a;
-    if (o_Color.a == 0) {
+    if (o_Color.a == 0.0) {
         discard;
     }
 }
