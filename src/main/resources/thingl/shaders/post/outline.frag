@@ -51,6 +51,7 @@ void main() {
             if (inputPixel.a != 0.0) {
                 o_Color = vec4(inputPixel.rgb, encodeDistance(0));
             } else {
+                o_Color = vec4(0.0); // AMD Mesa driver workaround
                 discard;
             }
         }
