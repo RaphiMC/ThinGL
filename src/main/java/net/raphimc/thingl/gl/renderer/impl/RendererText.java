@@ -85,7 +85,7 @@ public class RendererText extends Renderer {
         x -= switch (horizontalOrigin) {
             case LOGICAL_LEFT -> 0;
             case VISUAL_LEFT -> textBlock.visualBounds().minX;
-            case VISUAL_CENTER -> textBlock.visualBounds().lengthX() / 2F;
+            case VISUAL_CENTER -> textBlock.visualBounds().minX + textBlock.visualBounds().lengthX() / 2F;
             case VISUAL_RIGHT -> textBlock.visualBounds().maxX;
         } * this.textRenderer.getGlobalScale();
 
@@ -134,7 +134,7 @@ public class RendererText extends Renderer {
         x -= switch (horizontalOrigin) {
             case LOGICAL_LEFT -> 0;
             case VISUAL_LEFT -> textLine.visualBounds().minX;
-            case VISUAL_CENTER -> textLine.visualBounds().lengthX() / 2F;
+            case VISUAL_CENTER -> textLine.visualBounds().minX + textLine.visualBounds().lengthX() / 2F;
             case VISUAL_RIGHT -> textLine.visualBounds().maxX;
         } * this.textRenderer.getGlobalScale();
 
@@ -183,7 +183,7 @@ public class RendererText extends Renderer {
         x -= switch (horizontalOrigin) {
             case LOGICAL_LEFT -> 0;
             case VISUAL_LEFT -> textRun.visualBounds().minX;
-            case VISUAL_CENTER -> textRun.visualBounds().lengthX() / 2F;
+            case VISUAL_CENTER -> textRun.visualBounds().minX + textRun.visualBounds().lengthX() / 2F;
             case VISUAL_RIGHT -> textRun.visualBounds().maxX;
         } * this.textRenderer.getGlobalScale();
 
