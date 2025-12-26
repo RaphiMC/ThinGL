@@ -20,16 +20,16 @@ package net.raphimc.thingl.text.shaping;
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.gl.text.TextRenderer;
 import net.raphimc.thingl.resource.font.Font;
-import net.raphimc.thingl.text.TextSegment;
+import net.raphimc.thingl.text.TextStyle;
 import org.joml.Vector2f;
 import org.joml.primitives.Rectanglef;
 
 import java.util.List;
 
-public record ShapedTextSegment(List<TextShaper.Glyph> glyphs, Color color, int styleFlags, Color outlineColor, Vector2f visualOffset, Rectanglef visualBounds, Rectanglef logicalBounds) {
+public record ShapedTextSegment(List<TextShaper.Glyph> glyphs, TextStyle style, Rectanglef visualBounds, Rectanglef logicalBounds) {
 
-    public ShapedTextSegment(final List<TextShaper.Glyph> glyphs, final Color color, final int styleFlags, final Color outlineColor, final Vector2f visualOffset) {
-        this(glyphs, color, styleFlags, outlineColor, visualOffset, new Rectanglef(), new Rectanglef());
+    public ShapedTextSegment(final List<TextShaper.Glyph> glyphs, final TextStyle style) {
+        this(glyphs, style, new Rectanglef(), new Rectanglef());
         this.calculateBounds();
     }
 
@@ -75,21 +75,52 @@ public record ShapedTextSegment(List<TextShaper.Glyph> glyphs, Color color, int 
             }
         }
 
-        if ((this.styleFlags & TextSegment.STYLE_SHADOW_BIT) != 0) {
+        if (this.style.isShadow()) {
             final float shadowOffset = TextRenderer.SHADOW_OFFSET_FACTOR * this.glyphs.get(this.glyphs.size() - 1).fontGlyph().font().getSize();
             this.visualBounds.maxX += shadowOffset;
             this.visualBounds.maxY += shadowOffset;
         }
-        if ((this.styleFlags & TextSegment.STYLE_BOLD_BIT) != 0 || this.outlineColor.getAlpha() > 0) {
+        if (this.style.isBold() || this.style.outlineColor().getAlpha() > 0) {
             final float boldOffset = this.glyphs.get(0).fontGlyph().font().getSize() / TextRenderer.BOLD_OFFSET_DIVIDER;
             this.visualBounds.minX -= boldOffset;
             this.visualBounds.minY -= boldOffset;
             this.visualBounds.maxX += boldOffset;
             this.visualBounds.maxY += boldOffset;
         }
-        if ((this.styleFlags & TextSegment.STYLE_ITALIC_BIT) != 0) {
+        if (this.style.isItalic()) {
             this.visualBounds.maxX += TextRenderer.ITALIC_SHEAR_FACTOR * -this.glyphs.get(this.glyphs.size() - 1).fontGlyph().bearingY();
         }
+    }
+
+
+    @Deprecated(forRemoval = true)
+    public ShapedTextSegment(final List<TextShaper.Glyph> glyphs, final Color color, final int styleFlags, final Color outlineColor, final Vector2f visualOffset, final Rectanglef visualBounds, final Rectanglef logicalBounds) {
+        this(glyphs, new TextStyle(color, styleFlags, outlineColor, visualOffset), visualBounds, logicalBounds);
+    }
+
+    @Deprecated(forRemoval = true)
+    public ShapedTextSegment(final List<TextShaper.Glyph> glyphs, final Color color, final int styleFlags, final Color outlineColor, final Vector2f visualOffset) {
+        this(glyphs, new TextStyle(color, styleFlags, outlineColor, visualOffset));
+    }
+
+    @Deprecated(forRemoval = true)
+    public Color color() {
+        return this.style.color();
+    }
+
+    @Deprecated(forRemoval = true)
+    public int styleFlags() {
+        return this.style.flags();
+    }
+
+    @Deprecated(forRemoval = true)
+    public Color outlineColor() {
+        return this.style.outlineColor();
+    }
+
+    @Deprecated(forRemoval = true)
+    public Vector2f visualOffset() {
+        return this.style.visualOffset();
     }
 
 }

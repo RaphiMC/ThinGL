@@ -22,6 +22,7 @@ import net.raphimc.thingl.rendering.bufferbuilder.ShaderBufferBuilder;
 import net.raphimc.thingl.rendering.bufferbuilder.impl.Std430ShaderBufferBuilder;
 import net.raphimc.thingl.rendering.dataholder.MultiDrawBatchDataHolder;
 import net.raphimc.thingl.resource.font.Font;
+import net.raphimc.thingl.text.TextStyle;
 import net.raphimc.thingl.text.shaping.ShapedTextSegment;
 import org.joml.Matrix4f;
 
@@ -40,8 +41,9 @@ public class SDFTextRenderer extends TextRenderer {
     @Override
     protected void renderTextSegment(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextSegment textSegment, final float x, final float y, final float z) {
         final ShaderBufferBuilder textDataBufferBuilder = multiDrawBatchDataHolder.getShaderStorageBufferBuilder(this.getDrawBatch(), "ssbo_TextData", Std430ShaderBufferBuilder.SUPPLIER).ensureInTopLevelArray();
+        final TextStyle textStyle = textSegment.style();
         final int fontSize = textSegment.glyphs().get(0).fontGlyph().font().getSize();
-        final int textDataIndex = textDataBufferBuilder.beginStruct(Integer.BYTES).writeInt(fontSize).writeColor(textSegment.color()).writeColor(textSegment.outlineColor()).writeInt(textSegment.styleFlags()).endStructAndGetTopLevelArrayIndex();
+        final int textDataIndex = textDataBufferBuilder.beginStruct(Integer.BYTES).writeInt(fontSize).writeColor(textStyle.color()).writeColor(textStyle.outlineColor()).writeInt(textStyle.flags()).endStructAndGetTopLevelArrayIndex();
         this.renderTextSegment(positionMatrix, multiDrawBatchDataHolder, textSegment, x, y, z, textDataIndex);
     }
 

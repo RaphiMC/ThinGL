@@ -20,14 +20,41 @@ package net.raphimc.thingl.text;
 import net.lenni0451.commons.color.Color;
 import org.joml.Vector2f;
 
-public record TextSegment(String text, Color color, int styleFlags, Color outlineColor, Vector2f visualOffset) {
+public record TextSegment(String text, TextStyle style) {
 
+    public TextSegment(final String text, final Color color, final int styleFlags, final Color outlineColor) {
+        this(text, new TextStyle(color, styleFlags, outlineColor));
+    }
+
+    public TextSegment(final String text, final Color color, final int styleFlags) {
+        this(text, new TextStyle(color, styleFlags));
+    }
+
+    public TextSegment(final String text, final Color color) {
+        this(text, new TextStyle(color));
+    }
+
+    public TextSegment(final String text) {
+        this(text, new TextStyle());
+    }
+
+
+    @Deprecated(forRemoval = true)
     public static final int STYLE_SHADOW_BIT = 1 << 0;
+
+    @Deprecated(forRemoval = true)
     public static final int STYLE_BOLD_BIT = 1 << 1;
+
+    @Deprecated(forRemoval = true)
     public static final int STYLE_ITALIC_BIT = 1 << 2;
+
+    @Deprecated(forRemoval = true)
     public static final int STYLE_UNDERLINE_BIT = 1 << 3;
+
+    @Deprecated(forRemoval = true)
     public static final int STYLE_STRIKETHROUGH_BIT = 1 << 4;
 
+    @Deprecated(forRemoval = true)
     public static int buildStyleFlags(final boolean shadow, final boolean bold, final boolean italic, final boolean underline, final boolean strikethrough) {
         int flags = 0;
         if (shadow) {
@@ -48,20 +75,29 @@ public record TextSegment(String text, Color color, int styleFlags, Color outlin
         return flags;
     }
 
-    public TextSegment(final String text, final Color color, final int styleFlags, final Color outlineColor) {
-        this(text, color, styleFlags, outlineColor, new Vector2f());
+    @Deprecated(forRemoval = true)
+    public TextSegment(final String text, final Color color, final int styleFlags, final Color outlineColor, final Vector2f visualOffset) {
+        this(text, new TextStyle(color, styleFlags, outlineColor, visualOffset));
     }
 
-    public TextSegment(final String text, final Color color, final int styleFlags) {
-        this(text, color, styleFlags, Color.TRANSPARENT);
+    @Deprecated(forRemoval = true)
+    public Color color() {
+        return this.style.color();
     }
 
-    public TextSegment(final String text, final Color color) {
-        this(text, color, 0);
+    @Deprecated(forRemoval = true)
+    public int styleFlags() {
+        return this.style.flags();
     }
 
-    public TextSegment(final String text) {
-        this(text, Color.WHITE);
+    @Deprecated(forRemoval = true)
+    public Color outlineColor() {
+        return this.style.outlineColor();
+    }
+
+    @Deprecated(forRemoval = true)
+    public Vector2f visualOffset() {
+        return this.style.visualOffset();
     }
 
 }

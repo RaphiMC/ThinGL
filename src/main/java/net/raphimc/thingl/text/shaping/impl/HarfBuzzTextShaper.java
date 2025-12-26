@@ -74,7 +74,7 @@ public class HarfBuzzTextShaper extends TextShaper {
         }
         final List<ShapedTextSegment> shapedTextSegments = new ArrayList<>(textRun.segments().size());
         for (TextSegment textSegment : textRun.segments()) {
-            shapedTextSegments.add(new ShapedTextSegment(new ArrayList<>(textSegment.text().length()), textSegment.color(), textSegment.styleFlags(), textSegment.outlineColor(), textSegment.visualOffset()));
+            shapedTextSegments.add(new ShapedTextSegment(new ArrayList<>(textSegment.text().length()), textSegment.style()));
         }
         float x = 0F;
         float y = 0F;

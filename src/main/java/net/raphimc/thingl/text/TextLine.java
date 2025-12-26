@@ -42,18 +42,34 @@ public record TextLine(List<TextRun> runs) {
         return new TextLine(TextRun.fromString(font, text, color, styleFlags));
     }
 
+    public static TextLine fromString(final Font font, final String text, final Color color, final int styleFlags, final Color outlineColor) {
+        return new TextLine(TextRun.fromString(font, text, color, styleFlags, outlineColor));
+    }
+
+    public static TextLine fromString(final Font font, final String text, final TextStyle style) {
+        return new TextLine(TextRun.fromString(font, text, style));
+    }
+
     public static TextLine fromString(final FontSet fontSet, final String text) {
-        return fromString(fontSet, text, Color.WHITE);
+        return fromString(fontSet, text, new TextStyle());
     }
 
     public static TextLine fromString(final FontSet fontSet, final String text, final Color color) {
-        return fromString(fontSet, text, color, 0);
+        return fromString(fontSet, text, new TextStyle(color));
     }
 
     public static TextLine fromString(final FontSet fontSet, final String text, final Color color, final int styleFlags) {
-        Font currentFont = fontSet.getMainFont();
-        final StringBuilder currentText = new StringBuilder(text.length());
+        return fromString(fontSet, text, new TextStyle(color, styleFlags));
+    }
+
+    public static TextLine fromString(final FontSet fontSet, final String text, final Color color, final int styleFlags, final Color outlineColor) {
+        return fromString(fontSet, text, new TextStyle(color, styleFlags, outlineColor));
+    }
+
+    public static TextLine fromString(final FontSet fontSet, final String text, final TextStyle style) {
         final List<TextRun> runs = new ArrayList<>();
+        final StringBuilder currentText = new StringBuilder(text.length());
+        Font currentFont = fontSet.getMainFont();
         for (int i = 0; i < text.length(); i++) {
             final int codePoint = text.codePointAt(i);
             if (codePoint >= Character.MIN_SUPPLEMENTARY_CODE_POINT) {
@@ -65,7 +81,7 @@ public record TextLine(List<TextRun> runs) {
             }
             if (font != currentFont) {
                 if (!currentText.isEmpty()) {
-                    runs.add(new TextRun(currentFont, new TextSegment(currentText.toString(), color, styleFlags)));
+                    runs.add(new TextRun(currentFont, new TextSegment(currentText.toString(), style)));
                     currentText.setLength(0);
                 }
                 currentFont = font;
@@ -73,7 +89,7 @@ public record TextLine(List<TextRun> runs) {
             currentText.appendCodePoint(codePoint);
         }
         if (!currentText.isEmpty()) {
-            runs.add(new TextRun(currentFont, new TextSegment(currentText.toString(), color, styleFlags)));
+            runs.add(new TextRun(currentFont, new TextSegment(currentText.toString(), style)));
         }
         return new TextLine(runs);
     }

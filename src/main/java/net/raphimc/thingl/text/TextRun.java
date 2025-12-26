@@ -29,15 +29,23 @@ import java.util.List;
 public record TextRun(Font font, List<TextSegment> segments) {
 
     public static TextRun fromString(final Font font, final String text) {
-        return fromString(font, text, Color.WHITE);
+        return new TextRun(font, new TextSegment(text));
     }
 
     public static TextRun fromString(final Font font, final String text, final Color color) {
-        return fromString(font, text, color, 0);
+        return new TextRun(font, new TextSegment(text, color));
     }
 
     public static TextRun fromString(final Font font, final String text, final Color color, final int styleFlags) {
         return new TextRun(font, new TextSegment(text, color, styleFlags));
+    }
+
+    public static TextRun fromString(final Font font, final String text, final Color color, final int styleFlags, final Color outlineColor) {
+        return new TextRun(font, new TextSegment(text, color, styleFlags, outlineColor));
+    }
+
+    public static TextRun fromString(final Font font, final String text, final TextStyle style) {
+        return new TextRun(font, new TextSegment(text, style));
     }
 
     public TextRun(final Font font, final TextSegment... segments) {

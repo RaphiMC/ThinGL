@@ -47,7 +47,7 @@ public class BasicTextShaper extends TextShaper {
                 glyphs.add(new Glyph(fontGlyph, x, 0F));
                 x += fontGlyph.xAdvance();
             }
-            shapedTextSegments.add(new ShapedTextSegment(glyphs, textSegment.color(), textSegment.styleFlags(), textSegment.outlineColor(), textSegment.visualOffset()));
+            shapedTextSegments.add(new ShapedTextSegment(glyphs, textSegment.style()));
         }
         return new ShapedTextRun(textRun.font(), shapedTextSegments);
     }
