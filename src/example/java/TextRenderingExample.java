@@ -27,6 +27,7 @@ import net.raphimc.thingl.resource.font.impl.FreeTypeFont;
 import net.raphimc.thingl.text.TextRun;
 import net.raphimc.thingl.text.TextSegment;
 import net.raphimc.thingl.text.TextStyle;
+import net.raphimc.thingl.text.markup.MarkupTextParser;
 import net.raphimc.thingl.text.shaping.ShapedTextRun;
 import net.raphimc.thingl.text.shaping.impl.HarfBuzzTextShaper;
 import org.joml.Matrix4f;
@@ -112,6 +113,11 @@ public class TextRenderingExample extends GLFWApplicationRunner {
         { // Multiple styles text
             positionMatrix.translate(0, this.robotoRegular.getSize(), 0);
             final TextRun textRun = TextRun.fromString(robotoRegular, "Multiple Styles", Color.WHITE, TextStyle.STYLE_SHADOW_BIT | TextStyle.STYLE_BOLD_BIT | TextStyle.STYLE_ITALIC_BIT, Color.BLUE);
+            this.sdfTextRenderer.textRun(positionMatrix, textRun, 0, 0);
+        }
+        { // Markup text
+            positionMatrix.translate(0, this.robotoRegular.getSize(), 0);
+            final TextRun textRun = MarkupTextParser.parse(robotoRegular, "<color rgb=#FF0000><u>Mark<i>up</i></u></color> <color value=blue><b>Text</b></color>");
             this.sdfTextRenderer.textRun(positionMatrix, textRun, 0, 0);
         }
         positionMatrix.popMatrix();
