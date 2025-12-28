@@ -18,9 +18,7 @@
 package net.raphimc.thingl.implementation;
 
 import net.raphimc.thingl.ThinGL;
-import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL30C;
-import org.lwjgl.opengl.NVFramebufferMixedSamples;
 import org.lwjgl.system.Configuration;
 import org.lwjgl.util.freetype.FreeType;
 
@@ -148,19 +146,11 @@ public class Capabilities {
     private final int maxSamples;
     private final int maxColorAttachments;
     private final int maxArrayTextureLayers;
-    private final boolean supportsNVFramebufferMixedSamples;
-    private final int nvFramebufferMixedSamplesMaxRasterSamples;
 
     public Capabilities() {
         this.maxSamples = ThinGL.glBackend().getInteger(GL30C.GL_MAX_SAMPLES);
         this.maxColorAttachments = ThinGL.glBackend().getInteger(GL30C.GL_MAX_COLOR_ATTACHMENTS);
         this.maxArrayTextureLayers = ThinGL.glBackend().getInteger(GL30C.GL_MAX_ARRAY_TEXTURE_LAYERS);
-        this.supportsNVFramebufferMixedSamples = GL.getCapabilities().GL_NV_framebuffer_mixed_samples;
-        if (this.supportsNVFramebufferMixedSamples) {
-            this.nvFramebufferMixedSamplesMaxRasterSamples = ThinGL.glBackend().getInteger(NVFramebufferMixedSamples.GL_MAX_RASTER_SAMPLES_EXT);
-        } else {
-            this.nvFramebufferMixedSamplesMaxRasterSamples = 0;
-        }
     }
 
     public int getMaxSamples() {
@@ -173,14 +163,6 @@ public class Capabilities {
 
     public int getMaxArrayTextureLayers() {
         return this.maxArrayTextureLayers;
-    }
-
-    public boolean supportsNVFramebufferMixedSamples() {
-        return this.supportsNVFramebufferMixedSamples;
-    }
-
-    public int getNVFramebufferMixedSamplesMaxRasterSamples() {
-        return this.nvFramebufferMixedSamplesMaxRasterSamples;
     }
 
     private static boolean isClassPresent(final String className) {
