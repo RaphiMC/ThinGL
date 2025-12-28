@@ -17,10 +17,10 @@
  */
 package net.raphimc.thingl.gl.resource.image.renderbuffer.impl;
 
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.resource.image.MultisampleImageStorage2D;
 import net.raphimc.thingl.gl.resource.image.renderbuffer.RenderBuffer;
 import org.lwjgl.opengl.GL30C;
-import org.lwjgl.opengl.GL45C;
 
 public class MultisampleRenderBuffer extends RenderBuffer implements MultisampleImageStorage2D {
 
@@ -38,7 +38,7 @@ public class MultisampleRenderBuffer extends RenderBuffer implements Multisample
 
     public void initialize(final int internalFormat, final int width, final int height, final int samples) {
         this.parameters.clear();
-        GL45C.glNamedRenderbufferStorageMultisample(this.getGlId(), samples, internalFormat, width, height);
+        ThinGL.glBackend().namedRenderbufferStorageMultisample(this.getGlId(), samples, internalFormat, width, height);
     }
 
     @Override

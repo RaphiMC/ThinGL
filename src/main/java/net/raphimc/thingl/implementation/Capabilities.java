@@ -17,8 +17,8 @@
  */
 package net.raphimc.thingl.implementation;
 
+import net.raphimc.thingl.ThinGL;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL30C;
 import org.lwjgl.opengl.NVFramebufferMixedSamples;
 import org.lwjgl.system.Configuration;
@@ -152,12 +152,12 @@ public class Capabilities {
     private final int nvFramebufferMixedSamplesMaxRasterSamples;
 
     public Capabilities() {
-        this.maxSamples = GL11C.glGetInteger(GL30C.GL_MAX_SAMPLES);
-        this.maxColorAttachments = GL11C.glGetInteger(GL30C.GL_MAX_COLOR_ATTACHMENTS);
-        this.maxArrayTextureLayers = GL11C.glGetInteger(GL30C.GL_MAX_ARRAY_TEXTURE_LAYERS);
+        this.maxSamples = ThinGL.glBackend().getInteger(GL30C.GL_MAX_SAMPLES);
+        this.maxColorAttachments = ThinGL.glBackend().getInteger(GL30C.GL_MAX_COLOR_ATTACHMENTS);
+        this.maxArrayTextureLayers = ThinGL.glBackend().getInteger(GL30C.GL_MAX_ARRAY_TEXTURE_LAYERS);
         this.supportsNVFramebufferMixedSamples = GL.getCapabilities().GL_NV_framebuffer_mixed_samples;
         if (this.supportsNVFramebufferMixedSamples) {
-            this.nvFramebufferMixedSamplesMaxRasterSamples = GL11C.glGetInteger(NVFramebufferMixedSamples.GL_MAX_RASTER_SAMPLES_EXT);
+            this.nvFramebufferMixedSamplesMaxRasterSamples = ThinGL.glBackend().getInteger(NVFramebufferMixedSamples.GL_MAX_RASTER_SAMPLES_EXT);
         } else {
             this.nvFramebufferMixedSamplesMaxRasterSamples = 0;
         }

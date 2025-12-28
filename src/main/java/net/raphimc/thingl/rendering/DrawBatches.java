@@ -79,10 +79,7 @@ public class DrawBatches {
 
     public static final DrawBatch COLOR_GL_LINE = new DrawBatch.Builder(COLOR_SNIPPET)
             .drawMode(DrawMode.LINES)
-            .appendSetupAction(() -> {
-                ThinGL.glStateStack().enable(GL11C.GL_LINE_SMOOTH);
-                GL11C.glHint(GL11C.GL_LINE_SMOOTH_HINT, GL11C.GL_NICEST);
-            })
+            .appendSetupAction(() -> ThinGL.glStateStack().enable(GL11C.GL_LINE_SMOOTH))
             .build();
 
     public static final DrawBatch COLOR_LINE = new DrawBatch.Builder(COLOR_SNIPPET)

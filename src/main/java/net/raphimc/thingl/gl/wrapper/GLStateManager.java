@@ -17,6 +17,7 @@
  */
 package net.raphimc.thingl.gl.wrapper;
 
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.resource.framebuffer.Framebuffer;
 import org.joml.primitives.Rectanglei;
 import org.lwjgl.opengl.GL11C;
@@ -27,7 +28,7 @@ import org.lwjgl.opengl.GL30C;
 public class GLStateManager {
 
     public boolean getCapability(final int capability) {
-        return GL11C.glIsEnabled(capability);
+        return ThinGL.glBackend().isEnabled(capability);
     }
 
     public void enable(final int capability) {
@@ -40,18 +41,18 @@ public class GLStateManager {
 
     public void setCapability(final int capability, final boolean state) {
         if (state) {
-            GL11C.glEnable(capability);
+            ThinGL.glBackend().enable(capability);
         } else {
-            GL11C.glDisable(capability);
+            ThinGL.glBackend().disable(capability);
         }
     }
 
     public BlendFunc getBlendFunc() {
         return new BlendFunc(
-                GL11C.glGetInteger(GL14C.GL_BLEND_SRC_RGB),
-                GL11C.glGetInteger(GL14C.GL_BLEND_DST_RGB),
-                GL11C.glGetInteger(GL14C.GL_BLEND_SRC_ALPHA),
-                GL11C.glGetInteger(GL14C.GL_BLEND_DST_ALPHA)
+                ThinGL.glBackend().getInteger(GL14C.GL_BLEND_SRC_RGB),
+                ThinGL.glBackend().getInteger(GL14C.GL_BLEND_DST_RGB),
+                ThinGL.glBackend().getInteger(GL14C.GL_BLEND_SRC_ALPHA),
+                ThinGL.glBackend().getInteger(GL14C.GL_BLEND_DST_ALPHA)
         );
     }
 
@@ -65,31 +66,31 @@ public class GLStateManager {
 
     public void setBlendFunc(final int srcRGB, final int dstRGB, final int srcAlpha, final int dstAlpha) {
         if (srcRGB == srcAlpha && dstRGB == dstAlpha) {
-            GL11C.glBlendFunc(srcRGB, dstRGB);
+            ThinGL.glBackend().blendFunc(srcRGB, dstRGB);
         } else {
-            GL14C.glBlendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha);
+            ThinGL.glBackend().blendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha);
         }
     }
 
     public int getDepthFunc() {
-        return GL11C.glGetInteger(GL11C.GL_DEPTH_FUNC);
+        return ThinGL.glBackend().getInteger(GL11C.GL_DEPTH_FUNC);
     }
 
     public void setDepthFunc(final int func) {
-        GL11C.glDepthFunc(func);
+        ThinGL.glBackend().depthFunc(func);
     }
 
     public int getBlendEquation() {
-        return GL11C.glGetInteger(GL14C.GL_BLEND_EQUATION);
+        return ThinGL.glBackend().getInteger(GL14C.GL_BLEND_EQUATION);
     }
 
     public void setBlendEquation(final int mode) {
-        GL14C.glBlendEquation(mode);
+        ThinGL.glBackend().blendEquation(mode);
     }
 
     public ColorMask getColorMask() {
         final int[] colorMask = new int[4];
-        GL11C.glGetIntegerv(GL11C.GL_COLOR_WRITEMASK, colorMask);
+        ThinGL.glBackend().getIntegerv(GL11C.GL_COLOR_WRITEMASK, colorMask);
         return new ColorMask(colorMask[0] != GL11C.GL_FALSE,
                 colorMask[1] != GL11C.GL_FALSE,
                 colorMask[2] != GL11C.GL_FALSE,
@@ -101,21 +102,21 @@ public class GLStateManager {
     }
 
     public void setColorMask(final boolean red, final boolean green, final boolean blue, final boolean alpha) {
-        GL11C.glColorMask(red, green, blue, alpha);
+        ThinGL.glBackend().colorMask(red, green, blue, alpha);
     }
 
     public boolean getDepthMask() {
-        return GL11C.glGetBoolean(GL11C.GL_DEPTH_WRITEMASK);
+        return ThinGL.glBackend().getBoolean(GL11C.GL_DEPTH_WRITEMASK);
     }
 
     public void setDepthMask(final boolean state) {
-        GL11C.glDepthMask(state);
+        ThinGL.glBackend().depthMask(state);
     }
 
     public StencilMask getStencilMask() {
         return new StencilMask(
-                GL11C.glGetInteger(GL11C.GL_STENCIL_WRITEMASK),
-                GL11C.glGetInteger(GL20C.GL_STENCIL_BACK_WRITEMASK)
+                ThinGL.glBackend().getInteger(GL11C.GL_STENCIL_WRITEMASK),
+                ThinGL.glBackend().getInteger(GL20C.GL_STENCIL_BACK_WRITEMASK)
         );
     }
 
@@ -129,16 +130,16 @@ public class GLStateManager {
 
     public void setStencilMask(final int front, final int back) {
         if (front == back) {
-            GL11C.glStencilMask(front);
+            ThinGL.glBackend().stencilMask(front);
         } else {
-            GL20C.glStencilMaskSeparate(GL11C.GL_FRONT, front);
-            GL20C.glStencilMaskSeparate(GL11C.GL_BACK, back);
+            ThinGL.glBackend().stencilMaskSeparate(GL11C.GL_FRONT, front);
+            ThinGL.glBackend().stencilMaskSeparate(GL11C.GL_BACK, back);
         }
     }
 
     public Scissor getScissor() {
         final int[] scissor = new int[4];
-        GL11C.glGetIntegerv(GL11C.GL_SCISSOR_BOX, scissor);
+        ThinGL.glBackend().getIntegerv(GL11C.GL_SCISSOR_BOX, scissor);
         return new Scissor(scissor);
     }
 
@@ -151,12 +152,12 @@ public class GLStateManager {
     }
 
     public void setScissor(final int x, final int y, final int width, final int height) {
-        GL11C.glScissor(x, y, width, height);
+        ThinGL.glBackend().scissor(x, y, width, height);
     }
 
     public Viewport getViewport() {
         final int[] viewport = new int[4];
-        GL11C.glGetIntegerv(GL11C.GL_VIEWPORT, viewport);
+        ThinGL.glBackend().getIntegerv(GL11C.GL_VIEWPORT, viewport);
         return new Viewport(viewport);
     }
 
@@ -169,37 +170,37 @@ public class GLStateManager {
     }
 
     public void setViewport(final int x, final int y, final int width, final int height) {
-        GL11C.glViewport(x, y, width, height);
+        ThinGL.glBackend().viewport(x, y, width, height);
     }
 
     public int getCullFace() {
-        return GL11C.glGetInteger(GL11C.GL_CULL_FACE_MODE);
+        return ThinGL.glBackend().getInteger(GL11C.GL_CULL_FACE_MODE);
     }
 
     public void setCullFace(final int mode) {
-        GL11C.glCullFace(mode);
+        ThinGL.glBackend().cullFace(mode);
     }
 
     public int getFrontFace() {
-        return GL11C.glGetInteger(GL11C.GL_FRONT_FACE);
+        return ThinGL.glBackend().getInteger(GL11C.GL_FRONT_FACE);
     }
 
     public void setFrontFace(final int dir) {
-        GL11C.glFrontFace(dir);
+        ThinGL.glBackend().frontFace(dir);
     }
 
     public int getLogicOp() {
-        return GL11C.glGetInteger(GL11C.GL_LOGIC_OP_MODE);
+        return ThinGL.glBackend().getInteger(GL11C.GL_LOGIC_OP_MODE);
     }
 
     public void setLogicOp(final int op) {
-        GL11C.glLogicOp(op);
+        ThinGL.glBackend().logicOp(op);
     }
 
     public PolygonOffset getPolygonOffset() {
         return new PolygonOffset(
-                GL11C.glGetFloat(GL11C.GL_POLYGON_OFFSET_FACTOR),
-                GL11C.glGetFloat(GL11C.GL_POLYGON_OFFSET_UNITS)
+                ThinGL.glBackend().getFloat(GL11C.GL_POLYGON_OFFSET_FACTOR),
+                ThinGL.glBackend().getFloat(GL11C.GL_POLYGON_OFFSET_UNITS)
         );
     }
 
@@ -208,39 +209,39 @@ public class GLStateManager {
     }
 
     public void setPolygonOffset(final float factor, final float units) {
-        GL11C.glPolygonOffset(factor, units);
+        ThinGL.glBackend().polygonOffset(factor, units);
     }
 
     public int getPixelStore(final int parameter) {
-        return GL11C.glGetInteger(parameter);
+        return ThinGL.glBackend().getInteger(parameter);
     }
 
     public void setPixelStore(final int parameter, final int value) {
-        GL11C.glPixelStorei(parameter, value);
+        ThinGL.glBackend().pixelStorei(parameter, value);
     }
 
     public int getProgram() {
-        return GL11C.glGetInteger(GL20C.GL_CURRENT_PROGRAM);
+        return ThinGL.glBackend().getInteger(GL20C.GL_CURRENT_PROGRAM);
     }
 
     public void setProgram(final int program) {
-        GL20C.glUseProgram(program);
+        ThinGL.glBackend().useProgram(program);
     }
 
     public int getVertexArray() {
-        return GL11C.glGetInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
+        return ThinGL.glBackend().getInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
     }
 
     public void setVertexArray(final int vertexArray) {
-        GL30C.glBindVertexArray(vertexArray);
+        ThinGL.glBackend().bindVertexArray(vertexArray);
     }
 
     public Framebuffer getDrawFramebuffer() {
-        return Framebuffer.fromGlIdUnsafe(GL11C.glGetInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING));
+        return Framebuffer.fromGlIdUnsafe(ThinGL.glBackend().getInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING));
     }
 
     public void setDrawFramebuffer(final Framebuffer framebuffer) {
-        GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, framebuffer.getGlId());
+        ThinGL.glBackend().bindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, framebuffer.getGlId());
     }
 
     public record BlendFunc(int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) {

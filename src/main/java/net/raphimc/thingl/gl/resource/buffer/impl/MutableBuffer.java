@@ -17,10 +17,10 @@
  */
 package net.raphimc.thingl.gl.resource.buffer.impl;
 
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.resource.buffer.Buffer;
 import net.raphimc.thingl.resource.memory.Memory;
 import org.lwjgl.opengl.GL15C;
-import org.lwjgl.opengl.GL45C;
 
 public class MutableBuffer extends Buffer {
 
@@ -42,12 +42,12 @@ public class MutableBuffer extends Buffer {
 
     public void initialize(final long size, final int usage) {
         this.parameters.clear();
-        GL45C.glNamedBufferData(this.getGlId(), size, usage);
+        ThinGL.glBackend().namedBufferData(this.getGlId(), size, usage);
     }
 
     public void initialize(final Memory data, final int usage) {
         this.parameters.clear();
-        GL45C.nglNamedBufferData(this.getGlId(), data.getSize(), data.getAddress(), usage);
+        ThinGL.glBackend().namedBufferData(this.getGlId(), data.getSize(), data.getAddress(), usage);
     }
 
     public void ensureSize(final long size) {

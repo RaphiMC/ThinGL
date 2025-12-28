@@ -18,11 +18,11 @@
 package net.raphimc.thingl.gl.resource.image.texture.impl;
 
 import net.lenni0451.commons.color.Color;
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.resource.image.ImageStorage1D;
 import net.raphimc.thingl.gl.resource.image.texture.SampledTexture;
 import net.raphimc.thingl.resource.image.Image;
 import org.lwjgl.opengl.GL11C;
-import org.lwjgl.opengl.GL45C;
 
 public class Texture1D extends SampledTexture implements ImageStorage1D {
 
@@ -32,7 +32,7 @@ public class Texture1D extends SampledTexture implements ImageStorage1D {
 
     public Texture1D(final int internalFormat, final int width, final int mipMapLevels) {
         super(GL11C.GL_TEXTURE_1D);
-        GL45C.glTextureStorage1D(this.getGlId(), mipMapLevels, internalFormat, width);
+        ThinGL.glBackend().textureStorage1D(this.getGlId(), mipMapLevels, internalFormat, width);
     }
 
     protected Texture1D(final int glId) {

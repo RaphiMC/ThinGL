@@ -17,9 +17,9 @@
  */
 package net.raphimc.thingl.gl.resource.image.renderbuffer.impl;
 
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.resource.image.ImageStorage2D;
 import net.raphimc.thingl.gl.resource.image.renderbuffer.RenderBuffer;
-import org.lwjgl.opengl.GL45C;
 
 public class StandardRenderBuffer extends RenderBuffer implements ImageStorage2D {
 
@@ -37,7 +37,7 @@ public class StandardRenderBuffer extends RenderBuffer implements ImageStorage2D
 
     public void initialize(final int internalFormat, final int width, final int height) {
         this.parameters.clear();
-        GL45C.glNamedRenderbufferStorage(this.getGlId(), internalFormat, width, height);
+        ThinGL.glBackend().namedRenderbufferStorage(this.getGlId(), internalFormat, width, height);
     }
 
 }

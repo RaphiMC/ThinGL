@@ -17,19 +17,19 @@
  */
 package net.raphimc.thingl.gl.resource.buffer.impl;
 
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.resource.buffer.Buffer;
 import net.raphimc.thingl.resource.memory.Memory;
 import org.lwjgl.opengl.GL44C;
-import org.lwjgl.opengl.GL45C;
 
 public class ImmutableBuffer extends Buffer {
 
     public ImmutableBuffer(final long size, final int flags) {
-        GL45C.glNamedBufferStorage(this.getGlId(), size, flags);
+        ThinGL.glBackend().namedBufferStorage(this.getGlId(), size, flags);
     }
 
     public ImmutableBuffer(final Memory data, final int flags) {
-        GL45C.nglNamedBufferStorage(this.getGlId(), data.getSize(), data.getAddress(), flags);
+        ThinGL.glBackend().namedBufferStorage(this.getGlId(), data.getSize(), data.getAddress(), flags);
     }
 
     protected ImmutableBuffer(final int glId) {

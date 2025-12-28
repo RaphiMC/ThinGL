@@ -19,20 +19,19 @@ package net.raphimc.thingl.gl.resource.image.renderbuffer;
 
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.resource.GLObject;
 import net.raphimc.thingl.gl.resource.image.ImageStorage;
 import net.raphimc.thingl.gl.resource.image.renderbuffer.impl.MultisampleRenderBuffer;
 import net.raphimc.thingl.gl.resource.image.renderbuffer.impl.StandardRenderBuffer;
 import org.lwjgl.opengl.GL30C;
-import org.lwjgl.opengl.GL43C;
-import org.lwjgl.opengl.GL45C;
 
 public abstract class RenderBuffer extends GLObject implements ImageStorage {
 
     protected final Int2IntMap parameters = new Int2IntOpenHashMap();
 
     public RenderBuffer() {
-        super(GL45C.glCreateRenderbuffers());
+        super(ThinGL.glBackend().createRenderbuffers());
     }
 
     protected RenderBuffer(final int glId) {
@@ -40,14 +39,14 @@ public abstract class RenderBuffer extends GLObject implements ImageStorage {
     }
 
     public static RenderBuffer fromGlId(final int glId) {
-        if (!GL30C.glIsRenderbuffer(glId)) {
+        if (!ThinGL.glBackend().isRenderbuffer(glId)) {
             throw new IllegalArgumentException("Not a renderbuffer object");
         }
         return fromGlIdUnsafe(glId);
     }
 
     public static RenderBuffer fromGlIdUnsafe(final int glId) {
-        final int samples = GL45C.glGetNamedRenderbufferParameteri(glId, GL30C.GL_RENDERBUFFER_SAMPLES);
+        final int samples = ThinGL.glBackend().getNamedRenderbufferParameteri(glId, GL30C.GL_RENDERBUFFER_SAMPLES);
         if (samples == 0) {
             return StandardRenderBuffer.fromGlIdUnsafe(glId);
         } else {
@@ -57,12 +56,12 @@ public abstract class RenderBuffer extends GLObject implements ImageStorage {
 
     @Override
     public void copyTo(final ImageStorage target, final int srcLevel, final int srcX, final int srcY, final int srcZ, final int dstLevel, final int dstX, final int dstY, final int dstZ, final int width, final int height, final int depth) {
-        GL43C.glCopyImageSubData(this.getGlId(), this.getTarget(), srcLevel, srcX, srcY, srcZ, target.getGlId(), target.getTarget(), dstLevel, dstX, dstY, dstZ, width, height, depth);
+        ThinGL.glBackend().copyImageSubData(this.getGlId(), this.getTarget(), srcLevel, srcX, srcY, srcZ, target.getGlId(), target.getTarget(), dstLevel, dstX, dstY, dstZ, width, height, depth);
     }
 
     @Override
     protected void free0() {
-        GL30C.glDeleteRenderbuffers(this.getGlId());
+        ThinGL.glBackend().deleteRenderbuffers(this.getGlId());
     }
 
     @Override
@@ -77,7 +76,7 @@ public abstract class RenderBuffer extends GLObject implements ImageStorage {
 
     public int getParameterInt(final int parameter) {
         if (!this.parameters.containsKey(parameter)) {
-            this.parameters.put(parameter, GL45C.glGetNamedRenderbufferParameteri(this.getGlId(), parameter));
+            this.parameters.put(parameter, ThinGL.glBackend().getNamedRenderbufferParameteri(this.getGlId(), parameter));
         }
         return this.parameters.get(parameter);
     }

@@ -36,6 +36,8 @@ import net.raphimc.thingl.implementation.Capabilities;
 import net.raphimc.thingl.implementation.Config;
 import net.raphimc.thingl.implementation.GlobalUniforms;
 import net.raphimc.thingl.implementation.Workarounds;
+import net.raphimc.thingl.implementation.gl.GLBackend;
+import net.raphimc.thingl.implementation.gl.impl.GL45Backend;
 import net.raphimc.thingl.implementation.instance.InstanceManager;
 import net.raphimc.thingl.implementation.instance.SingleInstanceManager;
 import net.raphimc.thingl.implementation.window.WindowInterface;
@@ -75,6 +77,10 @@ public class ThinGL {
 
     public static WindowInterface windowInterface() {
         return get().getWindowInterface();
+    }
+
+    public static GLBackend glBackend() {
+        return get().getGLBackend();
     }
 
     public static GLStateManager glStateManager() {
@@ -160,6 +166,7 @@ public class ThinGL {
     private final Thread renderThread;
     private final WindowInterface windowInterface;
     private final Config config;
+    private final GLBackend glBackend;
     private final GLStateManager glStateManager;
     private final Capabilities capabilities;
     private final Workarounds workarounds;
@@ -210,6 +217,7 @@ public class ThinGL {
         this.renderThread = Thread.currentThread();
         this.windowInterface = windowInterface;
         this.config = this.createConfig();
+        this.glBackend = this.createGLBackend();
         this.glStateManager = this.createGLStateManager();
         this.capabilities = this.createCapabilities();
         this.workarounds = this.createWorkarounds();
@@ -241,9 +249,9 @@ public class ThinGL {
             }
         });
 
-        final String gpuVendor = GL11C.glGetString(GL11C.GL_VENDOR);
-        final String gpuModel = GL11C.glGetString(GL11C.GL_RENDERER);
-        final String glVersion = GL11C.glGetString(GL11C.GL_VERSION);
+        final String gpuVendor = this.glBackend.getString(GL11C.GL_VENDOR);
+        final String gpuModel = this.glBackend.getString(GL11C.GL_RENDERER);
+        final String glVersion = this.glBackend.getString(GL11C.GL_VERSION);
         LOGGER.info("Initialized ThinGL " + IMPL_VERSION + " on " + gpuModel + " (" + gpuVendor + ") with OpenGL " + glVersion);
     }
 
@@ -403,6 +411,10 @@ public class ThinGL {
         return this.windowInterface;
     }
 
+    public GLBackend getGLBackend() {
+        return this.glBackend;
+    }
+
     public GLStateManager getGLStateManager() {
         return this.glStateManager;
     }
@@ -485,6 +497,10 @@ public class ThinGL {
 
     protected Config createConfig() {
         return new Config();
+    }
+
+    protected GL45Backend createGLBackend() {
+        return new GL45Backend();
     }
 
     protected GLStateManager createGLStateManager() {

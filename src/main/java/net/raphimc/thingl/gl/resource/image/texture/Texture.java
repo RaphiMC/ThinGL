@@ -31,7 +31,7 @@ public abstract class Texture extends GLObject {
     protected final Int2ObjectMap<Int2IntMap> levelParameters = new Int2ObjectOpenHashMap<>();
 
     public Texture(final int target) {
-        super(GL45C.glCreateTextures(target));
+        super(ThinGL.glBackend().createTextures(target));
     }
 
     protected Texture(final int glId, final Object unused) {
@@ -39,7 +39,7 @@ public abstract class Texture extends GLObject {
     }
 
     public static Texture fromGlId(final int glId) {
-        if (!GL11C.glIsTexture(glId)) {
+        if (!ThinGL.glBackend().isTexture(glId)) {
             throw new IllegalArgumentException("Not a texture object");
         }
         return fromGlIdUnsafe(glId);
@@ -64,7 +64,7 @@ public abstract class Texture extends GLObject {
 
     @Override
     protected void free0() {
-        GL11C.glDeleteTextures(this.getGlId());
+        ThinGL.glBackend().deleteTextures(this.getGlId());
     }
 
     @Override
@@ -79,7 +79,7 @@ public abstract class Texture extends GLObject {
             this.levelParameters.put(level, parameters);
         }
         if (!parameters.containsKey(parameter)) {
-            parameters.put(parameter, GL45C.glGetTextureLevelParameteri(this.getGlId(), level, parameter));
+            parameters.put(parameter, ThinGL.glBackend().getTextureLevelParameteri(this.getGlId(), level, parameter));
         }
         return parameters.get(parameter);
     }
@@ -121,10 +121,10 @@ public abstract class Texture extends GLObject {
 
     protected static int getTextureTarget(final int glId) {
         if (!ThinGL.workarounds().isGetTextureParameterTextureTargetBroken()) {
-            return GL45C.glGetTextureParameteri(glId, GL45C.GL_TEXTURE_TARGET);
+            return ThinGL.glBackend().getTextureParameteri(glId, GL45C.GL_TEXTURE_TARGET);
         } else {
-            final int depth = GL45C.glGetTextureLevelParameteri(glId, 0, GL12C.GL_TEXTURE_DEPTH);
-            final int samples = GL45C.glGetTextureLevelParameteri(glId, 0, GL32C.GL_TEXTURE_SAMPLES);
+            final int depth = ThinGL.glBackend().getTextureLevelParameteri(glId, 0, GL12C.GL_TEXTURE_DEPTH);
+            final int samples = ThinGL.glBackend().getTextureLevelParameteri(glId, 0, GL32C.GL_TEXTURE_SAMPLES);
             if (samples == 0) {
                 if (depth > 1) {
                     return GL12C.GL_TEXTURE_3D;

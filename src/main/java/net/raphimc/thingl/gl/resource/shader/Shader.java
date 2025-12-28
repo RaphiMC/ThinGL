@@ -27,7 +27,7 @@ public class Shader extends GLObject {
     private String source;
 
     public Shader(final Type type, final String source) {
-        super(GL20C.glCreateShader(type.getGlType()));
+        super(ThinGL.glBackend().createShader(type.getGlType()));
         this.type = type.getGlType();
         try {
             this.setSource(source);
@@ -43,7 +43,7 @@ public class Shader extends GLObject {
     }
 
     public static Shader fromGlId(final int glId) {
-        if (!GL20C.glIsShader(glId)) {
+        if (!ThinGL.glBackend().isShader(glId)) {
             throw new IllegalArgumentException("Not a shader object");
         }
         return fromGlIdUnsafe(glId);
@@ -54,9 +54,9 @@ public class Shader extends GLObject {
     }
 
     public void compile() {
-        GL20C.glCompileShader(this.getGlId());
-        final String compileLog = GL20C.glGetShaderInfoLog(this.getGlId());
-        if (GL20C.glGetShaderi(this.getGlId(), GL20C.GL_COMPILE_STATUS) == GL11C.GL_FALSE) {
+        ThinGL.glBackend().compileShader(this.getGlId());
+        final String compileLog = ThinGL.glBackend().getShaderInfoLog(this.getGlId());
+        if (ThinGL.glBackend().getShaderi(this.getGlId(), GL20C.GL_COMPILE_STATUS) == GL11C.GL_FALSE) {
             throw new IllegalStateException("Error compiling shader: " + compileLog);
         } else if (!compileLog.isBlank()) {
             ThinGL.LOGGER.warn("Shader compile log: " + compileLog);
@@ -65,7 +65,7 @@ public class Shader extends GLObject {
 
     @Override
     protected void free0() {
-        GL20C.glDeleteShader(this.getGlId());
+        ThinGL.glBackend().deleteShader(this.getGlId());
     }
 
     @Override
@@ -75,7 +75,7 @@ public class Shader extends GLObject {
 
     public int getType() {
         if (this.type == null) {
-            this.type = GL20C.glGetShaderi(this.getGlId(), GL20C.GL_SHADER_TYPE);
+            this.type = ThinGL.glBackend().getShaderi(this.getGlId(), GL20C.GL_SHADER_TYPE);
         }
         return this.type;
     }
@@ -86,14 +86,14 @@ public class Shader extends GLObject {
 
     public String getSource() {
         if (this.source == null) {
-            this.source = GL20C.glGetShaderSource(this.getGlId());
+            this.source = ThinGL.glBackend().getShaderSource(this.getGlId());
         }
         return this.source;
     }
 
     public void setSource(final String source) {
         this.source = source;
-        GL20C.glShaderSource(this.getGlId(), source);
+        ThinGL.glBackend().shaderSource(this.getGlId(), source);
     }
 
     public enum Type {

@@ -19,6 +19,7 @@ package net.raphimc.thingl.gl.resource.buffer;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.resource.GLObject;
 import net.raphimc.thingl.gl.resource.buffer.impl.ImmutableBuffer;
 import net.raphimc.thingl.gl.resource.buffer.impl.MutableBuffer;
@@ -34,7 +35,7 @@ public abstract class Buffer extends GLObject {
     protected final Int2ObjectMap<Object> parameters = new Int2ObjectOpenHashMap<>();
 
     public Buffer() {
-        super(GL45C.glCreateBuffers());
+        super(ThinGL.glBackend().createBuffers());
     }
 
     protected Buffer(final int glId) {
@@ -42,14 +43,14 @@ public abstract class Buffer extends GLObject {
     }
 
     public static Buffer fromGlId(final int glId) {
-        if (!GL15C.glIsBuffer(glId)) {
+        if (!ThinGL.glBackend().isBuffer(glId)) {
             throw new IllegalArgumentException("Not a buffer object");
         }
         return fromGlIdUnsafe(glId);
     }
 
     public static Buffer fromGlIdUnsafe(final int glId) {
-        final boolean immutable = GL45C.glGetNamedBufferParameteri(glId, GL45C.GL_BUFFER_IMMUTABLE_STORAGE) != GL11C.GL_FALSE;
+        final boolean immutable = ThinGL.glBackend().getNamedBufferParameteri(glId, GL45C.GL_BUFFER_IMMUTABLE_STORAGE) != GL11C.GL_FALSE;
         if (immutable) {
             return ImmutableBuffer.fromGlIdUnsafe(glId);
         } else {
@@ -62,7 +63,7 @@ public abstract class Buffer extends GLObject {
     }
 
     public void upload(final long offset, final Memory data) {
-        GL45C.nglNamedBufferSubData(this.getGlId(), offset, data.getSize(), data.getAddress());
+        ThinGL.glBackend().namedBufferSubData(this.getGlId(), offset, data.getSize(), data.getAddress());
     }
 
     public Memory download() {
@@ -71,17 +72,17 @@ public abstract class Buffer extends GLObject {
 
     public Memory download(final long offset, final long length) {
         final Memory data = MemoryAllocator.allocateMemory(length);
-        GL45C.nglGetNamedBufferSubData(this.getGlId(), offset, data.getSize(), data.getAddress());
+        ThinGL.glBackend().getNamedBufferSubData(this.getGlId(), offset, data.getSize(), data.getAddress());
         return data;
     }
 
     public void copyTo(final Buffer target, final long readOffset, final long writeOffset, final long length) {
-        GL45C.glCopyNamedBufferSubData(this.getGlId(), target.getGlId(), readOffset, writeOffset, length);
+        ThinGL.glBackend().copyNamedBufferSubData(this.getGlId(), target.getGlId(), readOffset, writeOffset, length);
     }
 
     public Memory map(final int access) {
         this.parameters.clear();
-        return MemoryAllocator.wrapMemory(GL45C.nglMapNamedBuffer(this.getGlId(), access), this.getSize());
+        return MemoryAllocator.wrapMemory(ThinGL.glBackend().mapNamedBuffer(this.getGlId(), access), this.getSize());
     }
 
     public Memory mapFullRange(final int accessFlags) {
@@ -90,21 +91,21 @@ public abstract class Buffer extends GLObject {
 
     public Memory mapRange(final long offset, final long length, final int accessFlags) {
         this.parameters.clear();
-        return MemoryAllocator.wrapMemory(GL45C.nglMapNamedBufferRange(this.getGlId(), offset, length, accessFlags), length);
+        return MemoryAllocator.wrapMemory(ThinGL.glBackend().mapNamedBufferRange(this.getGlId(), offset, length, accessFlags), length);
     }
 
     public void flush(final long offset, final long length) {
-        GL45C.glFlushMappedNamedBufferRange(this.getGlId(), offset, length);
+        ThinGL.glBackend().flushMappedNamedBufferRange(this.getGlId(), offset, length);
     }
 
     public void unmap() {
         this.parameters.clear();
-        GL45C.glUnmapNamedBuffer(this.getGlId());
+        ThinGL.glBackend().unmapNamedBuffer(this.getGlId());
     }
 
     @Override
     protected void free0() {
-        GL15C.glDeleteBuffers(this.getGlId());
+        ThinGL.glBackend().deleteBuffers(this.getGlId());
     }
 
     @Override
@@ -115,7 +116,7 @@ public abstract class Buffer extends GLObject {
     public int getParameterInt(final int parameter) {
         Object value = this.parameters.get(parameter);
         if (!(value instanceof Integer)) {
-            value = GL45C.glGetNamedBufferParameteri(this.getGlId(), parameter);
+            value = ThinGL.glBackend().getNamedBufferParameteri(this.getGlId(), parameter);
             this.parameters.put(parameter, value);
         }
         return (int) value;
@@ -124,7 +125,7 @@ public abstract class Buffer extends GLObject {
     public long getParameterLong(final int parameter) {
         Object value = this.parameters.get(parameter);
         if (!(value instanceof Long)) {
-            value = GL45C.glGetNamedBufferParameteri64(this.getGlId(), parameter);
+            value = ThinGL.glBackend().getNamedBufferParameteri64(this.getGlId(), parameter);
             this.parameters.put(parameter, value);
         }
         return (long) value;

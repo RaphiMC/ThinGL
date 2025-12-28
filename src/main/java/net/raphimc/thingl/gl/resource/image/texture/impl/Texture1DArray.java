@@ -18,12 +18,12 @@
 package net.raphimc.thingl.gl.resource.image.texture.impl;
 
 import net.lenni0451.commons.color.Color;
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.resource.image.ImageStorage2D;
 import net.raphimc.thingl.gl.resource.image.texture.SampledTexture;
 import net.raphimc.thingl.resource.image.Image;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL30C;
-import org.lwjgl.opengl.GL45C;
 
 public class Texture1DArray extends SampledTexture implements ImageStorage2D {
 
@@ -33,7 +33,7 @@ public class Texture1DArray extends SampledTexture implements ImageStorage2D {
 
     public Texture1DArray(final int internalFormat, final int width, final int layers, final int mipMapLevels) {
         super(GL30C.GL_TEXTURE_1D_ARRAY);
-        GL45C.glTextureStorage2D(this.getGlId(), mipMapLevels, internalFormat, width, layers);
+        ThinGL.glBackend().textureStorage2D(this.getGlId(), mipMapLevels, internalFormat, width, layers);
     }
 
     protected Texture1DArray(final int glId) {

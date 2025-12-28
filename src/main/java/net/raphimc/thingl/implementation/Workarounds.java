@@ -17,6 +17,7 @@
  */
 package net.raphimc.thingl.implementation;
 
+import net.raphimc.thingl.ThinGL;
 import org.lwjgl.opengl.GL11C;
 
 public class Workarounds {
@@ -24,12 +25,12 @@ public class Workarounds {
     private final boolean isIntelGpu;
 
     public Workarounds() {
-        final String gpuVendor = GL11C.glGetString(GL11C.GL_VENDOR);
+        final String gpuVendor = ThinGL.glBackend().getString(GL11C.GL_VENDOR);
         this.isIntelGpu = gpuVendor != null && gpuVendor.equalsIgnoreCase("Intel");
     }
 
     /**
-     * The Intel OpenGL driver has a bug, where calling GL45C.glVertexArrayElementBuffer(vaoId, 0); generates an error.<br>
+     * The Intel OpenGL driver has a bug, where calling glVertexArrayElementBuffer(vaoId, 0); generates an error.<br>
      * Confirmed broken on Intel UHD Graphics 630 (Driver version: 31.0.101.2134)
      *
      * @return Whether ThinGL should use the non DSA method to unbind the element buffer.
@@ -39,7 +40,7 @@ public class Workarounds {
     }
 
     /**
-     * The Intel OpenGL driver doesn't support GL45C.glGetTextureParameteri(texId, GL45C.GL_TEXTURE_TARGET); even tho it's required by the OpenGL 4.5 specification.<br>
+     * The Intel OpenGL driver doesn't support glGetTextureParameteri(texId, GL_TEXTURE_TARGET); even tho it's required by the OpenGL 4.5 specification.<br>
      * Confirmed broken on Intel UHD Graphics 630 (Driver version: 31.0.101.2134)
      *
      * @return Whether ThinGL should use an alternative way to determine the texture type.

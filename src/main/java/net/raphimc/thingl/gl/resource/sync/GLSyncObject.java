@@ -17,6 +17,7 @@
  */
 package net.raphimc.thingl.gl.resource.sync;
 
+import net.raphimc.thingl.ThinGL;
 import org.lwjgl.opengl.GL32C;
 
 import java.util.Objects;
@@ -30,14 +31,14 @@ public abstract class GLSyncObject {
     }
 
     public static GLSyncObject fromPointer(final long pointer) {
-        if (!GL32C.glIsSync(pointer)) {
+        if (!ThinGL.glBackend().isSync(pointer)) {
             throw new IllegalArgumentException("Not a sync object");
         }
         return fromPointerUnsafe(pointer);
     }
 
     public static GLSyncObject fromPointerUnsafe(final long pointer) {
-        final int objectType = GL32C.glGetSynci(pointer, GL32C.GL_OBJECT_TYPE, null);
+        final int objectType = ThinGL.glBackend().getSynci(pointer, GL32C.GL_OBJECT_TYPE);
         return switch (objectType) {
             case GL32C.GL_SYNC_FENCE -> FenceSync.fromPointerUnsafe(pointer);
             default -> throw new IllegalArgumentException("Unsupported sync object type: " + objectType);
@@ -47,7 +48,7 @@ public abstract class GLSyncObject {
     public void free() {
         if (this.isAllocated()) {
             try {
-                GL32C.glDeleteSync(this.pointer);
+                ThinGL.glBackend().deleteSync(this.pointer);
             } finally {
                 this.pointer = 0L;
             }
