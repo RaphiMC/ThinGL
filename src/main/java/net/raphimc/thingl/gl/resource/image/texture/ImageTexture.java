@@ -108,11 +108,7 @@ public abstract class ImageTexture extends Texture implements ImageStorage {
     public int getParameterInt(final int parameter) {
         Object value = this.parameters.get(parameter);
         if (!(value instanceof Integer)) {
-            if (parameter == GL45C.GL_TEXTURE_TARGET && ThinGL.workarounds().isGetTextureParameterTextureTargetBroken()) {
-                value = getTextureTarget(this.getGlId());
-            } else {
-                value = ThinGL.glBackend().getTextureParameteri(this.getGlId(), parameter);
-            }
+            value = ThinGL.glBackend().getTextureParameteri(this.getGlId(), parameter);
             this.parameters.put(parameter, value);
         }
         return (int) value;

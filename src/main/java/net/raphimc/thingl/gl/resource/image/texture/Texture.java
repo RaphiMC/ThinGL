@@ -46,7 +46,7 @@ public abstract class Texture extends GLObject {
     }
 
     public static Texture fromGlIdUnsafe(final int glId) {
-        final int target = getTextureTarget(glId);
+        final int target = ThinGL.glBackend().getTextureParameteri(glId, GL45C.GL_TEXTURE_TARGET);
         return switch (target) {
             case GL11C.GL_TEXTURE_1D -> Texture1D.fromGlIdUnsafe(glId);
             case GL30C.GL_TEXTURE_1D_ARRAY -> Texture1DArray.fromGlIdUnsafe(glId);
@@ -116,29 +116,6 @@ public abstract class Texture extends GLObject {
 
     public int getDepth(final int level) {
         return this.getLevelParameterInt(level, GL12C.GL_TEXTURE_DEPTH);
-    }
-
-
-    protected static int getTextureTarget(final int glId) {
-        if (!ThinGL.workarounds().isGetTextureParameterTextureTargetBroken()) {
-            return ThinGL.glBackend().getTextureParameteri(glId, GL45C.GL_TEXTURE_TARGET);
-        } else {
-            final int depth = ThinGL.glBackend().getTextureLevelParameteri(glId, 0, GL12C.GL_TEXTURE_DEPTH);
-            final int samples = ThinGL.glBackend().getTextureLevelParameteri(glId, 0, GL32C.GL_TEXTURE_SAMPLES);
-            if (samples == 0) {
-                if (depth > 1) {
-                    return GL12C.GL_TEXTURE_3D;
-                } else {
-                    return GL11C.GL_TEXTURE_2D;
-                }
-            } else {
-                if (depth > 1) {
-                    return GL32C.GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
-                } else {
-                    return GL32C.GL_TEXTURE_2D_MULTISAMPLE;
-                }
-            }
-        }
     }
 
 }

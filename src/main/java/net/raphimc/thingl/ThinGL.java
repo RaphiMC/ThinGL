@@ -79,24 +79,24 @@ public class ThinGL {
         return get().getWindowInterface();
     }
 
+    public static Config config() {
+        return get().getConfig();
+    }
+
     public static GLBackend glBackend() {
         return get().getGLBackend();
     }
 
-    public static GLStateManager glStateManager() {
-        return get().getGLStateManager();
-    }
-
-    public static Config config() {
-        return get().getConfig();
+    public static Workarounds workarounds() {
+        return get().getWorkarounds();
     }
 
     public static Capabilities capabilities() {
         return get().getCapabilities();
     }
 
-    public static Workarounds workarounds() {
-        return get().getWorkarounds();
+    public static GLStateManager glStateManager() {
+        return get().getGLStateManager();
     }
 
     public static GLStateStack glStateStack() {
@@ -167,9 +167,9 @@ public class ThinGL {
     private final WindowInterface windowInterface;
     private final Config config;
     private final GLBackend glBackend;
-    private final GLStateManager glStateManager;
-    private final Capabilities capabilities;
     private final Workarounds workarounds;
+    private final Capabilities capabilities;
+    private final GLStateManager glStateManager;
 
     private final GLStateStack glStateStack;
     private final ScissorStack scissorStack;
@@ -218,9 +218,9 @@ public class ThinGL {
         this.windowInterface = windowInterface;
         this.config = this.createConfig();
         this.glBackend = this.createGLBackend();
-        this.glStateManager = this.createGLStateManager();
-        this.capabilities = this.createCapabilities();
         this.workarounds = this.createWorkarounds();
+        this.capabilities = this.createCapabilities();
+        this.glStateManager = this.createGLStateManager();
         this.glStateStack = this.createGLStateStack();
         this.scissorStack = this.createScissorStack();
         this.stencilStack = this.createStencilStack();
@@ -411,24 +411,24 @@ public class ThinGL {
         return this.windowInterface;
     }
 
+    public Config getConfig() {
+        return this.config;
+    }
+
     public GLBackend getGLBackend() {
         return this.glBackend;
     }
 
-    public GLStateManager getGLStateManager() {
-        return this.glStateManager;
-    }
-
-    public Config getConfig() {
-        return this.config;
+    public Workarounds getWorkarounds() {
+        return this.workarounds;
     }
 
     public Capabilities getCapabilities() {
         return this.capabilities;
     }
 
-    public Workarounds getWorkarounds() {
-        return this.workarounds;
+    public GLStateManager getGLStateManager() {
+        return this.glStateManager;
     }
 
     public GLStateStack getGLStateStack() {
@@ -499,20 +499,20 @@ public class ThinGL {
         return new Config();
     }
 
-    protected GL45Backend createGLBackend() {
+    protected GLBackend createGLBackend() {
         return new GL45Backend();
     }
 
-    protected GLStateManager createGLStateManager() {
-        return new TrackingGLStateManager();
+    protected Workarounds createWorkarounds() {
+        return new Workarounds();
     }
 
     protected Capabilities createCapabilities() {
         return new Capabilities();
     }
 
-    protected Workarounds createWorkarounds() {
-        return new Workarounds();
+    protected GLStateManager createGLStateManager() {
+        return new TrackingGLStateManager();
     }
 
     protected GLStateStack createGLStateStack() {

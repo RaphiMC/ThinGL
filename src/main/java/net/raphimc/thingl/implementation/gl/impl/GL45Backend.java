@@ -17,6 +17,7 @@
  */
 package net.raphimc.thingl.implementation.gl.impl;
 
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.implementation.gl.GLBackend;
 import org.lwjgl.opengl.*;
 
@@ -644,6 +645,24 @@ public class GL45Backend implements GLBackend {
 
     @Override
     public int getTextureParameteri(final int texture, final int pname) {
+        if (pname == GL45C.GL_TEXTURE_TARGET && ThinGL.workarounds().isGetTextureParameterTextureTargetBroken()) {
+            final int depth = this.getTextureLevelParameteri(texture, 0, GL12C.GL_TEXTURE_DEPTH);
+            final int samples = this.getTextureLevelParameteri(texture, 0, GL32C.GL_TEXTURE_SAMPLES);
+            if (samples == 0) {
+                if (depth > 1) {
+                    return GL12C.GL_TEXTURE_3D;
+                } else {
+                    return GL11C.GL_TEXTURE_2D;
+                }
+            } else {
+                if (depth > 1) {
+                    return GL32C.GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
+                } else {
+                    return GL32C.GL_TEXTURE_2D_MULTISAMPLE;
+                }
+            }
+        }
+
         return GL45C.glGetTextureParameteri(texture, pname);
     }
 
@@ -809,6 +828,14 @@ public class GL45Backend implements GLBackend {
 
     @Override
     public void vertexArrayElementBuffer(final int vaobj, final int buffer) {
+        if (buffer == 0 && ThinGL.workarounds().isDsaVertexArrayElementBufferUnbindBroken()) {
+            final int previousVertexArray = this.getInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
+            this.bindVertexArray(vaobj);
+            this.bindBuffer(GL15C.GL_ELEMENT_ARRAY_BUFFER, 0);
+            this.bindVertexArray(previousVertexArray);
+            return;
+        }
+
         GL45C.glVertexArrayElementBuffer(vaobj, buffer);
     }
 

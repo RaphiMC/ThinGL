@@ -26,7 +26,6 @@ import net.raphimc.thingl.rendering.DrawMode;
 import net.raphimc.thingl.rendering.vertex.VertexDataLayout;
 import net.raphimc.thingl.rendering.vertex.VertexDataLayoutElement;
 import org.lwjgl.opengl.GL11C;
-import org.lwjgl.opengl.GL15C;
 import org.lwjgl.opengl.GL40C;
 
 public class VertexArray extends GLContainerObject {
@@ -70,13 +69,7 @@ public class VertexArray extends GLContainerObject {
         if (buffer != null) {
             ThinGL.glBackend().vertexArrayElementBuffer(this.getGlId(), buffer.getGlId());
         } else {
-            if (!ThinGL.workarounds().isDsaVertexArrayElementBufferUnbindBroken()) {
-                ThinGL.glBackend().vertexArrayElementBuffer(this.getGlId(), 0);
-            } else {
-                this.bind();
-                ThinGL.glBackend().bindBuffer(GL15C.GL_ELEMENT_ARRAY_BUFFER, 0);
-                this.unbind();
-            }
+            ThinGL.glBackend().vertexArrayElementBuffer(this.getGlId(), 0);
         }
     }
 

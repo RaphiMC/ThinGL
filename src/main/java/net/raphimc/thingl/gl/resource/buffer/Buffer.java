@@ -28,7 +28,7 @@ import net.raphimc.thingl.resource.memory.Memory;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL15C;
 import org.lwjgl.opengl.GL43C;
-import org.lwjgl.opengl.GL45C;
+import org.lwjgl.opengl.GL44C;
 
 public abstract class Buffer extends GLObject {
 
@@ -50,7 +50,7 @@ public abstract class Buffer extends GLObject {
     }
 
     public static Buffer fromGlIdUnsafe(final int glId) {
-        final boolean immutable = ThinGL.glBackend().getNamedBufferParameteri(glId, GL45C.GL_BUFFER_IMMUTABLE_STORAGE) != GL11C.GL_FALSE;
+        final boolean immutable = ThinGL.glBackend().getNamedBufferParameteri(glId, GL44C.GL_BUFFER_IMMUTABLE_STORAGE) != GL11C.GL_FALSE;
         if (immutable) {
             return ImmutableBuffer.fromGlIdUnsafe(glId);
         } else {

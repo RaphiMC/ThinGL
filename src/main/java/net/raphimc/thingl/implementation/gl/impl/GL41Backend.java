@@ -51,7 +51,7 @@ public class GL41Backend implements GLBackend {
         TEXTURE_FORMATS.put(GL11C.GL_RGB8, GL11C.GL_RGB);
         TEXTURE_FORMATS.put(GL30C.GL_RG8, GL30C.GL_RG);
         TEXTURE_FORMATS.put(GL30C.GL_R8, GL11C.GL_RED);
-        TEXTURE_FORMATS.put(GL30C.GL_DEPTH_COMPONENT32F, GL41C.GL_DEPTH_COMPONENT);
+        TEXTURE_FORMATS.put(GL30C.GL_DEPTH_COMPONENT32F, GL11C.GL_DEPTH_COMPONENT);
         TEXTURE_FORMATS.put(GL14C.GL_DEPTH_COMPONENT32, GL11C.GL_DEPTH_COMPONENT);
         TEXTURE_FORMATS.put(GL14C.GL_DEPTH_COMPONENT24, GL11C.GL_DEPTH_COMPONENT);
         TEXTURE_FORMATS.put(GL14C.GL_DEPTH_COMPONENT16, GL11C.GL_DEPTH_COMPONENT);
@@ -125,6 +125,7 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public void deleteTextures(final int texture) {
+        this.textureTargets.remove(texture);
         GL11C.glDeleteTextures(texture);
     }
 
@@ -425,6 +426,7 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public void deleteVertexArrays(final int array) {
+        this.vertexArrayObjects.remove(array);
         GL30C.glDeleteVertexArrays(array);
     }
 
@@ -896,6 +898,10 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public int getTextureParameteri(final int texture, final int pname) {
+        if (pname == GL45C.GL_TEXTURE_TARGET) {
+            return this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
+        }
+
         final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
         final int previousTexture = this.getInteger(getTextureQuery(target));
         GL11C.glBindTexture(target, texture);
