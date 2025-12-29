@@ -37,12 +37,14 @@ import net.raphimc.thingl.implementation.Config;
 import net.raphimc.thingl.implementation.GlobalUniforms;
 import net.raphimc.thingl.implementation.Workarounds;
 import net.raphimc.thingl.implementation.gl.GLBackend;
+import net.raphimc.thingl.implementation.gl.impl.GL41Backend;
 import net.raphimc.thingl.implementation.gl.impl.GL45Backend;
 import net.raphimc.thingl.implementation.instance.InstanceManager;
 import net.raphimc.thingl.implementation.instance.SingleInstanceManager;
 import net.raphimc.thingl.implementation.window.WindowInterface;
 import net.raphimc.thingl.text.util.FreeTypeLibrary;
 import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL30C;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -500,7 +502,15 @@ public class ThinGL {
     }
 
     protected GLBackend createGLBackend() {
-        return new GL45Backend();
+        final int majorVersion = GL11C.glGetInteger(GL30C.GL_MAJOR_VERSION);
+        final int minorVersion = GL11C.glGetInteger(GL30C.GL_MINOR_VERSION);
+        if (majorVersion > 4 || (majorVersion == 4 && minorVersion >= 5)) {
+            return new GL45Backend();
+        } else if (majorVersion == 4 && minorVersion >= 1) {
+            return new GL41Backend();
+        } else {
+            throw new RuntimeException("ThinGL requires at least OpenGL 4.1 to run (detected version: " + majorVersion + "." + minorVersion + ")");
+        }
     }
 
     protected Workarounds createWorkarounds() {

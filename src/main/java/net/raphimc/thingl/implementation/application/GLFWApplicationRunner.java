@@ -48,8 +48,8 @@ public abstract class GLFWApplicationRunner extends ApplicationRunner {
         GLFW.glfwDefaultWindowHints();
         GLFW.glfwWindowHint(GLFW.GLFW_CLIENT_API, GLFW.GLFW_OPENGL_API);
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_CREATION_API, GLFW.GLFW_NATIVE_CONTEXT_API);
-        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 4);
-        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 5);
+        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, this.configuration.getOpenGLMajorVersion());
+        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, this.configuration.getOpenGLMinorVersion());
         GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
         GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GLFW.GLFW_TRUE);
     }
@@ -57,6 +57,13 @@ public abstract class GLFWApplicationRunner extends ApplicationRunner {
     protected void createWindow() {
         this.window = GLFW.glfwCreateWindow(this.configuration.getWindowWidth(), this.configuration.getWindowHeight(), this.configuration.getWindowTitle(), 0L, 0L);
         if (this.window == 0L) {
+            if (GLFW.glfwGetError(null) == GLFW.GLFW_VERSION_UNAVAILABLE && this.configuration.getOpenGLMajorVersion() == 4 && this.configuration.getOpenGLMinorVersion() > 1) {
+                this.configuration.setOpenGLMinorVersion(this.configuration.getOpenGLMinorVersion() - 1);
+                GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, this.configuration.getOpenGLMinorVersion());
+                this.createWindow();
+                return;
+            }
+
             throw new RuntimeException("Failed to create window");
         }
     }
