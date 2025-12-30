@@ -579,7 +579,7 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public int getProgramResourceIndex(final int program, final int programInterface, final CharSequence name) {
-        final int blockCount = this.getProgrami(program, GL31C.GL_ACTIVE_UNIFORM_BLOCKS);
+        final int blockCount = GL20C.glGetProgrami(program, GL31C.GL_ACTIVE_UNIFORM_BLOCKS);
         for (int i = 0; i < blockCount; i++) {
             final String blockName = GL31C.glGetActiveUniformBlockName(program, i);
             if (blockName.contentEquals(name)) {
@@ -630,7 +630,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void bindSamplers(final int first, final int[] samplers) {
         for (int i = 0; i < samplers.length; i++) {
-            this.bindSampler(first + i, samplers[i]);
+            GL33C.glBindSampler(first + i, samplers[i]);
         }
     }
 
@@ -695,7 +695,7 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public void bindTextureUnit(final int unit, final int texture) {
-        final int previousActiveTexture = this.getInteger(GL13C.GL_ACTIVE_TEXTURE);
+        final int previousActiveTexture = GL11C.glGetInteger(GL13C.GL_ACTIVE_TEXTURE);
         GL13C.glActiveTexture(GL13C.GL_TEXTURE0 + unit);
         if (texture != 0) {
             GL11C.glBindTexture(this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D), texture);
@@ -709,8 +709,8 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public void blitNamedFramebuffer(final int readFramebuffer, final int drawFramebuffer, final int srcX0, final int srcY0, final int srcX1, final int srcY1, final int dstX0, final int dstY0, final int dstX1, final int dstY1, final int mask, final int filter) {
-        final int previousReadFramebuffer = this.getInteger(GL30C.GL_READ_FRAMEBUFFER_BINDING);
-        final int previousDrawFramebuffer = this.getInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
+        final int previousReadFramebuffer = GL11C.glGetInteger(GL30C.GL_READ_FRAMEBUFFER_BINDING);
+        final int previousDrawFramebuffer = GL11C.glGetInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
         GL30C.glBindFramebuffer(GL30C.GL_READ_FRAMEBUFFER, readFramebuffer);
         GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, drawFramebuffer);
         GL30C.glBlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
@@ -720,7 +720,7 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public int checkNamedFramebufferStatus(final int framebuffer, final int target) {
-        final int previousFramebuffer = this.getInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
+        final int previousFramebuffer = GL11C.glGetInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
         GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, framebuffer);
         final int status = GL30C.glCheckFramebufferStatus(target);
         GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, previousFramebuffer);
@@ -729,7 +729,7 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public void clearNamedFramebufferfi(final int framebuffer, final int buffer, final int drawbuffer, final float depth, final int stencil) {
-        final int previousFramebuffer = this.getInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
+        final int previousFramebuffer = GL11C.glGetInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
         GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, framebuffer);
         GL30C.glClearBufferfi(buffer, drawbuffer, depth, stencil);
         GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, previousFramebuffer);
@@ -737,7 +737,7 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public void clearNamedFramebufferfv(final int framebuffer, final int buffer, final int drawbuffer, final float[] value) {
-        final int previousFramebuffer = this.getInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
+        final int previousFramebuffer = GL11C.glGetInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
         GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, framebuffer);
         GL30C.glClearBufferfv(buffer, drawbuffer, value);
         GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, previousFramebuffer);
@@ -745,7 +745,7 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public void clearNamedFramebufferiv(final int framebuffer, final int buffer, final int drawbuffer, final int[] value) {
-        final int previousFramebuffer = this.getInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
+        final int previousFramebuffer = GL11C.glGetInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
         GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, framebuffer);
         GL30C.glClearBufferiv(buffer, drawbuffer, value);
         GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, previousFramebuffer);
@@ -753,8 +753,8 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public void copyNamedBufferSubData(final int readBuffer, final int writeBuffer, final long readOffset, final long writeOffset, final long size) {
-        final int previousReadBuffer = this.getInteger(GL31C.GL_COPY_READ_BUFFER);
-        final int previousWriteBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+        final int previousReadBuffer = GL11C.glGetInteger(GL31C.GL_COPY_READ_BUFFER);
+        final int previousWriteBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
         GL15C.glBindBuffer(GL31C.GL_COPY_READ_BUFFER, readBuffer);
         GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, writeBuffer);
         GL31C.glCopyBufferSubData(GL31C.GL_COPY_READ_BUFFER, GL31C.GL_COPY_WRITE_BUFFER, readOffset, writeOffset, size);
@@ -796,15 +796,15 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public void enableVertexArrayAttrib(final int vaobj, final int index) {
-        final int previousVertexArray = this.getInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
-        this.bindVertexArray(vaobj);
+        final int previousVertexArray = GL11C.glGetInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
+        GL30C.glBindVertexArray(vaobj);
         GL20C.glEnableVertexAttribArray(index);
-        this.bindVertexArray(previousVertexArray);
+        GL30C.glBindVertexArray(previousVertexArray);
     }
 
     @Override
     public void flushMappedNamedBufferRange(final int buffer, final long offset, final long length) {
-        final int previousBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+        final int previousBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
         GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
         GL30C.glFlushMappedBufferRange(GL31C.GL_COPY_WRITE_BUFFER, offset, length);
         GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
@@ -813,7 +813,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void generateTextureMipmap(final int texture) {
         final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-        final int previousTexture = this.getInteger(getTextureQuery(target));
+        final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
         GL11C.glBindTexture(target, texture);
         GL30C.glGenerateMipmap(target);
         GL11C.glBindTexture(target, previousTexture);
@@ -821,7 +821,7 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public int getNamedBufferParameteri(final int buffer, final int pname) {
-        final int previousBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+        final int previousBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
         GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
         try {
             return GL15C.glGetBufferParameteri(GL31C.GL_COPY_WRITE_BUFFER, pname);
@@ -832,7 +832,7 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public long getNamedBufferParameteri64(final int buffer, final int pname) {
-        final int previousBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+        final int previousBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
         GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
         try {
             return GL32C.glGetBufferParameteri64(GL31C.GL_COPY_WRITE_BUFFER, pname);
@@ -843,7 +843,7 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public void getNamedBufferSubData(final int buffer, final long offset, final long size, final long data) {
-        final int previousBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+        final int previousBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
         GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
         GL15C.nglGetBufferSubData(GL31C.GL_COPY_WRITE_BUFFER, offset, size, data);
         GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
@@ -851,7 +851,7 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public int getNamedFramebufferAttachmentParameteri(final int framebuffer, final int attachment, final int pname) {
-        final int previousFramebuffer = this.getInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
+        final int previousFramebuffer = GL11C.glGetInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
         GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, framebuffer);
         final int parameter = GL30C.glGetFramebufferAttachmentParameteri(GL30C.GL_DRAW_FRAMEBUFFER, attachment, pname);
         GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, previousFramebuffer);
@@ -860,7 +860,7 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public int getNamedRenderbufferParameteri(final int renderbuffer, final int pname) {
-        final int previousRenderbuffer = this.getInteger(GL30C.GL_RENDERBUFFER_BINDING);
+        final int previousRenderbuffer = GL11C.glGetInteger(GL30C.GL_RENDERBUFFER_BINDING);
         GL30C.glBindRenderbuffer(GL30C.GL_RENDERBUFFER, renderbuffer);
         final int parameter = GL30C.glGetRenderbufferParameteri(GL30C.GL_RENDERBUFFER, pname);
         GL30C.glBindRenderbuffer(GL30C.GL_RENDERBUFFER, previousRenderbuffer);
@@ -870,7 +870,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public int getTextureLevelParameteri(final int texture, final int level, final int pname) {
         final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-        final int previousTexture = this.getInteger(getTextureQuery(target));
+        final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
         GL11C.glBindTexture(target, texture);
         final int parameter = GL11C.glGetTexLevelParameteri(target, level, pname);
         GL11C.glBindTexture(target, previousTexture);
@@ -880,7 +880,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public float getTextureParameterf(final int texture, final int pname) {
         final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-        final int previousTexture = this.getInteger(getTextureQuery(target));
+        final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
         GL11C.glBindTexture(target, texture);
         final float parameter = GL11C.glGetTexParameterf(target, pname);
         GL11C.glBindTexture(target, previousTexture);
@@ -890,7 +890,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void getTextureParameterfv(final int texture, final int pname, final float[] params) {
         final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-        final int previousTexture = this.getInteger(getTextureQuery(target));
+        final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
         GL11C.glBindTexture(target, texture);
         GL11C.glGetTexParameterfv(target, pname, params);
         GL11C.glBindTexture(target, previousTexture);
@@ -903,7 +903,7 @@ public class GL41Backend implements GLBackend {
         }
 
         final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-        final int previousTexture = this.getInteger(getTextureQuery(target));
+        final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
         GL11C.glBindTexture(target, texture);
         final int parameter = GL11C.glGetTexParameteri(target, pname);
         GL11C.glBindTexture(target, previousTexture);
@@ -913,7 +913,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void getTextureParameteriv(final int texture, final int pname, final int[] params) {
         final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-        final int previousTexture = this.getInteger(getTextureQuery(target));
+        final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
         GL11C.glBindTexture(target, texture);
         GL11C.glGetTexParameteriv(target, pname, params);
         GL11C.glBindTexture(target, previousTexture);
@@ -926,7 +926,7 @@ public class GL41Backend implements GLBackend {
         final int textureDepth = this.getTextureLevelParameteri(texture, level, GL12C.GL_TEXTURE_DEPTH);
         if (xoffset == 0 && yoffset == 0 && zoffset == 0 && width == textureWidth && height == textureHeight && depth == textureDepth) {
             final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-            final int previousTexture = this.getInteger(getTextureQuery(target));
+            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             GL11C.glGetTexImage(target, level, format, type, pixels);
             GL11C.glBindTexture(target, previousTexture);
@@ -937,7 +937,7 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public long mapNamedBuffer(final int buffer, final int access) {
-        final int previousBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+        final int previousBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
         GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
         final long address = GL15C.nglMapBuffer(GL31C.GL_COPY_WRITE_BUFFER, access);
         GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
@@ -946,7 +946,7 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public long mapNamedBufferRange(final int buffer, final long offset, final long length, final int access) {
-        final int previousBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+        final int previousBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
         GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
         final long address = GL30C.nglMapBufferRange(GL31C.GL_COPY_WRITE_BUFFER, offset, length, access);
         GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
@@ -955,7 +955,7 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public void namedBufferData(final int buffer, final long size, final int usage) {
-        final int previousBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+        final int previousBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
         GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
         GL15C.glBufferData(GL31C.GL_COPY_WRITE_BUFFER, size, usage);
         GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
@@ -963,7 +963,7 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public void namedBufferData(final int buffer, final long size, final long data, final int usage) {
-        final int previousBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+        final int previousBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
         GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
         GL15C.nglBufferData(GL31C.GL_COPY_WRITE_BUFFER, size, data, usage);
         GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
@@ -978,7 +978,7 @@ public class GL41Backend implements GLBackend {
             usage = GL15C.GL_STATIC_DRAW;
         }
 
-        final int previousBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+        final int previousBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
         GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
         GL15C.glBufferData(GL31C.GL_COPY_WRITE_BUFFER, size, usage);
         GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
@@ -993,7 +993,7 @@ public class GL41Backend implements GLBackend {
             usage = GL15C.GL_STATIC_DRAW;
         }
 
-        final int previousBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+        final int previousBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
         GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
         GL15C.nglBufferData(GL31C.GL_COPY_WRITE_BUFFER, size, data, usage);
         GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
@@ -1001,7 +1001,7 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public void namedBufferSubData(final int buffer, final long offset, final long size, final long data) {
-        final int previousBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+        final int previousBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
         GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
         GL15C.nglBufferSubData(GL31C.GL_COPY_WRITE_BUFFER, offset, size, data);
         GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
@@ -1009,7 +1009,7 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public void namedFramebufferRenderbuffer(final int framebuffer, final int attachment, final int renderbuffertarget, final int renderbuffer) {
-        final int previousFramebuffer = this.getInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
+        final int previousFramebuffer = GL11C.glGetInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
         GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, framebuffer);
         GL30C.glFramebufferRenderbuffer(GL30C.GL_DRAW_FRAMEBUFFER, attachment, renderbuffertarget, renderbuffer);
         GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, previousFramebuffer);
@@ -1017,7 +1017,7 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public void namedFramebufferTexture(final int framebuffer, final int attachment, final int texture, final int level) {
-        final int previousFramebuffer = this.getInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
+        final int previousFramebuffer = GL11C.glGetInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
         GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, framebuffer);
         GL30C.glFramebufferTexture2D(GL30C.GL_DRAW_FRAMEBUFFER, attachment, this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D), texture, level);
         GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, previousFramebuffer);
@@ -1025,7 +1025,7 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public void namedRenderbufferStorage(final int renderbuffer, final int internalformat, final int width, final int height) {
-        final int previousRenderbuffer = this.getInteger(GL30C.GL_RENDERBUFFER_BINDING);
+        final int previousRenderbuffer = GL11C.glGetInteger(GL30C.GL_RENDERBUFFER_BINDING);
         GL30C.glBindRenderbuffer(GL30C.GL_RENDERBUFFER, renderbuffer);
         GL30C.glRenderbufferStorage(GL30C.GL_RENDERBUFFER, internalformat, width, height);
         GL30C.glBindRenderbuffer(GL30C.GL_RENDERBUFFER, previousRenderbuffer);
@@ -1033,7 +1033,7 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public void namedRenderbufferStorageMultisample(final int renderbuffer, final int samples, final int internalformat, final int width, final int height) {
-        final int previousRenderbuffer = this.getInteger(GL30C.GL_RENDERBUFFER_BINDING);
+        final int previousRenderbuffer = GL11C.glGetInteger(GL30C.GL_RENDERBUFFER_BINDING);
         GL30C.glBindRenderbuffer(GL30C.GL_RENDERBUFFER, renderbuffer);
         GL30C.glRenderbufferStorageMultisample(GL30C.GL_RENDERBUFFER, samples, internalformat, width, height);
         GL30C.glBindRenderbuffer(GL30C.GL_RENDERBUFFER, previousRenderbuffer);
@@ -1042,7 +1042,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void textureBuffer(final int texture, final int internalformat, final int buffer) {
         final int target = this.textureTargets.getOrDefault(texture, GL31C.GL_TEXTURE_BUFFER);
-        final int previousTexture = this.getInteger(getTextureQuery(target));
+        final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
         GL11C.glBindTexture(target, texture);
         GL31C.glTexBuffer(target, internalformat, buffer);
         GL11C.glBindTexture(target, previousTexture);
@@ -1051,7 +1051,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void textureParameterf(final int texture, final int pname, final float param) {
         final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-        final int previousTexture = this.getInteger(getTextureQuery(target));
+        final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
         GL11C.glBindTexture(target, texture);
         GL11C.glTexParameterf(target, pname, param);
         GL11C.glBindTexture(target, previousTexture);
@@ -1060,7 +1060,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void textureParameterfv(final int texture, final int pname, final float[] params) {
         final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-        final int previousTexture = this.getInteger(getTextureQuery(target));
+        final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
         GL11C.glBindTexture(target, texture);
         GL11C.glTexParameterfv(target, pname, params);
         GL11C.glBindTexture(target, previousTexture);
@@ -1069,7 +1069,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void textureParameteri(final int texture, final int pname, final int param) {
         final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-        final int previousTexture = this.getInteger(getTextureQuery(target));
+        final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
         GL11C.glBindTexture(target, texture);
         GL11C.glTexParameteri(target, pname, param);
         GL11C.glBindTexture(target, previousTexture);
@@ -1078,7 +1078,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void textureParameteriv(final int texture, final int pname, final int[] params) {
         final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-        final int previousTexture = this.getInteger(getTextureQuery(target));
+        final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
         GL11C.glBindTexture(target, texture);
         GL11C.glTexParameteriv(target, pname, params);
         GL11C.glBindTexture(target, previousTexture);
@@ -1087,7 +1087,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void textureStorage1D(final int texture, final int levels, final int internalformat, final int width) {
         final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_1D);
-        final int previousTexture = this.getInteger(getTextureQuery(target));
+        final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
         GL11C.glBindTexture(target, texture);
         if (this.capabilities.GL_ARB_texture_storage) {
             ARBTextureStorage.glTexStorage1D(target, levels, internalformat, width);
@@ -1100,7 +1100,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void textureStorage2D(final int texture, final int levels, final int internalformat, final int width, final int height) {
         final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-        final int previousTexture = this.getInteger(getTextureQuery(target));
+        final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
         GL11C.glBindTexture(target, texture);
         if (this.capabilities.GL_ARB_texture_storage) {
             ARBTextureStorage.glTexStorage2D(target, levels, internalformat, width, height);
@@ -1113,7 +1113,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void textureStorage2DMultisample(final int texture, final int samples, final int internalformat, final int width, final int height, final boolean fixedsamplelocations) {
         final int target = this.textureTargets.getOrDefault(texture, GL32C.GL_TEXTURE_2D_MULTISAMPLE);
-        final int previousTexture = this.getInteger(getTextureQuery(target));
+        final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
         GL11C.glBindTexture(target, texture);
         GL32C.glTexImage2DMultisample(target, samples, internalformat, width, height, fixedsamplelocations);
         GL11C.glBindTexture(target, previousTexture);
@@ -1122,7 +1122,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void textureStorage3D(final int texture, final int levels, final int internalformat, final int width, final int height, final int depth) {
         final int target = this.textureTargets.getOrDefault(texture, GL12C.GL_TEXTURE_3D);
-        final int previousTexture = this.getInteger(getTextureQuery(target));
+        final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
         GL11C.glBindTexture(target, texture);
         if (this.capabilities.GL_ARB_texture_storage) {
             ARBTextureStorage.glTexStorage3D(target, levels, internalformat, width, height, depth);
@@ -1135,7 +1135,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void textureStorage3DMultisample(final int texture, final int samples, final int internalformat, final int width, final int height, final int depth, final boolean fixedsamplelocations) {
         final int target = this.textureTargets.getOrDefault(texture, GL32C.GL_TEXTURE_2D_MULTISAMPLE_ARRAY);
-        final int previousTexture = this.getInteger(getTextureQuery(target));
+        final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
         GL11C.glBindTexture(target, texture);
         GL32C.glTexImage3DMultisample(target, samples, internalformat, width, height, depth, fixedsamplelocations);
         GL11C.glBindTexture(target, previousTexture);
@@ -1144,7 +1144,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void textureSubImage1D(final int texture, final int level, final int xoffset, final int width, final int format, final int type, final long pixels) {
         final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_1D);
-        final int previousTexture = this.getInteger(getTextureQuery(target));
+        final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
         GL11C.glBindTexture(target, texture);
         GL11C.nglTexSubImage1D(target, level, xoffset, width, format, type, pixels);
         GL11C.glBindTexture(target, previousTexture);
@@ -1153,7 +1153,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void textureSubImage2D(final int texture, final int level, final int xoffset, final int yoffset, final int width, final int height, final int format, final int type, final long pixels) {
         final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-        final int previousTexture = this.getInteger(getTextureQuery(target));
+        final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
         GL11C.glBindTexture(target, texture);
         GL11C.nglTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
         GL11C.glBindTexture(target, previousTexture);
@@ -1162,7 +1162,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void textureSubImage3D(final int texture, final int level, final int xoffset, final int yoffset, final int zoffset, final int width, final int height, final int depth, final int format, final int type, final long pixels) {
         final int target = this.textureTargets.getOrDefault(texture, GL12C.GL_TEXTURE_3D);
-        final int previousTexture = this.getInteger(getTextureQuery(target));
+        final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
         GL11C.glBindTexture(target, texture);
         GL12C.nglTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels);
         GL11C.glBindTexture(target, previousTexture);
@@ -1170,7 +1170,7 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public boolean unmapNamedBuffer(final int buffer) {
-        final int previousBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+        final int previousBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
         GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
         final boolean result = GL15C.glUnmapBuffer(GL31C.GL_COPY_WRITE_BUFFER);
         GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
@@ -1219,10 +1219,10 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public void vertexArrayElementBuffer(final int vaobj, final int buffer) {
-        final int previousVertexArray = this.getInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
-        this.bindVertexArray(vaobj);
+        final int previousVertexArray = GL11C.glGetInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
+        GL30C.glBindVertexArray(vaobj);
         GL15C.glBindBuffer(GL15C.GL_ELEMENT_ARRAY_BUFFER, buffer);
-        this.bindVertexArray(previousVertexArray);
+        GL30C.glBindVertexArray(previousVertexArray);
     }
 
     @Override
@@ -1239,7 +1239,7 @@ public class GL41Backend implements GLBackend {
         this.textureTargets.put(texture, target);
     }
 
-    private class VertexArrayObject {
+    private static class VertexArrayObject {
 
         private final int id;
         private final Int2ObjectMap<VertexBufferBinding> vertexBufferBinding = new Int2ObjectOpenHashMap<>();
@@ -1272,9 +1272,9 @@ public class GL41Backend implements GLBackend {
                 return;
             }
 
-            final int previousVertexArray = GL41Backend.this.getInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
-            final int previousBuffer = GL41Backend.this.getInteger(GL15C.GL_ARRAY_BUFFER_BINDING);
-            GL41Backend.this.bindVertexArray(this.id);
+            final int previousVertexArray = GL11C.glGetInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
+            final int previousBuffer = GL11C.glGetInteger(GL15C.GL_ARRAY_BUFFER_BINDING);
+            GL30C.glBindVertexArray(this.id);
             GL15C.glBindBuffer(GL15C.GL_ARRAY_BUFFER, binding.buffer);
 
             if (attribute.format instanceof VertexAttribFFormat fformat) {
@@ -1289,7 +1289,7 @@ public class GL41Backend implements GLBackend {
             GL33C.glVertexAttribDivisor(index, binding.divisor);
 
             GL15C.glBindBuffer(GL15C.GL_ARRAY_BUFFER, previousBuffer);
-            GL41Backend.this.bindVertexArray(previousVertexArray);
+            GL30C.glBindVertexArray(previousVertexArray);
         }
 
         private static class VertexBufferBinding {

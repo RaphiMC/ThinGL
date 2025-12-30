@@ -646,8 +646,8 @@ public class GL45Backend implements GLBackend {
     @Override
     public int getTextureParameteri(final int texture, final int pname) {
         if (pname == GL45C.GL_TEXTURE_TARGET && ThinGL.workarounds().isGetTextureParameterTextureTargetBroken()) {
-            final int depth = this.getTextureLevelParameteri(texture, 0, GL12C.GL_TEXTURE_DEPTH);
-            final int samples = this.getTextureLevelParameteri(texture, 0, GL32C.GL_TEXTURE_SAMPLES);
+            final int depth = GL45C.glGetTextureLevelParameteri(texture, 0, GL12C.GL_TEXTURE_DEPTH);
+            final int samples = GL45C.glGetTextureLevelParameteri(texture, 0, GL32C.GL_TEXTURE_SAMPLES);
             if (samples == 0) {
                 if (depth > 1) {
                     return GL12C.GL_TEXTURE_3D;
@@ -829,10 +829,10 @@ public class GL45Backend implements GLBackend {
     @Override
     public void vertexArrayElementBuffer(final int vaobj, final int buffer) {
         if (buffer == 0 && ThinGL.workarounds().isDsaVertexArrayElementBufferUnbindBroken()) {
-            final int previousVertexArray = this.getInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
-            this.bindVertexArray(vaobj);
-            this.bindBuffer(GL15C.GL_ELEMENT_ARRAY_BUFFER, 0);
-            this.bindVertexArray(previousVertexArray);
+            final int previousVertexArray = GL11C.glGetInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
+            GL30C.glBindVertexArray(vaobj);
+            GL15C.glBindBuffer(GL15C.GL_ELEMENT_ARRAY_BUFFER, 0);
+            GL30C.glBindVertexArray(previousVertexArray);
             return;
         }
 
