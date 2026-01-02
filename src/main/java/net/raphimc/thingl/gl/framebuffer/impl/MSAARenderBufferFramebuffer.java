@@ -27,8 +27,6 @@ import org.lwjgl.system.MathUtil;
 
 public class MSAARenderBufferFramebuffer extends ResizingFramebuffer {
 
-    private final int samples;
-
     @SuppressWarnings("CodeBlock2Expr")
     public MSAARenderBufferFramebuffer(final int samples) {
         super((width, height) -> {
@@ -36,12 +34,17 @@ public class MSAARenderBufferFramebuffer extends ResizingFramebuffer {
         }, (width, height) -> {
             return new MultisampleRenderBuffer(GL30C.GL_DEPTH32F_STENCIL8, width, height, returnSamples(samples));
         });
-        this.samples = returnSamples(samples);
         this.init();
     }
 
-    public int getSamples() {
-        return this.samples;
+    @Override
+    public MultisampleRenderBuffer getColorAttachment(final int index) {
+        return (MultisampleRenderBuffer) super.getColorAttachment(index);
+    }
+
+    @Override
+    public MultisampleRenderBuffer getDepthAttachment() {
+        return (MultisampleRenderBuffer) super.getDepthAttachment();
     }
 
     private static int returnSamples(final int samples) {

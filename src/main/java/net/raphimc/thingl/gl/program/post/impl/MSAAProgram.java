@@ -32,7 +32,6 @@ public class MSAAProgram extends PostProcessingProgram {
 
     public MSAAProgram(final Shader vertexShader, final Shader fragmentShader, final int samples) {
         super(vertexShader, fragmentShader);
-
         this.samples = samples;
     }
 
@@ -66,6 +65,7 @@ public class MSAAProgram extends PostProcessingProgram {
     public void bind() {
         super.bind();
         this.setUniformSampler("u_Input", this.inputFramebuffer);
+        this.setUniformInt("u_InputSamples", this.inputFramebuffer.getColorAttachment(0).getSamples());
     }
 
     @Override
