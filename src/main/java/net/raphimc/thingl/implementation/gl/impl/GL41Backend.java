@@ -2042,7 +2042,7 @@ public class GL41Backend implements GLBackend {
             final List<GlslStructDeclarationNode> bufferStructs = new ArrayList<>();
             for (GlslNode node : tree.getBody()) {
                 if (node instanceof GlslStructDeclarationNode structNode) {
-                    final GlslSpecifiedType structType = structNode.getSpecifiedType();
+                    final GlslSpecifiedType structType = structNode.getType();
                     if (structType.getQualifiers().contains(GlslTypeQualifier.StorageType.BUFFER) && structType.getQualifiers().contains(GlslTypeQualifier.StorageType.READONLY)) {
                         bufferStructs.add(structNode);
                     }

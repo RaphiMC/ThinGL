@@ -9,6 +9,14 @@ plugins {
 
 repositories {
     maven {
+        name = "Lenni0451"
+        url = "https://maven.lenni0451.net/snapshots"
+
+        content {
+            includeGroupByRegex "net\\.lenni0451(\\..+)?"
+        }
+    }
+    maven {
         name = "Jitpack"
         url = "https://jitpack.io"
 
@@ -36,6 +44,7 @@ dependencies {
         exclude group: "org.joml", module: "joml"
     }
     api "it.unimi.dsi:fastutil:8.5.18"
+    api "net.lenni0451:glsl-processor:0.3.0-20260102.185910-1"
     api "net.lenni0451.commons:core:1.9.0"
     api "net.lenni0451.commons:logging:1.9.0"
 
@@ -59,7 +68,6 @@ dependencies {
     compileOnly "com.github.RaphiMC:gif-reader:0bdb781a96"
     compileOnly "com.twelvemonkeys.imageio:imageio-webp:3.13.0"
     compileOnly "com.github.weisj:jsvg:2.0.0"
-    compileOnly "com.github.Ocelot5836:glsl-processor:c4ddc4b3b7"
 
     // Example dependencies
     ["natives-windows", "natives-windows-arm64", "natives-linux", "natives-linux-arm64"].each {

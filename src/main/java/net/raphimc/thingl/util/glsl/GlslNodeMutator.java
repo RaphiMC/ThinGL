@@ -57,9 +57,7 @@ public class GlslNodeMutator {
             mutate(compareNode, mutator, GlslCompareNode::getFirst, GlslCompareNode::setFirst);
             mutate(compareNode, mutator, GlslCompareNode::getSecond, GlslCompareNode::setSecond);
         } else if (node instanceof GlslCompoundNode compoundNode) {
-            final List<GlslNode> children = compoundNode.toList();
-            mutate(children, mutator);
-            compoundNode.setChildren(children);
+            mutate(compoundNode.getChildren(), mutator);
         } else if (node instanceof GlslConditionalNode conditionalNode) {
             mutate(conditionalNode, mutator, GlslConditionalNode::getCondition, GlslConditionalNode::setCondition);
             mutate(conditionalNode, mutator, GlslConditionalNode::getFirst, GlslConditionalNode::setFirst);
@@ -77,7 +75,7 @@ public class GlslNodeMutator {
         } else if (node instanceof GlslGetFieldNode getFieldNode) {
             mutate(getFieldNode, mutator, GlslGetFieldNode::getExpression, GlslGetFieldNode::setExpression);
         } else if (node instanceof GlslIfNode ifNode) {
-            mutate(ifNode, mutator, GlslIfNode::getExpression, GlslIfNode::setExpression);
+            mutate(ifNode, mutator, GlslIfNode::getCondition, GlslIfNode::setCondition);
             mutate(ifNode.getFirst(), mutator);
             mutate(ifNode.getSecond(), mutator);
         } else if (node instanceof GlslInvokeFunctionNode invokeFunctionNode) {
