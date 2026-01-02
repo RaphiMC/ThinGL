@@ -59,6 +59,7 @@ dependencies {
     compileOnly "com.github.RaphiMC:gif-reader:0bdb781a96"
     compileOnly "com.twelvemonkeys.imageio:imageio-webp:3.13.0"
     compileOnly "com.github.weisj:jsvg:2.0.0"
+    compileOnly "com.github.Ocelot5836:glsl-processor:c4ddc4b3b7"
 
     // Example dependencies
     ["natives-windows", "natives-windows-arm64", "natives-linux", "natives-linux-arm64"].each {

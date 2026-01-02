@@ -40,6 +40,7 @@ public class DrawBatches {
     public static final VertexDataLayout POSITION_TEXTURE_ARRAY_LAYER_LAYOUT = new VertexDataLayout(POSITION_ELEMENT, TEXTURE_ELEMENT, new VertexDataLayoutElement(DataType.SHORT, 1));
     public static final VertexDataLayout POSITION_COLOR_TEXTURE_LAYOUT = new VertexDataLayout(POSITION_ELEMENT, COLOR_ELEMENT, TEXTURE_ELEMENT);
     public static final VertexDataLayout LINE_LAYOUT = new VertexDataLayout(POSITION_ELEMENT, COLOR_ELEMENT, new VertexDataLayoutElement(DataType.FLOAT, 1));
+    public static final VertexDataLayout TEXT_GLYPH_LAYOUT = new VertexDataLayout(POSITION_ELEMENT, TEXTURE_ELEMENT, new VertexDataLayoutElement(DataType.UNSIGNED_BYTE, 1), new VertexDataLayoutElement(DataType.UNSIGNED_SHORT, 1));
 
     // === Snippets ===
 

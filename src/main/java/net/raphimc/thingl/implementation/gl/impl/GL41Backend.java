@@ -17,6 +17,18 @@
  */
 package net.raphimc.thingl.implementation.gl.impl;
 
+import io.github.ocelot.glslprocessor.api.GlslParser;
+import io.github.ocelot.glslprocessor.api.grammar.*;
+import io.github.ocelot.glslprocessor.api.node.GlslNode;
+import io.github.ocelot.glslprocessor.api.node.GlslNodeList;
+import io.github.ocelot.glslprocessor.api.node.GlslTree;
+import io.github.ocelot.glslprocessor.api.node.branch.GlslReturnNode;
+import io.github.ocelot.glslprocessor.api.node.constant.GlslIntConstantNode;
+import io.github.ocelot.glslprocessor.api.node.expression.GlslAssignmentNode;
+import io.github.ocelot.glslprocessor.api.node.expression.GlslOperationNode;
+import io.github.ocelot.glslprocessor.api.node.function.GlslFunctionNode;
+import io.github.ocelot.glslprocessor.api.node.function.GlslInvokeFunctionNode;
+import io.github.ocelot.glslprocessor.api.node.variable.*;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -26,9 +38,17 @@ import net.raphimc.thingl.implementation.gl.GLBackend;
 import net.raphimc.thingl.rendering.command.impl.DrawArraysCommand;
 import net.raphimc.thingl.rendering.command.impl.DrawElementsCommand;
 import net.raphimc.thingl.resource.image.Image;
+import net.raphimc.thingl.util.glsl.GlslNodeMutator;
 import org.lwjgl.opengl.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class GL41Backend implements GLBackend {
+
+    private static final int SHADER_STORAGE_BUFFER_TEXTURE_UNIT_OFFSET = 16;
 
     private static int getTextureQuery(final int target) {
         return switch (target) {
@@ -86,6 +106,9 @@ public class GL41Backend implements GLBackend {
     private final Int2IntMap textureTargets = new Int2IntOpenHashMap();
     private final Int2IntMap queryTargets = new Int2IntOpenHashMap();
     private final Int2ObjectMap<VertexArrayObject> vertexArrayObjects = new Int2ObjectOpenHashMap<>();
+
+    private final boolean supportsShaderStorageBuffers = this.capabilities.OpenGL43;
+    private final Int2IntMap shaderStorageBufferTextures = new Int2IntOpenHashMap();
 
     @Override
     public void blendFunc(final int sfactor, final int dfactor) {
@@ -359,7 +382,31 @@ public class GL41Backend implements GLBackend {
     }
 
     @Override
-    public void shaderSource(final int shader, final CharSequence string) {
+    public void shaderSource(final int shader, CharSequence string) {
+        try {
+            final GlslTree glslTree = GlslParser.parse(string.toString());
+
+            boolean modified = false;
+            if (!this.supportsShaderStorageBuffers) {
+                if (ShaderStorageBufferShaderRewriter.modify(glslTree)) {
+                    modified = true;
+                }
+            }
+
+            final String shadingLanguageVersion = this.getString(GL20C.GL_SHADING_LANGUAGE_VERSION);
+            final int driverVersion = Integer.parseInt(shadingLanguageVersion.split(" ")[0].replace(".", ""));
+            if (glslTree.getVersionStatement().getVersion() > driverVersion) {
+                glslTree.getVersionStatement().setVersion(driverVersion);
+                modified = true;
+            }
+
+            if (modified) {
+                string = glslTree.toSourceString();
+            }
+        } catch (Throwable e) {
+            ThinGL.LOGGER.warn("Failed to rewrite shader source, using original source", e);
+        }
+
         GL20C.glShaderSource(shader, string);
     }
 
@@ -380,6 +427,14 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public void bindBufferBase(final int target, final int index, final int buffer) {
+        if (target == GL43C.GL_SHADER_STORAGE_BUFFER && !this.supportsShaderStorageBuffers) {
+            final int bufferTexture = this.shaderStorageBufferTextures.computeIfAbsent(index, k -> this.createTextures(GL31C.GL_TEXTURE_BUFFER));
+            this.textureBuffer(bufferTexture, GL30C.GL_R32F, buffer);
+            this.bindTextureUnit(SHADER_STORAGE_BUFFER_TEXTURE_UNIT_OFFSET + index, bufferTexture);
+            GL33C.glBindSampler(SHADER_STORAGE_BUFFER_TEXTURE_UNIT_OFFSET + index, 0);
+            return;
+        }
+
         GL30C.glBindBufferBase(target, index, buffer);
     }
 
@@ -583,6 +638,10 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public int getProgramResourceIndex(final int program, final int programInterface, final CharSequence name) {
+        if (programInterface == GL43C.GL_SHADER_STORAGE_BLOCK && !this.supportsShaderStorageBuffers) {
+            return GL20C.glGetUniformLocation(program, name);
+        }
+
         if (this.capabilities.glGetProgramResourceIndex != 0L) {
             return GL43C.glGetProgramResourceIndex(program, programInterface, name);
         } else {
@@ -655,10 +714,10 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public void shaderStorageBlockBinding(final int program, final int storageBlockIndex, final int storageBlockBinding) {
-        if (this.capabilities.glShaderStorageBlockBinding != 0L) {
+        if (this.capabilities.glShaderStorageBlockBinding != 0L && this.supportsShaderStorageBuffers) {
             GL43C.glShaderStorageBlockBinding(program, storageBlockIndex, storageBlockBinding);
         } else {
-            throw new UnsupportedOperationException();
+            GL41C.glProgramUniform1i(program, storageBlockIndex, SHADER_STORAGE_BUFFER_TEXTURE_UNIT_OFFSET + storageBlockBinding);
         }
     }
 
@@ -1833,6 +1892,174 @@ public class GL41Backend implements GLBackend {
         }
 
         private record VertexAttribLFormat(int size, int type, int relativeoffset) implements VertexAttribFormat {
+        }
+
+    }
+
+    private static class ShaderStorageBufferShaderRewriter {
+
+        private static boolean modify(final GlslTree tree) {
+            final List<GlslStructDeclarationNode> bufferStructs = getBufferStructs(tree);
+            for (GlslStructDeclarationNode bufferStruct : bufferStructs) {
+                final int index = tree.getBody().indexOf(bufferStruct);
+                { // Replace buffer struct with samplerBuffer uniform
+                    final GlslSpecifiedType type = new GlslSpecifiedType(GlslTypeSpecifier.BuiltinType.SAMPLERBUFFER, GlslTypeQualifier.StorageType.UNIFORM);
+                    final GlslNewFieldNode uniformNode = new GlslNewFieldNode(type, bufferStruct.getName(), null);
+                    tree.getBody().set(index, uniformNode);
+                }
+                final Map<String, String> fieldReplacements = new HashMap<>();
+                { // Generate the getter functions for each field in the buffer struct
+                    final List<GlslStructField> fields = bufferStruct.getStructSpecifier().getFields();
+                    int offset = 0;
+                    for (int i = 0; i < fields.size(); i++) {
+                        final GlslStructField field = fields.get(i);
+                        final GlslFunctionNode getterFunctionNode = generateGetter(tree, offset, bufferStruct.getName(), field);
+                        fieldReplacements.put(field.getName(), getterFunctionNode.getName());
+                        tree.getBody().add(index + 1, getterFunctionNode);
+                        if (i < fields.size() - 1) {
+                            offset += calculateSize(tree, field.getType().getSpecifier());
+                        }
+                    }
+                }
+
+                // Replace all accesses to the buffer struct fields with calls to the generated getter functions
+                GlslNodeMutator.mutate(tree.getBody(), node -> {
+                    if (node instanceof GlslVariableNode variableNode) {
+                        final String replacement = fieldReplacements.get(variableNode.getName());
+                        if (replacement != null) {
+                            return new GlslInvokeFunctionNode(new GlslVariableNode(replacement), new ArrayList<>());
+                        }
+                    } else if (node instanceof GlslGetArrayNode getArrayNode) {
+                        if (getArrayNode.getExpression() instanceof GlslInvokeFunctionNode invokeFunctionNode) {
+                            invokeFunctionNode.getParameters().add(new GlslInvokeFunctionNode(new GlslVariableNode("int"), List.of(getArrayNode.getIndex())));
+                            return invokeFunctionNode;
+                        }
+                    }
+                    return node;
+                });
+            }
+            return !bufferStructs.isEmpty();
+        }
+
+        private static GlslFunctionNode generateGetter(final GlslTree tree, final int offset, final String bufferStructName, final GlslStructField field) {
+            final String functionName = "get_" + bufferStructName + "_" + field.getName();
+            final String varName = "var";
+            GlslFunctionNode functionNode;
+            if (field.getType().getSpecifier() instanceof GlslTypeSpecifier.Array arraySpecifier) {
+                // If the buffer struct field is an array, the getter doesn't return the entire array, instead it returns only the element at the given index.
+                // This prevents a lot of unnecessary converting of data.
+                final int typeSize = calculateSize(tree, arraySpecifier.getSpecifier());
+                functionNode = new GlslFunctionNode(
+                        new GlslFunctionHeader(functionName, arraySpecifier.getSpecifier(), List.of(new GlslParameterDeclaration(GlslTypeSpecifier.BuiltinType.INT, "index"))),
+                        List.of()
+                );
+                functionNode.getBody().add(new GlslNewFieldNode(arraySpecifier.getSpecifier(), varName, null));
+                functionNode.getBody().addAll(generateConstructor(
+                        tree,
+                        bufferStructName,
+                        new GlslOperationNode(
+                                GlslNode.intConstant(offset),
+                                new GlslOperationNode(new GlslVariableNode("index"), GlslNode.intConstant(typeSize), GlslOperationNode.Operand.MULTIPLY),
+                                GlslOperationNode.Operand.ADD
+                        ),
+                        new GlslVariableNode(varName),
+                        arraySpecifier.getSpecifier())
+                );
+            } else {
+                // If the buffer struct field is not an array, the getter simply reads and returns the value.
+                functionNode = new GlslFunctionNode(new GlslFunctionHeader(functionName, field.getType(), List.of()), List.of());
+                functionNode.getBody().add(new GlslNewFieldNode(field.getType().getSpecifier(), varName, null));
+                functionNode.getBody().addAll(generateConstructor(tree, bufferStructName, GlslNode.intConstant(offset), new GlslVariableNode(varName), field.getType().getSpecifier()));
+            }
+            functionNode.getBody().add(new GlslReturnNode(new GlslVariableNode(varName)));
+            return functionNode;
+        }
+
+        private static GlslNodeList generateConstructor(final GlslTree tree, final String arrayName, final GlslNode offset, final GlslNode target, final GlslTypeSpecifier type) {
+            final GlslNodeList nodeList = new GlslNodeList();
+            if (type.equals(GlslTypeSpecifier.BuiltinType.UINT)) {
+                final GlslInvokeFunctionNode texelFetch = new GlslInvokeFunctionNode(new GlslVariableNode("texelFetch"), List.of(new GlslVariableNode(arrayName), offset));
+                final GlslGetFieldNode x = new GlslGetFieldNode(texelFetch, "x");
+                final GlslInvokeFunctionNode floatBitsToUint = new GlslInvokeFunctionNode(new GlslVariableNode("floatBitsToUint"), List.of(x));
+                nodeList.add(new GlslAssignmentNode(target, floatBitsToUint, GlslAssignmentNode.Operand.EQUAL));
+            } else if (type instanceof GlslTypeSpecifier.Name) {
+                int currentOffset = 0;
+                final GlslStructDeclarationNode structNode = getStruct(tree, type.getName());
+                final List<GlslStructField> fields = structNode.getStructSpecifier().getFields();
+                for (int i = 0; i < fields.size(); i++) {
+                    final GlslStructField field = fields.get(i);
+                    nodeList.addAll(generateConstructor(
+                            tree,
+                            arrayName,
+                            new GlslOperationNode(offset, GlslNode.intConstant(currentOffset), GlslOperationNode.Operand.ADD),
+                            new GlslGetFieldNode(target, field.getName()),
+                            field.getType().getSpecifier()
+                    ));
+                    if (i < fields.size() - 1) {
+                        currentOffset += calculateSize(tree, field.getType().getSpecifier());
+                    }
+                }
+            }
+            if (nodeList.isEmpty()) {
+                throw new IllegalArgumentException("Cannot generate constructor for type: " + type + " (" + type.getClass().getName() + ")");
+            }
+            return nodeList;
+        }
+
+        /**
+         * Calculate the size of the given type specified in number of float components.
+         */
+        private static int calculateSize(final GlslTree tree, final GlslTypeSpecifier type) {
+            if (type.equals(GlslTypeSpecifier.BuiltinType.UINT)) {
+                return 1;
+            } else if (type instanceof GlslStructSpecifier structSpecifier) {
+                int size = 0;
+                for (GlslStructField field : structSpecifier.getFields()) {
+                    size += calculateSize(tree, field.getType().getSpecifier());
+                }
+                return size;
+            } else if (type instanceof GlslTypeSpecifier.Array arraySpecifier) {
+                if (arraySpecifier.getSize() == null) {
+                    throw new IllegalArgumentException("Cannot calculate size of unsized array: " + type + " (" + type.getClass().getName() + ")");
+                }
+                if (!(arraySpecifier.getSize() instanceof GlslIntConstantNode intConstantNode)) {
+                    throw new IllegalArgumentException("Cannot calculate size of dynamically sized array: " + type + " (" + type.getClass().getName() + ")");
+                }
+                return calculateSize(tree, arraySpecifier.getSpecifier()) * intConstantNode.intValue();
+            } else if (type instanceof GlslTypeSpecifier.Name) {
+                int size = 0;
+                final GlslStructDeclarationNode structNode = getStruct(tree, type.getName());
+                for (GlslStructField field : structNode.getStructSpecifier().getFields()) {
+                    size += calculateSize(tree, field.getType().getSpecifier());
+                }
+                return size;
+            } else {
+                throw new IllegalArgumentException("Cannot calculate size of type: " + type + " (" + type.getClass().getName() + ")");
+            }
+        }
+
+        private static List<GlslStructDeclarationNode> getBufferStructs(final GlslTree tree) {
+            final List<GlslStructDeclarationNode> bufferStructs = new ArrayList<>();
+            for (GlslNode node : tree.getBody()) {
+                if (node instanceof GlslStructDeclarationNode structNode) {
+                    final GlslSpecifiedType structType = structNode.getSpecifiedType();
+                    if (structType.getQualifiers().contains(GlslTypeQualifier.StorageType.BUFFER) && structType.getQualifiers().contains(GlslTypeQualifier.StorageType.READONLY)) {
+                        bufferStructs.add(structNode);
+                    }
+                }
+            }
+            return bufferStructs;
+        }
+
+        private static GlslStructDeclarationNode getStruct(final GlslTree tree, final String name) {
+            for (GlslNode node : tree.getBody()) {
+                if (node instanceof GlslStructDeclarationNode structNode) {
+                    if (structNode.getName().equals(name)) {
+                        return structNode;
+                    }
+                }
+            }
+            throw new IllegalArgumentException("Struct not found: " + name);
         }
 
     }
