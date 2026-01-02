@@ -61,7 +61,7 @@ public class Program extends GLContainerObject {
             for (Shader shader : shaders) {
                 this.attachShader(shader);
             }
-            this.linkAndValidate();
+            this.link();
         } catch (Throwable e) {
             this.free();
             throw e;
@@ -95,7 +95,7 @@ public class Program extends GLContainerObject {
         this.shaders.remove(shader);
     }
 
-    public void linkAndValidate() {
+    public void link() {
         this.uniformLocationCache.clear();
         this.uniformBlockIndexCache.clear();
         this.shaderStorageBlockIndexCache.clear();
@@ -106,7 +106,9 @@ public class Program extends GLContainerObject {
         } else if (!linkLog.isBlank()) {
             ThinGL.LOGGER.warn("Program link log: " + linkLog);
         }
+    }
 
+    public void validate() {
         ThinGL.glBackend().validateProgram(this.getGlId());
         final String validateLog = ThinGL.glBackend().getProgramInfoLog(this.getGlId());
         if (ThinGL.glBackend().getProgrami(this.getGlId(), GL20C.GL_VALIDATE_STATUS) == GL11C.GL_FALSE) {
