@@ -28,6 +28,7 @@ import io.github.ocelot.glslprocessor.api.node.expression.GlslAssignmentNode;
 import io.github.ocelot.glslprocessor.api.node.expression.GlslOperationNode;
 import io.github.ocelot.glslprocessor.api.node.function.GlslFunctionNode;
 import io.github.ocelot.glslprocessor.api.node.function.GlslInvokeFunctionNode;
+import io.github.ocelot.glslprocessor.api.node.function.GlslPrimitiveConstructorNode;
 import io.github.ocelot.glslprocessor.api.node.variable.*;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -1927,11 +1928,11 @@ public class GL41Backend implements GLBackend {
                     if (node instanceof GlslVariableNode variableNode) {
                         final String replacement = fieldReplacements.get(variableNode.getName());
                         if (replacement != null) {
-                            return new GlslInvokeFunctionNode(new GlslVariableNode(replacement), new ArrayList<>());
+                            return new GlslInvokeFunctionNode(new GlslVariableNode(replacement), List.of());
                         }
                     } else if (node instanceof GlslGetArrayNode getArrayNode) {
                         if (getArrayNode.getExpression() instanceof GlslInvokeFunctionNode invokeFunctionNode) {
-                            invokeFunctionNode.getParameters().add(new GlslInvokeFunctionNode(new GlslVariableNode("int"), List.of(getArrayNode.getIndex())));
+                            invokeFunctionNode.getParameters().add(new GlslInvokeFunctionNode(new GlslPrimitiveConstructorNode(GlslTypeSpecifier.BuiltinType.INT), List.of(getArrayNode.getIndex())));
                             return invokeFunctionNode;
                         }
                     }
