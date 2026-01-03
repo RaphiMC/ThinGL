@@ -70,7 +70,7 @@ dependencies {
     compileOnly "com.github.weisj:jsvg:2.0.0"
 
     // Example dependencies
-    ["natives-windows", "natives-windows-arm64", "natives-linux", "natives-linux-arm64"].each {
+    ["natives-windows", "natives-windows-arm64", "natives-linux", "natives-linux-arm64", "natives-macos-arm64"].each {
         exampleImplementation "org.lwjgl:lwjgl:3.3.6:$it"
         exampleImplementation "org.lwjgl:lwjgl-opengl:3.3.6:$it"
         exampleImplementation "org.lwjgl:lwjgl-glfw:3.3.6:$it"
