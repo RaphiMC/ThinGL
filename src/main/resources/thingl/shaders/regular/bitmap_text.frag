@@ -1,7 +1,7 @@
 #version 400 core
 
 uniform vec4 u_ColorModifier;
-uniform sampler2D u_Textures[32];
+uniform sampler2D u_Textures[16];
 uniform bool u_EdgeSharpening;
 
 in vec2 v_TexCoord;

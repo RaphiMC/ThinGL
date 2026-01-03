@@ -3,7 +3,7 @@
 #define STYLE_BOLD_BIT 2u
 
 uniform vec4 u_ColorModifier;
-uniform sampler2D u_Textures[32];
+uniform sampler2D u_Textures[16];
 
 in vec2 v_TexCoord;
 flat in uint v_TextureIndex;
