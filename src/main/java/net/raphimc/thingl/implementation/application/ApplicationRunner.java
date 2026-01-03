@@ -203,6 +203,8 @@ public abstract class ApplicationRunner {
         private int windowHeight = 720;
         private boolean useVSync = true;
         private int fpsLimit = -1;
+        private int openGLMajorVersion = 4;
+        private int openGLMinorVersion = 5;
         private boolean useSeparateThreads = false;
         private boolean debugMode = true;
         private boolean extendedDebugMode = false;
@@ -249,6 +251,24 @@ public abstract class ApplicationRunner {
 
         public Configuration setFpsLimit(final int fpsLimit) {
             this.fpsLimit = fpsLimit;
+            return this;
+        }
+
+        public int getOpenGLMajorVersion() {
+            return this.openGLMajorVersion;
+        }
+
+        public Configuration setOpenGLMajorVersion(final int openGLMajorVersion) {
+            this.openGLMajorVersion = openGLMajorVersion;
+            return this;
+        }
+
+        public int getOpenGLMinorVersion() {
+            return this.openGLMinorVersion;
+        }
+
+        public Configuration setOpenGLMinorVersion(final int openGLMinorVersion) {
+            this.openGLMinorVersion = openGLMinorVersion;
             return this;
         }
 

@@ -17,15 +17,19 @@
  */
 package net.raphimc.thingl.gl.resource.query;
 
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.resource.GLObject;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL15C;
+import org.lwjgl.opengl.GL43C;
+import org.lwjgl.opengl.GL45C;
 
 public class Query extends GLObject {
 
     private Integer target;
 
     public Query(final int target) {
-        super(GL45C.glCreateQueries(target));
+        super(ThinGL.glBackend().createQueries(target));
         this.target = target;
     }
 
@@ -34,7 +38,7 @@ public class Query extends GLObject {
     }
 
     public static Query fromGlId(final int glId) {
-        if (!GL15C.glIsQuery(glId)) {
+        if (!ThinGL.glBackend().isQuery(glId)) {
             throw new IllegalArgumentException("Not a query object");
         }
         return fromGlIdUnsafe(glId);
@@ -45,32 +49,32 @@ public class Query extends GLObject {
     }
 
     public void begin() {
-        GL15C.glBeginQuery(this.getTarget(), this.getGlId());
+        ThinGL.glBackend().beginQuery(this.getTarget(), this.getGlId());
     }
 
     public void end() {
-        GL15C.glEndQuery(this.getTarget());
+        ThinGL.glBackend().endQuery(this.getTarget());
     }
 
     public boolean isResultAvailable() {
-        return GL15C.glGetQueryObjecti(this.getGlId(), GL15C.GL_QUERY_RESULT_AVAILABLE) == GL11C.GL_TRUE;
+        return ThinGL.glBackend().getQueryObjecti(this.getGlId(), GL15C.GL_QUERY_RESULT_AVAILABLE) == GL11C.GL_TRUE;
     }
 
     public boolean getResultBoolean() {
-        return GL15C.glGetQueryObjecti(this.getGlId(), GL15C.GL_QUERY_RESULT) == GL11C.GL_TRUE;
+        return ThinGL.glBackend().getQueryObjecti(this.getGlId(), GL15C.GL_QUERY_RESULT) == GL11C.GL_TRUE;
     }
 
     public int getResultInt() {
-        return GL15C.glGetQueryObjecti(this.getGlId(), GL15C.GL_QUERY_RESULT);
+        return ThinGL.glBackend().getQueryObjecti(this.getGlId(), GL15C.GL_QUERY_RESULT);
     }
 
     public long getResultLong() {
-        return GL33C.glGetQueryObjecti64(this.getGlId(), GL15C.GL_QUERY_RESULT);
+        return ThinGL.glBackend().getQueryObjecti64(this.getGlId(), GL15C.GL_QUERY_RESULT);
     }
 
     @Override
     protected void free0() {
-        GL15C.glDeleteQueries(this.getGlId());
+        ThinGL.glBackend().deleteQueries(this.getGlId());
     }
 
     @Override
@@ -80,7 +84,7 @@ public class Query extends GLObject {
 
     public int getTarget() {
         if (this.target == null) {
-            this.target = GL15C.glGetQueryObjecti(this.getGlId(), GL45C.GL_QUERY_TARGET);
+            this.target = ThinGL.glBackend().getQueryObjecti(this.getGlId(), GL45C.GL_QUERY_TARGET);
         }
         return this.target;
     }

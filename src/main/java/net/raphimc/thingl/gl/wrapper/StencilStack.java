@@ -19,7 +19,6 @@ package net.raphimc.thingl.gl.wrapper;
 
 import net.raphimc.thingl.ThinGL;
 import org.lwjgl.opengl.GL11C;
-import org.lwjgl.opengl.GL30C;
 
 import java.util.Stack;
 
@@ -66,47 +65,47 @@ public class StencilStack {
     }
 
     private void clear() {
-        GL30C.glClearBufferiv(GL11C.GL_STENCIL, 0, STENCIL_CLEAR_VALUE);
+        ThinGL.glBackend().clearBufferiv(GL11C.GL_STENCIL, 0, STENCIL_CLEAR_VALUE);
     }
 
     public enum Mode {
         EQUAL_INTERSECTION {
             @Override
             protected void begin(final int stackSize) {
-                GL11C.glStencilFunc(GL11C.GL_EQUAL, stackSize - 1, 0xFF);
-                GL11C.glStencilOp(GL11C.GL_KEEP, GL11C.GL_KEEP, GL11C.GL_INCR);
+                ThinGL.glBackend().stencilFunc(GL11C.GL_EQUAL, stackSize - 1, 0xFF);
+                ThinGL.glBackend().stencilOp(GL11C.GL_KEEP, GL11C.GL_KEEP, GL11C.GL_INCR);
             }
 
             @Override
             protected void end(final int stackSize) {
-                GL11C.glStencilFunc(GL11C.GL_LEQUAL, stackSize, 0xFF);
-                GL11C.glStencilOp(GL11C.GL_KEEP, GL11C.GL_KEEP, GL11C.GL_KEEP);
+                ThinGL.glBackend().stencilFunc(GL11C.GL_LEQUAL, stackSize, 0xFF);
+                ThinGL.glBackend().stencilOp(GL11C.GL_KEEP, GL11C.GL_KEEP, GL11C.GL_KEEP);
             }
         },
         NOT_EQUAL {
             @Override
             protected void begin(final int stackSize) {
-                GL11C.glStencilFunc(GL11C.GL_ALWAYS, 1, 0xFF);
-                GL11C.glStencilOp(GL11C.GL_REPLACE, GL11C.GL_REPLACE, GL11C.GL_REPLACE);
+                ThinGL.glBackend().stencilFunc(GL11C.GL_ALWAYS, 1, 0xFF);
+                ThinGL.glBackend().stencilOp(GL11C.GL_REPLACE, GL11C.GL_REPLACE, GL11C.GL_REPLACE);
             }
 
             @Override
             protected void end(final int stackSize) {
-                GL11C.glStencilFunc(GL11C.GL_EQUAL, 0, 0xFF);
-                GL11C.glStencilOp(GL11C.GL_KEEP, GL11C.GL_KEEP, GL11C.GL_KEEP);
+                ThinGL.glBackend().stencilFunc(GL11C.GL_EQUAL, 0, 0xFF);
+                ThinGL.glBackend().stencilOp(GL11C.GL_KEEP, GL11C.GL_KEEP, GL11C.GL_KEEP);
             }
         },
         OVERLAP {
             @Override
             protected void begin(final int stackSize) {
-                GL11C.glStencilFunc(GL11C.GL_NEVER, 0, 0xFF);
-                GL11C.glStencilOp(GL11C.GL_INCR, GL11C.GL_INCR, GL11C.GL_INCR);
+                ThinGL.glBackend().stencilFunc(GL11C.GL_NEVER, 0, 0xFF);
+                ThinGL.glBackend().stencilOp(GL11C.GL_INCR, GL11C.GL_INCR, GL11C.GL_INCR);
             }
 
             @Override
             protected void end(final int stackSize) {
-                GL11C.glStencilFunc(GL11C.GL_LEQUAL, stackSize + 1, 0xFF);
-                GL11C.glStencilOp(GL11C.GL_KEEP, GL11C.GL_KEEP, GL11C.GL_KEEP);
+                ThinGL.glBackend().stencilFunc(GL11C.GL_LEQUAL, stackSize + 1, 0xFF);
+                ThinGL.glBackend().stencilOp(GL11C.GL_KEEP, GL11C.GL_KEEP, GL11C.GL_KEEP);
             }
         },
         ;

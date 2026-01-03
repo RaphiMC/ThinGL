@@ -36,11 +36,15 @@ import net.raphimc.thingl.implementation.Capabilities;
 import net.raphimc.thingl.implementation.Config;
 import net.raphimc.thingl.implementation.GlobalUniforms;
 import net.raphimc.thingl.implementation.Workarounds;
+import net.raphimc.thingl.implementation.gl.GLBackend;
+import net.raphimc.thingl.implementation.gl.impl.GL41Backend;
+import net.raphimc.thingl.implementation.gl.impl.GL45Backend;
 import net.raphimc.thingl.implementation.instance.InstanceManager;
 import net.raphimc.thingl.implementation.instance.SingleInstanceManager;
 import net.raphimc.thingl.implementation.window.WindowInterface;
 import net.raphimc.thingl.text.util.FreeTypeLibrary;
 import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL30C;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,20 +81,24 @@ public class ThinGL {
         return get().getWindowInterface();
     }
 
-    public static GLStateManager glStateManager() {
-        return get().getGLStateManager();
-    }
-
     public static Config config() {
         return get().getConfig();
+    }
+
+    public static GLBackend glBackend() {
+        return get().getGLBackend();
+    }
+
+    public static Workarounds workarounds() {
+        return get().getWorkarounds();
     }
 
     public static Capabilities capabilities() {
         return get().getCapabilities();
     }
 
-    public static Workarounds workarounds() {
-        return get().getWorkarounds();
+    public static GLStateManager glStateManager() {
+        return get().getGLStateManager();
     }
 
     public static GLStateStack glStateStack() {
@@ -160,9 +168,10 @@ public class ThinGL {
     private final Thread renderThread;
     private final WindowInterface windowInterface;
     private final Config config;
-    private final GLStateManager glStateManager;
-    private final Capabilities capabilities;
+    private final GLBackend glBackend;
     private final Workarounds workarounds;
+    private final Capabilities capabilities;
+    private final GLStateManager glStateManager;
 
     private final GLStateStack glStateStack;
     private final ScissorStack scissorStack;
@@ -210,9 +219,10 @@ public class ThinGL {
         this.renderThread = Thread.currentThread();
         this.windowInterface = windowInterface;
         this.config = this.createConfig();
-        this.glStateManager = this.createGLStateManager();
-        this.capabilities = this.createCapabilities();
+        this.glBackend = this.createGLBackend();
         this.workarounds = this.createWorkarounds();
+        this.capabilities = this.createCapabilities();
+        this.glStateManager = this.createGLStateManager();
         this.glStateStack = this.createGLStateStack();
         this.scissorStack = this.createScissorStack();
         this.stencilStack = this.createStencilStack();
@@ -241,9 +251,9 @@ public class ThinGL {
             }
         });
 
-        final String gpuVendor = GL11C.glGetString(GL11C.GL_VENDOR);
-        final String gpuModel = GL11C.glGetString(GL11C.GL_RENDERER);
-        final String glVersion = GL11C.glGetString(GL11C.GL_VERSION);
+        final String gpuVendor = this.glBackend.getString(GL11C.GL_VENDOR);
+        final String gpuModel = this.glBackend.getString(GL11C.GL_RENDERER);
+        final String glVersion = this.glBackend.getString(GL11C.GL_VERSION);
         LOGGER.info("Initialized ThinGL " + IMPL_VERSION + " on " + gpuModel + " (" + gpuVendor + ") with OpenGL " + glVersion);
     }
 
@@ -403,20 +413,24 @@ public class ThinGL {
         return this.windowInterface;
     }
 
-    public GLStateManager getGLStateManager() {
-        return this.glStateManager;
-    }
-
     public Config getConfig() {
         return this.config;
+    }
+
+    public GLBackend getGLBackend() {
+        return this.glBackend;
+    }
+
+    public Workarounds getWorkarounds() {
+        return this.workarounds;
     }
 
     public Capabilities getCapabilities() {
         return this.capabilities;
     }
 
-    public Workarounds getWorkarounds() {
-        return this.workarounds;
+    public GLStateManager getGLStateManager() {
+        return this.glStateManager;
     }
 
     public GLStateStack getGLStateStack() {
@@ -487,16 +501,28 @@ public class ThinGL {
         return new Config();
     }
 
-    protected GLStateManager createGLStateManager() {
-        return new TrackingGLStateManager();
+    protected GLBackend createGLBackend() {
+        final int majorVersion = GL11C.glGetInteger(GL30C.GL_MAJOR_VERSION);
+        final int minorVersion = GL11C.glGetInteger(GL30C.GL_MINOR_VERSION);
+        if (majorVersion > 4 || (majorVersion == 4 && minorVersion >= 5)) {
+            return new GL45Backend();
+        } else if (majorVersion == 4 && minorVersion >= 1) {
+            return new GL41Backend();
+        } else {
+            throw new RuntimeException("ThinGL requires at least OpenGL 4.1 to run (detected version: " + majorVersion + "." + minorVersion + ")");
+        }
+    }
+
+    protected Workarounds createWorkarounds() {
+        return new Workarounds();
     }
 
     protected Capabilities createCapabilities() {
         return new Capabilities();
     }
 
-    protected Workarounds createWorkarounds() {
-        return new Workarounds();
+    protected GLStateManager createGLStateManager() {
+        return new TrackingGLStateManager();
     }
 
     protected GLStateStack createGLStateStack() {

@@ -59,8 +59,8 @@ public abstract class SDLApplicationRunner extends ApplicationRunner {
     }
 
     protected void setGLAttributes() {
-        SDLErrorUtil.checkError(SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_CONTEXT_MAJOR_VERSION, 4));
-        SDLErrorUtil.checkError(SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_CONTEXT_MINOR_VERSION, 5));
+        SDLErrorUtil.checkError(SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_CONTEXT_MAJOR_VERSION, this.configuration.getOpenGLMajorVersion()));
+        SDLErrorUtil.checkError(SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_CONTEXT_MINOR_VERSION, this.configuration.getOpenGLMinorVersion()));
         SDLErrorUtil.checkError(SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_CONTEXT_PROFILE_MASK, SDLVideo.SDL_GL_CONTEXT_PROFILE_CORE));
         SDLErrorUtil.checkError(SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_CONTEXT_FLAGS, SDLVideo.SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG));
     }

@@ -17,10 +17,10 @@
  */
 package net.raphimc.thingl.gl.resource.image.texture.impl;
 
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.resource.buffer.Buffer;
 import net.raphimc.thingl.gl.resource.image.texture.Texture;
 import org.lwjgl.opengl.GL31C;
-import org.lwjgl.opengl.GL45C;
 
 public class BufferTexture extends Texture {
 
@@ -38,7 +38,7 @@ public class BufferTexture extends Texture {
 
     public void initialize(final int internalFormat, final Buffer buffer) {
         this.levelParameters.clear();
-        GL45C.glTextureBuffer(this.getGlId(), internalFormat, buffer.getGlId());
+        ThinGL.glBackend().textureBuffer(this.getGlId(), internalFormat, buffer.getGlId());
     }
 
     @Override

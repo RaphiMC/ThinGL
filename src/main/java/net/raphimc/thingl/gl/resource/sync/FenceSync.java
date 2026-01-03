@@ -17,6 +17,7 @@
  */
 package net.raphimc.thingl.gl.resource.sync;
 
+import net.raphimc.thingl.ThinGL;
 import org.lwjgl.opengl.GL32C;
 
 public class FenceSync extends GLSyncObject {
@@ -29,7 +30,7 @@ public class FenceSync extends GLSyncObject {
     }
 
     public FenceSync(final int condition, final int flags) {
-        super(GL32C.glFenceSync(condition, flags));
+        super(ThinGL.glBackend().fenceSync(condition, flags));
         this.condition = condition;
         this.flags = flags;
     }
@@ -43,15 +44,15 @@ public class FenceSync extends GLSyncObject {
     }
 
     public boolean isSignaled() {
-        return GL32C.glGetSynci(this.getPointer(), GL32C.GL_SYNC_STATUS, null) == GL32C.GL_SIGNALED;
+        return ThinGL.glBackend().getSynci(this.getPointer(), GL32C.GL_SYNC_STATUS) == GL32C.GL_SIGNALED;
     }
 
     public int clientWait(final int flags, final long timeout) {
-        return GL32C.glClientWaitSync(this.getPointer(), flags, timeout);
+        return ThinGL.glBackend().clientWaitSync(this.getPointer(), flags, timeout);
     }
 
     public void serverWait(final int flags, final long timeout) {
-        GL32C.glWaitSync(this.getPointer(), flags, timeout);
+        ThinGL.glBackend().waitSync(this.getPointer(), flags, timeout);
     }
 
     @Override
@@ -61,14 +62,14 @@ public class FenceSync extends GLSyncObject {
 
     public int getCondition() {
         if (this.condition == null) {
-            this.condition = GL32C.glGetSynci(this.getPointer(), GL32C.GL_SYNC_CONDITION, null);
+            this.condition = ThinGL.glBackend().getSynci(this.getPointer(), GL32C.GL_SYNC_CONDITION);
         }
         return this.condition;
     }
 
     public int getFlags() {
         if (this.flags == null) {
-            this.flags = GL32C.glGetSynci(this.getPointer(), GL32C.GL_SYNC_FLAGS, null);
+            this.flags = ThinGL.glBackend().getSynci(this.getPointer(), GL32C.GL_SYNC_FLAGS);
         }
         return this.flags;
     }

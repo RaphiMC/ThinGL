@@ -31,7 +31,10 @@ import net.raphimc.thingl.memory.allocator.MemoryAllocator;
 import net.raphimc.thingl.resource.memory.Memory;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL20C;
+import org.lwjgl.opengl.GL31C;
+import org.lwjgl.opengl.GL43C;
 import org.lwjgl.system.MemoryStack;
 
 import java.util.Collections;
@@ -52,13 +55,13 @@ public class Program extends GLContainerObject {
     private int currentShaderStorageBufferIndex;
 
     public Program(final Shader... shaders) {
-        super(GL20C.glCreateProgram());
+        super(ThinGL.glBackend().createProgram());
         this.shaders = new HashSet<>(shaders.length);
         try {
             for (Shader shader : shaders) {
                 this.attachShader(shader);
             }
-            this.linkAndValidate();
+            this.link();
         } catch (Throwable e) {
             this.free();
             throw e;
@@ -70,7 +73,7 @@ public class Program extends GLContainerObject {
     }
 
     public static Program fromGlId(final int glId) {
-        if (!GL20C.glIsProgram(glId)) {
+        if (!ThinGL.glBackend().isProgram(glId)) {
             throw new IllegalArgumentException("Not a program object");
         }
         return fromGlIdUnsafe(glId);
@@ -82,31 +85,33 @@ public class Program extends GLContainerObject {
 
     public void attachShader(final Shader shader) {
         this.getShaders(); // Ensure shaders set is initialized
-        GL20C.glAttachShader(this.getGlId(), shader.getGlId());
+        ThinGL.glBackend().attachShader(this.getGlId(), shader.getGlId());
         this.shaders.add(shader);
     }
 
     public void detachShader(final Shader shader) {
         this.getShaders(); // Ensure shaders set is initialized
-        GL20C.glDetachShader(this.getGlId(), shader.getGlId());
+        ThinGL.glBackend().detachShader(this.getGlId(), shader.getGlId());
         this.shaders.remove(shader);
     }
 
-    public void linkAndValidate() {
+    public void link() {
         this.uniformLocationCache.clear();
         this.uniformBlockIndexCache.clear();
         this.shaderStorageBlockIndexCache.clear();
-        GL20C.glLinkProgram(this.getGlId());
-        final String linkLog = GL20C.glGetProgramInfoLog(this.getGlId());
-        if (GL20C.glGetProgrami(this.getGlId(), GL20C.GL_LINK_STATUS) == GL11C.GL_FALSE) {
+        ThinGL.glBackend().linkProgram(this.getGlId());
+        final String linkLog = ThinGL.glBackend().getProgramInfoLog(this.getGlId());
+        if (ThinGL.glBackend().getProgrami(this.getGlId(), GL20C.GL_LINK_STATUS) == GL11C.GL_FALSE) {
             throw new IllegalStateException("Error linking program: " + linkLog);
         } else if (!linkLog.isBlank()) {
             ThinGL.LOGGER.warn("Program link log: " + linkLog);
         }
+    }
 
-        GL20C.glValidateProgram(this.getGlId());
-        final String validateLog = GL20C.glGetProgramInfoLog(this.getGlId());
-        if (GL20C.glGetProgrami(this.getGlId(), GL20C.GL_VALIDATE_STATUS) == GL11C.GL_FALSE) {
+    public void validate() {
+        ThinGL.glBackend().validateProgram(this.getGlId());
+        final String validateLog = ThinGL.glBackend().getProgramInfoLog(this.getGlId());
+        if (ThinGL.glBackend().getProgrami(this.getGlId(), GL20C.GL_VALIDATE_STATUS) == GL11C.GL_FALSE) {
             throw new IllegalStateException("Error validating program: " + validateLog);
         } else if (!validateLog.isBlank()) {
             ThinGL.LOGGER.warn("Program validate log: " + validateLog);
@@ -114,31 +119,31 @@ public class Program extends GLContainerObject {
     }
 
     public void setUniformBoolean(final String name, final boolean v) {
-        GL41C.glProgramUniform1i(this.getGlId(), this.getUniformLocation(name), v ? GL11C.GL_TRUE : GL11C.GL_FALSE);
+        ThinGL.glBackend().programUniform1i(this.getGlId(), this.getUniformLocation(name), v ? GL11C.GL_TRUE : GL11C.GL_FALSE);
     }
 
     public void setUniformInt(final String name, final int v) {
-        GL41C.glProgramUniform1i(this.getGlId(), this.getUniformLocation(name), v);
+        ThinGL.glBackend().programUniform1i(this.getGlId(), this.getUniformLocation(name), v);
     }
 
     public void setUniformIntArray(final String name, final int... v) {
-        GL41C.glProgramUniform1iv(this.getGlId(), this.getUniformLocation(name), v);
+        ThinGL.glBackend().programUniform1iv(this.getGlId(), this.getUniformLocation(name), v);
     }
 
     public void setUniformFloat(final String name, final float v) {
-        GL41C.glProgramUniform1f(this.getGlId(), this.getUniformLocation(name), v);
+        ThinGL.glBackend().programUniform1f(this.getGlId(), this.getUniformLocation(name), v);
     }
 
     public void setUniformVector2f(final String name, final float v1, final float v2) {
-        GL41C.glProgramUniform2f(this.getGlId(), this.getUniformLocation(name), v1, v2);
+        ThinGL.glBackend().programUniform2f(this.getGlId(), this.getUniformLocation(name), v1, v2);
     }
 
     public void setUniformVector3f(final String name, final float v1, final float v2, final float v3) {
-        GL41C.glProgramUniform3f(this.getGlId(), this.getUniformLocation(name), v1, v2, v3);
+        ThinGL.glBackend().programUniform3f(this.getGlId(), this.getUniformLocation(name), v1, v2, v3);
     }
 
     public void setUniformVector4f(final String name, final float v1, final float v2, final float v3, final float v4) {
-        GL41C.glProgramUniform4f(this.getGlId(), this.getUniformLocation(name), v1, v2, v3, v4);
+        ThinGL.glBackend().programUniform4f(this.getGlId(), this.getUniformLocation(name), v1, v2, v3, v4);
     }
 
     public void setUniformVector4f(final String name, final Color color) {
@@ -149,7 +154,7 @@ public class Program extends GLContainerObject {
         try (MemoryStack memoryStack = MemoryStack.stackPush()) {
             final Memory memory = MemoryAllocator.wrapMemory(memoryStack.nmalloc(Memory.MATRIX3F_SIZE), Memory.MATRIX3F_SIZE);
             memory.putMatrix3f(0, matrix);
-            GL41C.nglProgramUniformMatrix3fv(this.getGlId(), this.getUniformLocation(name), 1, false, memory.getAddress());
+            ThinGL.glBackend().programUniformMatrix3fv(this.getGlId(), this.getUniformLocation(name), 1, false, memory.getAddress());
         }
     }
 
@@ -157,7 +162,7 @@ public class Program extends GLContainerObject {
         try (MemoryStack memoryStack = MemoryStack.stackPush()) {
             final Memory memory = MemoryAllocator.wrapMemory(memoryStack.nmalloc(Memory.MATRIX4F_SIZE), Memory.MATRIX4F_SIZE);
             memory.putMatrix4f(0, matrix);
-            GL41C.nglProgramUniformMatrix4fv(this.getGlId(), this.getUniformLocation(name), 1, false, memory.getAddress());
+            ThinGL.glBackend().programUniformMatrix4fv(this.getGlId(), this.getUniformLocation(name), 1, false, memory.getAddress());
         }
     }
 
@@ -182,14 +187,14 @@ public class Program extends GLContainerObject {
     }
 
     public void setUniformSampler(final String name, final int textureId) {
-        GL45C.glBindTextureUnit(this.currentTextureUnit, textureId);
-        GL33C.glBindSampler(this.currentTextureUnit, 0);
+        ThinGL.glBackend().bindTextureUnit(this.currentTextureUnit, textureId);
+        ThinGL.glBackend().bindSampler(this.currentTextureUnit, 0);
         this.setUniformInt(name, this.currentTextureUnit++);
     }
 
     public void setUniformSamplerArray(final String name, final int... textureIds) {
-        GL44C.glBindTextures(this.currentTextureUnit, textureIds);
-        GL44C.nglBindSamplers(this.currentTextureUnit, textureIds.length, 0L);
+        ThinGL.glBackend().bindTextures(this.currentTextureUnit, textureIds);
+        ThinGL.glBackend().bindSamplers(this.currentTextureUnit, new int[textureIds.length]);
         final int[] textureUnits = new int[textureIds.length];
         for (int i = 0; i < textureIds.length; i++) {
             textureUnits[i] = this.currentTextureUnit + i;
@@ -211,25 +216,25 @@ public class Program extends GLContainerObject {
     }
 
     public void setUniformImage(final String name, final int textureId, final int access, final int format) {
-        GL42C.glBindImageTexture(this.currentImageUnit, textureId, 0, false, 0, access, format);
+        ThinGL.glBackend().bindImageTexture(this.currentImageUnit, textureId, 0, false, 0, access, format);
         this.setUniformInt(name, this.currentImageUnit++);
     }
 
     public void setUniformBuffer(final String name, final Buffer buffer) {
-        GL31C.glUniformBlockBinding(this.getGlId(), this.getUniformBlockIndex(name), this.currentUniformBufferIndex);
+        ThinGL.glBackend().uniformBlockBinding(this.getGlId(), this.getUniformBlockIndex(name), this.currentUniformBufferIndex);
         if (buffer != null) {
-            GL30C.glBindBufferBase(GL31C.GL_UNIFORM_BUFFER, this.currentUniformBufferIndex++, buffer.getGlId());
+            ThinGL.glBackend().bindBufferBase(GL31C.GL_UNIFORM_BUFFER, this.currentUniformBufferIndex++, buffer.getGlId());
         } else {
-            GL30C.glBindBufferBase(GL31C.GL_UNIFORM_BUFFER, this.currentUniformBufferIndex++, 0);
+            ThinGL.glBackend().bindBufferBase(GL31C.GL_UNIFORM_BUFFER, this.currentUniformBufferIndex++, 0);
         }
     }
 
     public void setShaderStorageBuffer(final String name, final Buffer buffer) {
-        GL43C.glShaderStorageBlockBinding(this.getGlId(), this.getShaderStorageBlockIndex(name), this.currentShaderStorageBufferIndex);
+        ThinGL.glBackend().shaderStorageBlockBinding(this.getGlId(), this.getShaderStorageBlockIndex(name), this.currentShaderStorageBufferIndex);
         if (buffer != null) {
-            GL30C.glBindBufferBase(GL43C.GL_SHADER_STORAGE_BUFFER, this.currentShaderStorageBufferIndex++, buffer.getGlId());
+            ThinGL.glBackend().bindBufferBase(GL43C.GL_SHADER_STORAGE_BUFFER, this.currentShaderStorageBufferIndex++, buffer.getGlId());
         } else {
-            GL30C.glBindBufferBase(GL43C.GL_SHADER_STORAGE_BUFFER, this.currentShaderStorageBufferIndex++, 0);
+            ThinGL.glBackend().bindBufferBase(GL43C.GL_SHADER_STORAGE_BUFFER, this.currentShaderStorageBufferIndex++, 0);
         }
     }
 
@@ -256,7 +261,7 @@ public class Program extends GLContainerObject {
 
     @Override
     protected void free0() {
-        GL20C.glDeleteProgram(this.getGlId());
+        ThinGL.glBackend().deleteProgram(this.getGlId());
     }
 
     @Override
@@ -283,10 +288,10 @@ public class Program extends GLContainerObject {
 
     public Set<Shader> getShaders() {
         if (this.shaders == null) {
-            final int shaderCount = GL20C.glGetProgrami(this.getGlId(), GL20C.GL_ATTACHED_SHADERS);
+            final int shaderCount = ThinGL.glBackend().getProgrami(this.getGlId(), GL20C.GL_ATTACHED_SHADERS);
             this.shaders = new HashSet<>(shaderCount);
             final int[] shaderGlIds = new int[shaderCount];
-            GL20C.glGetAttachedShaders(this.getGlId(), null, shaderGlIds);
+            ThinGL.glBackend().getAttachedShaders(this.getGlId(), null, shaderGlIds);
             for (int shaderGlId : shaderGlIds) {
                 this.shaders.add(Shader.fromGlId(shaderGlId));
             }
@@ -299,7 +304,7 @@ public class Program extends GLContainerObject {
     }
 
     private int queryUniformLocation(final String name) {
-        return GL20C.glGetUniformLocation(this.getGlId(), name);
+        return ThinGL.glBackend().getUniformLocation(this.getGlId(), name);
     }
 
     public int getUniformBlockIndex(final String name) {
@@ -307,7 +312,7 @@ public class Program extends GLContainerObject {
     }
 
     private int queryUniformBlockIndex(final String name) {
-        return GL43C.glGetProgramResourceIndex(this.getGlId(), GL43C.GL_UNIFORM_BLOCK, name);
+        return ThinGL.glBackend().getProgramResourceIndex(this.getGlId(), GL43C.GL_UNIFORM_BLOCK, name);
     }
 
     public int getShaderStorageBlockIndex(final String name) {
@@ -315,7 +320,7 @@ public class Program extends GLContainerObject {
     }
 
     private int queryShaderStorageBlockIndex(final String name) {
-        return GL43C.glGetProgramResourceIndex(this.getGlId(), GL43C.GL_SHADER_STORAGE_BLOCK, name);
+        return ThinGL.glBackend().getProgramResourceIndex(this.getGlId(), GL43C.GL_SHADER_STORAGE_BLOCK, name);
     }
 
 }

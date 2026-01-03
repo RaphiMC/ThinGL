@@ -17,7 +17,7 @@
  */
 package net.raphimc.thingl.gl.resource;
 
-import org.lwjgl.opengl.GL43C;
+import net.raphimc.thingl.ThinGL;
 
 import java.util.Objects;
 
@@ -54,12 +54,12 @@ public abstract class GLObject {
 
     public final String getDebugName() {
         this.assertAllocated();
-        return GL43C.glGetObjectLabel(this.getGlType(), this.glId);
+        return ThinGL.glBackend().getObjectLabel(this.getGlType(), this.glId);
     }
 
     public final void setDebugName(final String name) {
         this.assertAllocated();
-        GL43C.glObjectLabel(this.getGlType(), this.glId, name);
+        ThinGL.glBackend().objectLabel(this.getGlType(), this.glId, name);
     }
 
     @Override

@@ -18,12 +18,12 @@
 package net.raphimc.thingl.gl.resource.image.texture.impl;
 
 import net.lenni0451.commons.color.Color;
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.resource.image.ImageStorage3D;
 import net.raphimc.thingl.gl.resource.image.texture.SampledTexture;
 import net.raphimc.thingl.resource.image.Image;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL12C;
-import org.lwjgl.opengl.GL45C;
 
 public class Texture3D extends SampledTexture implements ImageStorage3D {
 
@@ -33,7 +33,7 @@ public class Texture3D extends SampledTexture implements ImageStorage3D {
 
     public Texture3D(final int internalFormat, final int width, final int height, final int depth, final int mipMapLevels) {
         super(GL12C.GL_TEXTURE_3D);
-        GL45C.glTextureStorage3D(this.getGlId(), mipMapLevels, internalFormat, width, height, depth);
+        ThinGL.glBackend().textureStorage3D(this.getGlId(), mipMapLevels, internalFormat, width, height, depth);
     }
 
     protected Texture3D(final int glId) {

@@ -25,7 +25,8 @@ import net.raphimc.thingl.gl.resource.buffer.Buffer;
 import net.raphimc.thingl.rendering.DrawMode;
 import net.raphimc.thingl.rendering.vertex.VertexDataLayout;
 import net.raphimc.thingl.rendering.vertex.VertexDataLayoutElement;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL40C;
 
 public class VertexArray extends GLContainerObject {
 
@@ -34,7 +35,7 @@ public class VertexArray extends GLContainerObject {
     private Buffer indexBuffer;
 
     public VertexArray() {
-        super(GL45C.glCreateVertexArrays());
+        super(ThinGL.glBackend().createVertexArrays());
     }
 
     protected VertexArray(final int glId) {
@@ -42,7 +43,7 @@ public class VertexArray extends GLContainerObject {
     }
 
     public static VertexArray fromGlId(final int glId) {
-        if (!GL30C.glIsVertexArray(glId)) {
+        if (!ThinGL.glBackend().isVertexArray(glId)) {
             throw new IllegalArgumentException("Not a vertex array object");
         }
         return fromGlIdUnsafe(glId);
@@ -55,10 +56,10 @@ public class VertexArray extends GLContainerObject {
     public void setVertexBuffer(final int bindingIndex, final Buffer buffer, final long offset, final int stride) {
         if (buffer != null) {
             this.vertexBuffers.put(bindingIndex, buffer);
-            GL45C.glVertexArrayVertexBuffer(this.getGlId(), bindingIndex, buffer.getGlId(), offset, stride);
+            ThinGL.glBackend().vertexArrayVertexBuffer(this.getGlId(), bindingIndex, buffer.getGlId(), offset, stride);
         } else {
             this.vertexBuffers.remove(bindingIndex);
-            GL45C.glVertexArrayVertexBuffer(this.getGlId(), bindingIndex, 0, 0, 0);
+            ThinGL.glBackend().vertexArrayVertexBuffer(this.getGlId(), bindingIndex, 0, 0, 0);
         }
     }
 
@@ -66,15 +67,9 @@ public class VertexArray extends GLContainerObject {
         this.indexType = indexType;
         this.indexBuffer = buffer;
         if (buffer != null) {
-            GL45C.glVertexArrayElementBuffer(this.getGlId(), buffer.getGlId());
+            ThinGL.glBackend().vertexArrayElementBuffer(this.getGlId(), buffer.getGlId());
         } else {
-            if (!ThinGL.workarounds().isDsaVertexArrayElementBufferUnbindBroken()) {
-                GL45C.glVertexArrayElementBuffer(this.getGlId(), 0);
-            } else {
-                this.bind();
-                GL15C.glBindBuffer(GL15C.GL_ELEMENT_ARRAY_BUFFER, 0);
-                this.unbind();
-            }
+            ThinGL.glBackend().vertexArrayElementBuffer(this.getGlId(), 0);
         }
     }
 
@@ -83,71 +78,71 @@ public class VertexArray extends GLContainerObject {
         for (int i = 0; i < vertexDataLayout.getElements().length; i++) {
             final VertexDataLayoutElement element = vertexDataLayout.getElements()[i];
             switch (element.targetDataType()) {
-                case INT -> GL45C.glVertexArrayAttribIFormat(this.getGlId(), i + attribOffset, element.count(), element.dataType().getGlType(), relativeOffset);
-                case FLOAT -> GL45C.glVertexArrayAttribFormat(this.getGlId(), i + attribOffset, element.count(), element.dataType().getGlType(), false, relativeOffset);
-                case FLOAT_NORMALIZED -> GL45C.glVertexArrayAttribFormat(this.getGlId(), i + attribOffset, element.count(), element.dataType().getGlType(), true, relativeOffset);
-                case DOUBLE -> GL45C.glVertexArrayAttribLFormat(this.getGlId(), i + attribOffset, element.count(), element.dataType().getGlType(), relativeOffset);
+                case INT -> ThinGL.glBackend().vertexArrayAttribIFormat(this.getGlId(), i + attribOffset, element.count(), element.dataType().getGlType(), relativeOffset);
+                case FLOAT -> ThinGL.glBackend().vertexArrayAttribFormat(this.getGlId(), i + attribOffset, element.count(), element.dataType().getGlType(), false, relativeOffset);
+                case FLOAT_NORMALIZED -> ThinGL.glBackend().vertexArrayAttribFormat(this.getGlId(), i + attribOffset, element.count(), element.dataType().getGlType(), true, relativeOffset);
+                case DOUBLE -> ThinGL.glBackend().vertexArrayAttribLFormat(this.getGlId(), i + attribOffset, element.count(), element.dataType().getGlType(), relativeOffset);
             }
-            GL45C.glVertexArrayAttribBinding(this.getGlId(), i + attribOffset, bindingIndex);
-            GL45C.glEnableVertexArrayAttrib(this.getGlId(), i + attribOffset);
+            ThinGL.glBackend().vertexArrayAttribBinding(this.getGlId(), i + attribOffset, bindingIndex);
+            ThinGL.glBackend().enableVertexArrayAttrib(this.getGlId(), i + attribOffset);
             relativeOffset += element.count() * element.dataType().getSize() + element.padding();
         }
-        GL45C.glVertexArrayBindingDivisor(this.getGlId(), bindingIndex, divisor);
+        ThinGL.glBackend().vertexArrayBindingDivisor(this.getGlId(), bindingIndex, divisor);
     }
 
     public void drawArrays(final DrawMode drawMode, final int count, final int offset) {
         this.bind();
-        GL11C.glDrawArrays(drawMode.getGlMode(), offset, count);
+        ThinGL.glBackend().drawArrays(drawMode.getGlMode(), offset, count);
         this.unbind();
     }
 
     public void drawArrays(final DrawMode drawMode, final int count, final int offset, final int instanceCount, final int baseInstance) {
         this.bind();
-        GL42C.glDrawArraysInstancedBaseInstance(drawMode.getGlMode(), offset, count, instanceCount, baseInstance);
+        ThinGL.glBackend().drawArraysInstancedBaseInstance(drawMode.getGlMode(), offset, count, instanceCount, baseInstance);
         this.unbind();
     }
 
     public void drawArraysIndirect(final DrawMode drawMode, final Buffer indirectCommandBuffer, final long offset, final int count) {
         this.bind();
-        final int prevIndirectCommandBuffer = GL11C.glGetInteger(GL40C.GL_DRAW_INDIRECT_BUFFER_BINDING);
-        GL15C.glBindBuffer(GL40C.GL_DRAW_INDIRECT_BUFFER, indirectCommandBuffer.getGlId());
+        final int prevIndirectCommandBuffer = ThinGL.glBackend().getInteger(GL40C.GL_DRAW_INDIRECT_BUFFER_BINDING);
+        ThinGL.glBackend().bindBuffer(GL40C.GL_DRAW_INDIRECT_BUFFER, indirectCommandBuffer.getGlId());
         if (count == 1) {
-            GL40C.glDrawArraysIndirect(drawMode.getGlMode(), offset);
+            ThinGL.glBackend().drawArraysIndirect(drawMode.getGlMode(), offset);
         } else {
-            GL43C.glMultiDrawArraysIndirect(drawMode.getGlMode(), offset, count, 0);
+            ThinGL.glBackend().multiDrawArraysIndirect(drawMode.getGlMode(), offset, count, 0);
         }
-        GL15C.glBindBuffer(GL40C.GL_DRAW_INDIRECT_BUFFER, prevIndirectCommandBuffer);
+        ThinGL.glBackend().bindBuffer(GL40C.GL_DRAW_INDIRECT_BUFFER, prevIndirectCommandBuffer);
         this.unbind();
     }
 
     public void drawElements(final DrawMode drawMode, final int count, final int offset) {
         this.bind();
-        GL11C.glDrawElements(drawMode.getGlMode(), count, this.indexType, offset);
+        ThinGL.glBackend().drawElements(drawMode.getGlMode(), count, this.indexType, offset);
         this.unbind();
     }
 
     public void drawElements(final DrawMode drawMode, final int count, final int offset, final int instanceCount, final int baseVertex, final int baseInstance) {
         this.bind();
-        GL42C.glDrawElementsInstancedBaseVertexBaseInstance(drawMode.getGlMode(), count, this.indexType, offset, instanceCount, baseVertex, baseInstance);
+        ThinGL.glBackend().drawElementsInstancedBaseVertexBaseInstance(drawMode.getGlMode(), count, this.indexType, offset, instanceCount, baseVertex, baseInstance);
         this.unbind();
     }
 
     public void drawElementsIndirect(final DrawMode drawMode, final Buffer indirectCommandBuffer, final long offset, final int count) {
         this.bind();
-        final int prevIndirectCommandBuffer = GL11C.glGetInteger(GL40C.GL_DRAW_INDIRECT_BUFFER_BINDING);
-        GL15C.glBindBuffer(GL40C.GL_DRAW_INDIRECT_BUFFER, indirectCommandBuffer.getGlId());
+        final int prevIndirectCommandBuffer = ThinGL.glBackend().getInteger(GL40C.GL_DRAW_INDIRECT_BUFFER_BINDING);
+        ThinGL.glBackend().bindBuffer(GL40C.GL_DRAW_INDIRECT_BUFFER, indirectCommandBuffer.getGlId());
         if (count == 1) {
-            GL40C.glDrawElementsIndirect(drawMode.getGlMode(), this.indexType, offset);
+            ThinGL.glBackend().drawElementsIndirect(drawMode.getGlMode(), this.indexType, offset);
         } else {
-            GL43C.glMultiDrawElementsIndirect(drawMode.getGlMode(), this.indexType, offset, count, 0);
+            ThinGL.glBackend().multiDrawElementsIndirect(drawMode.getGlMode(), this.indexType, offset, count, 0);
         }
-        GL15C.glBindBuffer(GL40C.GL_DRAW_INDIRECT_BUFFER, prevIndirectCommandBuffer);
+        ThinGL.glBackend().bindBuffer(GL40C.GL_DRAW_INDIRECT_BUFFER, prevIndirectCommandBuffer);
         this.unbind();
     }
 
     @Override
     protected void free0() {
-        GL30C.glDeleteVertexArrays(this.getGlId());
+        ThinGL.glBackend().deleteVertexArrays(this.getGlId());
     }
 
     @Override

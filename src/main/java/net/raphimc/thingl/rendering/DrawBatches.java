@@ -40,6 +40,7 @@ public class DrawBatches {
     public static final VertexDataLayout POSITION_TEXTURE_ARRAY_LAYER_LAYOUT = new VertexDataLayout(POSITION_ELEMENT, TEXTURE_ELEMENT, new VertexDataLayoutElement(DataType.SHORT, 1));
     public static final VertexDataLayout POSITION_COLOR_TEXTURE_LAYOUT = new VertexDataLayout(POSITION_ELEMENT, COLOR_ELEMENT, TEXTURE_ELEMENT);
     public static final VertexDataLayout LINE_LAYOUT = new VertexDataLayout(POSITION_ELEMENT, COLOR_ELEMENT, new VertexDataLayoutElement(DataType.FLOAT, 1));
+    public static final VertexDataLayout TEXT_GLYPH_LAYOUT = new VertexDataLayout(POSITION_ELEMENT, TEXTURE_ELEMENT, new VertexDataLayoutElement(DataType.UNSIGNED_BYTE, 1), new VertexDataLayoutElement(DataType.UNSIGNED_SHORT, 1));
 
     // === Snippets ===
 
@@ -79,10 +80,7 @@ public class DrawBatches {
 
     public static final DrawBatch COLOR_GL_LINE = new DrawBatch.Builder(COLOR_SNIPPET)
             .drawMode(DrawMode.LINES)
-            .appendSetupAction(() -> {
-                ThinGL.glStateStack().enable(GL11C.GL_LINE_SMOOTH);
-                GL11C.glHint(GL11C.GL_LINE_SMOOTH_HINT, GL11C.GL_NICEST);
-            })
+            .appendSetupAction(() -> ThinGL.glStateStack().enable(GL11C.GL_LINE_SMOOTH))
             .build();
 
     public static final DrawBatch COLOR_LINE = new DrawBatch.Builder(COLOR_SNIPPET)

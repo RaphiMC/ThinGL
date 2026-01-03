@@ -18,16 +18,16 @@
 package net.raphimc.thingl.gl.resource.image.texture.impl;
 
 import net.lenni0451.commons.color.Color;
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.resource.image.MultisampleImageStorage2D;
 import net.raphimc.thingl.gl.resource.image.texture.MultisampleTexture;
 import org.lwjgl.opengl.GL32C;
-import org.lwjgl.opengl.GL45C;
 
 public class MultisampleTexture2D extends MultisampleTexture implements MultisampleImageStorage2D {
 
     public MultisampleTexture2D(final int internalFormat, final int width, final int height, final int samples) {
         super(GL32C.GL_TEXTURE_2D_MULTISAMPLE);
-        GL45C.glTextureStorage2DMultisample(this.getGlId(), samples, internalFormat, width, height, true);
+        ThinGL.glBackend().textureStorage2DMultisample(this.getGlId(), samples, internalFormat, width, height, true);
     }
 
     protected MultisampleTexture2D(final int glId) {

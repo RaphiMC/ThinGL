@@ -30,7 +30,6 @@ import net.raphimc.thingl.gl.resource.image.texture.Texture;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL30C;
 import org.lwjgl.opengl.GL32C;
-import org.lwjgl.opengl.GL45C;
 
 public class Framebuffer extends GLContainerObject {
 
@@ -41,7 +40,7 @@ public class Framebuffer extends GLContainerObject {
     private int clearStencil = 0;
 
     public Framebuffer() {
-        super(GL45C.glCreateFramebuffers());
+        super(ThinGL.glBackend().createFramebuffers());
         for (int attachment : this.getValidAttachmentPoints()) {
             this.attachments.put(attachment, null);
         }
@@ -56,7 +55,7 @@ public class Framebuffer extends GLContainerObject {
     }
 
     public Framebuffer(final ImageStorage colorAttachment, final ImageStorage depthAttachment, final ImageStorage stencilAttachment) {
-        super(GL45C.glCreateFramebuffers());
+        super(ThinGL.glBackend().createFramebuffers());
         for (int attachment : this.getValidAttachmentPoints()) {
             this.attachments.put(attachment, null);
         }
@@ -87,7 +86,7 @@ public class Framebuffer extends GLContainerObject {
     }
 
     public static Framebuffer fromGlId(final int glId) {
-        if (glId != 0 && !GL30C.glIsFramebuffer(glId)) {
+        if (glId != 0 && !ThinGL.glBackend().isFramebuffer(glId)) {
             throw new IllegalArgumentException("Not a framebuffer object");
         }
         return fromGlIdUnsafe(glId);
@@ -101,7 +100,7 @@ public class Framebuffer extends GLContainerObject {
     }
 
     public void checkStatus() {
-        final int status = GL45C.glCheckNamedFramebufferStatus(this.getGlId(), GL30C.GL_FRAMEBUFFER);
+        final int status = ThinGL.glBackend().checkNamedFramebufferStatus(this.getGlId(), GL30C.GL_FRAMEBUFFER);
         switch (status) {
             case GL30C.GL_FRAMEBUFFER_COMPLETE:
                 break;
@@ -175,7 +174,7 @@ public class Framebuffer extends GLContainerObject {
             ThinGL.glStateStack().disable(GL11C.GL_SCISSOR_TEST);
             ThinGL.glStateStack().pushColorMask();
             ThinGL.glStateManager().setColorMask(red, green, blue, alpha);
-            GL45C.glClearNamedFramebufferfv(this.getGlId(), GL11C.GL_COLOR, 0, color.toRGBAF());
+            ThinGL.glBackend().clearNamedFramebufferfv(this.getGlId(), GL11C.GL_COLOR, 0, color.toRGBAF());
             ThinGL.glStateStack().popColorMask();
             ThinGL.glStateStack().pop();
         }
@@ -189,7 +188,7 @@ public class Framebuffer extends GLContainerObject {
             ThinGL.glStateManager().setScissor(x, y, width, height);
             ThinGL.glStateStack().pushColorMask();
             ThinGL.glStateManager().setColorMask(red, green, blue, alpha);
-            GL45C.glClearNamedFramebufferfv(this.getGlId(), GL11C.GL_COLOR, 0, color.toRGBAF());
+            ThinGL.glBackend().clearNamedFramebufferfv(this.getGlId(), GL11C.GL_COLOR, 0, color.toRGBAF());
             ThinGL.glStateStack().popColorMask();
             ThinGL.glStateStack().popScissor();
             ThinGL.glStateStack().pop();
@@ -210,7 +209,7 @@ public class Framebuffer extends GLContainerObject {
             ThinGL.glStateStack().disable(GL11C.GL_SCISSOR_TEST);
             ThinGL.glStateStack().pushDepthMask();
             ThinGL.glStateManager().setDepthMask(true);
-            GL45C.glClearNamedFramebufferfv(this.getGlId(), GL11C.GL_DEPTH, 0, new float[]{depth});
+            ThinGL.glBackend().clearNamedFramebufferfv(this.getGlId(), GL11C.GL_DEPTH, 0, new float[]{depth});
             ThinGL.glStateStack().popDepthMask();
             ThinGL.glStateStack().pop();
         }
@@ -224,7 +223,7 @@ public class Framebuffer extends GLContainerObject {
             ThinGL.glStateManager().setScissor(x, y, width, height);
             ThinGL.glStateStack().pushDepthMask();
             ThinGL.glStateManager().setDepthMask(true);
-            GL45C.glClearNamedFramebufferfv(this.getGlId(), GL11C.GL_DEPTH, 0, new float[]{depth});
+            ThinGL.glBackend().clearNamedFramebufferfv(this.getGlId(), GL11C.GL_DEPTH, 0, new float[]{depth});
             ThinGL.glStateStack().popDepthMask();
             ThinGL.glStateStack().popScissor();
             ThinGL.glStateStack().pop();
@@ -253,7 +252,7 @@ public class Framebuffer extends GLContainerObject {
             ThinGL.glStateStack().disable(GL11C.GL_SCISSOR_TEST);
             ThinGL.glStateStack().pushStencilMask();
             ThinGL.glStateManager().setStencilMask(mask);
-            GL45C.glClearNamedFramebufferiv(this.getGlId(), GL11C.GL_STENCIL, 0, new int[]{stencil});
+            ThinGL.glBackend().clearNamedFramebufferiv(this.getGlId(), GL11C.GL_STENCIL, 0, new int[]{stencil});
             ThinGL.glStateStack().popStencilMask();
             ThinGL.glStateStack().pop();
         }
@@ -267,7 +266,7 @@ public class Framebuffer extends GLContainerObject {
             ThinGL.glStateManager().setScissor(x, y, width, height);
             ThinGL.glStateStack().pushStencilMask();
             ThinGL.glStateManager().setStencilMask(mask);
-            GL45C.glClearNamedFramebufferiv(this.getGlId(), GL11C.GL_STENCIL, 0, new int[]{stencil});
+            ThinGL.glBackend().clearNamedFramebufferiv(this.getGlId(), GL11C.GL_STENCIL, 0, new int[]{stencil});
             ThinGL.glStateStack().popStencilMask();
             ThinGL.glStateStack().popScissor();
             ThinGL.glStateStack().pop();
@@ -290,7 +289,7 @@ public class Framebuffer extends GLContainerObject {
             ThinGL.glStateManager().setDepthMask(true);
             ThinGL.glStateStack().pushStencilMask();
             ThinGL.glStateManager().setStencilMask(0xFFFFFFFF);
-            GL45C.glClearNamedFramebufferfi(this.getGlId(), GL30C.GL_DEPTH_STENCIL, 0, depth, stencil);
+            ThinGL.glBackend().clearNamedFramebufferfi(this.getGlId(), GL30C.GL_DEPTH_STENCIL, 0, depth, stencil);
             ThinGL.glStateStack().popStencilMask();
             ThinGL.glStateStack().popDepthMask();
             ThinGL.glStateStack().pop();
@@ -311,7 +310,7 @@ public class Framebuffer extends GLContainerObject {
             ThinGL.glStateManager().setDepthMask(true);
             ThinGL.glStateStack().pushStencilMask();
             ThinGL.glStateManager().setStencilMask(0xFFFFFFFF);
-            GL45C.glClearNamedFramebufferfi(this.getGlId(), GL30C.GL_DEPTH_STENCIL, 0, depth, stencil);
+            ThinGL.glBackend().clearNamedFramebufferfi(this.getGlId(), GL30C.GL_DEPTH_STENCIL, 0, depth, stencil);
             ThinGL.glStateStack().popStencilMask();
             ThinGL.glStateStack().popDepthMask();
             ThinGL.glStateStack().popScissor();
@@ -334,12 +333,12 @@ public class Framebuffer extends GLContainerObject {
         if (stencil) {
             mask |= GL11C.GL_STENCIL_BUFFER_BIT;
         }
-        GL45C.glBlitNamedFramebuffer(this.getGlId(), target.getGlId(), 0, 0, this.getWidth(), this.getHeight(), 0, 0, target.getWidth(), target.getHeight(), mask, GL11C.GL_NEAREST);
+        ThinGL.glBackend().blitNamedFramebuffer(this.getGlId(), target.getGlId(), 0, 0, this.getWidth(), this.getHeight(), 0, 0, target.getWidth(), target.getHeight(), mask, GL11C.GL_NEAREST);
     }
 
     @Override
     protected void free0() {
-        GL30C.glDeleteFramebuffers(this.getGlId());
+        ThinGL.glBackend().deleteFramebuffers(this.getGlId());
     }
 
     @Override
@@ -383,13 +382,13 @@ public class Framebuffer extends GLContainerObject {
 
     public ImageStorage getAttachment(final int attachmentPoint) {
         if (!this.attachments.containsKey(attachmentPoint)) {
-            final int attachmentType = GL45C.glGetNamedFramebufferAttachmentParameteri(this.getGlId(), attachmentPoint, GL30C.GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE);
+            final int attachmentType = ThinGL.glBackend().getNamedFramebufferAttachmentParameteri(this.getGlId(), attachmentPoint, GL30C.GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE);
             if (attachmentType == GL11C.GL_NONE) {
                 this.attachments.put(attachmentPoint, null);
                 return null;
             }
 
-            final int attachmentGlId = GL45C.glGetNamedFramebufferAttachmentParameteri(this.getGlId(), attachmentPoint, GL30C.GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME);
+            final int attachmentGlId = ThinGL.glBackend().getNamedFramebufferAttachmentParameteri(this.getGlId(), attachmentPoint, GL30C.GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME);
             final ImageStorage attachment = switch (attachmentType) {
                 case GL11C.GL_TEXTURE -> (ImageTexture) Texture.fromGlId(attachmentGlId);
                 case GL30C.GL_RENDERBUFFER -> RenderBuffer.fromGlId(attachmentGlId);
@@ -410,9 +409,9 @@ public class Framebuffer extends GLContainerObject {
         }
 
         if (attachment instanceof ImageTexture) {
-            GL45C.glNamedFramebufferTexture(this.getGlId(), attachmentPoint, attachment.getGlId(), 0);
+            ThinGL.glBackend().namedFramebufferTexture(this.getGlId(), attachmentPoint, attachment.getGlId(), 0);
         } else if (attachment instanceof RenderBuffer) {
-            GL45C.glNamedFramebufferRenderbuffer(this.getGlId(), attachmentPoint, attachment.getTarget(), attachment.getGlId());
+            ThinGL.glBackend().namedFramebufferRenderbuffer(this.getGlId(), attachmentPoint, attachment.getTarget(), attachment.getGlId());
         } else {
             throw new IllegalArgumentException("Unsupported framebuffer attachment class: " + attachment.getClass().getName());
         }

@@ -52,6 +52,11 @@ public class DebugMessageCallback {
                 }
             }
         });
+        if (callback == null) {
+            ThinGL.LOGGER.warn("Failed to set up OpenGL debug message callback");
+            return null;
+        }
+
         if (appendStackTrace) {
             ThinGL.glStateManager().enable(GL43C.GL_DEBUG_OUTPUT_SYNCHRONOUS);
         }

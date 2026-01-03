@@ -25,8 +25,6 @@ import net.raphimc.thingl.gl.resource.program.Program;
 import net.raphimc.thingl.gl.texture.StaticAtlasTexture;
 import net.raphimc.thingl.rendering.DrawBatch;
 import net.raphimc.thingl.rendering.DrawBatches;
-import net.raphimc.thingl.rendering.bufferbuilder.ShaderBufferBuilder;
-import net.raphimc.thingl.rendering.bufferbuilder.impl.Std430ShaderBufferBuilder;
 import net.raphimc.thingl.rendering.bufferbuilder.impl.VertexBufferBuilder;
 import net.raphimc.thingl.rendering.dataholder.DrawBatchDataHolder;
 import net.raphimc.thingl.rendering.dataholder.MultiDrawBatchDataHolder;
@@ -66,6 +64,7 @@ public abstract class TextRenderer {
     protected TextRenderer(final Supplier<Program> program, final Font.GlyphBitmap.RenderMode glyphRenderMode, final Consumer<Program> programSetup) {
         this.drawBatch = new DrawBatch.Builder(DrawBatches.TEXTURE_SNIPPET)
                 .program(program)
+                .vertexDataLayout(DrawBatches.TEXT_GLYPH_LAYOUT)
                 .appendSetupAction(programSetup)
                 .appendSetupAction(p -> {
                     final int[] textureIds = new int[this.glyphAtlases.size()];
@@ -155,7 +154,6 @@ public abstract class TextRenderer {
     protected void renderTextSegment(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextSegment textSegment, final float x, final float y, final float z, final int textDataIndex) {
         final DrawBatchDataHolder drawBatchDataHolder = multiDrawBatchDataHolder.getDrawBatchDataHolder(this.drawBatch);
         final VertexBufferBuilder vertexBufferBuilder = drawBatchDataHolder.getVertexBufferBuilder();
-        final ShaderBufferBuilder glyphDataBufferBuilder = drawBatchDataHolder.getShaderStorageBufferBuilder("ssbo_GlyphData", Std430ShaderBufferBuilder.SUPPLIER).ensureInTopLevelArray();
 
         for (TextShaper.Glyph shapedGlyph : textSegment.glyphs()) {
             final Font.Glyph fontGlyph = shapedGlyph.fontGlyph();
@@ -163,7 +161,7 @@ public abstract class TextRenderer {
             if (atlasGlyph != null) {
                 final float glyphX = shapedGlyph.x() * this.globalScale;
                 final float glyphY = shapedGlyph.y() * this.globalScale;
-                this.renderGlyph(positionMatrix, vertexBufferBuilder, glyphDataBufferBuilder, atlasGlyph, x + glyphX, y + glyphY, z, textSegment.style(), textDataIndex);
+                this.renderGlyph(positionMatrix, vertexBufferBuilder, atlasGlyph, x + glyphX, y + glyphY, z, textSegment.style(), textDataIndex);
             }
         }
     }
@@ -191,7 +189,7 @@ public abstract class TextRenderer {
         }
     }
 
-    private void renderGlyph(final Matrix4f positionMatrix, final VertexBufferBuilder vertexBufferBuilder, final ShaderBufferBuilder glyphDataBufferBuilder, final AtlasGlyph glyph, final float x, final float y, final float z, final TextStyle textStyle, final int textDataIndex) {
+    private void renderGlyph(final Matrix4f positionMatrix, final VertexBufferBuilder vertexBufferBuilder, final AtlasGlyph glyph, final float x, final float y, final float z, final TextStyle textStyle, final int textDataIndex) {
         final float x1 = x + glyph.xOffset() * this.globalScale;
         final float x2 = x1 + glyph.width() * this.globalScale;
         final float y1 = y + glyph.yOffset() * this.globalScale;
@@ -204,12 +202,10 @@ public abstract class TextRenderer {
             bottomOffset = ITALIC_SHEAR_FACTOR * (y2 - y);
         }
 
-        glyphDataBufferBuilder.ensureInTopLevelArray().beginStruct(Integer.BYTES).writeInt((glyph.atlasIndex() << 27) | textDataIndex).endStruct();
-
-        vertexBufferBuilder.writeVector3f(positionMatrix, x1 - bottomOffset, y2, z).writeTextureCoord(glyph.u1(), glyph.v2()).endVertex();
-        vertexBufferBuilder.writeVector3f(positionMatrix, x2 - bottomOffset, y2, z).writeTextureCoord(glyph.u2(), glyph.v2()).endVertex();
-        vertexBufferBuilder.writeVector3f(positionMatrix, x2 + topOffset, y1, z).writeTextureCoord(glyph.u2(), glyph.v1()).endVertex();
-        vertexBufferBuilder.writeVector3f(positionMatrix, x1 + topOffset, y1, z).writeTextureCoord(glyph.u1(), glyph.v1()).endVertex();
+        vertexBufferBuilder.writeVector3f(positionMatrix, x1 - bottomOffset, y2, z).writeTextureCoord(glyph.u1(), glyph.v2()).writeByte((byte) glyph.atlasIndex()).writeShort((short) textDataIndex).endVertex();
+        vertexBufferBuilder.writeVector3f(positionMatrix, x2 - bottomOffset, y2, z).writeTextureCoord(glyph.u2(), glyph.v2()).writeByte((byte) glyph.atlasIndex()).writeShort((short) textDataIndex).endVertex();
+        vertexBufferBuilder.writeVector3f(positionMatrix, x2 + topOffset, y1, z).writeTextureCoord(glyph.u2(), glyph.v1()).writeByte((byte) glyph.atlasIndex()).writeShort((short) textDataIndex).endVertex();
+        vertexBufferBuilder.writeVector3f(positionMatrix, x1 + topOffset, y1, z).writeTextureCoord(glyph.u1(), glyph.v1()).writeByte((byte) glyph.atlasIndex()).writeShort((short) textDataIndex).endVertex();
     }
 
     private AtlasGlyph getAtlasGlyph(final Font.Glyph fontGlyph) {

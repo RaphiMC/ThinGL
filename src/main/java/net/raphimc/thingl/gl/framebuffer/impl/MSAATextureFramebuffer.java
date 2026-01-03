@@ -27,8 +27,6 @@ import org.lwjgl.system.MathUtil;
 
 public class MSAATextureFramebuffer extends ResizingFramebuffer {
 
-    private final int samples;
-
     @SuppressWarnings("CodeBlock2Expr")
     public MSAATextureFramebuffer(final int samples) {
         super((width, height) -> {
@@ -36,12 +34,17 @@ public class MSAATextureFramebuffer extends ResizingFramebuffer {
         }, (width, height) -> {
             return new MultisampleTexture2D(GL30C.GL_DEPTH32F_STENCIL8, width, height, returnSamples(samples));
         });
-        this.samples = returnSamples(samples);
         this.init();
     }
 
-    public int getSamples() {
-        return this.samples;
+    @Override
+    public MultisampleTexture2D getColorAttachment(final int index) {
+        return (MultisampleTexture2D) super.getColorAttachment(index);
+    }
+
+    @Override
+    public MultisampleTexture2D getDepthAttachment() {
+        return (MultisampleTexture2D) super.getDepthAttachment();
     }
 
     private static int returnSamples(final int samples) {

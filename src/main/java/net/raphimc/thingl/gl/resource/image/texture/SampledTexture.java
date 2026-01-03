@@ -17,9 +17,9 @@
  */
 package net.raphimc.thingl.gl.resource.image.texture;
 
+import net.raphimc.thingl.ThinGL;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL12C;
-import org.lwjgl.opengl.GL45C;
 
 public abstract class SampledTexture extends ImageTexture {
 
@@ -34,7 +34,7 @@ public abstract class SampledTexture extends ImageTexture {
     }
 
     public void generateMipmaps() {
-        GL45C.glGenerateTextureMipmap(this.getGlId());
+        ThinGL.glBackend().generateTextureMipmap(this.getGlId());
     }
 
     public void setFilter(final int filter) {
