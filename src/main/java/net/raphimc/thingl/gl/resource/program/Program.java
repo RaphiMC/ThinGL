@@ -171,7 +171,7 @@ public class Program extends GLContainerObject {
             if (framebuffer.getColorAttachment(0) instanceof ImageTexture texture) {
                 this.setUniformSampler(name, texture);
             } else {
-                throw new IllegalArgumentException("Framebuffer color attachment is not a texture");
+                throw new IllegalArgumentException("Framebuffer color attachment is not an image texture");
             }
         } else {
             this.setUniformSampler(name, 0);
@@ -207,7 +207,7 @@ public class Program extends GLContainerObject {
         if (framebuffer.getColorAttachment(0) instanceof ImageTexture texture) {
             this.setUniformImage(name, texture, access, format);
         } else {
-            throw new IllegalArgumentException("Framebuffer color attachment is not a texture");
+            throw new IllegalArgumentException("Framebuffer color attachment is not an image texture");
         }
     }
 
