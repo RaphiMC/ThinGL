@@ -44,7 +44,7 @@ dependencies {
         exclude group: "org.joml", module: "joml"
     }
     api "it.unimi.dsi:fastutil:8.5.18"
-    api "net.lenni0451:glsl-processor:0.3.0-20260104.165257-3"
+    api "net.lenni0451:glsl-processor:0.3.0-20260104.200704-5"
     api "net.lenni0451.commons:core:1.9.1"
     api "net.lenni0451.commons:logging:1.9.1"
 
