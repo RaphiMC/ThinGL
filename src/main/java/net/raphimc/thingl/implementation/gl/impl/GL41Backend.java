@@ -526,8 +526,58 @@ public class GL41Backend implements GLBackend {
     }
 
     @Override
+    public void deleteSamplers(final int sampler) {
+        GL33C.glDeleteSamplers(sampler);
+    }
+
+    @Override
     public long getQueryObjecti64(final int id, final int pname) {
         return GL33C.glGetQueryObjecti64(id, pname);
+    }
+
+    @Override
+    public float getSamplerParameterf(final int sampler, final int pname) {
+        return GL33C.glGetSamplerParameterf(sampler, pname);
+    }
+
+    @Override
+    public void getSamplerParameterfv(final int sampler, final int pname, final float[] params) {
+        GL33C.glGetSamplerParameterfv(sampler, pname, params);
+    }
+
+    @Override
+    public int getSamplerParameteri(final int sampler, final int pname) {
+        return GL33C.glGetSamplerParameteri(sampler, pname);
+    }
+
+    @Override
+    public void getSamplerParameteriv(final int sampler, final int pname, final int[] params) {
+        GL33C.glGetSamplerParameteriv(sampler, pname, params);
+    }
+
+    @Override
+    public boolean isSampler(final int id) {
+        return GL33C.glIsSampler(id);
+    }
+
+    @Override
+    public void samplerParameterf(final int sampler, final int pname, final float param) {
+        GL33C.glSamplerParameterf(sampler, pname, param);
+    }
+
+    @Override
+    public void samplerParameterfv(final int sampler, final int pname, final float[] params) {
+        GL33C.glSamplerParameterfv(sampler, pname, params);
+    }
+
+    @Override
+    public void samplerParameteri(final int sampler, final int pname, final int param) {
+        GL33C.glSamplerParameteri(sampler, pname, param);
+    }
+
+    @Override
+    public void samplerParameteriv(final int sampler, final int pname, final int[] params) {
+        GL33C.glSamplerParameteriv(sampler, pname, params);
     }
 
     @Override
@@ -960,6 +1010,15 @@ public class GL41Backend implements GLBackend {
             GL30C.glBindRenderbuffer(GL30C.GL_RENDERBUFFER, renderBuffer);
             GL30C.glBindRenderbuffer(GL30C.GL_RENDERBUFFER, previousRenderBuffer);
             return renderBuffer;
+        }
+    }
+
+    @Override
+    public int createSamplers() {
+        if (this.capabilities.glCreateSamplers != 0L) {
+            return GL45C.glCreateSamplers();
+        } else {
+            return GL33C.glGenSamplers();
         }
     }
 

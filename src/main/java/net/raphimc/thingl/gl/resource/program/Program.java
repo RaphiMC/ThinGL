@@ -26,6 +26,7 @@ import net.raphimc.thingl.gl.resource.buffer.Buffer;
 import net.raphimc.thingl.gl.resource.framebuffer.Framebuffer;
 import net.raphimc.thingl.gl.resource.image.texture.ImageTexture;
 import net.raphimc.thingl.gl.resource.image.texture.Texture;
+import net.raphimc.thingl.gl.resource.sampler.Sampler;
 import net.raphimc.thingl.gl.resource.shader.Shader;
 import net.raphimc.thingl.memory.allocator.MemoryAllocator;
 import net.raphimc.thingl.resource.memory.Memory;
@@ -167,9 +168,13 @@ public class Program extends GLContainerObject {
     }
 
     public void setUniformSampler(final String name, final Framebuffer framebuffer) {
+        this.setUniformSampler(name, framebuffer, null);
+    }
+
+    public void setUniformSampler(final String name, final Framebuffer framebuffer, final Sampler sampler) {
         if (framebuffer != null) {
             if (framebuffer.getColorAttachment(0) instanceof ImageTexture texture) {
-                this.setUniformSampler(name, texture);
+                this.setUniformSampler(name, texture, sampler);
             } else {
                 throw new IllegalArgumentException("Framebuffer color attachment is not an image texture");
             }
@@ -179,16 +184,22 @@ public class Program extends GLContainerObject {
     }
 
     public void setUniformSampler(final String name, final Texture texture) {
-        if (texture != null) {
-            this.setUniformSampler(name, texture.getGlId());
-        } else {
-            this.setUniformSampler(name, 0);
-        }
+        this.setUniformSampler(name, texture, null);
+    }
+
+    public void setUniformSampler(final String name, final Texture texture, final Sampler sampler) {
+        final int textureId = texture != null ? texture.getGlId() : 0;
+        final int samplerId = sampler != null ? sampler.getGlId() : 0;
+        this.setUniformSampler(name, textureId, samplerId);
     }
 
     public void setUniformSampler(final String name, final int textureId) {
+        this.setUniformSampler(name, textureId, 0);
+    }
+
+    public void setUniformSampler(final String name, final int textureId, final int samplerId) {
         ThinGL.glBackend().bindTextureUnit(this.currentTextureUnit, textureId);
-        ThinGL.glBackend().bindSampler(this.currentTextureUnit, 0);
+        ThinGL.glBackend().bindSampler(this.currentTextureUnit, samplerId);
         this.setUniformInt(name, this.currentTextureUnit++);
     }
 

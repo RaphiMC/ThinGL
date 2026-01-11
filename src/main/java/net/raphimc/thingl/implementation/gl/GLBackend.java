@@ -169,7 +169,27 @@ public interface GLBackend {
 
     void bindSampler(final int unit, final int sampler);
 
+    void deleteSamplers(final int sampler);
+
     long getQueryObjecti64(final int id, final int pname);
+
+    float getSamplerParameterf(final int sampler, final int pname);
+
+    void getSamplerParameterfv(final int sampler, final int pname, final float[] params);
+
+    int getSamplerParameteri(final int sampler, final int pname);
+
+    void getSamplerParameteriv(final int sampler, final int pname, final int[] params);
+
+    boolean isSampler(final int id);
+
+    void samplerParameterf(final int sampler, final int pname, final float param);
+
+    void samplerParameterfv(final int sampler, final int pname, final float[] params);
+
+    void samplerParameteri(final int sampler, final int pname, final int param);
+
+    void samplerParameteriv(final int sampler, final int pname, final int[] params);
 
     void drawArraysIndirect(final int mode, final long indirect);
 
@@ -240,6 +260,8 @@ public interface GLBackend {
     int createQueries(final int target);
 
     int createRenderbuffers();
+
+    int createSamplers();
 
     int createTextures(final int target);
 
