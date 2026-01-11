@@ -27,10 +27,7 @@ import net.raphimc.thingl.gl.rendering.dataholder.ImmediateMultiDrawBatchDataHol
 import net.raphimc.thingl.gl.text.SDFTextRenderer;
 import net.raphimc.thingl.gl.util.QuadIndexBuffer;
 import net.raphimc.thingl.gl.util.SyncManager;
-import net.raphimc.thingl.gl.util.pool.FramebufferPool;
-import net.raphimc.thingl.gl.util.pool.GpuBufferPool;
-import net.raphimc.thingl.gl.util.pool.ImmediateVertexArrays;
-import net.raphimc.thingl.gl.util.pool.MemoryBufferPool;
+import net.raphimc.thingl.gl.util.pool.*;
 import net.raphimc.thingl.gl.wrapper.*;
 import net.raphimc.thingl.implementation.Capabilities;
 import net.raphimc.thingl.implementation.Config;
@@ -153,6 +150,10 @@ public class ThinGL {
         return get().getImmediateVertexArrays();
     }
 
+    public static SamplerCache samplerCache() {
+        return get().getSamplerCache();
+    }
+
     public static QuadIndexBuffer quadIndexBuffer() {
         return get().getQuadIndexBuffer();
     }
@@ -187,6 +188,7 @@ public class ThinGL {
     private final GpuBufferPool gpuBufferPool;
     private final FramebufferPool framebufferPool;
     private final ImmediateVertexArrays immediateVertexArrays;
+    private final SamplerCache samplerCache;
     private final QuadIndexBuffer quadIndexBuffer;
     private final SyncManager syncManager;
 
@@ -236,6 +238,7 @@ public class ThinGL {
         this.gpuBufferPool = this.createGpuBufferPool();
         this.framebufferPool = this.createFramebufferPool();
         this.immediateVertexArrays = this.createImmediateVertexArrays();
+        this.samplerCache = this.createSamplerCache();
         this.quadIndexBuffer = this.createQuadIndexBuffer();
         this.syncManager = this.createSyncManager();
         if (Capabilities.isFreeTypeAvailable()) {
@@ -398,6 +401,7 @@ public class ThinGL {
         this.gpuBufferPool.free();
         this.framebufferPool.free();
         this.immediateVertexArrays.free();
+        this.samplerCache.free();
         this.quadIndexBuffer.free();
         if (this.freeTypeLibrary != null) {
             this.freeTypeLibrary.free();
@@ -483,6 +487,10 @@ public class ThinGL {
 
     public ImmediateVertexArrays getImmediateVertexArrays() {
         return this.immediateVertexArrays;
+    }
+
+    public SamplerCache getSamplerCache() {
+        return this.samplerCache;
     }
 
     public QuadIndexBuffer getQuadIndexBuffer() {
@@ -575,6 +583,10 @@ public class ThinGL {
 
     protected ImmediateVertexArrays createImmediateVertexArrays() {
         return new ImmediateVertexArrays();
+    }
+
+    protected SamplerCache createSamplerCache() {
+        return new SamplerCache();
     }
 
     protected QuadIndexBuffer createQuadIndexBuffer() {
