@@ -21,8 +21,10 @@ import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.framebuffer.impl.TextureFramebuffer;
 import net.raphimc.thingl.gl.resource.framebuffer.Framebuffer;
 import net.raphimc.thingl.gl.resource.image.texture.impl.Texture2D;
+import net.raphimc.thingl.gl.resource.sampler.Sampler;
 import net.raphimc.thingl.gl.resource.shader.Shader;
 import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL12C;
 
 public abstract class MultiPassAuxInputPostProcessingProgram extends AuxInputPostProcessingProgram {
 
@@ -69,7 +71,8 @@ public abstract class MultiPassAuxInputPostProcessingProgram extends AuxInputPos
             framebuffers[0].bind();
             if (this.needsSourceFramebufferRead) {
                 if (sourceFramebuffer.getColorAttachment(0) instanceof Texture2D) {
-                    this.renderPass(0, sourceFramebuffer, xtl, ytl, xbr, ybr);
+                    final Sampler sourceSampler = ThinGL.samplerCache().getSampler(GL11C.GL_LINEAR, GL12C.GL_CLAMP_TO_EDGE);
+                    this.renderPass(0, sourceFramebuffer, sourceSampler, xtl, ytl, xbr, ybr);
                 } else { // Temp copy to ensure the source framebuffer color attachment is a Texture2D
                     final TextureFramebuffer sourceFramebufferCopy = ThinGL.framebufferPool().borrowFramebuffer(GL11C.GL_LINEAR);
                     sourceFramebuffer.blitTo(sourceFramebufferCopy, true, false, false);
@@ -96,8 +99,12 @@ public abstract class MultiPassAuxInputPostProcessingProgram extends AuxInputPos
     }
 
     protected void renderPass(final int pass, final Framebuffer sourceFramebuffer, final float xtl, final float ytl, final float xbr, final float ybr) {
+        this.renderPass(pass, sourceFramebuffer, null, xtl, ytl, xbr, ybr);
+    }
+
+    protected void renderPass(final int pass, final Framebuffer sourceFramebuffer, final Sampler sourceSampler, final float xtl, final float ytl, final float xbr, final float ybr) {
         this.setUniformInt("u_Pass", pass);
-        this.setUniformSampler("u_Source", sourceFramebuffer);
+        this.setUniformSampler("u_Source", sourceFramebuffer, sourceSampler);
         super.renderInternal(xtl, ytl, xbr, ybr);
     }
 
