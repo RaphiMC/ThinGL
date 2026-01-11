@@ -1,5 +1,4 @@
 #version 330 core
-#define M_PI 3.14159265359
 
 uniform sampler2D u_Source;
 uniform sampler2D u_Input;
@@ -10,9 +9,6 @@ uniform float u_Sigma;
 in vec2 v_VpPixelSize;
 in vec2 v_VpTexCoord;
 out vec4 o_Color;
-
-float normalization = 1.0 / (u_Sigma * sqrt(2.0 * M_PI));
-float sigmaSquared = u_Sigma * u_Sigma;
 
 vec4 getPixel(vec2 pos);
 bool shouldBlur(vec2 pos);
@@ -49,6 +45,5 @@ bool shouldBlur(vec2 pos) {
 }
 
 float gaussian(float x) {
-    float exponent = exp(-(x * x) / (2.0 * sigmaSquared));
-    return normalization * exponent;
+    return exp(-pow(x, 2.0) / (2.0 * pow(u_Sigma, 2.0)));
 }

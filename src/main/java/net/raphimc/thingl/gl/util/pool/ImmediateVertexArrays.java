@@ -30,14 +30,14 @@ import org.lwjgl.opengl.GL15C;
 
 public class ImmediateVertexArrays {
 
-    private final Object2ObjectMap<VertexArrayCacheKey, VertexArray> vertexArrayCache = new Object2ObjectOpenHashMap<>();
+    private final Object2ObjectMap<CacheKey, VertexArray> vertexArrayCache = new Object2ObjectOpenHashMap<>();
     private final Reference2LongMap<VertexArray> vertexArrayAccessTime = new Reference2LongOpenHashMap<>();
     private final VertexArray postProcessingVao;
 
     public ImmediateVertexArrays() {
         ThinGL.get().addFrameFinishedCallback(() -> {
             if (this.vertexArrayCache.size() > 64) {
-                ThinGL.LOGGER.warn("ImmediateVertexArrays cache has grown to " + this.vertexArrayCache.size() + " entries. Clearing the cache to prevent memory starvation.");
+                ThinGL.LOGGER.warn("Immediate vertex array cache has grown to " + this.vertexArrayCache.size() + " entries. Clearing the cache to prevent excessive memory usage.");
                 this.vertexArrayCache.values().forEach(VertexArray::freeFully);
                 this.vertexArrayCache.clear();
                 this.vertexArrayAccessTime.clear();
@@ -59,8 +59,8 @@ public class ImmediateVertexArrays {
 
     public VertexArray getVertexArray(final VertexDataLayout vertexDataLayout, final VertexDataLayout instanceVertexDataLayout) {
         ThinGL.get().assertOnRenderThread();
-        final VertexArrayCacheKey vertexArrayCacheKey = new VertexArrayCacheKey(vertexDataLayout, instanceVertexDataLayout);
-        final VertexArray vertexArray = this.vertexArrayCache.computeIfAbsent(vertexArrayCacheKey, this::createVertexArray);
+        final CacheKey cacheKey = new CacheKey(vertexDataLayout, instanceVertexDataLayout);
+        final VertexArray vertexArray = this.vertexArrayCache.computeIfAbsent(cacheKey, this::createVertexArray);
         this.vertexArrayAccessTime.put(vertexArray, System.nanoTime());
         return vertexArray;
     }
@@ -74,29 +74,27 @@ public class ImmediateVertexArrays {
     }
 
     public void free() {
-        for (VertexArray vertexArray : this.vertexArrayCache.values()) {
-            vertexArray.freeFully();
-        }
+        this.vertexArrayCache.values().forEach(VertexArray::freeFully);
         this.postProcessingVao.free();
     }
 
-    private VertexArray createVertexArray(final VertexArrayCacheKey vertexArrayCacheKey) {
+    private VertexArray createVertexArray(final CacheKey cacheKey) {
         final VertexArray vertexArray = new VertexArray();
         vertexArray.setDebugName("Immediate Vertex Array " + vertexArray.getGlId());
         final MutableBuffer vertexBuffer = new MutableBuffer(BufferUtil.DEFAULT_BUFFER_SIZE, GL15C.GL_DYNAMIC_DRAW);
         vertexBuffer.setDebugName("Immediate Vertex Buffer " + vertexBuffer.getGlId());
-        vertexArray.setVertexBuffer(0, vertexBuffer, 0, vertexArrayCacheKey.vertexDataLayout.getSize());
-        vertexArray.configureVertexDataLayout(0, 0, vertexArrayCacheKey.vertexDataLayout, 0);
-        if (vertexArrayCacheKey.instanceVertexDataLayout != null) {
+        vertexArray.setVertexBuffer(0, vertexBuffer, 0, cacheKey.vertexDataLayout.getSize());
+        vertexArray.configureVertexDataLayout(0, 0, cacheKey.vertexDataLayout, 0);
+        if (cacheKey.instanceVertexDataLayout != null) {
             final MutableBuffer instanceVertexBuffer = new MutableBuffer(BufferUtil.DEFAULT_BUFFER_SIZE, GL15C.GL_DYNAMIC_DRAW);
             instanceVertexBuffer.setDebugName("Immediate Instance Vertex Buffer " + instanceVertexBuffer.getGlId());
-            vertexArray.setVertexBuffer(1, instanceVertexBuffer, 0, vertexArrayCacheKey.instanceVertexDataLayout.getSize());
-            vertexArray.configureVertexDataLayout(1, vertexArrayCacheKey.vertexDataLayout.getElements().length, vertexArrayCacheKey.instanceVertexDataLayout, 1);
+            vertexArray.setVertexBuffer(1, instanceVertexBuffer, 0, cacheKey.instanceVertexDataLayout.getSize());
+            vertexArray.configureVertexDataLayout(1, cacheKey.vertexDataLayout.getElements().length, cacheKey.instanceVertexDataLayout, 1);
         }
         return vertexArray;
     }
 
-    private record VertexArrayCacheKey(VertexDataLayout vertexDataLayout, VertexDataLayout instanceVertexDataLayout) {
+    private record CacheKey(VertexDataLayout vertexDataLayout, VertexDataLayout instanceVertexDataLayout) {
     }
 
 }
