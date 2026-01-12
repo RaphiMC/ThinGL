@@ -40,7 +40,7 @@ public class Framebuffer extends GLContainerObject {
     private int clearStencil = 0;
 
     public Framebuffer() {
-        super(ThinGL.glBackend().createFramebuffers());
+        super(ThinGL.glBackend().createFramebuffer());
         for (int attachment : this.getValidAttachmentPoints()) {
             this.attachments.put(attachment, null);
         }
@@ -55,7 +55,7 @@ public class Framebuffer extends GLContainerObject {
     }
 
     public Framebuffer(final ImageStorage colorAttachment, final ImageStorage depthAttachment, final ImageStorage stencilAttachment) {
-        super(ThinGL.glBackend().createFramebuffers());
+        super(ThinGL.glBackend().createFramebuffer());
         for (int attachment : this.getValidAttachmentPoints()) {
             this.attachments.put(attachment, null);
         }
@@ -338,7 +338,7 @@ public class Framebuffer extends GLContainerObject {
 
     @Override
     protected void free0() {
-        ThinGL.glBackend().deleteFramebuffers(this.getGlId());
+        ThinGL.glBackend().deleteFramebuffer(this.getGlId());
     }
 
     @Override

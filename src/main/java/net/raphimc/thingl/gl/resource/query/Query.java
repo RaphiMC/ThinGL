@@ -29,7 +29,7 @@ public class Query extends GLObject {
     private Integer target;
 
     public Query(final int target) {
-        super(ThinGL.glBackend().createQueries(target));
+        super(ThinGL.glBackend().createQuery(target));
         this.target = target;
     }
 
@@ -74,7 +74,7 @@ public class Query extends GLObject {
 
     @Override
     protected void free0() {
-        ThinGL.glBackend().deleteQueries(this.getGlId());
+        ThinGL.glBackend().deleteQuery(this.getGlId());
     }
 
     @Override

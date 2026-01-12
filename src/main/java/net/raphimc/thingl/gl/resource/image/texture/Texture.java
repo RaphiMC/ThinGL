@@ -31,7 +31,7 @@ public abstract class Texture extends GLObject {
     protected final Int2ObjectMap<Int2IntMap> levelParameters = new Int2ObjectOpenHashMap<>();
 
     public Texture(final int target) {
-        super(ThinGL.glBackend().createTextures(target));
+        super(ThinGL.glBackend().createTexture(target));
     }
 
     protected Texture(final int glId, final Object unused) {
@@ -64,7 +64,7 @@ public abstract class Texture extends GLObject {
 
     @Override
     protected void free0() {
-        ThinGL.glBackend().deleteTextures(this.getGlId());
+        ThinGL.glBackend().deleteTexture(this.getGlId());
     }
 
     @Override

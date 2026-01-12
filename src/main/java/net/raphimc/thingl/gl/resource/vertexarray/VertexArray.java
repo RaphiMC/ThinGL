@@ -35,7 +35,7 @@ public class VertexArray extends GLContainerObject {
     private Buffer indexBuffer;
 
     public VertexArray() {
-        super(ThinGL.glBackend().createVertexArrays());
+        super(ThinGL.glBackend().createVertexArray());
     }
 
     protected VertexArray(final int glId) {
@@ -142,7 +142,7 @@ public class VertexArray extends GLContainerObject {
 
     @Override
     protected void free0() {
-        ThinGL.glBackend().deleteVertexArrays(this.getGlId());
+        ThinGL.glBackend().deleteVertexArray(this.getGlId());
     }
 
     @Override

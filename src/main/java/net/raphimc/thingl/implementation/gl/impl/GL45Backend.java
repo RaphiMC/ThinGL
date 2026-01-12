@@ -39,7 +39,7 @@ public class GL45Backend implements GLBackend {
     }
 
     @Override
-    public void deleteTextures(final int texture) {
+    public void deleteTexture(final int texture) {
         GL11C.glDeleteTextures(texture);
     }
 
@@ -174,12 +174,12 @@ public class GL45Backend implements GLBackend {
     }
 
     @Override
-    public void deleteBuffers(final int buffer) {
+    public void deleteBuffer(final int buffer) {
         GL15C.glDeleteBuffers(buffer);
     }
 
     @Override
-    public void deleteQueries(final int id) {
+    public void deleteQuery(final int id) {
         GL15C.glDeleteQueries(id);
     }
 
@@ -329,17 +329,17 @@ public class GL45Backend implements GLBackend {
     }
 
     @Override
-    public void deleteFramebuffers(final int framebuffer) {
+    public void deleteFramebuffer(final int framebuffer) {
         GL30C.glDeleteFramebuffers(framebuffer);
     }
 
     @Override
-    public void deleteRenderbuffers(final int renderbuffer) {
+    public void deleteRenderbuffer(final int renderbuffer) {
         GL30C.glDeleteRenderbuffers(renderbuffer);
     }
 
     @Override
-    public void deleteVertexArrays(final int array) {
+    public void deleteVertexArray(final int array) {
         GL30C.glDeleteVertexArrays(array);
     }
 
@@ -399,7 +399,7 @@ public class GL45Backend implements GLBackend {
     }
 
     @Override
-    public void deleteSamplers(final int sampler) {
+    public void deleteSampler(final int sampler) {
         GL33C.glDeleteSamplers(sampler);
     }
 
@@ -609,37 +609,37 @@ public class GL45Backend implements GLBackend {
     }
 
     @Override
-    public int createBuffers() {
+    public int createBuffer() {
         return GL45C.glCreateBuffers();
     }
 
     @Override
-    public int createFramebuffers() {
+    public int createFramebuffer() {
         return GL45C.glCreateFramebuffers();
     }
 
     @Override
-    public int createQueries(final int target) {
+    public int createQuery(final int target) {
         return GL45C.glCreateQueries(target);
     }
 
     @Override
-    public int createRenderbuffers() {
+    public int createRenderbuffer() {
         return GL45C.glCreateRenderbuffers();
     }
 
     @Override
-    public int createSamplers() {
+    public int createSampler() {
         return GL45C.glCreateSamplers();
     }
 
     @Override
-    public int createTextures(final int target) {
+    public int createTexture(final int target) {
         return GL45C.glCreateTextures(target);
     }
 
     @Override
-    public int createVertexArrays() {
+    public int createVertexArray() {
         return GL45C.glCreateVertexArrays();
     }
 

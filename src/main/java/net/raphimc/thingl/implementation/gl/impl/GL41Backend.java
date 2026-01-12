@@ -127,7 +127,7 @@ public class GL41Backend implements GLBackend {
     }
 
     @Override
-    public void deleteTextures(final int texture) {
+    public void deleteTexture(final int texture) {
         this.textureTargets.remove(texture);
         GL11C.glDeleteTextures(texture);
     }
@@ -263,12 +263,12 @@ public class GL41Backend implements GLBackend {
     }
 
     @Override
-    public void deleteBuffers(final int buffer) {
+    public void deleteBuffer(final int buffer) {
         GL15C.glDeleteBuffers(buffer);
     }
 
     @Override
-    public void deleteQueries(final int id) {
+    public void deleteQuery(final int id) {
         this.queryTargets.remove(id);
         GL15C.glDeleteQueries(id);
     }
@@ -429,7 +429,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void bindBufferBase(final int target, final int index, final int buffer) {
         if (target == GL43C.GL_SHADER_STORAGE_BUFFER && !this.supportsShaderStorageBuffers) {
-            final int bufferTexture = this.shaderStorageBufferTextures.computeIfAbsent(index, k -> this.createTextures(GL31C.GL_TEXTURE_BUFFER));
+            final int bufferTexture = this.shaderStorageBufferTextures.computeIfAbsent(index, k -> this.createTexture(GL31C.GL_TEXTURE_BUFFER));
             this.textureBuffer(bufferTexture, GL30C.GL_R32F, buffer);
             this.bindTextureUnit(SHADER_STORAGE_BUFFER_TEXTURE_UNIT_OFFSET + index, bufferTexture);
             GL33C.glBindSampler(SHADER_STORAGE_BUFFER_TEXTURE_UNIT_OFFSET + index, 0);
@@ -455,17 +455,17 @@ public class GL41Backend implements GLBackend {
     }
 
     @Override
-    public void deleteFramebuffers(final int framebuffer) {
+    public void deleteFramebuffer(final int framebuffer) {
         GL30C.glDeleteFramebuffers(framebuffer);
     }
 
     @Override
-    public void deleteRenderbuffers(final int renderbuffer) {
+    public void deleteRenderbuffer(final int renderbuffer) {
         GL30C.glDeleteRenderbuffers(renderbuffer);
     }
 
     @Override
-    public void deleteVertexArrays(final int array) {
+    public void deleteVertexArray(final int array) {
         this.vertexArrayObjects.remove(array);
         GL30C.glDeleteVertexArrays(array);
     }
@@ -526,7 +526,7 @@ public class GL41Backend implements GLBackend {
     }
 
     @Override
-    public void deleteSamplers(final int sampler) {
+    public void deleteSampler(final int sampler) {
         GL33C.glDeleteSamplers(sampler);
     }
 
@@ -963,7 +963,7 @@ public class GL41Backend implements GLBackend {
     }
 
     @Override
-    public int createBuffers() {
+    public int createBuffer() {
         if (this.capabilities.glCreateBuffers != 0L) {
             return GL45C.glCreateBuffers();
         } else {
@@ -976,7 +976,7 @@ public class GL41Backend implements GLBackend {
     }
 
     @Override
-    public int createFramebuffers() {
+    public int createFramebuffer() {
         if (this.capabilities.glCreateFramebuffers != 0L) {
             return GL45C.glCreateFramebuffers();
         } else {
@@ -989,7 +989,7 @@ public class GL41Backend implements GLBackend {
     }
 
     @Override
-    public int createQueries(final int target) {
+    public int createQuery(final int target) {
         final int query;
         if (this.capabilities.glCreateQueries != 0L) {
             query = GL45C.glCreateQueries(target);
@@ -1001,7 +1001,7 @@ public class GL41Backend implements GLBackend {
     }
 
     @Override
-    public int createRenderbuffers() {
+    public int createRenderbuffer() {
         if (this.capabilities.glCreateRenderbuffers != 0L) {
             return GL45C.glCreateRenderbuffers();
         } else {
@@ -1014,7 +1014,7 @@ public class GL41Backend implements GLBackend {
     }
 
     @Override
-    public int createSamplers() {
+    public int createSampler() {
         if (this.capabilities.glCreateSamplers != 0L) {
             return GL45C.glCreateSamplers();
         } else {
@@ -1023,7 +1023,7 @@ public class GL41Backend implements GLBackend {
     }
 
     @Override
-    public int createTextures(final int target) {
+    public int createTexture(final int target) {
         final int texture;
         if (this.capabilities.glCreateTextures != 0L) {
             texture = GL45C.glCreateTextures(target);
@@ -1038,7 +1038,7 @@ public class GL41Backend implements GLBackend {
     }
 
     @Override
-    public int createVertexArrays() {
+    public int createVertexArray() {
         if (this.capabilities.glCreateVertexArrays != 0L) {
             return GL45C.glCreateVertexArrays();
         } else {

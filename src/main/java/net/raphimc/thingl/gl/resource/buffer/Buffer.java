@@ -35,7 +35,7 @@ public abstract class Buffer extends GLObject {
     protected final Int2ObjectMap<Object> parameters = new Int2ObjectOpenHashMap<>();
 
     public Buffer() {
-        super(ThinGL.glBackend().createBuffers());
+        super(ThinGL.glBackend().createBuffer());
     }
 
     protected Buffer(final int glId) {
@@ -105,7 +105,7 @@ public abstract class Buffer extends GLObject {
 
     @Override
     protected void free0() {
-        ThinGL.glBackend().deleteBuffers(this.getGlId());
+        ThinGL.glBackend().deleteBuffer(this.getGlId());
     }
 
     @Override

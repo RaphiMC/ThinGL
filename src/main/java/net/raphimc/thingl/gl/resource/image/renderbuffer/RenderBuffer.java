@@ -31,7 +31,7 @@ public abstract class RenderBuffer extends GLObject implements ImageStorage {
     protected final Int2IntMap parameters = new Int2IntOpenHashMap();
 
     public RenderBuffer() {
-        super(ThinGL.glBackend().createRenderbuffers());
+        super(ThinGL.glBackend().createRenderbuffer());
     }
 
     protected RenderBuffer(final int glId) {
@@ -61,7 +61,7 @@ public abstract class RenderBuffer extends GLObject implements ImageStorage {
 
     @Override
     protected void free0() {
-        ThinGL.glBackend().deleteRenderbuffers(this.getGlId());
+        ThinGL.glBackend().deleteRenderbuffer(this.getGlId());
     }
 
     @Override

@@ -25,7 +25,7 @@ public interface GLBackend {
 
     void cullFace(final int mode);
 
-    void deleteTextures(final int texture);
+    void deleteTexture(final int texture);
 
     void depthFunc(final int func);
 
@@ -79,9 +79,9 @@ public interface GLBackend {
 
     void bindBuffer(final int target, final int buffer);
 
-    void deleteBuffers(final int buffer);
+    void deleteBuffer(final int buffer);
 
-    void deleteQueries(final int id);
+    void deleteQuery(final int id);
 
     void endQuery(final int target);
 
@@ -141,11 +141,11 @@ public interface GLBackend {
 
     void clearBufferiv(final int buffer, final int drawbuffer, final int[] value);
 
-    void deleteFramebuffers(final int framebuffer);
+    void deleteFramebuffer(final int framebuffer);
 
-    void deleteRenderbuffers(final int renderbuffer);
+    void deleteRenderbuffer(final int renderbuffer);
 
-    void deleteVertexArrays(final int array);
+    void deleteVertexArray(final int array);
 
     boolean isFramebuffer(final int framebuffer);
 
@@ -169,7 +169,7 @@ public interface GLBackend {
 
     void bindSampler(final int unit, final int sampler);
 
-    void deleteSamplers(final int sampler);
+    void deleteSampler(final int sampler);
 
     long getQueryObjecti64(final int id, final int pname);
 
@@ -253,19 +253,19 @@ public interface GLBackend {
 
     void copyNamedBufferSubData(final int readBuffer, final int writeBuffer, final long readOffset, final long writeOffset, final long size);
 
-    int createBuffers();
+    int createBuffer();
 
-    int createFramebuffers();
+    int createFramebuffer();
 
-    int createQueries(final int target);
+    int createQuery(final int target);
 
-    int createRenderbuffers();
+    int createRenderbuffer();
 
-    int createSamplers();
+    int createSampler();
 
-    int createTextures(final int target);
+    int createTexture(final int target);
 
-    int createVertexArrays();
+    int createVertexArray();
 
     void enableVertexArrayAttrib(final int vaobj, final int index);
 

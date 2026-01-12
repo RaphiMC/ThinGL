@@ -32,7 +32,7 @@ public class Sampler extends GLObject {
     private final Int2ObjectMap<Object> parameters = new Int2ObjectOpenHashMap<>();
 
     public Sampler() {
-        super(ThinGL.glBackend().createSamplers());
+        super(ThinGL.glBackend().createSampler());
     }
 
     protected Sampler(final int glId) {
@@ -169,7 +169,7 @@ public class Sampler extends GLObject {
 
     @Override
     protected void free0() {
-        ThinGL.glBackend().deleteSamplers(this.getGlId());
+        ThinGL.glBackend().deleteSampler(this.getGlId());
     }
 
     @Override
