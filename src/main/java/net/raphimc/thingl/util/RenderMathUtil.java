@@ -41,8 +41,8 @@ public class RenderMathUtil {
 
     public static Matrix4f getIdentityMatrix() {
         if ((IDENTITY_MATRIX.properties() & Matrix4fc.PROPERTY_IDENTITY) == 0) {
-            IDENTITY_MATRIX.identity();
             ThinGL.LOGGER.warn("IDENTITY_MATRIX was modified");
+            IDENTITY_MATRIX.identity();
         }
         return IDENTITY_MATRIX;
     }

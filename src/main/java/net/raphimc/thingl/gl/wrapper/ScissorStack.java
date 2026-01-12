@@ -32,8 +32,8 @@ public class ScissorStack {
     public ScissorStack() {
         ThinGL.get().addFrameFinishedCallback(() -> {
             if (!this.stack.isEmpty()) {
-                while (!this.stack.isEmpty()) this.pop();
                 ThinGL.LOGGER.warn("ScissorStack was not empty at the end of the frame!");
+                while (!this.stack.isEmpty()) this.pop();
             }
         });
     }

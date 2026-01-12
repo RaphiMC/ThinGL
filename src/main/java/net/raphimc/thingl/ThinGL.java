@@ -249,8 +249,8 @@ public class ThinGL {
 
         this.addFrameFinishedCallback(() -> {
             if (this.globalDrawBatch.hasDrawBatches()) {
-                this.globalDrawBatch.free();
                 ThinGL.LOGGER.warn("Global draw batch was not empty at the end of the frame!");
+                this.globalDrawBatch.free();
             }
         });
 
