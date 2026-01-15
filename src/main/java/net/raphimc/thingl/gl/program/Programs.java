@@ -25,8 +25,11 @@ import net.raphimc.thingl.util.GlSlPreprocessor;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,118 +37,118 @@ import static net.raphimc.thingl.gl.resource.shader.Shader.Type.*;
 
 public class Programs {
 
-    private final Map<String, Shader> shaders = new HashMap<>();
+    protected final ShaderLoader shaderLoader = new ShaderLoader("thingl/shaders");
 
     private final Lazy<RegularProgram> color = Lazy.of(() -> {
-        final RegularProgram program = new RegularProgram(this.getShader("regular/color", VERTEX), this.getShader("regular/color", FRAGMENT));
+        final RegularProgram program = new RegularProgram(this.shaderLoader.get("regular/color", VERTEX), this.shaderLoader.get("regular/color", FRAGMENT));
         program.setDebugName("color");
         return program;
     });
 
     private final Lazy<RegularProgram> texture = Lazy.of(() -> {
-        final RegularProgram program = new RegularProgram(this.getShader("regular/texture", VERTEX), this.getShader("regular/texture", FRAGMENT));
+        final RegularProgram program = new RegularProgram(this.shaderLoader.get("regular/texture", VERTEX), this.shaderLoader.get("regular/texture", FRAGMENT));
         program.setDebugName("texture");
         return program;
     });
 
     private final Lazy<RegularProgram> textureArrayLayer = Lazy.of(() -> {
-        final RegularProgram program = new RegularProgram(this.getShader("regular/texture_array_layer", VERTEX), this.getShader("regular/texture_array_layer", FRAGMENT));
+        final RegularProgram program = new RegularProgram(this.shaderLoader.get("regular/texture_array_layer", VERTEX), this.shaderLoader.get("regular/texture_array_layer", FRAGMENT));
         program.setDebugName("texture_array_layer");
         return program;
     });
 
     private final Lazy<RegularProgram> coloredTexture = Lazy.of(() -> {
-        final RegularProgram program = new RegularProgram(this.getShader("regular/colored_texture", VERTEX), this.getShader("regular/colored_texture", FRAGMENT));
+        final RegularProgram program = new RegularProgram(this.shaderLoader.get("regular/colored_texture", VERTEX), this.shaderLoader.get("regular/colored_texture", FRAGMENT));
         program.setDebugName("colored_texture");
         return program;
     });
 
     private final Lazy<RegularProgram> colorizedTexture = Lazy.of(() -> {
-        final RegularProgram program = new RegularProgram(this.getShader("regular/colored_texture", VERTEX), this.getShader("regular/colorized_texture", FRAGMENT));
+        final RegularProgram program = new RegularProgram(this.shaderLoader.get("regular/colored_texture", VERTEX), this.shaderLoader.get("regular/colorized_texture", FRAGMENT));
         program.setDebugName("colorized_texture");
         return program;
     });
 
     private final Lazy<RegularProgram> line = Lazy.of(() -> {
-        final RegularProgram program = new RegularProgram(this.getShader("geometry/line", VERTEX), this.getShader("geometry/line", GEOMETRY), this.getShader("geometry/line", FRAGMENT));
+        final RegularProgram program = new RegularProgram(this.shaderLoader.get("geometry/line", VERTEX), this.shaderLoader.get("geometry/line", GEOMETRY), this.shaderLoader.get("geometry/line", FRAGMENT));
         program.setDebugName("line");
         return program;
     });
 
     private final Lazy<RegularProgram> bitmapText = Lazy.of(() -> {
-        final RegularProgram program = new RegularProgram(this.getShader("regular/bitmap_text", VERTEX), this.getShader("regular/bitmap_text", FRAGMENT));
+        final RegularProgram program = new RegularProgram(this.shaderLoader.get("regular/bitmap_text", VERTEX), this.shaderLoader.get("regular/bitmap_text", FRAGMENT));
         program.setDebugName("bitmap_text");
         return program;
     });
 
     private final Lazy<RegularProgram> sdfText = Lazy.of(() -> {
-        final RegularProgram program = new RegularProgram(this.getShader("regular/sdf_text", VERTEX), this.getShader("regular/sdf_text", FRAGMENT));
+        final RegularProgram program = new RegularProgram(this.shaderLoader.get("regular/sdf_text", VERTEX), this.shaderLoader.get("regular/sdf_text", FRAGMENT));
         program.setDebugName("sdf_text");
         return program;
     });
 
     private final Lazy<RegularProgram> skyBox = Lazy.of(() -> {
-        final RegularProgram program = new RegularProgram(this.getShader("regular/sky_box", VERTEX), this.getShader("regular/sky_box", FRAGMENT));
+        final RegularProgram program = new RegularProgram(this.shaderLoader.get("regular/sky_box", VERTEX), this.shaderLoader.get("regular/sky_box", FRAGMENT));
         program.setDebugName("sky_box");
         return program;
     });
 
     private final Lazy<GaussianBlurProgram> gaussianBlur = Lazy.of(() -> {
-        final GaussianBlurProgram program = new GaussianBlurProgram(this.getShader("post/post_processing", VERTEX), this.getShader("post/gaussian_blur", FRAGMENT));
+        final GaussianBlurProgram program = new GaussianBlurProgram(this.shaderLoader.get("post/post_processing", VERTEX), this.shaderLoader.get("post/gaussian_blur", FRAGMENT));
         program.setDebugName("gaussian_blur");
         return program;
     });
 
     private final Lazy<KawaseBlurProgram> kawaseBlur = Lazy.of(() -> {
-        final KawaseBlurProgram program = new KawaseBlurProgram(this.getShader("post/post_processing", VERTEX), this.getShader("post/kawase_blur", FRAGMENT));
+        final KawaseBlurProgram program = new KawaseBlurProgram(this.shaderLoader.get("post/post_processing", VERTEX), this.shaderLoader.get("post/kawase_blur", FRAGMENT));
         program.setDebugName("kawase_blur");
         return program;
     });
 
     private final Lazy<ColorTweakProgram> colorTweak = Lazy.of(() -> {
-        final ColorTweakProgram program = new ColorTweakProgram(this.getShader("post/post_processing", VERTEX), this.getShader("post/color_tweak", FRAGMENT));
+        final ColorTweakProgram program = new ColorTweakProgram(this.shaderLoader.get("post/post_processing", VERTEX), this.shaderLoader.get("post/color_tweak", FRAGMENT));
         program.setDebugName("color_tweak");
         return program;
     });
 
     private final Lazy<SingleColorProgram> singleColor = Lazy.of(() -> {
-        final SingleColorProgram program = new SingleColorProgram(this.getShader("post/post_processing", VERTEX), this.getShader("post/single_color", FRAGMENT));
+        final SingleColorProgram program = new SingleColorProgram(this.shaderLoader.get("post/post_processing", VERTEX), this.shaderLoader.get("post/single_color", FRAGMENT));
         program.setDebugName("single_color");
         return program;
     });
 
     private final Lazy<RainbowColorProgram> rainbowColor = Lazy.of(() -> {
-        final RainbowColorProgram program = new RainbowColorProgram(this.getShader("post/post_processing", VERTEX), this.getShader("post/rainbow_color", FRAGMENT));
+        final RainbowColorProgram program = new RainbowColorProgram(this.shaderLoader.get("post/post_processing", VERTEX), this.shaderLoader.get("post/rainbow_color", FRAGMENT));
         program.setDebugName("rainbow_color");
         return program;
     });
 
     private final Lazy<OutlineProgram> outline = Lazy.of(() -> {
-        final OutlineProgram program = new OutlineProgram(this.getShader("post/post_processing", VERTEX), this.getShader("post/outline", FRAGMENT));
+        final OutlineProgram program = new OutlineProgram(this.shaderLoader.get("post/post_processing", VERTEX), this.shaderLoader.get("post/outline", FRAGMENT));
         program.setDebugName("outline");
         return program;
     });
 
     private final Lazy<MSAAProgram> msaa = Lazy.of(() -> {
-        final MSAAProgram program = new MSAAProgram(this.getShader("post/post_processing", VERTEX), this.getShader("post/msaa", FRAGMENT), 4);
+        final MSAAProgram program = new MSAAProgram(this.shaderLoader.get("post/post_processing", VERTEX), this.shaderLoader.get("post/msaa", FRAGMENT), 4);
         program.setDebugName("msaa");
         return program;
     });
 
     private final Lazy<RegularProgram> instancedColor = Lazy.of(() -> {
-        final RegularProgram program = new RegularProgram(this.getShader("instancing/color", VERTEX), this.getShader("regular/color", FRAGMENT));
+        final RegularProgram program = new RegularProgram(this.shaderLoader.get("instancing/color", VERTEX), this.shaderLoader.get("regular/color", FRAGMENT));
         program.setDebugName("instanced_color");
         return program;
     });
 
     private final Lazy<RegularProgram> multidrawColor = Lazy.of(() -> {
-        final RegularProgram program = new RegularProgram(this.getShader("multidraw/color", VERTEX), this.getShader("regular/color", FRAGMENT));
+        final RegularProgram program = new RegularProgram(this.shaderLoader.get("multidraw/color", VERTEX), this.shaderLoader.get("regular/color", FRAGMENT));
         program.setDebugName("multidraw_color");
         return program;
     });
 
     private final Lazy<RegularProgram> multidrawLine = Lazy.of(() -> {
-        final RegularProgram program = new RegularProgram(this.getShader("multidraw/line", VERTEX), this.getShader("geometry/line", GEOMETRY), this.getShader("geometry/line", FRAGMENT));
+        final RegularProgram program = new RegularProgram(this.shaderLoader.get("multidraw/line", VERTEX), this.shaderLoader.get("geometry/line", GEOMETRY), this.shaderLoader.get("geometry/line", FRAGMENT));
         program.setDebugName("multidraw_line");
         return program;
     });
@@ -226,30 +229,6 @@ public class Programs {
         return this.multidrawLine.get();
     }
 
-    protected Shader getShader(final String name, final Shader.Type type) {
-        return this.getShader(name, type, Map.of());
-    }
-
-    protected Shader getShader(final String name, final Shader.Type type, final Map<String, Object> defines) {
-        return this.shaders.computeIfAbsent(name + "." + type.getFileExtension(), path -> {
-            try {
-                try (InputStream stream = this.getClass().getClassLoader().getResourceAsStream("thingl/shaders/" + path)) {
-                    if (stream == null) {
-                        throw new IOException("Shader " + name + " not found");
-                    }
-                    final String source = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
-                    final GlSlPreprocessor preprocessor = new GlSlPreprocessor();
-                    preprocessor.addDefines(defines);
-                    final Shader shader = new Shader(type, preprocessor.process(source));
-                    shader.setDebugName(name);
-                    return shader;
-                }
-            } catch (Throwable e) {
-                throw new RuntimeException("Failed to load shader " + name, e);
-            }
-        });
-    }
-
     public void free() {
         Class<?> clazz = this.getClass();
         while (clazz != null) {
@@ -267,6 +246,68 @@ public class Programs {
             }
             clazz = clazz.getSuperclass();
         }
+    }
+
+    @Deprecated(forRemoval = true)
+    protected Shader getShader(final String name, final Shader.Type type) {
+        return this.shaderLoader.get(name, type);
+    }
+
+    @Deprecated(forRemoval = true)
+    protected Shader getShader(final String name, final Shader.Type type, final Map<String, Object> defines) {
+        return this.shaderLoader.get(name, type, defines);
+    }
+
+    protected static class ShaderLoader {
+
+        private final String basePath;
+        private final Map<String, Shader> shaders = new HashMap<>();
+
+        public ShaderLoader(final String basePath) {
+            if (basePath.endsWith("/")) {
+                this.basePath = basePath;
+            } else {
+                this.basePath = basePath + "/";
+            }
+        }
+
+        public Shader get(final String name, final Shader.Type type) {
+            return this.get(name, type, Map.of());
+        }
+
+        public Shader get(final String name, final Shader.Type type, final Map<String, Object> defines) {
+            return this.shaders.computeIfAbsent(name + "." + type.getFileExtension(), path -> {
+                try {
+                    try (InputStream stream = this.getClass().getClassLoader().getResourceAsStream(this.basePath + path)) {
+                        if (stream == null) {
+                            throw new IOException("Shader " + name + " not found");
+                        }
+                        final String source = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+                        final GlSlPreprocessor preprocessor = new GlSlPreprocessor();
+                        preprocessor.addDefines(defines);
+                        preprocessor.setIncludeResolver(includePath -> {
+                            final Path basePath = Paths.get(this.basePath + path);
+                            final Path relativePath = Paths.get(includePath);
+                            final Path resolvedPath = basePath.getParent().resolve(relativePath).normalize();
+                            try (InputStream includeStream = this.getClass().getClassLoader().getResourceAsStream(resolvedPath.toString())) {
+                                if (includeStream == null) {
+                                    throw new IOException("Included shader file " + includePath + " not found");
+                                }
+                                return new String(includeStream.readAllBytes(), StandardCharsets.UTF_8);
+                            } catch (IOException e) {
+                                throw new UncheckedIOException("Failed to load included shader file: " + includePath, e);
+                            }
+                        });
+                        final Shader shader = new Shader(type, preprocessor.process(source));
+                        shader.setDebugName(name);
+                        return shader;
+                    }
+                } catch (Throwable e) {
+                    throw new RuntimeException("Failed to load shader " + name, e);
+                }
+            });
+        }
+
     }
 
 }

@@ -1,6 +1,7 @@
 #version 400 core
 #define DF_PX_RANGE 6
 #define STYLE_BOLD_BIT 2u
+#include "../util/math.glsl"
 
 uniform vec4 u_ColorModifier;
 uniform sampler2D u_Textures[16];
@@ -13,14 +14,12 @@ flat in vec4 v_OutlineColor;
 flat in uint v_StyleFlags;
 out vec4 o_Color;
 
-float median(float r, float g, float b);
-
 void main() {
     vec3 msd = texture(u_Textures[v_TextureIndex], v_TexCoord).rgb;
     float dist = median(msd.r, msd.g, msd.b);
     if ((v_StyleFlags & STYLE_BOLD_BIT) == 0 && v_OutlineColor.a == 0.0) { // High quality text rendering
         vec2 unitRange = vec2(float(DF_PX_RANGE)) / vec2(textureSize(u_Textures[v_TextureIndex], 0));
-        vec2 screenTexSize = 1.0 / fwidth(v_TexCoord);
+        vec2 screenTexSize = vec2(1.0) / fwidth(v_TexCoord);
         float screenPxRange = max(dot(unitRange, screenTexSize), 1.0);
         float screenPxDistance = screenPxRange * (dist - 0.5);
         float alpha = clamp(screenPxDistance + 0.5, 0.0, 1.0);
@@ -46,8 +45,4 @@ void main() {
     if (o_Color.a == 0.0) {
         discard;
     }
-}
-
-float median(float r, float g, float b) {
-    return max(min(r, g), min(max(r, g), b));
 }

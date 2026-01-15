@@ -1,4 +1,5 @@
 #version 330 core
+#include "../util/math.glsl"
 
 uniform sampler2D u_Source;
 uniform sampler2D u_Input;
@@ -12,21 +13,20 @@ out vec4 o_Color;
 
 vec4 getPixel(vec2 pos);
 bool shouldBlur(vec2 pos);
-float gaussian(float x);
 
 void main() {
     if (shouldBlur(v_VpTexCoord)) {
         vec4 colorSum = vec4(0.0);
         if (u_Pass == 0) { /* x axis pass */
             for (int i = -u_Radius; i <= u_Radius; i++) {
-                colorSum += getPixel(v_VpTexCoord + vec2(float(i), 0.0) * v_VpPixelSize) * gaussian(float(i));
+                colorSum += getPixel(v_VpTexCoord + vec2(float(i), 0.0) * v_VpPixelSize) * vec4(gaussian(float(i), u_Sigma));
             }
         } else { /* y axis pass */
             for (int i = -u_Radius; i <= u_Radius; i++) {
-                colorSum += getPixel(v_VpTexCoord + vec2(0.0, float(i)) * v_VpPixelSize) * gaussian(float(i));
+                colorSum += getPixel(v_VpTexCoord + vec2(0.0, float(i)) * v_VpPixelSize) * vec4(gaussian(float(i), u_Sigma));
             }
         }
-        o_Color = colorSum / colorSum.a;
+        o_Color = colorSum / vec4(colorSum.a);
     } else {
         discard;
     }
@@ -42,8 +42,4 @@ vec4 getPixel(vec2 pos) {
 
 bool shouldBlur(vec2 pos) {
     return texture(u_Input, pos).a != 0.0;
-}
-
-float gaussian(float x) {
-    return exp(-pow(x, 2.0) / (2.0 * pow(u_Sigma, 2.0)));
 }

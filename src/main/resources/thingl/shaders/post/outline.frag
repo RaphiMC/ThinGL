@@ -13,8 +13,6 @@ in vec2 v_VpPixelSize;
 in vec2 v_VpTexCoord;
 out vec4 o_Color;
 
-int doubleWidth = u_Width * 2;
-
 int decodeDistance(float alpha);
 float encodeDistance(int dist);
 
@@ -47,9 +45,8 @@ void main() {
         if (xDistance != 0) {
             o_Color = vec4(color, encodeDistance(xDistance));
         } else {
-            vec4 inputPixel = texture(u_Input, v_VpTexCoord);
-            if (inputPixel.a != 0.0) {
-                o_Color = vec4(inputPixel.rgb, encodeDistance(0));
+            if (currentPixel.a != 0.0) {
+                o_Color = vec4(currentPixel.rgb, encodeDistance(0));
             } else {
                 o_Color = vec4(0.0); // AMD Mesa driver workaround
                 discard;
@@ -94,7 +91,7 @@ void main() {
         if (xyDistance != 0.0) {
             if ((u_StyleFlags & STYLE_SHARP_CORNERS_BIT) == 0) {
                 float alpha = clamp(1.0 - (abs(xyDistance) - u_Width), 0.0, 1.0);
-                if (alpha > 0) {
+                if (alpha != 0.0) {
                     o_Color = vec4(color, alpha);
                 } else {
                     discard;
@@ -110,12 +107,12 @@ void main() {
 
 int decodeDistance(float alpha) {
     if (alpha != 0.0) {
-        return int(round(alpha * 255.0)) - doubleWidth - 1;
+        return int(round(alpha * 255.0)) - (u_Width * 2) - 1;
     } else {
         return 0;
     }
 }
 
 float encodeDistance(int dist) {
-    return float(dist + doubleWidth + 1) / 255.0;
+    return float(dist + (u_Width * 2) + 1) / 255.0;
 }

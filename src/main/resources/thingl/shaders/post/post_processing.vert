@@ -22,11 +22,11 @@ void main() {
     vec2 relative = a_Position.xy - u_Rectangle.xy;
     vec4 relativeCoord = u_ProjectionMatrix * vec4(relative / rectangleSize * u_Viewport, a_Position.z, 1.0);
 
-    v_RelPixelSize = 1.0 / rectangleSize;
+    v_RelPixelSize = vec2(1.0) / rectangleSize;
     v_RelCoord = vec4(relative.x, rectangleSize.y - relative.y, a_Position.z, 1.0);
-    v_RelTexCoord = (relativeCoord.xy + 1.0) / 2.0;
+    v_RelTexCoord = (relativeCoord.xy + vec2(1.0)) / vec2(2.0);
 
-    v_VpPixelSize = 1.0 / u_Viewport;
+    v_VpPixelSize = vec2(1.0) / u_Viewport;
     v_VpCoord = vec4(a_Position.x, u_Viewport.y - a_Position.y, a_Position.z, 1.0);
-    v_VpTexCoord = (gl_Position.xy + 1.0) / 2.0;
+    v_VpTexCoord = (gl_Position.xy + vec2(1.0)) / vec2(2.0);
 }

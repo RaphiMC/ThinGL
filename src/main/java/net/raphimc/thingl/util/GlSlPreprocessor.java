@@ -21,10 +21,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public class GlSlPreprocessor {
 
     private final Map<String, Object> defines = new HashMap<>();
+    private Function<String, String> includeResolver;
 
     public void addDefines(final Map<String, Object> defines) {
         if (defines == null) {
@@ -42,15 +44,27 @@ public class GlSlPreprocessor {
         this.defines.put(name, value);
     }
 
+    public void setIncludeResolver(final Function<String, String> includeResolver) {
+        if (includeResolver == null) {
+            throw new IllegalArgumentException("Include resolver cannot be null");
+        }
+        this.includeResolver = includeResolver;
+    }
+
     public String process(final String code) {
         final List<String> codeLines = new ArrayList<>(code.lines().toList());
         if (codeLines.isEmpty()) {
             throw new IllegalArgumentException("Shader code cannot be empty");
         }
+        int sourceStringIndex = 0;
 
         if (!this.defines.isEmpty()) {
+            if (!codeLines.get(0).startsWith("#version ")) {
+                throw new IllegalArgumentException("Shader code must start with a #version directive when using defines");
+            }
+
             final List<String> defineLines = new ArrayList<>();
-            defineLines.add("#line 2 1");
+            defineLines.add("#line 2 " + (++sourceStringIndex));
             for (Map.Entry<String, Object> entry : this.defines.entrySet()) {
                 final StringBuilder sb = new StringBuilder();
                 sb.append("#define ").append(entry.getKey());
@@ -62,6 +76,24 @@ public class GlSlPreprocessor {
             defineLines.add("#line 2 0");
 
             codeLines.addAll(1, defineLines);
+        }
+
+        if (this.includeResolver != null) {
+            for (int i = 0; i < codeLines.size(); i++) {
+                final String line = codeLines.get(i).trim();
+                if (line.startsWith("#include ")) {
+                    final String includePath = line.substring(9).trim().replaceAll("^\"|\"$", "");
+                    final String includeCode = this.includeResolver.apply(includePath);
+                    final List<String> includeLines = new ArrayList<>();
+                    includeLines.add("#line 1 " + (++sourceStringIndex));
+                    includeLines.addAll(includeCode.lines().toList());
+                    includeLines.add("#line " + (i + 2) + " 0");
+
+                    codeLines.remove(i);
+                    codeLines.addAll(i, includeLines);
+                    i += includeLines.size() - 1;
+                }
+            }
         }
 
         return String.join("\n", codeLines);

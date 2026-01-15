@@ -1,5 +1,7 @@
 #version 330 core
-#define LUMINOSITY_WEIGHTS vec3(0.2126, 0.7152, 0.0722)
+#define AVG_LUMINOSITY_WEIGHTS vec3(0.3333, 0.3333, 0.3333)
+#define REC601_LUMINOSITY_WEIGHTS vec3(0.299, 0.587, 0.114)
+#define REC709_LUMINOSITY_WEIGHTS vec3(0.2126, 0.7152, 0.0722)
 
 uniform vec4 u_ColorModifier;
 uniform sampler2D u_Texture;
@@ -10,7 +12,7 @@ out vec4 o_Color;
 
 void main() {
     vec4 textureColor = texture(u_Texture, v_TexCoord);
-    vec3 grayScale = vec3(dot(textureColor.rgb, LUMINOSITY_WEIGHTS));
+    vec3 grayScale = vec3(dot(textureColor.rgb, REC709_LUMINOSITY_WEIGHTS));
     float colorAverage = (v_Color.r + v_Color.g + v_Color.b) / 3.0;
     vec3 colorPow = vec3(1.0 + colorAverage) - v_Color.rgb;
     o_Color = vec4(pow(grayScale, colorPow), textureColor.a * v_Color.a) * u_ColorModifier;
