@@ -21,6 +21,8 @@ import net.lenni0451.commons.lazy.Lazy;
 import net.raphimc.thingl.gl.program.post.impl.*;
 import net.raphimc.thingl.gl.resource.program.Program;
 import net.raphimc.thingl.gl.resource.shader.Shader;
+import net.raphimc.thingl.gl.text.SDFTextRenderer;
+import net.raphimc.thingl.text.TextStyle;
 import net.raphimc.thingl.util.glsl.GlSlPreprocessor;
 
 import java.io.IOException;
@@ -80,7 +82,10 @@ public class Programs {
     });
 
     private final Lazy<RegularProgram> sdfText = Lazy.of(() -> {
-        final RegularProgram program = new RegularProgram(this.shaderLoader.get("regular/sdf_text", VERTEX), this.shaderLoader.get("regular/sdf_text", FRAGMENT));
+        final Map<String, Object> defines = new HashMap<>();
+        defines.put("DF_PX_RANGE", SDFTextRenderer.DF_PX_RANGE);
+        defines.put("STYLE_BOLD_BIT", TextStyle.STYLE_BOLD_BIT);
+        final RegularProgram program = new RegularProgram(this.shaderLoader.get("regular/sdf_text", VERTEX), this.shaderLoader.get("regular/sdf_text", FRAGMENT, defines));
         program.setDebugName("sdf_text");
         return program;
     });
@@ -122,7 +127,11 @@ public class Programs {
     });
 
     private final Lazy<OutlineProgram> outline = Lazy.of(() -> {
-        final OutlineProgram program = new OutlineProgram(this.shaderLoader.get("post/post_processing", VERTEX), this.shaderLoader.get("post/outline", FRAGMENT));
+        final Map<String, Object> defines = new HashMap<>();
+        defines.put("STYLE_OUTER_BIT", OutlineProgram.STYLE_OUTER_BIT);
+        defines.put("STYLE_INNER_BIT", OutlineProgram.STYLE_INNER_BIT);
+        defines.put("STYLE_SHARP_CORNERS_BIT", OutlineProgram.STYLE_SHARP_CORNERS_BIT);
+        final OutlineProgram program = new OutlineProgram(this.shaderLoader.get("post/post_processing", VERTEX), this.shaderLoader.get("post/outline", FRAGMENT, defines));
         program.setDebugName("outline");
         return program;
     });

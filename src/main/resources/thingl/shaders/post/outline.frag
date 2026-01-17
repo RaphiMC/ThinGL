@@ -1,7 +1,4 @@
 #version 330 core
-#define STYLE_OUTER_BIT 1
-#define STYLE_INNER_BIT 2
-#define STYLE_SHARP_CORNERS_BIT 4
 
 uniform sampler2D u_Source;
 uniform sampler2D u_Input;

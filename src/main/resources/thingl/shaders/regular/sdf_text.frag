@@ -1,6 +1,4 @@
 #version 400 core
-#define DF_PX_RANGE 6
-#define STYLE_BOLD_BIT 2u
 #include "../util/math.glsl"
 
 uniform vec4 u_ColorModifier;
