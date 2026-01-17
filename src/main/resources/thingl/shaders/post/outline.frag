@@ -63,7 +63,7 @@ void main() {
                 float yDist = float(abs(i));
                 float xyDist = yDist;
                 if (xDist > 0.0) {
-                    xyDist = sqrt(xDist * xDist + yDist * yDist);
+                    xyDist = length(vec2(xDist, yDist));
                 }
                 if (inputPixel.a != 0.0 && (xyDist < xyDistance || xyDistance == 0.0)) {
                     color = inputPixel.rgb;
@@ -78,7 +78,7 @@ void main() {
                 float yDist = -float(abs(i));
                 float xyDist = yDist;
                 if (xDist < 0.0) {
-                    xyDist = -sqrt(xDist * xDist + yDist * yDist);
+                    xyDist = -length(vec2(xDist, yDist));
                     inputPixel.a = 0.0; // Allow the condition below to be true
                 }
                 if (inputPixel.a == 0.0 && (xyDist > xyDistance || xyDistance == 0.0)) {
