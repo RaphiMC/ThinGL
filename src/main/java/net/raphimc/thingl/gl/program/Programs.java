@@ -21,14 +21,12 @@ import net.lenni0451.commons.lazy.Lazy;
 import net.raphimc.thingl.gl.program.post.impl.*;
 import net.raphimc.thingl.gl.resource.program.Program;
 import net.raphimc.thingl.gl.resource.shader.Shader;
-import net.raphimc.thingl.util.GlSlPreprocessor;
+import net.raphimc.thingl.util.glsl.GlSlPreprocessor;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
@@ -277,35 +275,30 @@ public class Programs {
 
         public Shader get(final String name, final Shader.Type type, final Map<String, Object> defines) {
             return this.shaders.computeIfAbsent(name + "." + type.getFileExtension(), path -> {
-                try {
-                    try (InputStream stream = this.getClass().getClassLoader().getResourceAsStream(this.basePath + path)) {
-                        if (stream == null) {
-                            throw new IOException("Shader " + name + " not found");
-                        }
-                        final String source = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
-                        final GlSlPreprocessor preprocessor = new GlSlPreprocessor();
-                        preprocessor.addDefines(defines);
-                        preprocessor.setIncludeResolver(includePath -> {
-                            final Path basePath = Paths.get(this.basePath + path);
-                            final Path relativePath = Paths.get(includePath);
-                            final Path resolvedPath = basePath.getParent().resolve(relativePath).normalize();
-                            try (InputStream includeStream = this.getClass().getClassLoader().getResourceAsStream(resolvedPath.toString())) {
-                                if (includeStream == null) {
-                                    throw new IOException("Included shader file " + includePath + " not found");
-                                }
-                                return new String(includeStream.readAllBytes(), StandardCharsets.UTF_8);
-                            } catch (IOException e) {
-                                throw new UncheckedIOException("Failed to load included shader file: " + includePath, e);
-                            }
-                        });
-                        final Shader shader = new Shader(type, preprocessor.process(source));
-                        shader.setDebugName(name);
-                        return shader;
-                    }
-                } catch (Throwable e) {
-                    throw new RuntimeException("Failed to load shader " + name, e);
-                }
+                final GlSlPreprocessor preprocessor = new GlSlPreprocessor(this.getProcessedShaderSource(this.basePath + path));
+                preprocessor.prependDefines(defines);
+                final Shader shader = new Shader(type, preprocessor.getCode());
+                shader.setDebugName(name);
+                return shader;
             });
+        }
+
+        private String getProcessedShaderSource(final String path) {
+            try (InputStream stream = this.getClass().getClassLoader().getResourceAsStream(path)) {
+                if (stream == null) {
+                    throw new IOException("Shader " + path + " not found");
+                }
+                final GlSlPreprocessor preprocessor = new GlSlPreprocessor(new String(stream.readAllBytes(), StandardCharsets.UTF_8));
+                preprocessor.resolveIncludes(includePath -> {
+                    final String fullIncludePath = Paths.get(path).getParent().resolve(includePath).normalize().toString();
+                    final GlSlPreprocessor innerPreprocessor = new GlSlPreprocessor(this.getProcessedShaderSource(fullIncludePath));
+                    innerPreprocessor.addIncludeGuard(fullIncludePath);
+                    return innerPreprocessor.getCode();
+                });
+                return preprocessor.getCode();
+            } catch (Throwable e) {
+                throw new RuntimeException("Failed to process shader file: " + path, e);
+            }
         }
 
     }

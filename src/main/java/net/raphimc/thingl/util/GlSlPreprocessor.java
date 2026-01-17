@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+@Deprecated(forRemoval = true)
 public class GlSlPreprocessor {
 
     private final Map<String, Object> defines = new HashMap<>();
