@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
@@ -299,7 +300,8 @@ public class Programs {
                 }
                 final GlSlPreprocessor preprocessor = new GlSlPreprocessor(new String(stream.readAllBytes(), StandardCharsets.UTF_8));
                 preprocessor.resolveIncludes(includePath -> {
-                    final String fullIncludePath = Paths.get(path).getParent().resolve(includePath).normalize().toString();
+                    final Path resolvedIncludePath = Paths.get(path).getParent().resolve(includePath).normalize();
+                    final String fullIncludePath = resolvedIncludePath.toString().replace(resolvedIncludePath.getFileSystem().getSeparator(), "/");
                     final GlSlPreprocessor innerPreprocessor = new GlSlPreprocessor(this.getProcessedShaderSource(fullIncludePath));
                     innerPreprocessor.addIncludeGuard(fullIncludePath);
                     return innerPreprocessor.getCode();
