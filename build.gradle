@@ -48,7 +48,7 @@ dependencies {
     compileOnly "org.lwjgl:lwjgl-sdl:3.4.0"
     compileOnly "org.lwjgl:lwjgl-stb:3.4.0"
     compileOnly "org.lwjgl:lwjgl-freetype:3.4.0"
-    compileOnly "org.lwjgl:lwjgl-harfbuzz:3.3.6" // TODO: Use 3.4.0 when available
+    compileOnly "org.lwjgl:lwjgl-harfbuzz:3.4.0" // TODO: Use 3.4.0 when available
     compileOnly "org.lwjgl:lwjgl-spng:3.4.0"
     compileOnly "org.lwjgl:lwjgl-meshoptimizer:3.4.0"
     compileOnly "io.github.earcut4j:earcut4j:2.2.2"
