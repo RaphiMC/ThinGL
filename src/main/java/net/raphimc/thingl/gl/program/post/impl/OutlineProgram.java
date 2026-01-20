@@ -35,8 +35,45 @@ public class OutlineProgram extends MultiPassAuxInputPostProcessingProgram {
     }
 
     public void configureParameters(final int width, final int styleFlags) {
+        this.configureParameters(width, styleFlags, Interpolation.NONE);
+    }
+
+    public void configureParameters(final int width, final Interpolation interpolation) {
+        this.configureParameters(width, STYLE_OUTER_BIT, interpolation);
+    }
+
+    public void configureParameters(final int width, final int styleFlags, final Interpolation interpolation) {
         this.setUniformInt("u_Width", width);
         this.setUniformInt("u_StyleFlags", styleFlags);
+        this.setUniformInt("u_InterpolationType", interpolation.ordinal());
+    }
+
+    public enum Interpolation {
+
+        NONE,
+        LINEAR,
+        EASE_IN_SINE,
+        EASE_OUT_SINE,
+        EASE_IN_OUT_SINE,
+        EASE_IN_QUAD,
+        EASE_OUT_QUAD,
+        EASE_IN_OUT_QUAD,
+        EASE_IN_CUBIC,
+        EASE_OUT_CUBIC,
+        EASE_IN_OUT_CUBIC,
+        EASE_IN_QUART,
+        EASE_OUT_QUART,
+        EASE_IN_OUT_QUART,
+        EASE_IN_QUINT,
+        EASE_OUT_QUINT,
+        EASE_IN_OUT_QUINT,
+        EASE_IN_EXPO,
+        EASE_OUT_EXPO,
+        EASE_IN_OUT_EXPO,
+        EASE_IN_CIRC,
+        EASE_OUT_CIRC,
+        EASE_IN_OUT_CIRC,
+
     }
 
 }

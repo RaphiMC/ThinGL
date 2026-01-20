@@ -1,10 +1,12 @@
 #version 330 core
+#include "../util/easing.glsl"
 
 uniform sampler2D u_Source;
 uniform sampler2D u_Input;
 uniform int u_Pass;
 uniform int u_Width;
 uniform int u_StyleFlags;
+uniform int u_InterpolationType;
 
 in vec2 v_VpPixelSize;
 in vec2 v_VpTexCoord;
@@ -60,7 +62,11 @@ void main() {
                 float yDist = float(abs(i));
                 float xyDist = yDist;
                 if (xDist > 0.0) {
-                    xyDist = length(vec2(xDist, yDist));
+                    if ((u_StyleFlags & STYLE_SHARP_CORNERS_BIT) == 0) {
+                        xyDist = length(vec2(xDist, yDist));
+                    } else {
+                        xyDist = max(xDist, yDist);
+                    }
                 }
                 if (inputPixel.a != 0.0 && (xyDist < xyDistance || xyDistance == 0.0)) {
                     color = inputPixel.rgb;
@@ -75,7 +81,11 @@ void main() {
                 float yDist = -float(abs(i));
                 float xyDist = yDist;
                 if (xDist < 0.0) {
-                    xyDist = -length(vec2(xDist, yDist));
+                    if ((u_StyleFlags & STYLE_SHARP_CORNERS_BIT) == 0) {
+                        xyDist = -length(vec2(xDist, yDist));
+                    } else {
+                        xyDist = min(xDist, yDist);
+                    }
                     inputPixel.a = 0.0; // Allow the condition below to be true
                 }
                 if (inputPixel.a == 0.0 && (xyDist > xyDistance || xyDistance == 0.0)) {
@@ -86,15 +96,40 @@ void main() {
         }
 
         if (xyDistance != 0.0) {
-            if ((u_StyleFlags & STYLE_SHARP_CORNERS_BIT) == 0) {
-                float alpha = clamp(1.0 - (abs(xyDistance) - u_Width), 0.0, 1.0);
-                if (alpha != 0.0) {
-                    o_Color = vec4(color, alpha);
-                } else {
-                    discard;
-                }
+            float alpha = 0.0;
+            if (u_InterpolationType == INTERPOLATION_NONE) {
+                alpha = clamp(abs(xyDistance) - float(u_Width), 0.0, 1.0);
             } else {
-                o_Color = vec4(color, 1.0);
+                alpha = clamp(abs(xyDistance) / float(u_Width), 0.0, 1.0);
+                switch (u_InterpolationType) {
+                    case INTERPOLATION_EASE_IN_SINE: alpha = easeInSine(alpha); break;
+                    case INTERPOLATION_EASE_OUT_SINE: alpha = easeOutSine(alpha); break;
+                    case INTERPOLATION_EASE_IN_OUT_SINE: alpha = easeInOutSine(alpha); break;
+                    case INTERPOLATION_EASE_IN_QUAD: alpha = easeInQuad(alpha); break;
+                    case INTERPOLATION_EASE_OUT_QUAD: alpha = easeOutQuad(alpha); break;
+                    case INTERPOLATION_EASE_IN_OUT_QUAD: alpha = easeInOutQuad(alpha); break;
+                    case INTERPOLATION_EASE_IN_CUBIC: alpha = easeInCubic(alpha); break;
+                    case INTERPOLATION_EASE_OUT_CUBIC: alpha = easeOutCubic(alpha); break;
+                    case INTERPOLATION_EASE_IN_OUT_CUBIC: alpha = easeInOutCubic(alpha); break;
+                    case INTERPOLATION_EASE_IN_QUART: alpha = easeInQuart(alpha); break;
+                    case INTERPOLATION_EASE_OUT_QUART: alpha = easeOutQuart(alpha); break;
+                    case INTERPOLATION_EASE_IN_OUT_QUART: alpha = easeInOutQuart(alpha); break;
+                    case INTERPOLATION_EASE_IN_QUINT: alpha = easeInQuint(alpha); break;
+                    case INTERPOLATION_EASE_OUT_QUINT: alpha = easeOutQuint(alpha); break;
+                    case INTERPOLATION_EASE_IN_OUT_QUINT: alpha = easeInOutQuint(alpha); break;
+                    case INTERPOLATION_EASE_IN_EXPO: alpha = easeInExpo(alpha); break;
+                    case INTERPOLATION_EASE_OUT_EXPO: alpha = easeOutExpo(alpha); break;
+                    case INTERPOLATION_EASE_IN_OUT_EXPO: alpha = easeInOutExpo(alpha); break;
+                    case INTERPOLATION_EASE_IN_CIRC: alpha = easeInCirc(alpha); break;
+                    case INTERPOLATION_EASE_OUT_CIRC: alpha = easeOutCirc(alpha); break;
+                    case INTERPOLATION_EASE_IN_OUT_CIRC: alpha = easeInOutCirc(alpha); break;
+                }
+            }
+            alpha = clamp(1.0 - alpha, 0.0, 1.0);
+            if (alpha != 0.0) {
+                o_Color = vec4(color, alpha);
+            } else {
+                discard;
             }
         } else {
             discard;

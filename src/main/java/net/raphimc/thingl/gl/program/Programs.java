@@ -132,6 +132,9 @@ public class Programs {
         defines.put("STYLE_OUTER_BIT", OutlineProgram.STYLE_OUTER_BIT);
         defines.put("STYLE_INNER_BIT", OutlineProgram.STYLE_INNER_BIT);
         defines.put("STYLE_SHARP_CORNERS_BIT", OutlineProgram.STYLE_SHARP_CORNERS_BIT);
+        for (OutlineProgram.Interpolation interpolation : OutlineProgram.Interpolation.values()) {
+            defines.put("INTERPOLATION_" + interpolation.name(), interpolation.ordinal());
+        }
         final OutlineProgram program = new OutlineProgram(this.shaderLoader.get("post/post_processing", VERTEX), this.shaderLoader.get("post/outline", FRAGMENT, defines));
         program.setDebugName("outline");
         return program;
