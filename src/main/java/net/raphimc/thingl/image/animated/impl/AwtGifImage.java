@@ -18,7 +18,7 @@
 package net.raphimc.thingl.image.animated.impl;
 
 import net.raphimc.thingl.image.animated.AnimatedImage;
-import net.raphimc.thingl.image.io.impl.awt.AwtImageIO;
+import net.raphimc.thingl.resource.image.impl.AwtByteImage2D;
 import net.raphimc.thingl.resource.image.impl.ByteImage2D;
 import org.lwjgl.opengl.GL12C;
 import org.w3c.dom.Node;
@@ -87,7 +87,7 @@ public class AwtGifImage extends AnimatedImage {
             final int imageTopPosition = Integer.parseInt(imageDescriptorNode.getAttributes().getNamedItem("imageTopPosition").getNodeValue());
 
             this.compositeImage.getPixels().copyTo(this.getPixels());
-            final ByteImage2D image = AwtImageIO.INSTANCE.createByteImage2D(frame);
+            final ByteImage2D image = new AwtByteImage2D(frame);
             try {
                 this.drawImage(image, imageLeftPosition, imageTopPosition, TransparencyMode.MASKED);
             } finally {

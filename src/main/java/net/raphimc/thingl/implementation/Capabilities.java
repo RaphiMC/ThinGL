@@ -27,7 +27,6 @@ public class Capabilities {
     private static final boolean STB_AVAILABLE;
     private static final boolean FREE_TYPE_AVAILABLE;
     private static final boolean HARF_BUZZ_AVAILABLE;
-    private static final boolean SPNG_AVAILABLE;
     private static final boolean MESH_OPTIMIZER_AVAILABLE;
     private static final boolean EARCUT4J_AVAILABLE;
     private static final boolean GIF_READER_AVAILABLE;
@@ -38,7 +37,6 @@ public class Capabilities {
         STB_AVAILABLE = isClassPresent("org.lwjgl.stb.LibSTB");
         FREE_TYPE_AVAILABLE = isClassPresent("org.lwjgl.util.freetype.FreeType");
         HARF_BUZZ_AVAILABLE = isClassPresent("org.lwjgl.util.harfbuzz.HarfBuzz");
-        SPNG_AVAILABLE = isClassPresent("org.lwjgl.util.spng.SPNG");
         MESH_OPTIMIZER_AVAILABLE = isClassPresent("org.lwjgl.util.meshoptimizer.LibMeshOptimizer");
         EARCUT4J_AVAILABLE = isClassPresent("earcut4j.Earcut");
         GIF_READER_AVAILABLE = isClassPresent("com.ibasco.image.gif.GifImageReader");
@@ -68,12 +66,6 @@ public class Capabilities {
     public static void assertHarfBuzzAvailable() {
         if (!HARF_BUZZ_AVAILABLE) {
             throw new IllegalStateException("HarfBuzz is not available. Please add the LWJGL HarfBuzz module to your project.");
-        }
-    }
-
-    public static void assertSpngAvailable() {
-        if (!SPNG_AVAILABLE) {
-            throw new IllegalStateException("SPNG is not available. Please add the LWJGL SPNG module to your project.");
         }
     }
 
@@ -117,10 +109,6 @@ public class Capabilities {
 
     public static boolean isHarfBuzzAvailable() {
         return HARF_BUZZ_AVAILABLE;
-    }
-
-    public static boolean isSpngAvailable() {
-        return SPNG_AVAILABLE;
     }
 
     public static boolean isMeshOptimizerAvailable() {

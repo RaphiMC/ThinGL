@@ -28,6 +28,8 @@ import org.lwjgl.opengl.GL30C;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.stb.STBImageWrite;
 
+@SuppressWarnings("removal")
+@Deprecated(forRemoval = true)
 public class StbImageIO implements ByteImage2DReader, ByteImage2DWriter {
 
     static {

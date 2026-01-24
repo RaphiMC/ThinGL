@@ -22,6 +22,7 @@ import net.raphimc.thingl.memory.allocator.MemoryAllocator;
 import net.raphimc.thingl.resource.memory.Memory;
 import org.lwjgl.stb.STBIWriteCallback;
 
+@Deprecated(forRemoval = true)
 public class BufferedStbWriteCallback extends STBIWriteCallback {
 
     private final MemoryBuffer memoryBuffer = new MemoryBuffer();

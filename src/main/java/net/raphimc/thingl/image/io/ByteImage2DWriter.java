@@ -20,6 +20,7 @@ package net.raphimc.thingl.image.io;
 import net.raphimc.thingl.resource.image.impl.ByteImage2D;
 import net.raphimc.thingl.resource.memory.Memory;
 
+@Deprecated(forRemoval = true)
 public interface ByteImage2DWriter {
 
     default byte[] writeByteImage2DToBytes(final ByteImage2D image) {

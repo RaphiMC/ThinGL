@@ -50,7 +50,6 @@ dependencies {
     compileOnly "org.lwjgl:lwjgl-stb:3.4.0"
     compileOnly "org.lwjgl:lwjgl-freetype:3.4.0"
     compileOnly "org.lwjgl:lwjgl-harfbuzz:3.4.0"
-    compileOnly "org.lwjgl:lwjgl-spng:3.4.0"
     compileOnly "org.lwjgl:lwjgl-meshoptimizer:3.4.0"
     compileOnly "io.github.earcut4j:earcut4j:2.2.2"
     compileOnly "com.github.RaphiMC:gif-reader:0bdb781a96"
@@ -66,7 +65,6 @@ dependencies {
         exampleImplementation "org.lwjgl:lwjgl-stb:3.4.0:$it"
         exampleImplementation "org.lwjgl:lwjgl-freetype:3.4.0:$it"
         // exampleImplementation "org.lwjgl:lwjgl-harfbuzz:3.4.0:$it" // Already included in FreeType
-        exampleImplementation "org.lwjgl:lwjgl-spng:3.4.0:$it"
         exampleImplementation "org.lwjgl:lwjgl-meshoptimizer:3.4.0:$it"
     }
 }

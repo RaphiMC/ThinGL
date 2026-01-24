@@ -21,8 +21,8 @@ import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.resource.image.ImageStorage2D;
 import net.raphimc.thingl.gl.resource.image.texture.SampledTexture;
-import net.raphimc.thingl.image.io.impl.stb.StbImageIO;
 import net.raphimc.thingl.resource.image.Image;
+import net.raphimc.thingl.resource.image.impl.StbByteImage2D;
 import org.lwjgl.opengl.GL11C;
 
 public class Texture2D extends SampledTexture implements ImageStorage2D {
@@ -45,11 +45,11 @@ public class Texture2D extends SampledTexture implements ImageStorage2D {
     }
 
     public static Texture2D fromImage(final byte[] imageBytes) {
-        return fromImage(StbImageIO.INSTANCE.readByteImage2D(imageBytes));
+        return fromImage(new StbByteImage2D(imageBytes));
     }
 
     public static Texture2D fromImage(final int internalFormat, final byte[] imageBytes) {
-        return fromImage(internalFormat, StbImageIO.INSTANCE.readByteImage2D(imageBytes));
+        return fromImage(internalFormat, new StbByteImage2D(imageBytes));
     }
 
     public static Texture2D fromImage(final Image image) {

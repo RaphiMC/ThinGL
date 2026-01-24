@@ -41,8 +41,8 @@ public class ImageRenderingExample extends GLFWApplicationRunner {
         try {
             final byte[] imageBytes = ImageRenderingExample.class.getResourceAsStream("/images/triangles-1430105_640.png").readAllBytes();
             this.texture = Texture2D.fromImage(imageBytes); // Standard image formats like PNG, JPEG, BMP, and GIF are supported
-            // this.texture = Texture2D.fromImage(AwtImageIO.INSTANCE.createByteImage2D(...)); // Its also possible to create a Texture2D from a BufferedImage directly
-            // this.texture = Texture2D.fromImage(AwtSvgImageIO.INSTANCE.readByteImage2D(...); // SVG is also supported, but requires a library
+            // this.texture = Texture2D.fromImage(new AwtByteImage2D(...)); // Its also possible to create a Texture2D from a BufferedImage directly
+            // this.texture = Texture2D.fromImage(new AwtSvgByteImage2D(...); // SVG is also supported, but requires a library
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

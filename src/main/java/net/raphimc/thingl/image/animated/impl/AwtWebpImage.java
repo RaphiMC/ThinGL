@@ -19,8 +19,8 @@ package net.raphimc.thingl.image.animated.impl;
 
 import com.twelvemonkeys.imageio.plugins.webp.WebPImageReaderSpi;
 import net.raphimc.thingl.image.animated.AnimatedImage;
-import net.raphimc.thingl.image.io.impl.awt.AwtImageIO;
 import net.raphimc.thingl.implementation.Capabilities;
+import net.raphimc.thingl.resource.image.impl.AwtByteImage2D;
 import net.raphimc.thingl.resource.image.impl.ByteImage2D;
 import net.raphimc.thingl.util.ReflectionUtil;
 import org.lwjgl.opengl.GL12C;
@@ -94,7 +94,7 @@ public class AwtWebpImage extends AnimatedImage {
             final boolean dispose = (boolean) this.frameDisposeGetter.apply(animationFrame);
 
             this.compositeImage.getPixels().copyTo(this.getPixels());
-            final ByteImage2D image = AwtImageIO.INSTANCE.createByteImage2D(frame);
+            final ByteImage2D image = new AwtByteImage2D(frame);
             try {
                 this.drawImage(image, bounds.x, bounds.y, blend ? TransparencyMode.ALPHA_BLENDED : TransparencyMode.OPAQUE);
             } finally {

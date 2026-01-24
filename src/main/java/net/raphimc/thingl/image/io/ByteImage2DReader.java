@@ -23,6 +23,7 @@ import net.raphimc.thingl.resource.memory.Memory;
 
 import java.nio.ByteBuffer;
 
+@Deprecated(forRemoval = true)
 public interface ByteImage2DReader {
 
     default ByteImage2D readByteImage2D(final ByteBuffer imageBuffer) {

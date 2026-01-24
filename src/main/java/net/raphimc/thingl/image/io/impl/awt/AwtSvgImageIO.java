@@ -34,6 +34,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+@SuppressWarnings("removal")
+@Deprecated(forRemoval = true)
 public class AwtSvgImageIO implements ByteImage2DReader {
 
     static {

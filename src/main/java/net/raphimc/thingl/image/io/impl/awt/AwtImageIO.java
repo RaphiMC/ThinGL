@@ -28,6 +28,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 
+@SuppressWarnings("removal")
+@Deprecated(forRemoval = true)
 public class AwtImageIO implements ByteImage2DReader {
 
     public static final AwtImageIO INSTANCE = new AwtImageIO();

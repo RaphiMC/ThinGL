@@ -17,8 +17,8 @@
  */
 package net.raphimc.thingl.resource.font.impl;
 
-import net.raphimc.thingl.image.io.impl.awt.AwtImageIO;
 import net.raphimc.thingl.resource.font.Font;
+import net.raphimc.thingl.resource.image.impl.AwtByteImage2D;
 import net.raphimc.thingl.resource.image.impl.ByteImage2D;
 import net.raphimc.thingl.util.AwtUtil;
 
@@ -80,7 +80,7 @@ public class AwtFont extends Font {
         this.graphics.drawGlyphVector(glyphVector, -glyph.bearingX(), -glyph.bearingY());
         final int width = (int) Math.ceil(glyph.width());
         final int height = (int) Math.ceil(glyph.height());
-        ByteImage2D image = AwtImageIO.INSTANCE.createByteImage2D(this.drawImage.getSubimage(0, 0, width, height));
+        ByteImage2D image = new AwtByteImage2D(this.drawImage.getSubimage(0, 0, width, height));
         if (renderMode == GlyphBitmap.RenderMode.PIXELATED || renderMode == GlyphBitmap.RenderMode.ANTIALIASED) {
             image = image.convertToSingleChannel(3);
         }
