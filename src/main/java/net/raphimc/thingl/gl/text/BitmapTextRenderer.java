@@ -63,7 +63,7 @@ public class BitmapTextRenderer extends TextRenderer {
     }
 
     private void renderTextSegmentOutline(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextSegment textSegment, final float x, final float y, final float z, final int textDataIndex) {
-        final float offsetMultiplier = textSegment.glyphs().get(0).fontGlyph().font().getSize() / TextRenderer.BOLD_OFFSET_DIVIDER;
+        final float offsetMultiplier = textSegment.glyphs().getFirst().fontGlyph().font().getSize() / TextRenderer.BOLD_OFFSET_DIVIDER;
         for (int xOffset = -1; xOffset <= 1; xOffset++) {
             for (int yOffset = -1; yOffset <= 1; yOffset++) {
                 if (xOffset != 0 || yOffset != 0) {

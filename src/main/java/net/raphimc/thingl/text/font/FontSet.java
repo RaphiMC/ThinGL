@@ -41,7 +41,7 @@ public class FontSet {
         if (fonts.isEmpty()) {
             throw new IllegalArgumentException("Font list must contain at least one font");
         }
-        this.mainFont = fonts.get(0);
+        this.mainFont = fonts.getFirst();
         this.addFonts(fonts);
     }
 

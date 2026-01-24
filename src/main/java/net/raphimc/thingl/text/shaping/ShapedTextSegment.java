@@ -40,7 +40,7 @@ public record ShapedTextSegment(List<TextShaper.Glyph> glyphs, TextStyle style, 
             return;
         }
 
-        final Font font = this.glyphs.get(0).fontGlyph().font();
+        final Font font = this.glyphs.getFirst().fontGlyph().font();
         this.visualBounds.setMin(Float.MAX_VALUE, Float.MAX_VALUE).setMax(-Float.MAX_VALUE, -Float.MAX_VALUE);
         this.logicalBounds.setMin(Float.MAX_VALUE, -font.getAscent()).setMax(-Float.MAX_VALUE, font.getDescent());
         for (TextShaper.Glyph shapedGlyph : this.glyphs) {
@@ -76,19 +76,19 @@ public record ShapedTextSegment(List<TextShaper.Glyph> glyphs, TextStyle style, 
         }
 
         if (this.style.isShadow()) {
-            final float shadowOffset = TextRenderer.SHADOW_OFFSET_FACTOR * this.glyphs.get(this.glyphs.size() - 1).fontGlyph().font().getSize();
+            final float shadowOffset = TextRenderer.SHADOW_OFFSET_FACTOR * this.glyphs.getLast().fontGlyph().font().getSize();
             this.visualBounds.maxX += shadowOffset;
             this.visualBounds.maxY += shadowOffset;
         }
         if (this.style.isBold() || this.style.outlineColor().getAlpha() > 0) {
-            final float boldOffset = this.glyphs.get(0).fontGlyph().font().getSize() / TextRenderer.BOLD_OFFSET_DIVIDER;
+            final float boldOffset = this.glyphs.getFirst().fontGlyph().font().getSize() / TextRenderer.BOLD_OFFSET_DIVIDER;
             this.visualBounds.minX -= boldOffset;
             this.visualBounds.minY -= boldOffset;
             this.visualBounds.maxX += boldOffset;
             this.visualBounds.maxY += boldOffset;
         }
         if (this.style.isItalic()) {
-            this.visualBounds.maxX += TextRenderer.ITALIC_SHEAR_FACTOR * -this.glyphs.get(this.glyphs.size() - 1).fontGlyph().bearingY();
+            this.visualBounds.maxX += TextRenderer.ITALIC_SHEAR_FACTOR * -this.glyphs.getLast().fontGlyph().bearingY();
         }
     }
 

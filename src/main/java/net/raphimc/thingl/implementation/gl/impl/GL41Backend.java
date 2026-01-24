@@ -1905,14 +1905,11 @@ public class GL41Backend implements GLBackend {
             GL30C.glBindVertexArray(this.id);
             GL15C.glBindBuffer(GL15C.GL_ARRAY_BUFFER, binding.buffer);
 
-            if (attribute.format instanceof VertexAttribFFormat fformat) {
-                GL20C.glVertexAttribPointer(index, fformat.size(), fformat.type(), fformat.normalized(), binding.stride, binding.offset + fformat.relativeoffset());
-            } else if (attribute.format instanceof VertexAttribIFormat iformat) {
-                GL30C.glVertexAttribIPointer(index, iformat.size(), iformat.type(), binding.stride, binding.offset + iformat.relativeoffset());
-            } else if (attribute.format instanceof VertexAttribLFormat lformat) {
-                GL41C.glVertexAttribLPointer(index, lformat.size(), lformat.type(), binding.stride, binding.offset + lformat.relativeoffset());
-            } else {
-                throw new IllegalStateException("Unknown VertexAttribFormat");
+            switch (attribute.format) {
+                case VertexAttribFFormat fformat -> GL20C.glVertexAttribPointer(index, fformat.size(), fformat.type(), fformat.normalized(), binding.stride, binding.offset + fformat.relativeoffset());
+                case VertexAttribIFormat iformat -> GL30C.glVertexAttribIPointer(index, iformat.size(), iformat.type(), binding.stride, binding.offset + iformat.relativeoffset());
+                case VertexAttribLFormat lformat -> GL41C.glVertexAttribLPointer(index, lformat.size(), lformat.type(), binding.stride, binding.offset + lformat.relativeoffset());
+                case null, default -> throw new IllegalStateException("Unknown VertexAttribFormat");
             }
             GL33C.glVertexAttribDivisor(index, binding.divisor);
 

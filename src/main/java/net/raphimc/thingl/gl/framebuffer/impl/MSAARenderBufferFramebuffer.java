@@ -29,12 +29,15 @@ public class MSAARenderBufferFramebuffer extends ResizingFramebuffer {
 
     @SuppressWarnings("CodeBlock2Expr")
     public MSAARenderBufferFramebuffer(final int samples) {
+        if (!MathUtil.mathIsPoT(samples)) {
+            throw new IllegalArgumentException("The number of samples must be a power of two");
+        }
+        final int clampedSamples = Math.clamp(samples, 2, ThinGL.capabilities().getMaxSamples());
         super((width, height) -> {
-            return new MultisampleRenderBuffer(GL11C.GL_RGBA8, width, height, returnSamples(samples));
+            return new MultisampleRenderBuffer(GL11C.GL_RGBA8, width, height, clampedSamples);
         }, (width, height) -> {
-            return new MultisampleRenderBuffer(GL30C.GL_DEPTH32F_STENCIL8, width, height, returnSamples(samples));
+            return new MultisampleRenderBuffer(GL30C.GL_DEPTH32F_STENCIL8, width, height, clampedSamples);
         });
-        this.init();
     }
 
     @Override
@@ -45,13 +48,6 @@ public class MSAARenderBufferFramebuffer extends ResizingFramebuffer {
     @Override
     public MultisampleRenderBuffer getDepthAttachment() {
         return (MultisampleRenderBuffer) super.getDepthAttachment();
-    }
-
-    private static int returnSamples(final int samples) {
-        if (!MathUtil.mathIsPoT(samples)) {
-            throw new IllegalArgumentException("The number of samples must be a power of two");
-        }
-        return Math.clamp(samples, 2, ThinGL.capabilities().getMaxSamples());
     }
 
 }

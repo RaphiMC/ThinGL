@@ -55,10 +55,7 @@ public class Framebuffer extends GLContainerObject {
     }
 
     public Framebuffer(final ImageStorage colorAttachment, final ImageStorage depthAttachment, final ImageStorage stencilAttachment) {
-        super(ThinGL.glBackend().createFramebuffer());
-        for (int attachment : this.getValidAttachmentPoints()) {
-            this.attachments.put(attachment, null);
-        }
+        this();
         try {
             if (colorAttachment != null) {
                 this.setAttachment(GL30C.GL_COLOR_ATTACHMENT0, colorAttachment);

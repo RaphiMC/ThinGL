@@ -97,7 +97,7 @@ public class AnimatedTexture extends Texture2D {
             this.loadingThread.interrupt();
             try {
                 this.loadingThread.join(1000);
-            } catch (InterruptedException ignored) {
+            } catch (InterruptedException _) {
             }
         }
         this.animatedImage.free();

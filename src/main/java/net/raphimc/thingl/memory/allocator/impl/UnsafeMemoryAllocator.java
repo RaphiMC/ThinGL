@@ -25,6 +25,7 @@ import sun.misc.Unsafe;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
+@SuppressWarnings("removal")
 public class UnsafeMemoryAllocator extends MemoryAllocator {
 
     public static final UnsafeMemoryAllocator INSTANCE = new UnsafeMemoryAllocator();
@@ -48,7 +49,7 @@ public class UnsafeMemoryAllocator extends MemoryAllocator {
             if (unsafeInstance.arrayIndexScale(byte[].class) == 1) {
                 byteArrayBaseOffset = unsafeInstance.arrayBaseOffset(byte[].class);
             }
-        } catch (Throwable ignored) {
+        } catch (Throwable _) {
         }
         UNSAFE = unsafeInstance;
         BYTE_ARRAY_BASE_OFFSET = byteArrayBaseOffset;

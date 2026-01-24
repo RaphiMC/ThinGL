@@ -47,15 +47,16 @@ public class AwtGifImage extends AnimatedImage {
     }
 
     public AwtGifImage(final InputStream imageStream) throws IOException {
-        this(InitialInput.create(imageStream));
-    }
-
-    private AwtGifImage(final InitialInput initialInput) throws IOException {
-        super(initialInput.gifReader.getWidth(0), initialInput.gifReader.getHeight(0), initialInput.gifReader.getNumImages(true), GL12C.GL_BGRA);
-        this.imageStream = initialInput.imageStream;
-        this.gifReader = initialInput.gifReader;
-        this.imageInputStream = initialInput.imageInputStream;
-        this.compositeImage = new ByteImage2D(this.getWidth(), this.getHeight(), GL12C.GL_BGRA);
+        this.imageStream = imageStream;
+        final Iterator<ImageReader> gifReaders = ImageIO.getImageReadersByFormatName("gif");
+        if (!gifReaders.hasNext()) {
+            throw new RuntimeException("No GIF reader available");
+        }
+        final ImageReader gifReader = this.gifReader = gifReaders.next();
+        final ImageInputStream imageInputStream = this.imageInputStream = ImageIO.createImageInputStream(imageStream);
+        gifReader.setInput(imageInputStream);
+        super(gifReader.getWidth(0), gifReader.getHeight(0), gifReader.getNumImages(true), GL12C.GL_BGRA);
+        this.compositeImage = new ByteImage2D(this.getWidth(), this.getHeight(), this.getPixelFormat());
         this.compositeImage.clear();
     }
 
@@ -117,28 +118,13 @@ public class AwtGifImage extends AnimatedImage {
         this.gifReader.dispose();
         try {
             this.imageInputStream.close();
-        } catch (IOException ignored) {
+        } catch (IOException _) {
         }
         try {
             this.imageStream.close();
-        } catch (IOException ignored) {
+        } catch (IOException _) {
         }
         super.free0();
-    }
-
-    private record InitialInput(InputStream imageStream, ImageReader gifReader, ImageInputStream imageInputStream) {
-
-        public static InitialInput create(final InputStream imageStream) throws IOException {
-            final Iterator<ImageReader> gifReaders = ImageIO.getImageReadersByFormatName("gif");
-            if (!gifReaders.hasNext()) {
-                throw new RuntimeException("No GIF reader available");
-            }
-            final ImageReader gifReader = gifReaders.next();
-            final ImageInputStream imageInputStream = ImageIO.createImageInputStream(imageStream);
-            gifReader.setInput(imageInputStream);
-            return new InitialInput(imageStream, gifReader, imageInputStream);
-        }
-
     }
 
 }

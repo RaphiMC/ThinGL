@@ -50,7 +50,6 @@ public class TextureFramebuffer extends ResizingFramebuffer {
             texture.setParameterInt(GL14C.GL_TEXTURE_COMPARE_MODE, GL11C.GL_NONE);
             return texture;
         } : null);
-        this.init();
     }
 
     public void render(final Matrix4f positionMatrix, final float x, final float y, final float width, final float height) {

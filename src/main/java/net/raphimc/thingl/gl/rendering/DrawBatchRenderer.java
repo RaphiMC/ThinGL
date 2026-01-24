@@ -59,7 +59,7 @@ public class DrawBatchRenderer {
         }
 
         if (drawCommands.size() == 1) {
-            final DrawCommand drawCommand = drawCommands.get(0);
+            final DrawCommand drawCommand = drawCommands.getFirst();
             if (drawCommand instanceof DrawElementsCommand drawElementsCommand) {
                 vertexArray.drawElements(drawMode, drawElementsCommand.vertexCount(), drawElementsCommand.firstIndex(), drawElementsCommand.instanceCount(), drawElementsCommand.baseVertex(), drawElementsCommand.baseInstance());
             } else if (drawCommand instanceof DrawArraysCommand drawArraysCommand) {

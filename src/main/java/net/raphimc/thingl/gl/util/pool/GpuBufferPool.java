@@ -59,7 +59,7 @@ public class GpuBufferPool {
             buffer = new MutableBuffer(BufferUtil.DEFAULT_BUFFER_SIZE, GL15C.GL_DYNAMIC_DRAW);
             buffer.setDebugName("Buffer Pool Buffer " + this.getSize());
         } else {
-            buffer = this.free.remove(0);
+            buffer = this.free.removeFirst();
         }
         this.inUse.add(buffer);
         this.bufferAccessTime.put(buffer, System.nanoTime());

@@ -50,7 +50,7 @@ public class DrawBatchDataOptimizer {
             return preparedDrawBatchData;
         }
 
-        final DrawCommand drawCommand = drawCommands.get(0);
+        final DrawCommand drawCommand = drawCommands.getFirst();
         final int vertexSize = drawBatch.vertexDataLayout().getSize();
         Memory vertexBuffer = preparedDrawBatchData.vertexBuffer();
         Memory indexBuffer = preparedDrawBatchData.indexBuffer() != null ? preparedDrawBatchData.indexBuffer().buffer() : null;

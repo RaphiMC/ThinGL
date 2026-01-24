@@ -33,6 +33,8 @@ There is no guarantee of API stability and breaking changes may occur at any tim
 To use ThinGL with Gradle/Maven you can get it from [Lenni0451's Maven](https://maven.lenni0451.net/#/snapshots/net/raphimc/thingl) or [Jitpack](https://jitpack.io/#RaphiMC/ThinGL).
 You can also find instructions how to implement it into your build script there.
 
+ThinGL requires Java 25 or higher, but there is a Java 17-24 compatible version available under the `java17` classifier (Example: `net.raphimc:thingl:VERSION:java17`).
+
 ### Jar File
 If you just want the latest jar file you can download it from [GitHub Actions](https://github.com/RaphiMC/ThinGL/actions/workflows/build.yml) or [Lenni0451's Jenkins](https://build.lenni0451.net/job/ThinGL/).
 

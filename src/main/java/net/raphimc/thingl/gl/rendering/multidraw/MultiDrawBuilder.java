@@ -112,7 +112,7 @@ public class MultiDrawBuilder {
 
             long indexBufferSize = indexBuffer.getSize();
             if (indexBuffer == ThinGL.quadIndexBuffer().getSharedBuffer()) {
-                final DrawElementsCommand drawCommand = (DrawElementsCommand) drawCommands.get(0);
+                final DrawElementsCommand drawCommand = (DrawElementsCommand) drawCommands.getFirst();
                 indexBufferSize = (long) drawCommand.vertexCount() * Integer.BYTES;
             }
 

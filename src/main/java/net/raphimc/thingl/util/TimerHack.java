@@ -34,7 +34,7 @@ public class TimerHack {
                 while (true) {
                     try {
                         Thread.sleep(Long.MAX_VALUE);
-                    } catch (InterruptedException ignored) {
+                    } catch (InterruptedException _) {
                     }
                 }
             }, "ThinGL-TimerHack");

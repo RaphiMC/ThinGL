@@ -20,6 +20,7 @@ package net.raphimc.thingl.resource.memory.impl;
 import net.raphimc.thingl.memory.allocator.impl.UnsafeMemoryAllocator;
 import net.raphimc.thingl.resource.memory.Memory;
 
+@SuppressWarnings("removal")
 public class UnsafeMemory extends Memory {
 
     public UnsafeMemory(final long address, final long size) {

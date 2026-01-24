@@ -105,6 +105,7 @@ public class GlslNodeMutator {
         }
     }
 
+    @SuppressWarnings("NonExtendableApiUsage")
     private static <T extends GlslNode> void mutate(final T parentNode, final Function<GlslNode, GlslNode> mutator, final Function<T, GlslNode> getter, final BiConsumer<T, GlslNode> setter) {
         final GlslNode oldNode = getter.apply(parentNode);
         final GlslNode newNode = mutate(oldNode, mutator);

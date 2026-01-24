@@ -50,20 +50,23 @@ public abstract class ImageTexture extends Texture implements ImageStorage {
         ThinGL.glStateStack().pixelStore(GL11C.GL_UNPACK_SKIP_PIXELS, 0);
         ThinGL.glStateStack().pixelStore(GL11C.GL_UNPACK_SKIP_ROWS, 0);
         ThinGL.glStateStack().pixelStore(GL11C.GL_UNPACK_ROW_LENGTH, 0);
-        if (this instanceof ImageStorage2D) {
-            if (z != 0 || image.getDepth() != 1) {
-                throw new IllegalArgumentException("z and depth must be 0 and 1 for 2D textures");
+        switch (this) {
+            case ImageStorage2D _ -> {
+                if (z != 0 || image.getDepth() != 1) {
+                    throw new IllegalArgumentException("z and depth must be 0 and 1 for 2D textures");
+                }
+                ThinGL.glBackend().textureSubImage2D(this.getGlId(), level, x, y, image.getWidth(), image.getHeight(), image.getPixelFormat(), image.getPixelDataType(), image.getPixels().getAddress());
             }
-            ThinGL.glBackend().textureSubImage2D(this.getGlId(), level, x, y, image.getWidth(), image.getHeight(), image.getPixelFormat(), image.getPixelDataType(), image.getPixels().getAddress());
-        } else if (this instanceof ImageStorage3D) {
-            ThinGL.glBackend().textureSubImage3D(this.getGlId(), level, x, y, z, image.getWidth(), image.getHeight(), image.getDepth(), image.getPixelFormat(), image.getPixelDataType(), image.getPixels().getAddress());
-        } else if (this instanceof ImageStorage1D) {
-            if (y != 0 || z != 0 || image.getHeight() != 1 || image.getDepth() != 1) {
-                throw new IllegalArgumentException("y, z, height, and depth must be 0, 0, 1, and 1 for 1D textures");
+            case ImageStorage3D _ -> {
+                ThinGL.glBackend().textureSubImage3D(this.getGlId(), level, x, y, z, image.getWidth(), image.getHeight(), image.getDepth(), image.getPixelFormat(), image.getPixelDataType(), image.getPixels().getAddress());
             }
-            ThinGL.glBackend().textureSubImage1D(this.getGlId(), level, x, image.getWidth(), image.getPixelFormat(), image.getPixelDataType(), image.getPixels().getAddress());
-        } else {
-            throw new IllegalArgumentException("Unsupported texture class: " + this.getClass().getName());
+            case ImageStorage1D _ -> {
+                if (y != 0 || z != 0 || image.getHeight() != 1 || image.getDepth() != 1) {
+                    throw new IllegalArgumentException("y, z, height, and depth must be 0, 0, 1, and 1 for 1D textures");
+                }
+                ThinGL.glBackend().textureSubImage1D(this.getGlId(), level, x, image.getWidth(), image.getPixelFormat(), image.getPixelDataType(), image.getPixels().getAddress());
+            }
+            default -> throw new IllegalArgumentException("Unsupported texture class: " + this.getClass().getName());
         }
         ThinGL.glStateStack().popPixelStore();
     }

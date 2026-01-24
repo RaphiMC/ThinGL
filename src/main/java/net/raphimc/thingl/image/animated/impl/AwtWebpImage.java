@@ -44,8 +44,8 @@ public class AwtWebpImage extends AnimatedImage {
     }
 
     private final InputStream imageStream;
-    private final ImageReader webpReader;
     private final ImageInputStream imageInputStream;
+    private final ImageReader webpReader;
     private final List<?> frames;
     private final Function<Object, Object> frameBoundsGetter;
     private final Function<Object, Object> frameDurationGetter;
@@ -59,14 +59,19 @@ public class AwtWebpImage extends AnimatedImage {
     }
 
     public AwtWebpImage(final InputStream imageStream) throws IOException {
-        this(InitialInput.create(imageStream));
-    }
-
-    private AwtWebpImage(final InitialInput initialInput) throws IOException {
-        super(initialInput.width, initialInput.height, initialInput.webpReader.getNumImages(true), GL12C.GL_BGRA);
-        this.imageStream = initialInput.imageStream;
-        this.webpReader = initialInput.webpReader;
-        this.imageInputStream = initialInput.imageInputStream;
+        this.imageStream = imageStream;
+        final ImageInputStream imageInputStream = this.imageInputStream = ImageIO.createImageInputStream(imageStream);
+        final ImageReader webpReader = this.webpReader = new WebPImageReaderSpi().createReaderInstance();
+        webpReader.setInput(imageInputStream);
+        webpReader.getNumImages(false); // Force read the header
+        final Object header = ReflectionUtil.createGetter("com.twelvemonkeys.imageio.plugins.webp.WebPImageReader", "header").apply(webpReader);
+        final int width = (int) ReflectionUtil.createGetter("com.twelvemonkeys.imageio.plugins.webp.VP8xChunk", "width").apply(header);
+        final int height = (int) ReflectionUtil.createGetter("com.twelvemonkeys.imageio.plugins.webp.VP8xChunk", "height").apply(header);
+        final boolean isAnimated = (boolean) ReflectionUtil.createGetter("com.twelvemonkeys.imageio.plugins.webp.VP8xChunk", "containsANIM").apply(header);
+        if (!isAnimated) {
+            throw new UnsupportedOperationException("WebP image is not animated");
+        }
+        super(width, height, webpReader.getNumImages(true), GL12C.GL_BGRA);
         this.frames = (List<?>) ReflectionUtil.createGetter("com.twelvemonkeys.imageio.plugins.webp.WebPImageReader", "frames").apply(this.webpReader);
         this.frameBoundsGetter = ReflectionUtil.createGetter("com.twelvemonkeys.imageio.plugins.webp.AnimationFrame", "bounds");
         this.frameDurationGetter = ReflectionUtil.createGetter("com.twelvemonkeys.imageio.plugins.webp.AnimationFrame", "duration");
@@ -118,32 +123,13 @@ public class AwtWebpImage extends AnimatedImage {
         this.webpReader.dispose();
         try {
             this.imageInputStream.close();
-        } catch (IOException ignored) {
+        } catch (IOException _) {
         }
         try {
             this.imageStream.close();
-        } catch (IOException ignored) {
+        } catch (IOException _) {
         }
         super.free0();
-    }
-
-    private record InitialInput(InputStream imageStream, ImageReader webpReader, ImageInputStream imageInputStream, int width, int height) {
-
-        public static InitialInput create(final InputStream imageStream) throws IOException {
-            final ImageReader webpReader = new WebPImageReaderSpi().createReaderInstance();
-            final ImageInputStream imageInputStream = ImageIO.createImageInputStream(imageStream);
-            webpReader.setInput(imageInputStream);
-            webpReader.getNumImages(false); // Force read the header
-            final Object header = ReflectionUtil.createGetter("com.twelvemonkeys.imageio.plugins.webp.WebPImageReader", "header").apply(webpReader);
-            final int width = (int) ReflectionUtil.createGetter("com.twelvemonkeys.imageio.plugins.webp.VP8xChunk", "width").apply(header);
-            final int height = (int) ReflectionUtil.createGetter("com.twelvemonkeys.imageio.plugins.webp.VP8xChunk", "height").apply(header);
-            final boolean isAnimated = (boolean) ReflectionUtil.createGetter("com.twelvemonkeys.imageio.plugins.webp.VP8xChunk", "containsANIM").apply(header);
-            if (!isAnimated) {
-                throw new UnsupportedOperationException("WebP image is not animated");
-            }
-            return new InitialInput(imageStream, webpReader, imageInputStream, width, height);
-        }
-
     }
 
 }

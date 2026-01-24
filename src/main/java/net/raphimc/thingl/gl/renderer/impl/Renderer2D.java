@@ -655,7 +655,7 @@ public class Renderer2D extends Renderer {
         if (closedLoop) {
             final List<Vector2f> newPoints = new ArrayList<>(points.size() + 1);
             newPoints.addAll(points);
-            newPoints.add(points.get(0));
+            newPoints.add(points.getFirst());
             this.polyLine(positionMatrix, newPoints, width, color);
         } else {
             this.polyLine(positionMatrix, points, width, color);

@@ -42,12 +42,8 @@ public class GifImage extends AnimatedImage {
     }
 
     public GifImage(final InputStream imageStream) throws IOException {
-        this(new GifImageReader(imageStream, true));
-    }
-
-    private GifImage(final GifImageReader gifReader) {
+        final GifImageReader gifReader = this.gifReader = new GifImageReader(imageStream, true);
         super(gifReader.getMetadata().getWidth(), gifReader.getMetadata().getHeight(), gifReader.getTotalFrames(), GL12C.GL_BGRA);
-        this.gifReader = gifReader;
     }
 
     @Override
@@ -77,7 +73,7 @@ public class GifImage extends AnimatedImage {
     protected void free0() {
         try {
             this.gifReader.close();
-        } catch (IOException ignored) {
+        } catch (IOException _) {
         }
         super.free0();
     }

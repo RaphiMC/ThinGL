@@ -23,7 +23,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 public interface GlyphPredicate {
 
     static GlyphPredicate all() {
-        return codePoint -> true;
+        return _ -> true;
     }
 
     static GlyphPredicate range(final int min, final int max) {

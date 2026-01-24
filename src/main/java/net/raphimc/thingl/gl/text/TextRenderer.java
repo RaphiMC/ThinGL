@@ -57,7 +57,7 @@ public abstract class TextRenderer {
     private float globalScale = 1F;
 
     protected TextRenderer(final Supplier<Program> program, final Font.GlyphBitmap.RenderMode glyphRenderMode) {
-        this(program, glyphRenderMode, p -> {
+        this(program, glyphRenderMode, _ -> {
         });
     }
 
@@ -91,7 +91,7 @@ public abstract class TextRenderer {
                 this.renderTextRun(positionMatrix, multiDrawBatchDataHolder, textRun, x, y, z, textRun.font());
                 x += textRun.visualBounds().minX * this.globalScale;
             } else {
-                this.renderTextRun(positionMatrix, multiDrawBatchDataHolder, textRun, x - textRun.visualBounds().minX * this.globalScale, y, z, textLine.runs().get(0).font());
+                this.renderTextRun(positionMatrix, multiDrawBatchDataHolder, textRun, x - textRun.visualBounds().minX * this.globalScale, y, z, textLine.runs().getFirst().font());
             }
             x += textRun.logicalBounds().maxX * this.globalScale;
         }

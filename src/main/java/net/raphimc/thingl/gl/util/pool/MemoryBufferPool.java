@@ -59,7 +59,7 @@ public class MemoryBufferPool {
         if (this.free.isEmpty()) {
             memoryBuffer = new MemoryBuffer();
         } else {
-            memoryBuffer = this.free.remove(0);
+            memoryBuffer = this.free.removeFirst();
         }
         this.inUse.add(memoryBuffer);
         this.memoryBufferAccessTime.put(memoryBuffer, System.nanoTime());

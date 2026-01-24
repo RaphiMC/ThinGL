@@ -60,7 +60,7 @@ public class GlSlPreprocessor {
         int sourceStringIndex = 0;
 
         if (!this.defines.isEmpty()) {
-            if (!codeLines.get(0).startsWith("#version ")) {
+            if (!codeLines.getFirst().startsWith("#version ")) {
                 throw new IllegalArgumentException("Shader code must start with a #version directive when using defines");
             }
 
