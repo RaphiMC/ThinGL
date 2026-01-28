@@ -55,6 +55,11 @@ dependencies {
     compileOnly "com.github.RaphiMC:gif-reader:0bdb781a96"
     compileOnly "com.twelvemonkeys.imageio:imageio-webp:3.13.0"
     compileOnly "com.github.weisj:jsvg:2.0.0"
+    compileOnly("org.lwjglx:lwjgl3-awt:0.2.3") {
+        exclude(module: "lwjgl")
+        exclude(module: "lwjgl-opengl")
+        exclude(module: "lwjgl-vulkan")
+    }
 
     // Example dependencies
     ["natives-windows", "natives-windows-arm64", "natives-linux", "natives-linux-arm64", "natives-macos-arm64"].each {

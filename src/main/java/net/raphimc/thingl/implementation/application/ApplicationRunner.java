@@ -22,6 +22,7 @@ import net.raphimc.thingl.gl.framebuffer.impl.TextureFramebuffer;
 import net.raphimc.thingl.gl.framebuffer.impl.WindowFramebuffer;
 import net.raphimc.thingl.gl.resource.framebuffer.Framebuffer;
 import net.raphimc.thingl.gl.wrapper.Blending;
+import net.raphimc.thingl.implementation.Capabilities;
 import net.raphimc.thingl.implementation.DebugMessageCallback;
 import net.raphimc.thingl.implementation.window.WindowInterface;
 import org.joml.Matrix4fStack;
@@ -46,7 +47,7 @@ public abstract class ApplicationRunner {
     }
 
     protected void launch() {
-        if (!this.configuration.shouldUseSeparateThreads()) {
+        Runnable basic = () -> {
             try {
                 this.launchWindowSystem();
                 try {
@@ -66,6 +67,12 @@ public abstract class ApplicationRunner {
                 this.freeFuture.completeExceptionally(e);
                 throw e;
             }
+        };
+
+        if (!this.configuration.shouldUseSeparateThreads()) {
+            basic.run();
+        } else if (!Capabilities.isWindowThreadingAvailable()) {
+            new Thread(basic, this.getClass().getSimpleName() + " Window Thread").start();
         } else {
             new Thread(() -> {
                 try {
@@ -155,6 +162,9 @@ public abstract class ApplicationRunner {
     }
 
     protected void renderFrame(final boolean tickWindow) {
+        if (!this.windowInterface.isFramebufferReady()) {
+            return;
+        }
         this.thinGL.onFrameBegin();
         if (tickWindow && this.windowInterface.isOnWindowThread()) {
             this.tickWindow();

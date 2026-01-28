@@ -131,4 +131,8 @@ public abstract class WindowInterface {
         }
     }
 
+    public boolean isFramebufferReady() {
+        return true;
+    }
+
 }

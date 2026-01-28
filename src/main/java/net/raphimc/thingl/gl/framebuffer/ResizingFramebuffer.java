@@ -56,6 +56,7 @@ public abstract class ResizingFramebuffer extends Framebuffer {
     }
 
     private void resize(final int width, final int height) {
+        if (width <= 0 && height <= 0) return;
         try {
             this.freeContainingObjects();
             this.setAttachment(GL30C.GL_COLOR_ATTACHMENT0, this.colorAttachmentSupplier.apply(width, height));

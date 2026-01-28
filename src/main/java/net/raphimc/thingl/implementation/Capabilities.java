@@ -32,6 +32,7 @@ public class Capabilities {
     private static final boolean GIF_READER_AVAILABLE;
     private static final boolean TWELVE_MONKEYS_WEBP_READER_AVAILABLE;
     private static final boolean JSVG_AVAILABLE;
+    private static final boolean WINDOW_THREADING_AVAILABLE;
 
     static {
         STB_AVAILABLE = isClassPresent("org.lwjgl.stb.LibSTB");
@@ -46,9 +47,11 @@ public class Capabilities {
         if (FREE_TYPE_AVAILABLE && HARF_BUZZ_AVAILABLE) {
             Configuration.HARFBUZZ_LIBRARY_NAME.set(FreeType.getLibrary());
         }
-        if (System.getProperty("os.name").startsWith("Mac")) {
+        boolean isMac = System.getProperty("os.name").startsWith("Mac");
+        if (isMac) {
             System.setProperty("joml.nounsafe", "true");
         }
+        WINDOW_THREADING_AVAILABLE = !isMac;
     }
 
     public static void assertStbAvailable() {
@@ -129,6 +132,10 @@ public class Capabilities {
 
     public static boolean isJsvgAvailable() {
         return JSVG_AVAILABLE;
+    }
+
+    public static boolean isWindowThreadingAvailable() {
+        return WINDOW_THREADING_AVAILABLE;
     }
 
     private final int maxSamples;
