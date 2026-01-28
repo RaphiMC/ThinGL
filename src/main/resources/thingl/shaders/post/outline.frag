@@ -5,8 +5,8 @@ uniform sampler2D u_Source;
 uniform sampler2D u_Input;
 uniform int u_Pass;
 uniform int u_Width;
-uniform int u_StyleFlags;
-uniform int u_InterpolationType;
+uniform uint u_StyleFlags;
+uniform uint u_InterpolationType;
 
 in vec2 v_VpPixelSize;
 in vec2 v_VpTexCoord;
@@ -20,7 +20,7 @@ void main() {
         vec3 color = vec3(0.0);
         int xDistance = 0;
         vec4 currentPixel = texture(u_Input, v_VpTexCoord);
-        if ((u_StyleFlags & STYLE_OUTER_BIT) != 0 && currentPixel.a == 0.0) {
+        if (bool(u_StyleFlags & STYLE_OUTER_BIT) && currentPixel.a == 0.0) {
             for (int i = -u_Width; i <= u_Width; i++) {
                 vec4 inputPixel = texture(u_Input, v_VpTexCoord + vec2(float(i), 0.0) * v_VpPixelSize);
                 int xDist = abs(i);
@@ -30,7 +30,7 @@ void main() {
                 }
             }
         }
-        if ((u_StyleFlags & STYLE_INNER_BIT) != 0 && currentPixel.a != 0.0) {
+        if (bool(u_StyleFlags & STYLE_INNER_BIT) && currentPixel.a != 0.0) {
             for (int i = -u_Width; i <= u_Width; i++) {
                 vec4 inputPixel = texture(u_Input, v_VpTexCoord + vec2(float(i), 0.0) * v_VpPixelSize);
                 int xDist = -abs(i);
@@ -55,14 +55,14 @@ void main() {
         vec3 color = vec3(0.0);
         float xyDistance = 0.0;
         vec4 currentPixel = texture(u_Source, v_VpTexCoord);
-        if ((u_StyleFlags & STYLE_OUTER_BIT) != 0 && (currentPixel.a == 0.0 || decodeDistance(currentPixel.a) > 0)) {
+        if (bool(u_StyleFlags & STYLE_OUTER_BIT) && (currentPixel.a == 0.0 || decodeDistance(currentPixel.a) > 0)) {
             for (int i = -u_Width; i <= u_Width; i++) {
                 vec4 inputPixel = texture(u_Source, v_VpTexCoord + vec2(0.0, float(i)) * v_VpPixelSize);
                 float xDist = float(decodeDistance(inputPixel.a));
                 float yDist = float(abs(i));
                 float xyDist = yDist;
                 if (xDist > 0.0) {
-                    if ((u_StyleFlags & STYLE_SHARP_CORNERS_BIT) == 0) {
+                    if (!bool(u_StyleFlags & STYLE_SHARP_CORNERS_BIT)) {
                         xyDist = length(vec2(xDist, yDist));
                     } else {
                         xyDist = max(xDist, yDist);
@@ -74,14 +74,14 @@ void main() {
                 }
             }
         }
-        if ((u_StyleFlags & STYLE_INNER_BIT) != 0 && currentPixel.a != 0.0) {
+        if (bool(u_StyleFlags & STYLE_INNER_BIT) && currentPixel.a != 0.0) {
             for (int i = -u_Width; i <= u_Width; i++) {
                 vec4 inputPixel = texture(u_Source, v_VpTexCoord + vec2(0.0, float(i)) * v_VpPixelSize);
                 float xDist = float(decodeDistance(inputPixel.a));
                 float yDist = -float(abs(i));
                 float xyDist = yDist;
                 if (xDist < 0.0) {
-                    if ((u_StyleFlags & STYLE_SHARP_CORNERS_BIT) == 0) {
+                    if (!bool(u_StyleFlags & STYLE_SHARP_CORNERS_BIT)) {
                         xyDist = -length(vec2(xDist, yDist));
                     } else {
                         xyDist = min(xDist, yDist);

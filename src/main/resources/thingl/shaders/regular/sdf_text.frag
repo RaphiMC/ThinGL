@@ -15,7 +15,7 @@ out vec4 o_Color;
 void main() {
     vec3 msd = texture(u_Textures[v_TextureIndex], v_TexCoord).rgb;
     float dist = median(msd.r, msd.g, msd.b);
-    if ((v_StyleFlags & STYLE_BOLD_BIT) == 0 && v_OutlineColor.a == 0.0) { // High quality text rendering
+    if (!bool(v_StyleFlags & STYLE_BOLD_BIT) && v_OutlineColor.a == 0.0) { // High quality text rendering
         vec2 unitRange = vec2(float(DF_PX_RANGE)) / vec2(textureSize(u_Textures[v_TextureIndex], 0));
         vec2 screenTexSize = vec2(1.0) / fwidth(v_TexCoord);
         float screenPxRange = max(dot(unitRange, screenTexSize), 1.0);
@@ -25,7 +25,7 @@ void main() {
     } else { // Regular text rendering
         float width = fwidth(dist);
         float center = 0.5;
-        if ((v_StyleFlags & STYLE_BOLD_BIT) != 0) {
+        if (bool(v_StyleFlags & STYLE_BOLD_BIT)) {
             center = clamp(center - float(v_FontSize) / 64.0 / 10.0, 0.05, 0.5);
         }
         float alpha = smoothstep(max(center - width, 0.0), min(center + width, 1.0), dist);

@@ -479,6 +479,11 @@ public class GL45Backend implements GLBackend {
     }
 
     @Override
+    public void programUniform1ui(final int program, final int location, final int v0) {
+        GL41C.glProgramUniform1ui(program, location, v0);
+    }
+
+    @Override
     public void programUniform2f(final int program, final int location, final float v0, final float v1) {
         GL41C.glProgramUniform2f(program, location, v0, v1);
     }

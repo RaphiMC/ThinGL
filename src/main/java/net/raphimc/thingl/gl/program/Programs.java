@@ -23,6 +23,7 @@ import net.raphimc.thingl.gl.resource.program.Program;
 import net.raphimc.thingl.gl.resource.shader.Shader;
 import net.raphimc.thingl.gl.text.SDFTextRenderer;
 import net.raphimc.thingl.text.TextStyle;
+import net.raphimc.thingl.util.glsl.DefinesMap;
 import net.raphimc.thingl.util.glsl.GlSlPreprocessor;
 
 import java.io.IOException;
@@ -83,9 +84,9 @@ public class Programs {
     });
 
     private final Lazy<RegularProgram> sdfText = Lazy.of(() -> {
-        final Map<String, Object> defines = new HashMap<>();
-        defines.put("DF_PX_RANGE", SDFTextRenderer.DF_PX_RANGE);
-        defines.put("STYLE_BOLD_BIT", TextStyle.STYLE_BOLD_BIT);
+        final DefinesMap defines = new DefinesMap();
+        defines.putInt("DF_PX_RANGE", SDFTextRenderer.DF_PX_RANGE);
+        defines.putUnsignedInt("STYLE_BOLD_BIT", TextStyle.STYLE_BOLD_BIT);
         final RegularProgram program = new RegularProgram(this.shaderLoader.get("regular/sdf_text", VERTEX), this.shaderLoader.get("regular/sdf_text", FRAGMENT, defines));
         program.setDebugName("sdf_text");
         return program;
@@ -128,12 +129,12 @@ public class Programs {
     });
 
     private final Lazy<OutlineProgram> outline = Lazy.of(() -> {
-        final Map<String, Object> defines = new HashMap<>();
-        defines.put("STYLE_OUTER_BIT", OutlineProgram.STYLE_OUTER_BIT);
-        defines.put("STYLE_INNER_BIT", OutlineProgram.STYLE_INNER_BIT);
-        defines.put("STYLE_SHARP_CORNERS_BIT", OutlineProgram.STYLE_SHARP_CORNERS_BIT);
+        final DefinesMap defines = new DefinesMap();
+        defines.putUnsignedInt("STYLE_OUTER_BIT", OutlineProgram.STYLE_OUTER_BIT);
+        defines.putUnsignedInt("STYLE_INNER_BIT", OutlineProgram.STYLE_INNER_BIT);
+        defines.putUnsignedInt("STYLE_SHARP_CORNERS_BIT", OutlineProgram.STYLE_SHARP_CORNERS_BIT);
         for (OutlineProgram.Interpolation interpolation : OutlineProgram.Interpolation.values()) {
-            defines.put("INTERPOLATION_" + interpolation.name(), interpolation.ordinal());
+            defines.putUnsignedInt("INTERPOLATION_" + interpolation.name(), interpolation.ordinal());
         }
         final OutlineProgram program = new OutlineProgram(this.shaderLoader.get("post/post_processing", VERTEX), this.shaderLoader.get("post/outline", FRAGMENT, defines));
         program.setDebugName("outline");
@@ -266,7 +267,11 @@ public class Programs {
 
     @Deprecated(forRemoval = true)
     protected Shader getShader(final String name, final Shader.Type type, final Map<String, Object> defines) {
-        return this.shaderLoader.get(name, type, defines);
+        final DefinesMap definesMap = new DefinesMap();
+        for (Map.Entry<String, Object> entry : defines.entrySet()) {
+            definesMap.put(entry.getKey(), entry.getValue().toString());
+        }
+        return this.shaderLoader.get(name, type, definesMap);
     }
 
     protected static class ShaderLoader {
@@ -286,7 +291,7 @@ public class Programs {
             return this.get(name, type, Map.of());
         }
 
-        public Shader get(final String name, final Shader.Type type, final Map<String, Object> defines) {
+        public Shader get(final String name, final Shader.Type type, final Map<String, String> defines) {
             return this.shaders.computeIfAbsent(name + "." + type.getFileExtension(), path -> {
                 final GlSlPreprocessor preprocessor = new GlSlPreprocessor(this.getProcessedShaderSource(this.basePath + path));
                 preprocessor.prependDefines(defines);

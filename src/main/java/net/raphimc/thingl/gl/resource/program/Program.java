@@ -30,8 +30,7 @@ import net.raphimc.thingl.gl.resource.sampler.Sampler;
 import net.raphimc.thingl.gl.resource.shader.Shader;
 import net.raphimc.thingl.memory.allocator.MemoryAllocator;
 import net.raphimc.thingl.resource.memory.Memory;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
+import org.joml.*;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL20C;
 import org.lwjgl.opengl.GL31C;
@@ -127,28 +126,44 @@ public class Program extends GLContainerObject {
         ThinGL.glBackend().programUniform1i(this.getGlId(), this.getUniformLocation(name), v);
     }
 
-    public void setUniformIntArray(final String name, final int... v) {
-        ThinGL.glBackend().programUniform1iv(this.getGlId(), this.getUniformLocation(name), v);
+    public void setUniformUnsignedInt(final String name, final int v) {
+        ThinGL.glBackend().programUniform1ui(this.getGlId(), this.getUniformLocation(name), v);
     }
 
     public void setUniformFloat(final String name, final float v) {
         ThinGL.glBackend().programUniform1f(this.getGlId(), this.getUniformLocation(name), v);
     }
 
+    public void setUniformVector2f(final String name, final Vector2f vector) {
+        this.setUniformVector2f(name, vector.x, vector.y);
+    }
+
     public void setUniformVector2f(final String name, final float v1, final float v2) {
         ThinGL.glBackend().programUniform2f(this.getGlId(), this.getUniformLocation(name), v1, v2);
+    }
+
+    public void setUniformVector3f(final String name, final Vector3f vector) {
+        this.setUniformVector3f(name, vector.x, vector.y, vector.z);
     }
 
     public void setUniformVector3f(final String name, final float v1, final float v2, final float v3) {
         ThinGL.glBackend().programUniform3f(this.getGlId(), this.getUniformLocation(name), v1, v2, v3);
     }
 
-    public void setUniformVector4f(final String name, final float v1, final float v2, final float v3, final float v4) {
-        ThinGL.glBackend().programUniform4f(this.getGlId(), this.getUniformLocation(name), v1, v2, v3, v4);
+    public void setUniformVector4f(final String name, final Vector4f vector) {
+        this.setUniformVector4f(name, vector.x, vector.y, vector.z, vector.w);
     }
 
     public void setUniformVector4f(final String name, final Color color) {
         this.setUniformVector4f(name, color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, color.getAlpha() / 255F);
+    }
+
+    public void setUniformVector4f(final String name, final float v1, final float v2, final float v3, final float v4) {
+        ThinGL.glBackend().programUniform4f(this.getGlId(), this.getUniformLocation(name), v1, v2, v3, v4);
+    }
+
+    public void setUniformIntArray(final String name, final int... v) {
+        ThinGL.glBackend().programUniform1iv(this.getGlId(), this.getUniformLocation(name), v);
     }
 
     public void setUniformMatrix3f(final String name, final Matrix3f matrix) {
