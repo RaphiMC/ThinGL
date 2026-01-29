@@ -127,8 +127,8 @@ public abstract class ApplicationRunner {
         ThinGL.glStateManager().enable(GL11C.GL_CULL_FACE);
         this.mainFramebuffer = new TextureFramebuffer();
 
-        ThinGL.windowInterface().addRenderThreadFramebufferResizeCallback(this::loadProjectionMatrix);
-        this.loadProjectionMatrix(ThinGL.windowInterface().getFramebufferWidth(), ThinGL.windowInterface().getFramebufferHeight());
+        this.windowInterface.addRenderThreadFramebufferResizeCallback(this::loadProjectionMatrix);
+        this.loadProjectionMatrix(this.windowInterface.getFramebufferWidth(), this.windowInterface.getFramebufferHeight());
     }
 
     protected void loadProjectionMatrix(final float width, final float height) {
@@ -139,9 +139,9 @@ public abstract class ApplicationRunner {
         while (!this.thinGL.getRenderThread().isInterrupted() && !this.windowInterface.getWindowThread().isInterrupted() && this.windowInterface.getWindowThread().isAlive()) {
             this.renderFrame(true);
             if (this.configuration.getFpsLimit() > 0) {
-                final float timeToSleep = 1000F / this.configuration.getFpsLimit() - ThinGL.get().getFullFrameTime();
+                final float timeToSleep = 1000F / this.configuration.getFpsLimit() - this.thinGL.getFullFrameTime();
                 if (timeToSleep > 0) {
-                    ThinGL.windowInterface().responsiveSleep(timeToSleep);
+                    this.windowInterface.responsiveSleep(timeToSleep);
                 }
             }
         }
