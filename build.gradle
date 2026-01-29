@@ -47,6 +47,11 @@ dependencies {
     // Optional dependencies
     compileOnly "org.lwjgl:lwjgl-glfw:3.4.0"
     compileOnly "org.lwjgl:lwjgl-sdl:3.4.0"
+    compileOnly("org.lwjglx:lwjgl3-awt:0.2.3") {
+        exclude group: "org.lwjgl", module: "lwjgl"
+        exclude group: "org.lwjgl", module: "lwjgl-opengl"
+        exclude group: "org.lwjgl", module: "lwjgl-vulkan"
+    }
     compileOnly "org.lwjgl:lwjgl-stb:3.4.0"
     compileOnly "org.lwjgl:lwjgl-freetype:3.4.0"
     compileOnly "org.lwjgl:lwjgl-harfbuzz:3.4.0"
