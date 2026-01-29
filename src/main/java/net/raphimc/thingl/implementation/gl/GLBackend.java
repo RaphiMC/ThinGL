@@ -201,6 +201,8 @@ public interface GLBackend {
 
     void programUniform1iv(final int program, final int location, final int[] value);
 
+    void programUniform1ui(final int program, final int location, final int v0);
+
     void programUniform2f(final int program, final int location, final float v0, final float v1);
 
     void programUniform3f(final int program, final int location, final float v0, final float v1, final float v2);

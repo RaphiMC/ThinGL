@@ -35,17 +35,17 @@ public class GlSlPreprocessor {
         this.codeLines.addAll(code.lines().toList());
     }
 
-    public void prependDefines(final Map<String, Object> defines) {
+    public void prependDefines(final Map<String, String> defines) {
         if (defines == null) {
             throw new IllegalArgumentException("Defines map cannot be null");
         }
 
-        for (Map.Entry<String, Object> entry : defines.entrySet()) {
+        for (Map.Entry<String, String> entry : defines.entrySet()) {
             this.prependDefine(entry.getKey(), entry.getValue());
         }
     }
 
-    public void prependDefine(final String name, final Object value) {
+    public void prependDefine(final String name, final String value) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Define name cannot be null or empty");
         }
@@ -61,17 +61,17 @@ public class GlSlPreprocessor {
         this.insertLines(defineLine, index, List.of(defineLine));
     }
 
-    public void appendDefines(final Map<String, Object> defines) {
+    public void appendDefines(final Map<String, String> defines) {
         if (defines == null) {
             throw new IllegalArgumentException("Defines map cannot be null");
         }
 
-        for (Map.Entry<String, Object> entry : defines.entrySet()) {
+        for (Map.Entry<String, String> entry : defines.entrySet()) {
             this.appendDefine(entry.getKey(), entry.getValue());
         }
     }
 
-    public void appendDefine(final String name, final Object value) {
+    public void appendDefine(final String name, final String value) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Define name cannot be null or empty");
         }

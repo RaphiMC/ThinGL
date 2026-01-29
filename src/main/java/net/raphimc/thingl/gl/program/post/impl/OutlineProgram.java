@@ -44,8 +44,8 @@ public class OutlineProgram extends MultiPassAuxInputPostProcessingProgram {
 
     public void configureParameters(final int width, final int styleFlags, final Interpolation interpolation) {
         this.setUniformInt("u_Width", width);
-        this.setUniformInt("u_StyleFlags", styleFlags);
-        this.setUniformInt("u_InterpolationType", interpolation.ordinal());
+        this.setUniformUnsignedInt("u_StyleFlags", styleFlags);
+        this.setUniformUnsignedInt("u_InterpolationType", interpolation.ordinal());
     }
 
     public enum Interpolation {
