@@ -35,8 +35,8 @@ public class AwtWindowInterface extends WindowInterface {
 
     public AwtWindowInterface(final AWTGLCanvas canvas) {
         this.canvas = canvas;
-        this.callFramebufferResizeCallbacks(canvas.getFramebufferWidth(), canvas.getFramebufferHeight());
         canvas.addComponentListener(this.resizeListener);
+        canvas.dispatchEvent(new ComponentEvent(canvas, ComponentEvent.COMPONENT_RESIZED)); // Ensure the framebuffer size fields are initialized
     }
 
     public AWTGLCanvas getCanvas() {
