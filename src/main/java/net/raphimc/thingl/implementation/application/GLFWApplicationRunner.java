@@ -67,14 +67,10 @@ public abstract class GLFWApplicationRunner extends ApplicationRunner {
 
             throw new RuntimeException("Failed to create window");
         }
-        if (this.configuration.isWindowCentered()) {
-            final GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-            if (vidMode != null) {
-                GLFW.glfwSetWindowPos(
-                        this.window,
-                        (vidMode.width() - this.configuration.getWindowWidth()) / 2,
-                        (vidMode.height() - this.configuration.getWindowHeight()) / 2
-                );
+        if (this.configuration.isWindowCentered() && GLFW.glfwGetPlatform() != GLFW.GLFW_PLATFORM_WAYLAND) {
+            final GLFWVidMode videoMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
+            if (videoMode != null) {
+                GLFW.glfwSetWindowPos(this.window, (videoMode.width() - this.configuration.getWindowWidth()) / 2, (videoMode.height() - this.configuration.getWindowHeight()) / 2);
             }
         }
     }

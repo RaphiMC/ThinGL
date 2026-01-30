@@ -237,6 +237,15 @@ public abstract class ApplicationRunner {
             return this;
         }
 
+        public boolean isWindowCentered() {
+            return this.windowCentered;
+        }
+
+        public Configuration setWindowCentered(final boolean windowCentered) {
+            this.windowCentered = windowCentered;
+            return this;
+        }
+
         public boolean shouldUseVSync() {
             return this.useVSync;
         }
@@ -297,15 +306,6 @@ public abstract class ApplicationRunner {
 
         public Configuration setExtendedDebugMode(final boolean extendedDebugMode) {
             this.extendedDebugMode = extendedDebugMode;
-            return this;
-        }
-
-        public boolean isWindowCentered() {
-            return this.windowCentered;
-        }
-
-        public Configuration setWindowCentered(final boolean windowCentered) {
-            this.windowCentered = windowCentered;
             return this;
         }
 
