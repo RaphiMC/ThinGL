@@ -201,6 +201,7 @@ public abstract class ApplicationRunner {
         private String windowTitle = "ThinGL Application";
         private int windowWidth = 1280;
         private int windowHeight = 720;
+        private boolean windowCentered = true;
         private boolean useVSync = true;
         private int fpsLimit = -1;
         private int openGLMajorVersion = 4;
@@ -296,6 +297,15 @@ public abstract class ApplicationRunner {
 
         public Configuration setExtendedDebugMode(final boolean extendedDebugMode) {
             this.extendedDebugMode = extendedDebugMode;
+            return this;
+        }
+
+        public boolean isWindowCentered() {
+            return this.windowCentered;
+        }
+
+        public Configuration setWindowCentered(final boolean windowCentered) {
+            this.windowCentered = windowCentered;
             return this;
         }
 
