@@ -46,6 +46,18 @@ public abstract class ApplicationRunner implements Runnable {
         this.configuration = configuration;
     }
 
+    public void runAsync() {
+        this.runAsync(true);
+    }
+
+    public void runAsync(final boolean waitForLaunch) {
+        new Thread(this, this.getClass().getSimpleName() + " Main Thread").start();
+        try {
+            this.launchFuture.join();
+        } catch (CancellationException ignored) {
+        }
+    }
+
     @Override
     public void run() {
         try {
@@ -84,6 +96,9 @@ public abstract class ApplicationRunner implements Runnable {
     public void close(final boolean waitForClose) {
         this.thinGL.getRenderThread().interrupt();
         if (waitForClose) {
+            if (this.windowInterface.isOnWindowThread()) {
+                throw new UnsupportedOperationException("Cannot wait for close on the window thread");
+            }
             try {
                 this.freeFuture.join();
             } catch (CancellationException ignored) {

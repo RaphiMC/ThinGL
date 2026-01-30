@@ -27,6 +27,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.concurrent.CompletableFuture;
 
 public abstract class AwtApplicationRunner extends ApplicationRunner {
 
@@ -36,6 +37,42 @@ public abstract class AwtApplicationRunner extends ApplicationRunner {
 
     public AwtApplicationRunner(final Configuration configuration) {
         super(configuration);
+    }
+
+    @Override
+    public void runAsync(final boolean waitForLaunch) {
+        if (waitForLaunch && EventQueue.isDispatchThread()) { // Don't block the EDT to prevent deadlocks
+            final SecondaryLoop secondaryLoop = Toolkit.getDefaultToolkit().getSystemEventQueue().createSecondaryLoop();
+            final CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                try {
+                    super.runAsync(true);
+                } finally {
+                    secondaryLoop.exit();
+                }
+            });
+            secondaryLoop.enter();
+            future.join();
+        } else {
+            super.runAsync(waitForLaunch);
+        }
+    }
+
+    @Override
+    public void close(final boolean waitForClose) {
+        if (waitForClose && EventQueue.isDispatchThread()) { // Don't block the EDT to prevent deadlocks
+            final SecondaryLoop secondaryLoop = Toolkit.getDefaultToolkit().getSystemEventQueue().createSecondaryLoop();
+            final CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                try {
+                    super.close(true);
+                } finally {
+                    secondaryLoop.exit();
+                }
+            });
+            secondaryLoop.enter();
+            future.join();
+        } else {
+            super.close(waitForClose);
+        }
     }
 
     @Override
