@@ -71,6 +71,10 @@ public abstract class SDLApplicationRunner extends ApplicationRunner {
         SDLErrorUtil.checkError(SDLProperties.SDL_SetStringProperty(properties, SDLVideo.SDL_PROP_WINDOW_CREATE_TITLE_STRING, this.configuration.getWindowTitle()));
         SDLErrorUtil.checkError(SDLProperties.SDL_SetNumberProperty(properties, SDLVideo.SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, this.configuration.getWindowWidth()));
         SDLErrorUtil.checkError(SDLProperties.SDL_SetNumberProperty(properties, SDLVideo.SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, this.configuration.getWindowHeight()));
+        if (this.configuration.isWindowCentered()) {
+            SDLErrorUtil.checkError(SDLProperties.SDL_SetNumberProperty(properties, SDLVideo.SDL_PROP_WINDOW_CREATE_X_NUMBER, SDLVideo.SDL_WINDOWPOS_CENTERED));
+            SDLErrorUtil.checkError(SDLProperties.SDL_SetNumberProperty(properties, SDLVideo.SDL_PROP_WINDOW_CREATE_Y_NUMBER, SDLVideo.SDL_WINDOWPOS_CENTERED));
+        }
     }
 
     @Override

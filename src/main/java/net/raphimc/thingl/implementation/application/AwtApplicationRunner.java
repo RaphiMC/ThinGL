@@ -75,6 +75,9 @@ public abstract class AwtApplicationRunner extends ApplicationRunner {
         this.frame.setPreferredSize(new Dimension(this.configuration.getWindowWidth(), this.configuration.getWindowHeight()));
         this.frame.add(this.canvas);
         this.frame.pack();
+        if (this.configuration.isWindowCentered()) {
+            this.frame.setLocationRelativeTo(null);
+        }
         this.frame.setVisible(true);
     }
 

@@ -20,6 +20,7 @@ package net.raphimc.thingl.implementation.application;
 import net.raphimc.thingl.implementation.window.GLFWWindowInterface;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWVidMode;
 
 public abstract class GLFWApplicationRunner extends ApplicationRunner {
 
@@ -65,6 +66,12 @@ public abstract class GLFWApplicationRunner extends ApplicationRunner {
             }
 
             throw new RuntimeException("Failed to create window");
+        }
+        if (this.configuration.isWindowCentered() && GLFW.glfwGetPlatform() != GLFW.GLFW_PLATFORM_WAYLAND) {
+            final GLFWVidMode videoMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
+            if (videoMode != null) {
+                GLFW.glfwSetWindowPos(this.window, (videoMode.width() - this.configuration.getWindowWidth()) / 2, (videoMode.height() - this.configuration.getWindowHeight()) / 2);
+            }
         }
     }
 
