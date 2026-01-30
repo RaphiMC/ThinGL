@@ -37,7 +37,6 @@ public abstract class SDLApplicationRunner extends ApplicationRunner {
         this.initSDL();
         this.setGLAttributes();
         this.createWindow();
-        this.windowInterface = new SDLWindowInterface(this.window);
     }
 
     protected void initSDL() {
@@ -56,6 +55,7 @@ public abstract class SDLApplicationRunner extends ApplicationRunner {
         } finally {
             SDLProperties.SDL_DestroyProperties(properties);
         }
+        this.windowInterface = new SDLWindowInterface(this.window);
     }
 
     protected void setGLAttributes() {
@@ -96,7 +96,7 @@ public abstract class SDLApplicationRunner extends ApplicationRunner {
 
     protected void handleWindowEvent(final SDL_Event event) {
         if (event.type() == SDLEvents.SDL_EVENT_WINDOW_CLOSE_REQUESTED && event.window().windowID() == this.windowId) {
-            this.thinGL.getRenderThread().interrupt();
+            this.close(false);
         }
     }
 

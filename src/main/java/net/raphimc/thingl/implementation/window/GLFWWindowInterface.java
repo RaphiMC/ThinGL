@@ -68,9 +68,7 @@ public class GLFWWindowInterface extends WindowInterface {
         if (this.originalFramebufferSizeCallback != null) {
             this.originalFramebufferSizeCallback.invoke(windowHandle, width, height);
         }
-        if (width != 0 && height != 0) {
-            this.callFramebufferResizeCallbacks(width, height);
-        }
+        this.callFramebufferResizeCallbacks(width, height);
     }
 
 }

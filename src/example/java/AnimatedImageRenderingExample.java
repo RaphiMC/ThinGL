@@ -27,7 +27,7 @@ import java.io.IOException;
 public class AnimatedImageRenderingExample extends GLFWApplicationRunner {
 
     public static void main(String[] args) {
-        new AnimatedImageRenderingExample().launch();
+        new AnimatedImageRenderingExample().run();
     }
 
     public AnimatedImageRenderingExample() {

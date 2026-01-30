@@ -25,7 +25,7 @@ import org.joml.primitives.AABBf;
 public class Minimal3DExample extends GLFWApplicationRunner {
 
     public static void main(String[] args) {
-        new Minimal3DExample().launch();
+        new Minimal3DExample().run();
     }
 
     public Minimal3DExample() {

@@ -29,9 +29,10 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.system.Callback;
 
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 
-public abstract class ApplicationRunner {
+public abstract class ApplicationRunner implements Runnable {
 
     protected final Configuration configuration;
     protected final CompletableFuture<Void> launchFuture = new CompletableFuture<>();
@@ -45,59 +46,58 @@ public abstract class ApplicationRunner {
         this.configuration = configuration;
     }
 
-    protected void launch() {
-        if (!this.configuration.shouldUseSeparateThreads()) {
+    @Override
+    public void run() {
+        try {
+            this.launchWindowSystem();
             try {
-                this.launchWindowSystem();
-                try {
-                    this.launchGL();
-                    this.launchFuture.complete(null);
-                    try {
-                        this.runRenderLoop();
-                    } finally {
-                        this.freeGL();
-                    }
-                } finally {
-                    this.freeWindowSystem();
-                }
-                this.freeFuture.complete(null);
-            } catch (Throwable e) {
-                this.launchFuture.completeExceptionally(e);
-                this.freeFuture.completeExceptionally(e);
-                throw e;
-            }
-        } else {
-            new Thread(() -> {
-                try {
-                    this.launchWindowSystem();
+                if (!this.configuration.shouldUseSeparateThreads()) {
+                    this.runRenderLifecycle();
+                } else {
                     new Thread(() -> {
                         try {
-                            this.launchGL();
-                            this.launchFuture.complete(null);
-                            try {
-                                this.runRenderLoop();
-                            } finally {
-                                this.freeGL();
-                            }
+                            this.runRenderLifecycle();
                         } catch (Throwable e) {
                             this.launchFuture.completeExceptionally(e);
                             this.freeFuture.completeExceptionally(e);
                             throw e;
                         }
                     }, this.getClass().getSimpleName() + " Render Thread").start();
-                    try {
-                        this.launchFuture.join();
-                        this.runWindowLoop();
-                    } finally {
-                        this.freeWindowSystem();
-                    }
-                    this.freeFuture.complete(null);
-                } catch (Throwable e) {
-                    this.launchFuture.completeExceptionally(e);
-                    this.freeFuture.completeExceptionally(e);
-                    throw e;
+                    this.launchFuture.join();
+                    this.runWindowLoop();
                 }
-            }, this.getClass().getSimpleName() + " Window Thread").start();
+            } finally {
+                this.freeWindowSystem();
+            }
+            this.freeFuture.complete(null);
+        } catch (Throwable e) {
+            this.launchFuture.completeExceptionally(e);
+            this.freeFuture.completeExceptionally(e);
+            throw e;
+        }
+    }
+
+    public void close() {
+        this.close(true);
+    }
+
+    public void close(final boolean waitForClose) {
+        this.thinGL.getRenderThread().interrupt();
+        if (waitForClose) {
+            try {
+                this.freeFuture.join();
+            } catch (CancellationException ignored) {
+            }
+        }
+    }
+
+    protected void runRenderLifecycle() {
+        this.launchGL();
+        this.launchFuture.complete(null);
+        try {
+            this.runRenderLoop();
+        } finally {
+            this.freeGL();
         }
     }
 
@@ -194,6 +194,11 @@ public abstract class ApplicationRunner {
     }
 
     protected abstract void freeWindowSystem();
+
+    @Deprecated(forRemoval = true)
+    protected void launch() {
+        this.run();
+    }
 
 
     public static class Configuration {

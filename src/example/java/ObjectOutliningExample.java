@@ -25,7 +25,7 @@ import org.joml.Matrix4fStack;
 public class ObjectOutliningExample extends GLFWApplicationRunner {
 
     public static void main(String[] args) {
-        new ObjectOutliningExample().launch();
+        new ObjectOutliningExample().run();
     }
 
     public ObjectOutliningExample() {

@@ -27,7 +27,7 @@ import org.joml.Matrix4fStack;
 public class InstancedRenderingExample extends GLFWApplicationRunner {
 
     public static void main(String[] args) {
-        new InstancedRenderingExample().launch();
+        new InstancedRenderingExample().run();
     }
 
     public InstancedRenderingExample() {

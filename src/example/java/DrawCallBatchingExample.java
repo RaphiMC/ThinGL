@@ -26,7 +26,7 @@ import org.joml.Matrix4fStack;
 public class DrawCallBatchingExample extends GLFWApplicationRunner {
 
     public static void main(String[] args) {
-        new DrawCallBatchingExample().launch();
+        new DrawCallBatchingExample().run();
     }
 
     public DrawCallBatchingExample() {

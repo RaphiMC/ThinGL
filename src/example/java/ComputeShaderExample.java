@@ -45,7 +45,7 @@ public class ComputeShaderExample extends GLFWApplicationRunner {
             """;
 
     public static void main(String[] args) {
-        new ComputeShaderExample().launch();
+        new ComputeShaderExample().run();
     }
 
     public ComputeShaderExample() {

@@ -35,7 +35,6 @@ public abstract class GLFWApplicationRunner extends ApplicationRunner {
         this.initGLFW();
         this.setWindowHints();
         this.createWindow();
-        this.windowInterface = new GLFWWindowInterface(this.window);
     }
 
     protected void initGLFW() {
@@ -73,6 +72,7 @@ public abstract class GLFWApplicationRunner extends ApplicationRunner {
                 GLFW.glfwSetWindowPos(this.window, (videoMode.width() - this.configuration.getWindowWidth()) / 2, (videoMode.height() - this.configuration.getWindowHeight()) / 2);
             }
         }
+        this.windowInterface = new GLFWWindowInterface(this.window);
     }
 
     @Override
@@ -85,7 +85,7 @@ public abstract class GLFWApplicationRunner extends ApplicationRunner {
     protected void pollWindowEvents() {
         GLFW.glfwPollEvents();
         if (GLFW.glfwWindowShouldClose(this.window)) {
-            this.thinGL.getRenderThread().interrupt();
+            this.close(false);
         }
     }
 

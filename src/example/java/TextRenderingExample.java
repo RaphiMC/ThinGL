@@ -38,7 +38,7 @@ import java.io.IOException;
 public class TextRenderingExample extends GLFWApplicationRunner {
 
     public static void main(String[] args) {
-        new TextRenderingExample().launch();
+        new TextRenderingExample().run();
     }
 
     public TextRenderingExample() {

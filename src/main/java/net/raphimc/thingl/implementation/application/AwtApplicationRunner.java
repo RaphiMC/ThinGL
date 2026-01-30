@@ -42,7 +42,6 @@ public abstract class AwtApplicationRunner extends ApplicationRunner {
     protected void launchWindowSystem() {
         this.setGLAttributes();
         this.createWindow();
-        this.windowInterface = new AwtWindowInterface(this.canvas);
     }
 
     protected void setGLAttributes() {
@@ -61,7 +60,7 @@ public abstract class AwtApplicationRunner extends ApplicationRunner {
         this.frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(final WindowEvent e) {
-                AwtApplicationRunner.this.thinGL.getRenderThread().interrupt();
+                AwtApplicationRunner.this.close(false);
             }
 
             @Override
@@ -79,6 +78,7 @@ public abstract class AwtApplicationRunner extends ApplicationRunner {
             this.frame.setLocationRelativeTo(null);
         }
         this.frame.setVisible(true);
+        this.windowInterface = new AwtWindowInterface(this.canvas);
     }
 
     @Override
@@ -109,14 +109,14 @@ public abstract class AwtApplicationRunner extends ApplicationRunner {
 
     @Override
     protected void freeWindowSystem() {
-        if (this.windowInterface != null) {
-            this.windowInterface.free();
-            this.windowInterface = null;
-        }
         this.freeWindow();
     }
 
     protected void freeWindow() {
+        if (this.windowInterface != null) {
+            this.windowInterface.free();
+            this.windowInterface = null;
+        }
         if (this.frame != null) {
             final boolean wasInterrupted = Thread.interrupted();
             try {

@@ -34,15 +34,15 @@ import java.util.List;
 public class MultiWindowExample extends GLFWApplicationRunner {
 
     public static void main(String[] args) {
-        new MultiWindowExample().launch();
+        new MultiWindowExample().run();
     }
 
     public MultiWindowExample() {
-        super(null);
+        super(new Configuration());
     }
 
     @Override
-    protected void launch() {
+    public void run() {
         ThinGL.setInstanceManager(new ThreadLocalInstanceManager());
 
         this.initGLFW();
@@ -82,19 +82,12 @@ public class MultiWindowExample extends GLFWApplicationRunner {
         private Font robotoRegular;
 
         public Window(final int num) {
-            super(new Configuration().setWindowTitle("ThinGL Example - Multi Window Example | Window #" + num).setExtendedDebugMode(true));
+            super(new Configuration().setWindowTitle("ThinGL Example - Multi Window Example | Window #" + num).setWindowCentered(false).setExtendedDebugMode(true));
             this.num = num;
             this.createWindow();
-            this.windowInterface = new GLFWWindowInterface(this.window);
             new Thread(() -> {
                 try {
-                    this.launchGL();
-                    this.launchFuture.complete(null);
-                    try {
-                        this.runRenderLoop();
-                    } finally {
-                        this.freeGL();
-                    }
+                    this.runRenderLifecycle();
                 } catch (Throwable e) {
                     this.launchFuture.completeExceptionally(e);
                     this.freeFuture.completeExceptionally(e);

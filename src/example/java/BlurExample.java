@@ -27,7 +27,7 @@ import java.io.IOException;
 public class BlurExample extends GLFWApplicationRunner {
 
     public static void main(String[] args) {
-        new BlurExample().launch();
+        new BlurExample().run();
     }
 
     public BlurExample() {

@@ -24,7 +24,7 @@ import org.joml.Matrix4fStack;
 public class AntiAliasingExample extends GLFWApplicationRunner {
 
     public static void main(String[] args) {
-        new AntiAliasingExample().launch();
+        new AntiAliasingExample().run();
     }
 
     public AntiAliasingExample() {
