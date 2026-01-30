@@ -84,6 +84,11 @@ public abstract class AwtApplicationRunner extends ApplicationRunner {
     }
 
     @Override
+    protected void renderFrame(final boolean tickWindow) {
+        this.canvas.runInContext(() -> super.renderFrame(tickWindow));
+    }
+
+    @Override
     protected void pollWindowEvents() {
     }
 
