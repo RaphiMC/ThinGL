@@ -47,6 +47,11 @@ dependencies {
     // Optional dependencies
     compileOnly "org.lwjgl:lwjgl-glfw:3.4.0"
     compileOnly "org.lwjgl:lwjgl-sdl:3.4.0"
+    compileOnly("org.lwjglx:lwjgl3-awt:0.2.3") {
+        exclude group: "org.lwjgl", module: "lwjgl"
+        exclude group: "org.lwjgl", module: "lwjgl-opengl"
+        exclude group: "org.lwjgl", module: "lwjgl-vulkan"
+    }
     compileOnly "org.lwjgl:lwjgl-stb:3.4.0"
     compileOnly "org.lwjgl:lwjgl-freetype:3.4.0"
     compileOnly "org.lwjgl:lwjgl-harfbuzz:3.4.0"
@@ -57,7 +62,7 @@ dependencies {
     compileOnly "com.github.weisj:jsvg:2.0.0"
 
     // Example dependencies
-    ["natives-windows", "natives-windows-arm64", "natives-linux", "natives-linux-arm64", "natives-macos-arm64"].each {
+    ["natives-windows", "natives-windows-arm64", "natives-linux", "natives-linux-arm64", "natives-macos", "natives-macos-arm64"].each {
         exampleImplementation "org.lwjgl:lwjgl:3.4.0:$it"
         exampleImplementation "org.lwjgl:lwjgl-opengl:3.4.0:$it"
         exampleImplementation "org.lwjgl:lwjgl-glfw:3.4.0:$it"
