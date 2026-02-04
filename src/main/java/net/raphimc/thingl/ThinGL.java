@@ -86,6 +86,7 @@ public class ThinGL {
         return get().getGLBackend();
     }
 
+    @Deprecated(forRemoval = true)
     public static Workarounds workarounds() {
         return get().getWorkarounds();
     }
@@ -170,6 +171,7 @@ public class ThinGL {
     private final WindowInterface windowInterface;
     private final Config config;
     private final GLBackend glBackend;
+    @SuppressWarnings("deprecation")
     private final Workarounds workarounds;
     private final Capabilities capabilities;
     private final GLStateManager glStateManager;
@@ -425,6 +427,7 @@ public class ThinGL {
         return this.glBackend;
     }
 
+    @Deprecated(forRemoval = true)
     public Workarounds getWorkarounds() {
         return this.workarounds;
     }
@@ -521,6 +524,8 @@ public class ThinGL {
         }
     }
 
+    @Deprecated(forRemoval = true)
+    @SuppressWarnings("DeprecatedIsStillUsed")
     protected Workarounds createWorkarounds() {
         return new Workarounds();
     }

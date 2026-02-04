@@ -17,11 +17,17 @@
  */
 package net.raphimc.thingl.implementation.gl.impl;
 
-import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.implementation.gl.GLBackend;
 import org.lwjgl.opengl.*;
 
 public class GL45Backend implements GLBackend {
+
+    private final boolean isIntelGpu;
+
+    public GL45Backend() {
+        final String gpuVendor = GL11C.glGetString(GL11C.GL_VENDOR);
+        this.isIntelGpu = gpuVendor != null && gpuVendor.equalsIgnoreCase("Intel");
+    }
 
     @Override
     public void blendFunc(final int sfactor, final int dfactor) {
@@ -705,9 +711,11 @@ public class GL45Backend implements GLBackend {
 
     @Override
     public int getTextureParameteri(final int texture, final int pname) {
-        if (pname == GL45C.GL_TEXTURE_TARGET && ThinGL.workarounds().isGetTextureParameterTextureTargetBroken()) {
-            final int depth = GL45C.glGetTextureLevelParameteri(texture, 0, GL12C.GL_TEXTURE_DEPTH);
-            final int samples = GL45C.glGetTextureLevelParameteri(texture, 0, GL32C.GL_TEXTURE_SAMPLES);
+        if (this.isIntelGpu && pname == GL45C.GL_TEXTURE_TARGET) {
+            // The Intel OpenGL driver doesn't support glGetTextureParameteri(texId, GL_TEXTURE_TARGET); even tho it's required by the OpenGL 4.5 specification.
+            // Confirmed broken on Intel UHD Graphics 630 (Driver version: 31.0.101.2134)
+            final int depth = this.getTextureLevelParameteri(texture, 0, GL12C.GL_TEXTURE_DEPTH);
+            final int samples = this.getTextureLevelParameteri(texture, 0, GL32C.GL_TEXTURE_SAMPLES);
             if (samples == 0) {
                 if (depth > 1) {
                     return GL12C.GL_TEXTURE_3D;
@@ -888,11 +896,13 @@ public class GL45Backend implements GLBackend {
 
     @Override
     public void vertexArrayElementBuffer(final int vaobj, final int buffer) {
-        if (buffer == 0 && ThinGL.workarounds().isDsaVertexArrayElementBufferUnbindBroken()) {
-            final int previousVertexArray = GL11C.glGetInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
-            GL30C.glBindVertexArray(vaobj);
-            GL15C.glBindBuffer(GL15C.GL_ELEMENT_ARRAY_BUFFER, 0);
-            GL30C.glBindVertexArray(previousVertexArray);
+        if (this.isIntelGpu && buffer == 0) {
+            // The Intel OpenGL driver has a bug, where calling glVertexArrayElementBuffer(vaobj, 0); generates an error.
+            // Confirmed broken on Intel UHD Graphics 630 (Driver version: 31.0.101.2134)
+            final int previousVertexArray = this.getInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
+            this.bindVertexArray(vaobj);
+            this.bindBuffer(GL15C.GL_ELEMENT_ARRAY_BUFFER, 0);
+            this.bindVertexArray(previousVertexArray);
             return;
         }
 

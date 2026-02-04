@@ -20,6 +20,8 @@ package net.raphimc.thingl.implementation;
 import net.raphimc.thingl.ThinGL;
 import org.lwjgl.opengl.GL11C;
 
+@Deprecated
+@SuppressWarnings("DeprecatedIsStillUsed")
 public class Workarounds {
 
     private final boolean isIntelGpu;

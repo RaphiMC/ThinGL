@@ -35,7 +35,6 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.raphimc.thingl.ThinGL;
-import net.raphimc.thingl.implementation.gl.GLBackend;
 import net.raphimc.thingl.rendering.command.impl.DrawArraysCommand;
 import net.raphimc.thingl.rendering.command.impl.DrawElementsCommand;
 import net.raphimc.thingl.resource.image.Image;
@@ -47,7 +46,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GL41Backend implements GLBackend {
+public class GL41Backend extends GL45Backend {
 
     private static final int SHADER_STORAGE_BUFFER_TEXTURE_UNIT_OFFSET = 16;
 
@@ -112,170 +111,15 @@ public class GL41Backend implements GLBackend {
     private final Int2IntMap shaderStorageBufferTextures = new Int2IntOpenHashMap();
 
     @Override
-    public void blendFunc(final int sfactor, final int dfactor) {
-        GL11C.glBlendFunc(sfactor, dfactor);
-    }
-
-    @Override
-    public void colorMask(final boolean red, final boolean green, final boolean blue, final boolean alpha) {
-        GL11C.glColorMask(red, green, blue, alpha);
-    }
-
-    @Override
-    public void cullFace(final int mode) {
-        GL11C.glCullFace(mode);
-    }
-
-    @Override
     public void deleteTexture(final int texture) {
         this.textureTargets.remove(texture);
-        GL11C.glDeleteTextures(texture);
-    }
-
-    @Override
-    public void depthFunc(final int func) {
-        GL11C.glDepthFunc(func);
-    }
-
-    @Override
-    public void depthMask(final boolean flag) {
-        GL11C.glDepthMask(flag);
-    }
-
-    @Override
-    public void disable(final int cap) {
-        GL11C.glDisable(cap);
-    }
-
-    @Override
-    public void drawArrays(final int mode, final int first, final int count) {
-        GL11C.glDrawArrays(mode, first, count);
-    }
-
-    @Override
-    public void drawElements(final int mode, final int count, final int type, final long indices) {
-        GL11C.glDrawElements(mode, count, type, indices);
-    }
-
-    @Override
-    public void enable(final int cap) {
-        GL11C.glEnable(cap);
-    }
-
-    @Override
-    public void frontFace(final int dir) {
-        GL11C.glFrontFace(dir);
-    }
-
-    @Override
-    public boolean getBoolean(final int pname) {
-        return GL11C.glGetBoolean(pname);
-    }
-
-    @Override
-    public float getFloat(final int pname) {
-        return GL11C.glGetFloat(pname);
-    }
-
-    @Override
-    public int getInteger(final int pname) {
-        return GL11C.glGetInteger(pname);
-    }
-
-    @Override
-    public void getIntegerv(final int pname, final int[] params) {
-        GL11C.glGetIntegerv(pname, params);
-    }
-
-    @Override
-    public String getString(final int name) {
-        return GL11C.glGetString(name);
-    }
-
-    @Override
-    public boolean isEnabled(final int cap) {
-        return GL11C.glIsEnabled(cap);
-    }
-
-    @Override
-    public boolean isTexture(final int texture) {
-        return GL11C.glIsTexture(texture);
-    }
-
-    @Override
-    public void logicOp(final int opcode) {
-        GL11C.glLogicOp(opcode);
-    }
-
-    @Override
-    public void pixelStorei(final int pname, final int param) {
-        GL11C.glPixelStorei(pname, param);
-    }
-
-    @Override
-    public void polygonOffset(final float factor, final float units) {
-        GL11C.glPolygonOffset(factor, units);
-    }
-
-    @Override
-    public void scissor(final int x, final int y, final int width, final int height) {
-        GL11C.glScissor(x, y, width, height);
-    }
-
-    @Override
-    public void stencilFunc(final int func, final int ref, final int mask) {
-        GL11C.glStencilFunc(func, ref, mask);
-    }
-
-    @Override
-    public void stencilMask(final int mask) {
-        GL11C.glStencilMask(mask);
-    }
-
-    @Override
-    public void stencilOp(final int sfail, final int dpfail, final int dppass) {
-        GL11C.glStencilOp(sfail, dpfail, dppass);
-    }
-
-    @Override
-    public void viewport(final int x, final int y, final int width, final int height) {
-        GL11C.glViewport(x, y, width, height);
-    }
-
-    @Override
-    public void blendEquation(final int mode) {
-        GL14C.glBlendEquation(mode);
-    }
-
-    @Override
-    public void blendFuncSeparate(final int srcRGB, final int dstRGB, final int srcAlpha, final int dstAlpha) {
-        GL14C.glBlendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha);
-    }
-
-    @Override
-    public void beginQuery(final int target, final int id) {
-        GL15C.glBeginQuery(target, id);
-    }
-
-    @Override
-    public void bindBuffer(final int target, final int buffer) {
-        GL15C.glBindBuffer(target, buffer);
-    }
-
-    @Override
-    public void deleteBuffer(final int buffer) {
-        GL15C.glDeleteBuffers(buffer);
+        super.deleteTexture(texture);
     }
 
     @Override
     public void deleteQuery(final int id) {
         this.queryTargets.remove(id);
-        GL15C.glDeleteQueries(id);
-    }
-
-    @Override
-    public void endQuery(final int target) {
-        GL15C.glEndQuery(target);
+        super.deleteQuery(id);
     }
 
     @Override
@@ -283,103 +127,7 @@ public class GL41Backend implements GLBackend {
         if (pname == GL45C.GL_QUERY_TARGET && !this.capabilities.OpenGL45 && !this.capabilities.GL_ARB_direct_state_access) {
             return this.queryTargets.get(id);
         }
-
-        return GL15C.glGetQueryObjecti(id, pname);
-    }
-
-    @Override
-    public boolean isBuffer(final int buffer) {
-        return GL15C.glIsBuffer(buffer);
-    }
-
-    @Override
-    public boolean isQuery(final int id) {
-        return GL15C.glIsQuery(id);
-    }
-
-    @Override
-    public void attachShader(final int program, final int shader) {
-        GL20C.glAttachShader(program, shader);
-    }
-
-    @Override
-    public void compileShader(final int shader) {
-        GL20C.glCompileShader(shader);
-    }
-
-    @Override
-    public int createProgram() {
-        return GL20C.glCreateProgram();
-    }
-
-    @Override
-    public int createShader(final int type) {
-        return GL20C.glCreateShader(type);
-    }
-
-    @Override
-    public void deleteProgram(final int program) {
-        GL20C.glDeleteProgram(program);
-    }
-
-    @Override
-    public void deleteShader(final int shader) {
-        GL20C.glDeleteShader(shader);
-    }
-
-    @Override
-    public void detachShader(final int program, final int shader) {
-        GL20C.glDetachShader(program, shader);
-    }
-
-    @Override
-    public void getAttachedShaders(final int program, final int[] count, final int[] shaders) {
-        GL20C.glGetAttachedShaders(program, count, shaders);
-    }
-
-    @Override
-    public String getProgramInfoLog(final int program) {
-        return GL20C.glGetProgramInfoLog(program);
-    }
-
-    @Override
-    public int getProgrami(final int program, final int pname) {
-        return GL20C.glGetProgrami(program, pname);
-    }
-
-    @Override
-    public String getShaderInfoLog(final int shader) {
-        return GL20C.glGetShaderInfoLog(shader);
-    }
-
-    @Override
-    public String getShaderSource(final int shader) {
-        return GL20C.glGetShaderSource(shader);
-    }
-
-    @Override
-    public int getShaderi(final int shader, final int pname) {
-        return GL20C.glGetShaderi(shader, pname);
-    }
-
-    @Override
-    public int getUniformLocation(final int program, final CharSequence name) {
-        return GL20C.glGetUniformLocation(program, name);
-    }
-
-    @Override
-    public boolean isProgram(final int program) {
-        return GL20C.glIsProgram(program);
-    }
-
-    @Override
-    public boolean isShader(final int shader) {
-        return GL20C.glIsShader(shader);
-    }
-
-    @Override
-    public void linkProgram(final int program) {
-        GL20C.glLinkProgram(program);
+        return super.getQueryObjecti(id, pname);
     }
 
     @Override
@@ -407,238 +155,31 @@ public class GL41Backend implements GLBackend {
         } catch (Throwable e) {
             ThinGL.LOGGER.warn("Failed to rewrite shader source, using original source", e);
         }
-
-        GL20C.glShaderSource(shader, string);
-    }
-
-    @Override
-    public void stencilMaskSeparate(final int face, final int mask) {
-        GL20C.glStencilMaskSeparate(face, mask);
-    }
-
-    @Override
-    public void useProgram(final int program) {
-        GL20C.glUseProgram(program);
-    }
-
-    @Override
-    public void validateProgram(final int program) {
-        GL20C.glValidateProgram(program);
+        super.shaderSource(shader, string);
     }
 
     @Override
     public void bindBufferBase(final int target, final int index, final int buffer) {
         if (target == GL43C.GL_SHADER_STORAGE_BUFFER && !this.supportsShaderStorageBuffers) {
-            final int bufferTexture = this.shaderStorageBufferTextures.computeIfAbsent(index, k -> this.createTexture(GL31C.GL_TEXTURE_BUFFER));
+            final int bufferTexture = this.shaderStorageBufferTextures.computeIfAbsent(index, _ -> this.createTexture(GL31C.GL_TEXTURE_BUFFER));
             this.textureBuffer(bufferTexture, GL30C.GL_R32F, buffer);
             this.bindTextureUnit(SHADER_STORAGE_BUFFER_TEXTURE_UNIT_OFFSET + index, bufferTexture);
-            GL33C.glBindSampler(SHADER_STORAGE_BUFFER_TEXTURE_UNIT_OFFSET + index, 0);
+            this.bindSampler(SHADER_STORAGE_BUFFER_TEXTURE_UNIT_OFFSET + index, 0);
             return;
         }
-
-        GL30C.glBindBufferBase(target, index, buffer);
-    }
-
-    @Override
-    public void bindFramebuffer(final int target, final int framebuffer) {
-        GL30C.glBindFramebuffer(target, framebuffer);
-    }
-
-    @Override
-    public void bindVertexArray(final int array) {
-        GL30C.glBindVertexArray(array);
-    }
-
-    @Override
-    public void clearBufferiv(final int buffer, final int drawbuffer, final int[] value) {
-        GL30C.glClearBufferiv(buffer, drawbuffer, value);
-    }
-
-    @Override
-    public void deleteFramebuffer(final int framebuffer) {
-        GL30C.glDeleteFramebuffers(framebuffer);
-    }
-
-    @Override
-    public void deleteRenderbuffer(final int renderbuffer) {
-        GL30C.glDeleteRenderbuffers(renderbuffer);
+        super.bindBufferBase(target, index, buffer);
     }
 
     @Override
     public void deleteVertexArray(final int array) {
         this.vertexArrayObjects.remove(array);
-        GL30C.glDeleteVertexArrays(array);
-    }
-
-    @Override
-    public boolean isFramebuffer(final int framebuffer) {
-        return GL30C.glIsFramebuffer(framebuffer);
-    }
-
-    @Override
-    public boolean isRenderbuffer(final int renderbuffer) {
-        return GL30C.glIsRenderbuffer(renderbuffer);
-    }
-
-    @Override
-    public boolean isVertexArray(final int array) {
-        return GL30C.glIsVertexArray(array);
-    }
-
-    @Override
-    public void uniformBlockBinding(final int program, final int uniformBlockIndex, final int uniformBlockBinding) {
-        GL31C.glUniformBlockBinding(program, uniformBlockIndex, uniformBlockBinding);
-    }
-
-    @Override
-    public int clientWaitSync(final long sync, final int flags, final long timeout) {
-        return GL32C.glClientWaitSync(sync, flags, timeout);
-    }
-
-    @Override
-    public void deleteSync(final long sync) {
-        GL32C.glDeleteSync(sync);
-    }
-
-    @Override
-    public long fenceSync(final int condition, final int flags) {
-        return GL32C.glFenceSync(condition, flags);
-    }
-
-    @Override
-    public int getSynci(final long sync, final int pname) {
-        return GL32C.glGetSynci(sync, pname, null);
-    }
-
-    @Override
-    public boolean isSync(final long sync) {
-        return GL32C.glIsSync(sync);
-    }
-
-    @Override
-    public void waitSync(final long sync, final int flags, final long timeout) {
-        GL32C.glWaitSync(sync, flags, timeout);
-    }
-
-    @Override
-    public void bindSampler(final int unit, final int sampler) {
-        GL33C.glBindSampler(unit, sampler);
-    }
-
-    @Override
-    public void deleteSampler(final int sampler) {
-        GL33C.glDeleteSamplers(sampler);
-    }
-
-    @Override
-    public long getQueryObjecti64(final int id, final int pname) {
-        return GL33C.glGetQueryObjecti64(id, pname);
-    }
-
-    @Override
-    public float getSamplerParameterf(final int sampler, final int pname) {
-        return GL33C.glGetSamplerParameterf(sampler, pname);
-    }
-
-    @Override
-    public void getSamplerParameterfv(final int sampler, final int pname, final float[] params) {
-        GL33C.glGetSamplerParameterfv(sampler, pname, params);
-    }
-
-    @Override
-    public int getSamplerParameteri(final int sampler, final int pname) {
-        return GL33C.glGetSamplerParameteri(sampler, pname);
-    }
-
-    @Override
-    public void getSamplerParameteriv(final int sampler, final int pname, final int[] params) {
-        GL33C.glGetSamplerParameteriv(sampler, pname, params);
-    }
-
-    @Override
-    public boolean isSampler(final int id) {
-        return GL33C.glIsSampler(id);
-    }
-
-    @Override
-    public void samplerParameterf(final int sampler, final int pname, final float param) {
-        GL33C.glSamplerParameterf(sampler, pname, param);
-    }
-
-    @Override
-    public void samplerParameterfv(final int sampler, final int pname, final float[] params) {
-        GL33C.glSamplerParameterfv(sampler, pname, params);
-    }
-
-    @Override
-    public void samplerParameteri(final int sampler, final int pname, final int param) {
-        GL33C.glSamplerParameteri(sampler, pname, param);
-    }
-
-    @Override
-    public void samplerParameteriv(final int sampler, final int pname, final int[] params) {
-        GL33C.glSamplerParameteriv(sampler, pname, params);
-    }
-
-    @Override
-    public void drawArraysIndirect(final int mode, final long indirect) {
-        GL40C.glDrawArraysIndirect(mode, indirect);
-    }
-
-    @Override
-    public void drawElementsIndirect(final int mode, final int type, final long indirect) {
-        GL40C.glDrawElementsIndirect(mode, type, indirect);
-    }
-
-    @Override
-    public void programUniform1f(final int program, final int location, final float v0) {
-        GL41C.glProgramUniform1f(program, location, v0);
-    }
-
-    @Override
-    public void programUniform1i(final int program, final int location, final int v0) {
-        GL41C.glProgramUniform1i(program, location, v0);
-    }
-
-    @Override
-    public void programUniform1iv(final int program, final int location, final int[] value) {
-        GL41C.glProgramUniform1iv(program, location, value);
-    }
-
-    @Override
-    public void programUniform1ui(final int program, final int location, final int v0) {
-        GL41C.glProgramUniform1ui(program, location, v0);
-    }
-
-    @Override
-    public void programUniform2f(final int program, final int location, final float v0, final float v1) {
-        GL41C.glProgramUniform2f(program, location, v0, v1);
-    }
-
-    @Override
-    public void programUniform3f(final int program, final int location, final float v0, final float v1, final float v2) {
-        GL41C.glProgramUniform3f(program, location, v0, v1, v2);
-    }
-
-    @Override
-    public void programUniform4f(final int program, final int location, final float v0, final float v1, final float v2, final float v3) {
-        GL41C.glProgramUniform4f(program, location, v0, v1, v2, v3);
-    }
-
-    @Override
-    public void programUniformMatrix3fv(final int program, final int location, final int count, final boolean transpose, final long value) {
-        GL41C.nglProgramUniformMatrix3fv(program, location, count, transpose, value);
-    }
-
-    @Override
-    public void programUniformMatrix4fv(final int program, final int location, final int count, final boolean transpose, final long value) {
-        GL41C.nglProgramUniformMatrix4fv(program, location, count, transpose, value);
+        super.deleteVertexArray(array);
     }
 
     @Override
     public void bindImageTexture(final int unit, final int texture, final int level, final boolean layered, final int layer, final int access, final int format) {
         if (this.capabilities.glBindImageTexture != 0L) {
-            GL42C.glBindImageTexture(unit, texture, level, layered, layer, access, format);
+            super.bindImageTexture(unit, texture, level, layered, layer, access, format);
         } else if (this.capabilities.glBindImageTextureEXT != 0L) {
             EXTShaderImageLoadStore.glBindImageTextureEXT(unit, texture, level, layered, layer, access, format);
         } else {
@@ -649,7 +190,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void drawArraysInstancedBaseInstance(final int mode, final int first, final int count, final int primcount, final int baseinstance) {
         if (this.capabilities.glDrawArraysInstancedBaseInstance != 0L) {
-            GL42C.glDrawArraysInstancedBaseInstance(mode, first, count, primcount, baseinstance);
+            super.drawArraysInstancedBaseInstance(mode, first, count, primcount, baseinstance);
         } else {
             if (baseinstance == 0) {
                 GL31C.glDrawArraysInstanced(mode, first, count, primcount);
@@ -662,7 +203,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void drawElementsInstancedBaseVertexBaseInstance(final int mode, final int count, final int type, final long indices, final int primcount, final int basevertex, final int baseinstance) {
         if (this.capabilities.glDrawElementsInstancedBaseVertexBaseInstance != 0L) {
-            GL42C.glDrawElementsInstancedBaseVertexBaseInstance(mode, count, type, indices, primcount, basevertex, baseinstance);
+            super.drawElementsInstancedBaseVertexBaseInstance(mode, count, type, indices, primcount, basevertex, baseinstance);
         } else {
             if (baseinstance == 0) {
                 GL32C.glDrawElementsInstancedBaseVertex(mode, count, type, indices, primcount, basevertex);
@@ -675,7 +216,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void copyImageSubData(final int srcName, final int srcTarget, final int srcLevel, final int srcX, final int srcY, final int srcZ, final int dstName, final int dstTarget, final int dstLevel, final int dstX, final int dstY, final int dstZ, final int srcWidth, final int srcHeight, final int srcDepth) {
         if (this.capabilities.glCopyImageSubData != 0L) {
-            GL43C.glCopyImageSubData(srcName, srcTarget, srcLevel, srcX, srcY, srcZ, dstName, dstTarget, dstLevel, dstX, dstY, dstZ, srcWidth, srcHeight, srcDepth);
+            super.copyImageSubData(srcName, srcTarget, srcLevel, srcX, srcY, srcZ, dstName, dstTarget, dstLevel, dstX, dstY, dstZ, srcWidth, srcHeight, srcDepth);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -684,7 +225,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public String getObjectLabel(final int identifier, final int name) {
         if (this.capabilities.glGetObjectLabel != 0L) {
-            return GL43C.glGetObjectLabel(identifier, name);
+            return super.getObjectLabel(identifier, name);
         } else if (this.capabilities.glGetObjectLabelEXT != 0L) {
             return EXTDebugLabel.glGetObjectLabelEXT(getDebugLabelObjectTypeEXT(identifier), name, 255);
         } else {
@@ -695,15 +236,15 @@ public class GL41Backend implements GLBackend {
     @Override
     public int getProgramResourceIndex(final int program, final int programInterface, final CharSequence name) {
         if (programInterface == GL43C.GL_SHADER_STORAGE_BLOCK && !this.supportsShaderStorageBuffers) {
-            return GL20C.glGetUniformLocation(program, name);
+            return this.getUniformLocation(program, name);
         }
 
         if (this.capabilities.glGetProgramResourceIndex != 0L) {
-            return GL43C.glGetProgramResourceIndex(program, programInterface, name);
+            return super.getProgramResourceIndex(program, programInterface, name);
         } else {
             return switch (programInterface) {
                 case GL43C.GL_UNIFORM -> {
-                    final int uniformCount = GL20C.glGetProgrami(program, GL20C.GL_ACTIVE_UNIFORMS);
+                    final int uniformCount = this.getProgrami(program, GL20C.GL_ACTIVE_UNIFORMS);
                     for (int i = 0; i < uniformCount; i++) {
                         final String uniformName = GL31C.glGetActiveUniformName(program, i);
                         if (uniformName.contentEquals(name)) {
@@ -713,7 +254,7 @@ public class GL41Backend implements GLBackend {
                     yield GL31C.GL_INVALID_INDEX;
                 }
                 case GL43C.GL_UNIFORM_BLOCK -> {
-                    final int uniformBlockCount = GL20C.glGetProgrami(program, GL31C.GL_ACTIVE_UNIFORM_BLOCKS);
+                    final int uniformBlockCount = this.getProgrami(program, GL31C.GL_ACTIVE_UNIFORM_BLOCKS);
                     for (int i = 0; i < uniformBlockCount; i++) {
                         final String uniformBlockName = GL31C.glGetActiveUniformBlockName(program, i);
                         if (uniformBlockName.contentEquals(name)) {
@@ -730,7 +271,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void multiDrawArraysIndirect(final int mode, long indirect, final int drawcount, int stride) {
         if (this.capabilities.glMultiDrawArraysIndirect != 0L) {
-            GL43C.glMultiDrawArraysIndirect(mode, indirect, drawcount, stride);
+            super.multiDrawArraysIndirect(mode, indirect, drawcount, stride);
         } else {
             if (stride == 0) {
                 stride = DrawArraysCommand.BYTES;
@@ -745,7 +286,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void multiDrawElementsIndirect(final int mode, final int type, long indirect, final int drawcount, int stride) {
         if (this.capabilities.glMultiDrawElementsIndirect != 0L) {
-            GL43C.glMultiDrawElementsIndirect(mode, type, indirect, drawcount, stride);
+            super.multiDrawElementsIndirect(mode, type, indirect, drawcount, stride);
         } else {
             if (stride == 0) {
                 stride = DrawElementsCommand.BYTES;
@@ -760,7 +301,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void objectLabel(final int identifier, final int name, final CharSequence label) {
         if (this.capabilities.glObjectLabel != 0L) {
-            GL43C.glObjectLabel(identifier, name, label);
+            super.objectLabel(identifier, name, label);
         } else if (this.capabilities.glLabelObjectEXT != 0L) {
             EXTDebugLabel.glLabelObjectEXT(getDebugLabelObjectTypeEXT(identifier), name, label);
         } else {
@@ -771,7 +312,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void shaderStorageBlockBinding(final int program, final int storageBlockIndex, final int storageBlockBinding) {
         if (this.capabilities.glShaderStorageBlockBinding != 0L && this.supportsShaderStorageBuffers) {
-            GL43C.glShaderStorageBlockBinding(program, storageBlockIndex, storageBlockBinding);
+            super.shaderStorageBlockBinding(program, storageBlockIndex, storageBlockBinding);
         } else {
             GL41C.glProgramUniform1i(program, storageBlockIndex, SHADER_STORAGE_BUFFER_TEXTURE_UNIT_OFFSET + storageBlockBinding);
         }
@@ -780,10 +321,10 @@ public class GL41Backend implements GLBackend {
     @Override
     public void bindSamplers(final int first, final int[] samplers) {
         if (this.capabilities.glBindSamplers != 0L) {
-            GL44C.glBindSamplers(first, samplers);
+            super.bindSamplers(first, samplers);
         } else {
             for (int i = 0; i < samplers.length; i++) {
-                GL33C.glBindSampler(first + i, samplers[i]);
+                this.bindSampler(first + i, samplers[i]);
             }
         }
     }
@@ -791,7 +332,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void bindTextures(final int first, final int[] textures) {
         if (this.capabilities.glBindTextures != 0L) {
-            GL44C.glBindTextures(first, textures);
+            super.bindTextures(first, textures);
         } else {
             for (int i = 0; i < textures.length; i++) {
                 this.bindTextureUnit(first + i, textures[i]);
@@ -802,7 +343,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void clearTexImage(final int texture, final int level, final int format, final int type, final float[] data) {
         if (this.capabilities.glClearTexImage != 0L) {
-            GL44C.glClearTexImage(texture, level, format, type, data);
+            super.clearTexImage(texture, level, format, type, data);
         } else {
             final int textureWidth = this.getTextureLevelParameteri(texture, level, GL11C.GL_TEXTURE_WIDTH);
             final int textureHeight = this.getTextureLevelParameteri(texture, level, GL11C.GL_TEXTURE_HEIGHT);
@@ -814,7 +355,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public void clearTexSubImage(final int texture, final int level, final int xoffset, final int yoffset, final int zoffset, final int width, final int height, final int depth, final int format, final int type, final float[] data) {
         if (this.capabilities.glClearTexSubImage != 0L) {
-            GL44C.glClearTexSubImage(texture, level, xoffset, yoffset, zoffset, width, height, depth, format, type, data);
+            super.clearTexSubImage(texture, level, xoffset, yoffset, zoffset, width, height, depth, format, type, data);
         } else {
             ThinGL.glStateStack().pushPixelStore();
             ThinGL.glStateStack().pixelStore(GL11C.GL_UNPACK_ALIGNMENT, 1);
@@ -862,9 +403,9 @@ public class GL41Backend implements GLBackend {
     @Override
     public void bindTextureUnit(final int unit, final int texture) {
         if (this.capabilities.glBindTextureUnit != 0L) {
-            GL45C.glBindTextureUnit(unit, texture);
+            super.bindTextureUnit(unit, texture);
         } else {
-            final int previousActiveTexture = GL11C.glGetInteger(GL13C.GL_ACTIVE_TEXTURE);
+            final int previousActiveTexture = this.getInteger(GL13C.GL_ACTIVE_TEXTURE);
             GL13C.glActiveTexture(GL13C.GL_TEXTURE0 + unit);
             if (texture != 0) {
                 GL11C.glBindTexture(this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D), texture);
@@ -887,29 +428,29 @@ public class GL41Backend implements GLBackend {
     @Override
     public void blitNamedFramebuffer(final int readFramebuffer, final int drawFramebuffer, final int srcX0, final int srcY0, final int srcX1, final int srcY1, final int dstX0, final int dstY0, final int dstX1, final int dstY1, final int mask, final int filter) {
         if (this.capabilities.glBlitNamedFramebuffer != 0L) {
-            GL45C.glBlitNamedFramebuffer(readFramebuffer, drawFramebuffer, srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
+            super.blitNamedFramebuffer(readFramebuffer, drawFramebuffer, srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
         } else {
-            final int previousReadFramebuffer = GL11C.glGetInteger(GL30C.GL_READ_FRAMEBUFFER_BINDING);
-            final int previousDrawFramebuffer = GL11C.glGetInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
-            GL30C.glBindFramebuffer(GL30C.GL_READ_FRAMEBUFFER, readFramebuffer);
-            GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, drawFramebuffer);
+            final int previousReadFramebuffer = this.getInteger(GL30C.GL_READ_FRAMEBUFFER_BINDING);
+            final int previousDrawFramebuffer = this.getInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
+            this.bindFramebuffer(GL30C.GL_READ_FRAMEBUFFER, readFramebuffer);
+            this.bindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, drawFramebuffer);
             GL30C.glBlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
-            GL30C.glBindFramebuffer(GL30C.GL_READ_FRAMEBUFFER, previousReadFramebuffer);
-            GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, previousDrawFramebuffer);
+            this.bindFramebuffer(GL30C.GL_READ_FRAMEBUFFER, previousReadFramebuffer);
+            this.bindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, previousDrawFramebuffer);
         }
     }
 
     @Override
     public int checkNamedFramebufferStatus(final int framebuffer, final int target) {
         if (this.capabilities.glCheckNamedFramebufferStatus != 0L) {
-            return GL45C.glCheckNamedFramebufferStatus(framebuffer, target);
+            return super.checkNamedFramebufferStatus(framebuffer, target);
         } else if (this.capabilities.glCheckNamedFramebufferStatusEXT != 0L) {
             return EXTDirectStateAccess.glCheckNamedFramebufferStatusEXT(framebuffer, target);
         } else {
-            final int previousFramebuffer = GL11C.glGetInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
-            GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, framebuffer);
+            final int previousFramebuffer = this.getInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
+            this.bindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, framebuffer);
             final int status = GL30C.glCheckFramebufferStatus(target);
-            GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, previousFramebuffer);
+            this.bindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, previousFramebuffer);
             return status;
         }
     }
@@ -917,65 +458,65 @@ public class GL41Backend implements GLBackend {
     @Override
     public void clearNamedFramebufferfi(final int framebuffer, final int buffer, final int drawbuffer, final float depth, final int stencil) {
         if (this.capabilities.glClearNamedFramebufferfi != 0L) {
-            GL45C.glClearNamedFramebufferfi(framebuffer, buffer, drawbuffer, depth, stencil);
+            super.clearNamedFramebufferfi(framebuffer, buffer, drawbuffer, depth, stencil);
         } else {
-            final int previousFramebuffer = GL11C.glGetInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
-            GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, framebuffer);
+            final int previousFramebuffer = this.getInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
+            this.bindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, framebuffer);
             GL30C.glClearBufferfi(buffer, drawbuffer, depth, stencil);
-            GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, previousFramebuffer);
+            this.bindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, previousFramebuffer);
         }
     }
 
     @Override
     public void clearNamedFramebufferfv(final int framebuffer, final int buffer, final int drawbuffer, final float[] value) {
         if (this.capabilities.glClearNamedFramebufferfv != 0L) {
-            GL45C.glClearNamedFramebufferfv(framebuffer, buffer, drawbuffer, value);
+            super.clearNamedFramebufferfv(framebuffer, buffer, drawbuffer, value);
         } else {
-            final int previousFramebuffer = GL11C.glGetInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
-            GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, framebuffer);
+            final int previousFramebuffer = this.getInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
+            this.bindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, framebuffer);
             GL30C.glClearBufferfv(buffer, drawbuffer, value);
-            GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, previousFramebuffer);
+            this.bindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, previousFramebuffer);
         }
     }
 
     @Override
     public void clearNamedFramebufferiv(final int framebuffer, final int buffer, final int drawbuffer, final int[] value) {
         if (this.capabilities.glClearNamedFramebufferiv != 0L) {
-            GL45C.glClearNamedFramebufferiv(framebuffer, buffer, drawbuffer, value);
+            super.clearNamedFramebufferiv(framebuffer, buffer, drawbuffer, value);
         } else {
-            final int previousFramebuffer = GL11C.glGetInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
-            GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, framebuffer);
+            final int previousFramebuffer = this.getInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
+            this.bindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, framebuffer);
             GL30C.glClearBufferiv(buffer, drawbuffer, value);
-            GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, previousFramebuffer);
+            this.bindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, previousFramebuffer);
         }
     }
 
     @Override
     public void copyNamedBufferSubData(final int readBuffer, final int writeBuffer, final long readOffset, final long writeOffset, final long size) {
         if (this.capabilities.glCopyNamedBufferSubData != 0L) {
-            GL45C.glCopyNamedBufferSubData(readBuffer, writeBuffer, readOffset, writeOffset, size);
+            super.copyNamedBufferSubData(readBuffer, writeBuffer, readOffset, writeOffset, size);
         } else if (this.capabilities.glNamedCopyBufferSubDataEXT != 0L) {
             EXTDirectStateAccess.glNamedCopyBufferSubDataEXT(readBuffer, writeBuffer, readOffset, writeOffset, size);
         } else {
-            final int previousReadBuffer = GL11C.glGetInteger(GL31C.GL_COPY_READ_BUFFER);
-            final int previousWriteBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
-            GL15C.glBindBuffer(GL31C.GL_COPY_READ_BUFFER, readBuffer);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, writeBuffer);
+            final int previousReadBuffer = this.getInteger(GL31C.GL_COPY_READ_BUFFER);
+            final int previousWriteBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+            this.bindBuffer(GL31C.GL_COPY_READ_BUFFER, readBuffer);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, writeBuffer);
             GL31C.glCopyBufferSubData(GL31C.GL_COPY_READ_BUFFER, GL31C.GL_COPY_WRITE_BUFFER, readOffset, writeOffset, size);
-            GL15C.glBindBuffer(GL31C.GL_COPY_READ_BUFFER, previousReadBuffer);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousWriteBuffer);
+            this.bindBuffer(GL31C.GL_COPY_READ_BUFFER, previousReadBuffer);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousWriteBuffer);
         }
     }
 
     @Override
     public int createBuffer() {
         if (this.capabilities.glCreateBuffers != 0L) {
-            return GL45C.glCreateBuffers();
+            return super.createBuffer();
         } else {
             final int buffer = GL15C.glGenBuffers();
-            final int previousBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
+            final int previousBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
             return buffer;
         }
     }
@@ -983,12 +524,12 @@ public class GL41Backend implements GLBackend {
     @Override
     public int createFramebuffer() {
         if (this.capabilities.glCreateFramebuffers != 0L) {
-            return GL45C.glCreateFramebuffers();
+            return super.createFramebuffer();
         } else {
             final int framebuffer = GL30C.glGenFramebuffers();
-            final int previousFramebuffer = GL11C.glGetInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
-            GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, framebuffer);
-            GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, previousFramebuffer);
+            final int previousFramebuffer = this.getInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
+            this.bindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, framebuffer);
+            this.bindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, previousFramebuffer);
             return framebuffer;
         }
     }
@@ -997,7 +538,7 @@ public class GL41Backend implements GLBackend {
     public int createQuery(final int target) {
         final int query;
         if (this.capabilities.glCreateQueries != 0L) {
-            query = GL45C.glCreateQueries(target);
+            query = super.createQuery(target);
         } else {
             query = GL15C.glGenQueries();
         }
@@ -1008,10 +549,10 @@ public class GL41Backend implements GLBackend {
     @Override
     public int createRenderbuffer() {
         if (this.capabilities.glCreateRenderbuffers != 0L) {
-            return GL45C.glCreateRenderbuffers();
+            return super.createRenderbuffer();
         } else {
             final int renderBuffer = GL30C.glGenRenderbuffers();
-            final int previousRenderBuffer = GL11C.glGetInteger(GL30C.GL_RENDERBUFFER_BINDING);
+            final int previousRenderBuffer = this.getInteger(GL30C.GL_RENDERBUFFER_BINDING);
             GL30C.glBindRenderbuffer(GL30C.GL_RENDERBUFFER, renderBuffer);
             GL30C.glBindRenderbuffer(GL30C.GL_RENDERBUFFER, previousRenderBuffer);
             return renderBuffer;
@@ -1021,7 +562,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public int createSampler() {
         if (this.capabilities.glCreateSamplers != 0L) {
-            return GL45C.glCreateSamplers();
+            return super.createSampler();
         } else {
             return GL33C.glGenSamplers();
         }
@@ -1031,10 +572,10 @@ public class GL41Backend implements GLBackend {
     public int createTexture(final int target) {
         final int texture;
         if (this.capabilities.glCreateTextures != 0L) {
-            texture = GL45C.glCreateTextures(target);
+            texture = super.createTexture(target);
         } else {
             texture = GL11C.glGenTextures();
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             GL11C.glBindTexture(target, previousTexture);
         }
@@ -1045,12 +586,12 @@ public class GL41Backend implements GLBackend {
     @Override
     public int createVertexArray() {
         if (this.capabilities.glCreateVertexArrays != 0L) {
-            return GL45C.glCreateVertexArrays();
+            return super.createVertexArray();
         } else {
             final int vertexArray = GL30C.glGenVertexArrays();
-            final int previousVertexArray = GL11C.glGetInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
-            GL30C.glBindVertexArray(vertexArray);
-            GL30C.glBindVertexArray(previousVertexArray);
+            final int previousVertexArray = this.getInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
+            this.bindVertexArray(vertexArray);
+            this.bindVertexArray(previousVertexArray);
             return vertexArray;
         }
     }
@@ -1058,40 +599,40 @@ public class GL41Backend implements GLBackend {
     @Override
     public void enableVertexArrayAttrib(final int vaobj, final int index) {
         if (this.capabilities.glEnableVertexArrayAttrib != 0L) {
-            GL45C.glEnableVertexArrayAttrib(vaobj, index);
+            super.enableVertexArrayAttrib(vaobj, index);
         } else if (this.capabilities.glEnableVertexArrayAttribEXT != 0L) {
             EXTDirectStateAccess.glEnableVertexArrayAttribEXT(vaobj, index);
         } else {
-            final int previousVertexArray = GL11C.glGetInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
-            GL30C.glBindVertexArray(vaobj);
+            final int previousVertexArray = this.getInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
+            this.bindVertexArray(vaobj);
             GL20C.glEnableVertexAttribArray(index);
-            GL30C.glBindVertexArray(previousVertexArray);
+            this.bindVertexArray(previousVertexArray);
         }
     }
 
     @Override
     public void flushMappedNamedBufferRange(final int buffer, final long offset, final long length) {
         if (this.capabilities.glFlushMappedNamedBufferRange != 0L) {
-            GL45C.glFlushMappedNamedBufferRange(buffer, offset, length);
+            super.flushMappedNamedBufferRange(buffer, offset, length);
         } else if (this.capabilities.glFlushMappedNamedBufferRangeEXT != 0L) {
             EXTDirectStateAccess.glFlushMappedNamedBufferRangeEXT(buffer, offset, length);
         } else {
-            final int previousBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
+            final int previousBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
             GL30C.glFlushMappedBufferRange(GL31C.GL_COPY_WRITE_BUFFER, offset, length);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
         }
     }
 
     @Override
     public void generateTextureMipmap(final int texture) {
         if (this.capabilities.glGenerateTextureMipmap != 0L) {
-            GL45C.glGenerateTextureMipmap(texture);
+            super.generateTextureMipmap(texture);
         } else if (this.capabilities.glGenerateTextureMipmapEXT != 0L) {
             EXTDirectStateAccess.glGenerateTextureMipmapEXT(texture, this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D));
         } else {
             final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             GL30C.glGenerateMipmap(target);
             GL11C.glBindTexture(target, previousTexture);
@@ -1101,14 +642,14 @@ public class GL41Backend implements GLBackend {
     @Override
     public int getNamedBufferParameteri(final int buffer, final int pname) {
         if (this.capabilities.glGetNamedBufferParameteriv != 0L) {
-            return GL45C.glGetNamedBufferParameteri(buffer, pname);
+            return super.getNamedBufferParameteri(buffer, pname);
         } else if (this.capabilities.glGetNamedBufferParameterivEXT != 0L) {
             return EXTDirectStateAccess.glGetNamedBufferParameteriEXT(buffer, pname);
         } else {
-            final int previousBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
+            final int previousBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
             final int parameter = GL15C.glGetBufferParameteri(GL31C.GL_COPY_WRITE_BUFFER, pname);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
             return parameter;
         }
     }
@@ -1116,12 +657,12 @@ public class GL41Backend implements GLBackend {
     @Override
     public long getNamedBufferParameteri64(final int buffer, final int pname) {
         if (this.capabilities.glGetNamedBufferParameteri64v != 0L) {
-            return GL45C.glGetNamedBufferParameteri64(buffer, pname);
+            return super.getNamedBufferParameteri64(buffer, pname);
         } else {
-            final int previousBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
+            final int previousBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
             final long parameter = GL32C.glGetBufferParameteri64(GL31C.GL_COPY_WRITE_BUFFER, pname);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
             return parameter;
         }
     }
@@ -1129,28 +670,28 @@ public class GL41Backend implements GLBackend {
     @Override
     public void getNamedBufferSubData(final int buffer, final long offset, final long size, final long data) {
         if (this.capabilities.glGetNamedBufferSubData != 0L) {
-            GL45C.nglGetNamedBufferSubData(buffer, offset, size, data);
+            super.getNamedBufferSubData(buffer, offset, size, data);
         } else if (this.capabilities.glGetNamedBufferSubDataEXT != 0L) {
             EXTDirectStateAccess.nglGetNamedBufferSubDataEXT(buffer, offset, size, data);
         } else {
-            final int previousBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
+            final int previousBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
             GL15C.nglGetBufferSubData(GL31C.GL_COPY_WRITE_BUFFER, offset, size, data);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
         }
     }
 
     @Override
     public int getNamedFramebufferAttachmentParameteri(final int framebuffer, final int attachment, final int pname) {
         if (this.capabilities.glGetNamedFramebufferAttachmentParameteriv != 0L) {
-            return GL45C.glGetNamedFramebufferAttachmentParameteri(framebuffer, attachment, pname);
+            return super.getNamedFramebufferAttachmentParameteri(framebuffer, attachment, pname);
         } else if (this.capabilities.glGetNamedFramebufferAttachmentParameterivEXT != 0L) {
             return EXTDirectStateAccess.glGetNamedFramebufferAttachmentParameteriEXT(framebuffer, attachment, pname);
         } else {
-            final int previousFramebuffer = GL11C.glGetInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
-            GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, framebuffer);
+            final int previousFramebuffer = this.getInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
+            this.bindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, framebuffer);
             final int parameter = GL30C.glGetFramebufferAttachmentParameteri(GL30C.GL_DRAW_FRAMEBUFFER, attachment, pname);
-            GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, previousFramebuffer);
+            this.bindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, previousFramebuffer);
             return parameter;
         }
     }
@@ -1158,11 +699,11 @@ public class GL41Backend implements GLBackend {
     @Override
     public int getNamedRenderbufferParameteri(final int renderbuffer, final int pname) {
         if (this.capabilities.glGetNamedRenderbufferParameteriv != 0L) {
-            return GL45C.glGetNamedRenderbufferParameteri(renderbuffer, pname);
+            return super.getNamedRenderbufferParameteri(renderbuffer, pname);
         } else if (this.capabilities.glGetNamedRenderbufferParameterivEXT != 0L) {
             return EXTDirectStateAccess.glGetNamedRenderbufferParameteriEXT(renderbuffer, pname);
         } else {
-            final int previousRenderbuffer = GL11C.glGetInteger(GL30C.GL_RENDERBUFFER_BINDING);
+            final int previousRenderbuffer = this.getInteger(GL30C.GL_RENDERBUFFER_BINDING);
             GL30C.glBindRenderbuffer(GL30C.GL_RENDERBUFFER, renderbuffer);
             final int parameter = GL30C.glGetRenderbufferParameteri(GL30C.GL_RENDERBUFFER, pname);
             GL30C.glBindRenderbuffer(GL30C.GL_RENDERBUFFER, previousRenderbuffer);
@@ -1173,12 +714,12 @@ public class GL41Backend implements GLBackend {
     @Override
     public int getTextureLevelParameteri(final int texture, final int level, final int pname) {
         if (this.capabilities.glGetTextureLevelParameteriv != 0L) {
-            return GL45C.glGetTextureLevelParameteri(texture, level, pname);
+            return super.getTextureLevelParameteri(texture, level, pname);
         } else if (this.capabilities.glGetTextureLevelParameterivEXT != 0L) {
             return EXTDirectStateAccess.glGetTextureLevelParameteriEXT(texture, this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D), level, pname);
         } else {
             final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             final int parameter = GL11C.glGetTexLevelParameteri(target, level, pname);
             GL11C.glBindTexture(target, previousTexture);
@@ -1189,12 +730,12 @@ public class GL41Backend implements GLBackend {
     @Override
     public float getTextureParameterf(final int texture, final int pname) {
         if (this.capabilities.glGetTextureParameterfv != 0L) {
-            return GL45C.glGetTextureParameterf(texture, pname);
+            return super.getTextureParameterf(texture, pname);
         } else if (this.capabilities.glGetTextureParameterfvEXT != 0L) {
             return EXTDirectStateAccess.glGetTextureParameterfEXT(texture, this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D), pname);
         } else {
             final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             final float parameter = GL11C.glGetTexParameterf(target, pname);
             GL11C.glBindTexture(target, previousTexture);
@@ -1205,12 +746,12 @@ public class GL41Backend implements GLBackend {
     @Override
     public void getTextureParameterfv(final int texture, final int pname, final float[] params) {
         if (this.capabilities.glGetTextureParameterfv != 0L) {
-            GL45C.glGetTextureParameterfv(texture, pname, params);
+            super.getTextureParameterfv(texture, pname, params);
         } else if (this.capabilities.glGetTextureParameterfvEXT != 0L) {
             EXTDirectStateAccess.glGetTextureParameterfvEXT(texture, this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D), pname, params);
         } else {
             final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             GL11C.glGetTexParameterfv(target, pname, params);
             GL11C.glBindTexture(target, previousTexture);
@@ -1220,11 +761,7 @@ public class GL41Backend implements GLBackend {
     @Override
     public int getTextureParameteri(final int texture, final int pname) {
         if (this.capabilities.glGetTextureParameteriv != 0L) {
-            if (pname == GL45C.GL_TEXTURE_TARGET && ThinGL.workarounds().isGetTextureParameterTextureTargetBroken()) {
-                return this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-            }
-
-            return GL45C.glGetTextureParameteri(texture, pname);
+            return super.getTextureParameteri(texture, pname);
         } else if (this.capabilities.glGetTextureParameterivEXT != 0L) {
             if (pname == GL45C.GL_TEXTURE_TARGET) {
                 return this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
@@ -1237,7 +774,7 @@ public class GL41Backend implements GLBackend {
             }
 
             final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             final int parameter = GL11C.glGetTexParameteri(target, pname);
             GL11C.glBindTexture(target, previousTexture);
@@ -1248,12 +785,12 @@ public class GL41Backend implements GLBackend {
     @Override
     public void getTextureParameteriv(final int texture, final int pname, final int[] params) {
         if (this.capabilities.glGetTextureParameteriv != 0L) {
-            GL45C.glGetTextureParameteriv(texture, pname, params);
+            super.getTextureParameteriv(texture, pname, params);
         } else if (this.capabilities.glGetTextureParameterivEXT != 0L) {
             EXTDirectStateAccess.glGetTextureParameterivEXT(texture, this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D), pname, params);
         } else {
             final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             GL11C.glGetTexParameteriv(target, pname, params);
             GL11C.glBindTexture(target, previousTexture);
@@ -1263,14 +800,14 @@ public class GL41Backend implements GLBackend {
     @Override
     public void getTextureSubImage(final int texture, final int level, final int xoffset, final int yoffset, final int zoffset, final int width, final int height, final int depth, final int format, final int type, final int bufSize, final long pixels) {
         if (this.capabilities.glGetTextureSubImage != 0L) {
-            GL45C.glGetTextureSubImage(texture, level, xoffset, yoffset, zoffset, width, height, depth, format, type, bufSize, pixels);
+            super.getTextureSubImage(texture, level, xoffset, yoffset, zoffset, width, height, depth, format, type, bufSize, pixels);
         } else {
             final int textureWidth = this.getTextureLevelParameteri(texture, level, GL11C.GL_TEXTURE_WIDTH);
             final int textureHeight = this.getTextureLevelParameteri(texture, level, GL11C.GL_TEXTURE_HEIGHT);
             final int textureDepth = this.getTextureLevelParameteri(texture, level, GL12C.GL_TEXTURE_DEPTH);
             if (xoffset == 0 && yoffset == 0 && zoffset == 0 && width == textureWidth && height == textureHeight && depth == textureDepth) {
                 final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-                final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+                final int previousTexture = this.getInteger(getTextureQuery(target));
                 GL11C.glBindTexture(target, texture);
                 GL11C.glGetTexImage(target, level, format, type, pixels);
                 GL11C.glBindTexture(target, previousTexture);
@@ -1283,14 +820,14 @@ public class GL41Backend implements GLBackend {
     @Override
     public long mapNamedBuffer(final int buffer, final int access) {
         if (this.capabilities.glMapNamedBuffer != 0L) {
-            return GL45C.nglMapNamedBuffer(buffer, access);
+            return super.mapNamedBuffer(buffer, access);
         } else if (this.capabilities.glMapNamedBufferEXT != 0L) {
             return EXTDirectStateAccess.nglMapNamedBufferEXT(buffer, access);
         } else {
-            final int previousBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
+            final int previousBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
             final long address = GL15C.nglMapBuffer(GL31C.GL_COPY_WRITE_BUFFER, access);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
             return address;
         }
     }
@@ -1298,14 +835,14 @@ public class GL41Backend implements GLBackend {
     @Override
     public long mapNamedBufferRange(final int buffer, final long offset, final long length, final int access) {
         if (this.capabilities.glMapNamedBufferRange != 0L) {
-            return GL45C.nglMapNamedBufferRange(buffer, offset, length, access);
+            return super.mapNamedBufferRange(buffer, offset, length, access);
         } else if (this.capabilities.glMapNamedBufferRangeEXT != 0L) {
             return EXTDirectStateAccess.nglMapNamedBufferRangeEXT(buffer, offset, length, access);
         } else {
-            final int previousBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
+            final int previousBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
             final long address = GL30C.nglMapBufferRange(GL31C.GL_COPY_WRITE_BUFFER, offset, length, access);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
             return address;
         }
     }
@@ -1313,42 +850,42 @@ public class GL41Backend implements GLBackend {
     @Override
     public void namedBufferData(final int buffer, final long size, final int usage) {
         if (this.capabilities.glNamedBufferData != 0L) {
-            GL45C.glNamedBufferData(buffer, size, usage);
+            super.namedBufferData(buffer, size, usage);
         } else if (this.capabilities.glNamedBufferDataEXT != 0L) {
             EXTDirectStateAccess.glNamedBufferDataEXT(buffer, size, usage);
         } else {
-            final int previousBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
+            final int previousBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
             GL15C.glBufferData(GL31C.GL_COPY_WRITE_BUFFER, size, usage);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
         }
     }
 
     @Override
     public void namedBufferData(final int buffer, final long size, final long data, final int usage) {
         if (this.capabilities.glNamedBufferData != 0L) {
-            GL45C.nglNamedBufferData(buffer, size, data, usage);
+            super.namedBufferData(buffer, size, data, usage);
         } else if (this.capabilities.glNamedBufferDataEXT != 0L) {
             EXTDirectStateAccess.nglNamedBufferDataEXT(buffer, size, data, usage);
         } else {
-            final int previousBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
+            final int previousBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
             GL15C.nglBufferData(GL31C.GL_COPY_WRITE_BUFFER, size, data, usage);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
         }
     }
 
     @Override
     public void namedBufferStorage(final int buffer, final long size, final int flags) {
         if (this.capabilities.glNamedBufferStorage != 0L) {
-            GL45C.glNamedBufferStorage(buffer, size, flags);
+            super.namedBufferStorage(buffer, size, flags);
         } else if (this.capabilities.glNamedBufferStorageEXT != 0L) {
             ARBBufferStorage.glNamedBufferStorageEXT(buffer, size, flags);
         } else if (this.capabilities.glBufferStorage != 0L) {
-            final int previousBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
+            final int previousBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
             GL44C.glBufferStorage(GL31C.GL_COPY_WRITE_BUFFER, size, flags);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
         } else {
             final int usage;
             if ((flags & GL44C.GL_DYNAMIC_STORAGE_BIT) != 0) {
@@ -1357,24 +894,24 @@ public class GL41Backend implements GLBackend {
                 usage = GL15C.GL_STATIC_DRAW;
             }
 
-            final int previousBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
+            final int previousBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
             GL15C.glBufferData(GL31C.GL_COPY_WRITE_BUFFER, size, usage);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
         }
     }
 
     @Override
     public void namedBufferStorage(final int buffer, final long size, final long data, final int flags) {
         if (this.capabilities.glNamedBufferStorage != 0L) {
-            GL45C.nglNamedBufferStorage(buffer, size, data, flags);
+            super.namedBufferStorage(buffer, size, data, flags);
         } else if (this.capabilities.glNamedBufferStorageEXT != 0L) {
             ARBBufferStorage.nglNamedBufferStorageEXT(buffer, size, data, flags);
         } else if (this.capabilities.glBufferStorage != 0L) {
-            final int previousBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
+            final int previousBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
             GL44C.nglBufferStorage(GL31C.GL_COPY_WRITE_BUFFER, size, data, flags);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
         } else {
             final int usage;
             if ((flags & GL44C.GL_DYNAMIC_STORAGE_BIT) != 0) {
@@ -1383,63 +920,63 @@ public class GL41Backend implements GLBackend {
                 usage = GL15C.GL_STATIC_DRAW;
             }
 
-            final int previousBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
+            final int previousBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
             GL15C.nglBufferData(GL31C.GL_COPY_WRITE_BUFFER, size, data, usage);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
         }
     }
 
     @Override
     public void namedBufferSubData(final int buffer, final long offset, final long size, final long data) {
         if (this.capabilities.glNamedBufferSubData != 0L) {
-            GL45C.nglNamedBufferSubData(buffer, offset, size, data);
+            super.namedBufferSubData(buffer, offset, size, data);
         } else if (this.capabilities.glNamedBufferSubDataEXT != 0L) {
             EXTDirectStateAccess.nglNamedBufferSubDataEXT(buffer, offset, size, data);
         } else {
-            final int previousBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
+            final int previousBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
             GL15C.nglBufferSubData(GL31C.GL_COPY_WRITE_BUFFER, offset, size, data);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
         }
     }
 
     @Override
     public void namedFramebufferRenderbuffer(final int framebuffer, final int attachment, final int renderbuffertarget, final int renderbuffer) {
         if (this.capabilities.glNamedFramebufferRenderbuffer != 0L) {
-            GL45C.glNamedFramebufferRenderbuffer(framebuffer, attachment, renderbuffertarget, renderbuffer);
+            super.namedFramebufferRenderbuffer(framebuffer, attachment, renderbuffertarget, renderbuffer);
         } else if (this.capabilities.glNamedFramebufferRenderbufferEXT != 0L) {
             EXTDirectStateAccess.glNamedFramebufferRenderbufferEXT(framebuffer, attachment, renderbuffertarget, renderbuffer);
         } else {
-            final int previousFramebuffer = GL11C.glGetInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
-            GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, framebuffer);
+            final int previousFramebuffer = this.getInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
+            this.bindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, framebuffer);
             GL30C.glFramebufferRenderbuffer(GL30C.GL_DRAW_FRAMEBUFFER, attachment, renderbuffertarget, renderbuffer);
-            GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, previousFramebuffer);
+            this.bindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, previousFramebuffer);
         }
     }
 
     @Override
     public void namedFramebufferTexture(final int framebuffer, final int attachment, final int texture, final int level) {
         if (this.capabilities.glNamedFramebufferTexture != 0L) {
-            GL45C.glNamedFramebufferTexture(framebuffer, attachment, texture, level);
+            super.namedFramebufferTexture(framebuffer, attachment, texture, level);
         } else if (this.capabilities.glNamedFramebufferTextureEXT != 0L) {
             EXTDirectStateAccess.glNamedFramebufferTextureEXT(framebuffer, attachment, texture, level);
         } else {
-            final int previousFramebuffer = GL11C.glGetInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
-            GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, framebuffer);
+            final int previousFramebuffer = this.getInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
+            this.bindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, framebuffer);
             GL30C.glFramebufferTexture2D(GL30C.GL_DRAW_FRAMEBUFFER, attachment, this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D), texture, level);
-            GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, previousFramebuffer);
+            this.bindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, previousFramebuffer);
         }
     }
 
     @Override
     public void namedRenderbufferStorage(final int renderbuffer, final int internalformat, final int width, final int height) {
         if (this.capabilities.glNamedRenderbufferStorage != 0L) {
-            GL45C.glNamedRenderbufferStorage(renderbuffer, internalformat, width, height);
+            super.namedRenderbufferStorage(renderbuffer, internalformat, width, height);
         } else if (this.capabilities.glNamedRenderbufferStorageEXT != 0L) {
             EXTDirectStateAccess.glNamedRenderbufferStorageEXT(renderbuffer, internalformat, width, height);
         } else {
-            final int previousRenderbuffer = GL11C.glGetInteger(GL30C.GL_RENDERBUFFER_BINDING);
+            final int previousRenderbuffer = this.getInteger(GL30C.GL_RENDERBUFFER_BINDING);
             GL30C.glBindRenderbuffer(GL30C.GL_RENDERBUFFER, renderbuffer);
             GL30C.glRenderbufferStorage(GL30C.GL_RENDERBUFFER, internalformat, width, height);
             GL30C.glBindRenderbuffer(GL30C.GL_RENDERBUFFER, previousRenderbuffer);
@@ -1449,11 +986,11 @@ public class GL41Backend implements GLBackend {
     @Override
     public void namedRenderbufferStorageMultisample(final int renderbuffer, final int samples, final int internalformat, final int width, final int height) {
         if (this.capabilities.glNamedRenderbufferStorageMultisample != 0L) {
-            GL45C.glNamedRenderbufferStorageMultisample(renderbuffer, samples, internalformat, width, height);
+            super.namedRenderbufferStorageMultisample(renderbuffer, samples, internalformat, width, height);
         } else if (this.capabilities.glNamedRenderbufferStorageMultisampleEXT != 0L) {
             EXTDirectStateAccess.glNamedRenderbufferStorageMultisampleEXT(renderbuffer, samples, internalformat, width, height);
         } else {
-            final int previousRenderbuffer = GL11C.glGetInteger(GL30C.GL_RENDERBUFFER_BINDING);
+            final int previousRenderbuffer = this.getInteger(GL30C.GL_RENDERBUFFER_BINDING);
             GL30C.glBindRenderbuffer(GL30C.GL_RENDERBUFFER, renderbuffer);
             GL30C.glRenderbufferStorageMultisample(GL30C.GL_RENDERBUFFER, samples, internalformat, width, height);
             GL30C.glBindRenderbuffer(GL30C.GL_RENDERBUFFER, previousRenderbuffer);
@@ -1463,12 +1000,12 @@ public class GL41Backend implements GLBackend {
     @Override
     public void textureBuffer(final int texture, final int internalformat, final int buffer) {
         if (this.capabilities.glTextureBuffer != 0L) {
-            GL45C.glTextureBuffer(texture, internalformat, buffer);
+            super.textureBuffer(texture, internalformat, buffer);
         } else if (this.capabilities.glTextureBufferEXT != 0L) {
             EXTDirectStateAccess.glTextureBufferEXT(texture, this.textureTargets.getOrDefault(texture, GL31C.GL_TEXTURE_BUFFER), internalformat, buffer);
         } else {
             final int target = this.textureTargets.getOrDefault(texture, GL31C.GL_TEXTURE_BUFFER);
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             GL31C.glTexBuffer(target, internalformat, buffer);
             GL11C.glBindTexture(target, previousTexture);
@@ -1478,12 +1015,12 @@ public class GL41Backend implements GLBackend {
     @Override
     public void textureParameterf(final int texture, final int pname, final float param) {
         if (this.capabilities.glTextureParameterf != 0L) {
-            GL45C.glTextureParameterf(texture, pname, param);
+            super.textureParameterf(texture, pname, param);
         } else if (this.capabilities.glTextureParameterfEXT != 0L) {
             EXTDirectStateAccess.glTextureParameterfEXT(texture, this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D), pname, param);
         } else {
             final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             GL11C.glTexParameterf(target, pname, param);
             GL11C.glBindTexture(target, previousTexture);
@@ -1493,12 +1030,12 @@ public class GL41Backend implements GLBackend {
     @Override
     public void textureParameterfv(final int texture, final int pname, final float[] params) {
         if (this.capabilities.glTextureParameterfv != 0L) {
-            GL45C.glTextureParameterfv(texture, pname, params);
+            super.textureParameterfv(texture, pname, params);
         } else if (this.capabilities.glTextureParameterfvEXT != 0L) {
             EXTDirectStateAccess.glTextureParameterfvEXT(texture, this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D), pname, params);
         } else {
             final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             GL11C.glTexParameterfv(target, pname, params);
             GL11C.glBindTexture(target, previousTexture);
@@ -1508,12 +1045,12 @@ public class GL41Backend implements GLBackend {
     @Override
     public void textureParameteri(final int texture, final int pname, final int param) {
         if (this.capabilities.glTextureParameteri != 0L) {
-            GL45C.glTextureParameteri(texture, pname, param);
+            super.textureParameteri(texture, pname, param);
         } else if (this.capabilities.glTextureParameteriEXT != 0L) {
             EXTDirectStateAccess.glTextureParameteriEXT(texture, this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D), pname, param);
         } else {
             final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             GL11C.glTexParameteri(target, pname, param);
             GL11C.glBindTexture(target, previousTexture);
@@ -1523,12 +1060,12 @@ public class GL41Backend implements GLBackend {
     @Override
     public void textureParameteriv(final int texture, final int pname, final int[] params) {
         if (this.capabilities.glTextureParameteriv != 0L) {
-            GL45C.glTextureParameteriv(texture, pname, params);
+            super.textureParameteriv(texture, pname, params);
         } else if (this.capabilities.glTextureParameterivEXT != 0L) {
             EXTDirectStateAccess.glTextureParameterivEXT(texture, this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D), pname, params);
         } else {
             final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             GL11C.glTexParameteriv(target, pname, params);
             GL11C.glBindTexture(target, previousTexture);
@@ -1538,24 +1075,24 @@ public class GL41Backend implements GLBackend {
     @Override
     public void textureStorage1D(final int texture, final int levels, final int internalformat, final int width) {
         if (this.capabilities.glTextureStorage1D != 0L) {
-            GL45C.glTextureStorage1D(texture, levels, internalformat, width);
+            super.textureStorage1D(texture, levels, internalformat, width);
         } else if (this.capabilities.glTextureStorage1DEXT != 0L) {
             ARBTextureStorage.glTextureStorage1DEXT(texture, this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_1D), levels, internalformat, width);
         } else if (this.capabilities.glTexStorage1D != 0L) {
             final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_1D);
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             GL42C.glTexStorage1D(target, levels, internalformat, width);
             GL11C.glBindTexture(target, previousTexture);
         } else if (this.capabilities.glTexStorage1DEXT != 0L) {
             final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_1D);
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             EXTTextureStorage.glTexStorage1DEXT(target, levels, internalformat, width);
             GL11C.glBindTexture(target, previousTexture);
         } else {
             final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             for (int level = 0; level < levels; level++) {
                 final int levelWidth = Math.max(1, width >> level);
@@ -1568,24 +1105,24 @@ public class GL41Backend implements GLBackend {
     @Override
     public void textureStorage2D(final int texture, final int levels, final int internalformat, final int width, final int height) {
         if (this.capabilities.glTextureStorage2D != 0L) {
-            GL45C.glTextureStorage2D(texture, levels, internalformat, width, height);
+            super.textureStorage2D(texture, levels, internalformat, width, height);
         } else if (this.capabilities.glTextureStorage2DEXT != 0L) {
             ARBTextureStorage.glTextureStorage2DEXT(texture, this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D), levels, internalformat, width, height);
         } else if (this.capabilities.glTexStorage2D != 0L) {
             final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             GL42C.glTexStorage2D(target, levels, internalformat, width, height);
             GL11C.glBindTexture(target, previousTexture);
         } else if (this.capabilities.glTexStorage2DEXT != 0L) {
             final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             EXTTextureStorage.glTexStorage2DEXT(target, levels, internalformat, width, height);
             GL11C.glBindTexture(target, previousTexture);
         } else {
             final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             for (int level = 0; level < levels; level++) {
                 final int levelWidth = Math.max(1, width >> level);
@@ -1599,18 +1136,18 @@ public class GL41Backend implements GLBackend {
     @Override
     public void textureStorage2DMultisample(final int texture, final int samples, final int internalformat, final int width, final int height, final boolean fixedsamplelocations) {
         if (this.capabilities.glTextureStorage2DMultisample != 0L) {
-            GL45C.glTextureStorage2DMultisample(texture, samples, internalformat, width, height, fixedsamplelocations);
+            super.textureStorage2DMultisample(texture, samples, internalformat, width, height, fixedsamplelocations);
         } else if (this.capabilities.glTextureStorage2DMultisampleEXT != 0L) {
             ARBTextureStorageMultisample.glTextureStorage2DMultisampleEXT(texture, this.textureTargets.getOrDefault(texture, GL32C.GL_TEXTURE_2D_MULTISAMPLE), samples, internalformat, width, height, fixedsamplelocations);
         } else if (this.capabilities.glTexStorage2DMultisample != 0L) {
             final int target = this.textureTargets.getOrDefault(texture, GL32C.GL_TEXTURE_2D_MULTISAMPLE);
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             GL43C.glTexStorage2DMultisample(target, samples, internalformat, width, height, fixedsamplelocations);
             GL11C.glBindTexture(target, previousTexture);
         } else {
             final int target = this.textureTargets.getOrDefault(texture, GL32C.GL_TEXTURE_2D_MULTISAMPLE);
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             GL32C.glTexImage2DMultisample(target, samples, internalformat, width, height, fixedsamplelocations);
             GL11C.glBindTexture(target, previousTexture);
@@ -1620,24 +1157,24 @@ public class GL41Backend implements GLBackend {
     @Override
     public void textureStorage3D(final int texture, final int levels, final int internalformat, final int width, final int height, final int depth) {
         if (this.capabilities.glTextureStorage3D != 0L) {
-            GL45C.glTextureStorage3D(texture, levels, internalformat, width, height, depth);
+            super.textureStorage3D(texture, levels, internalformat, width, height, depth);
         } else if (this.capabilities.glTextureStorage3DEXT != 0L) {
             ARBTextureStorage.glTextureStorage3DEXT(texture, this.textureTargets.getOrDefault(texture, GL12C.GL_TEXTURE_3D), levels, internalformat, width, height, depth);
         } else if (this.capabilities.glTexStorage3D != 0L) {
             final int target = this.textureTargets.getOrDefault(texture, GL12C.GL_TEXTURE_3D);
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             GL42C.glTexStorage3D(target, levels, internalformat, width, height, depth);
             GL11C.glBindTexture(target, previousTexture);
         } else if (this.capabilities.glTexStorage3DEXT != 0L) {
             final int target = this.textureTargets.getOrDefault(texture, GL12C.GL_TEXTURE_3D);
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             EXTTextureStorage.glTexStorage3DEXT(target, levels, internalformat, width, height, depth);
             GL11C.glBindTexture(target, previousTexture);
         } else {
             final int target = this.textureTargets.getOrDefault(texture, GL12C.GL_TEXTURE_3D);
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             for (int level = 0; level < levels; level++) {
                 final int levelWidth = Math.max(1, width >> level);
@@ -1652,18 +1189,18 @@ public class GL41Backend implements GLBackend {
     @Override
     public void textureStorage3DMultisample(final int texture, final int samples, final int internalformat, final int width, final int height, final int depth, final boolean fixedsamplelocations) {
         if (this.capabilities.glTextureStorage3DMultisample != 0L) {
-            GL45C.glTextureStorage3DMultisample(texture, samples, internalformat, width, height, depth, fixedsamplelocations);
+            super.textureStorage3DMultisample(texture, samples, internalformat, width, height, depth, fixedsamplelocations);
         } else if (this.capabilities.glTextureStorage3DMultisampleEXT != 0L) {
             ARBTextureStorageMultisample.glTextureStorage3DMultisampleEXT(texture, this.textureTargets.getOrDefault(texture, GL32C.GL_TEXTURE_2D_MULTISAMPLE_ARRAY), samples, internalformat, width, height, depth, fixedsamplelocations);
         } else if (this.capabilities.glTexStorage3DMultisample != 0L) {
             final int target = this.textureTargets.getOrDefault(texture, GL32C.GL_TEXTURE_2D_MULTISAMPLE_ARRAY);
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             GL43C.glTexStorage3DMultisample(target, samples, internalformat, width, height, depth, fixedsamplelocations);
             GL11C.glBindTexture(target, previousTexture);
         } else {
             final int target = this.textureTargets.getOrDefault(texture, GL32C.GL_TEXTURE_2D_MULTISAMPLE_ARRAY);
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             GL32C.glTexImage3DMultisample(target, samples, internalformat, width, height, depth, fixedsamplelocations);
             GL11C.glBindTexture(target, previousTexture);
@@ -1673,12 +1210,12 @@ public class GL41Backend implements GLBackend {
     @Override
     public void textureSubImage1D(final int texture, final int level, final int xoffset, final int width, final int format, final int type, final long pixels) {
         if (this.capabilities.glTextureSubImage1D != 0L) {
-            GL45C.nglTextureSubImage1D(texture, level, xoffset, width, format, type, pixels);
+            super.textureSubImage1D(texture, level, xoffset, width, format, type, pixels);
         } else if (this.capabilities.glTextureSubImage1DEXT != 0L) {
             EXTDirectStateAccess.nglTextureSubImage1DEXT(texture, this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_1D), level, xoffset, width, format, type, pixels);
         } else {
             final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_1D);
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             GL11C.nglTexSubImage1D(target, level, xoffset, width, format, type, pixels);
             GL11C.glBindTexture(target, previousTexture);
@@ -1688,12 +1225,12 @@ public class GL41Backend implements GLBackend {
     @Override
     public void textureSubImage2D(final int texture, final int level, final int xoffset, final int yoffset, final int width, final int height, final int format, final int type, final long pixels) {
         if (this.capabilities.glTextureSubImage2D != 0L) {
-            GL45C.nglTextureSubImage2D(texture, level, xoffset, yoffset, width, height, format, type, pixels);
+            super.textureSubImage2D(texture, level, xoffset, yoffset, width, height, format, type, pixels);
         } else if (this.capabilities.glTextureSubImage2DEXT != 0L) {
             EXTDirectStateAccess.nglTextureSubImage2DEXT(texture, this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D), level, xoffset, yoffset, width, height, format, type, pixels);
         } else {
             final int target = this.textureTargets.getOrDefault(texture, GL11C.GL_TEXTURE_2D);
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             GL11C.nglTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
             GL11C.glBindTexture(target, previousTexture);
@@ -1703,12 +1240,12 @@ public class GL41Backend implements GLBackend {
     @Override
     public void textureSubImage3D(final int texture, final int level, final int xoffset, final int yoffset, final int zoffset, final int width, final int height, final int depth, final int format, final int type, final long pixels) {
         if (this.capabilities.glTextureSubImage3D != 0L) {
-            GL45C.nglTextureSubImage3D(texture, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels);
+            super.textureSubImage3D(texture, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels);
         } else if (this.capabilities.glTextureSubImage3DEXT != 0L) {
             EXTDirectStateAccess.nglTextureSubImage3DEXT(texture, this.textureTargets.getOrDefault(texture, GL12C.GL_TEXTURE_3D), level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels);
         } else {
             final int target = this.textureTargets.getOrDefault(texture, GL12C.GL_TEXTURE_3D);
-            final int previousTexture = GL11C.glGetInteger(getTextureQuery(target));
+            final int previousTexture = this.getInteger(getTextureQuery(target));
             GL11C.glBindTexture(target, texture);
             GL12C.nglTexSubImage3D(target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels);
             GL11C.glBindTexture(target, previousTexture);
@@ -1718,14 +1255,14 @@ public class GL41Backend implements GLBackend {
     @Override
     public boolean unmapNamedBuffer(final int buffer) {
         if (this.capabilities.glUnmapNamedBuffer != 0L) {
-            return GL45C.glUnmapNamedBuffer(buffer);
+            return super.unmapNamedBuffer(buffer);
         } else if (this.capabilities.glUnmapNamedBufferEXT != 0L) {
             return EXTDirectStateAccess.glUnmapNamedBufferEXT(buffer);
         } else {
-            final int previousBuffer = GL11C.glGetInteger(GL31C.GL_COPY_WRITE_BUFFER);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
+            final int previousBuffer = this.getInteger(GL31C.GL_COPY_WRITE_BUFFER);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, buffer);
             final boolean result = GL15C.glUnmapBuffer(GL31C.GL_COPY_WRITE_BUFFER);
-            GL15C.glBindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
+            this.bindBuffer(GL31C.GL_COPY_WRITE_BUFFER, previousBuffer);
             return result;
         }
     }
@@ -1737,14 +1274,14 @@ public class GL41Backend implements GLBackend {
         vertexAttribute.bindingindex = bindingindex;
 
         if (this.capabilities.glVertexArrayAttribBinding != 0L) {
-            GL45C.glVertexArrayAttribBinding(vaobj, attribindex, bindingindex);
+            super.vertexArrayAttribBinding(vaobj, attribindex, bindingindex);
         } else if (this.capabilities.glVertexArrayVertexAttribBindingEXT != 0L) {
             ARBVertexAttribBinding.glVertexArrayVertexAttribBindingEXT(vaobj, attribindex, bindingindex);
         } else if (this.capabilities.glVertexAttribBinding != 0L) {
-            final int previousVertexArray = GL11C.glGetInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
-            GL30C.glBindVertexArray(vaobj);
+            final int previousVertexArray = this.getInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
+            this.bindVertexArray(vaobj);
             GL43C.glVertexAttribBinding(attribindex, bindingindex);
-            GL30C.glBindVertexArray(previousVertexArray);
+            this.bindVertexArray(previousVertexArray);
         } else {
             vertexArrayObject.applyAttribute(attribindex);
         }
@@ -1757,14 +1294,14 @@ public class GL41Backend implements GLBackend {
         vertexAttribute.format = new VertexArrayObject.VertexAttribFFormat(size, type, normalized, relativeoffset);
 
         if (this.capabilities.glVertexArrayAttribFormat != 0L) {
-            GL45C.glVertexArrayAttribFormat(vaobj, attribindex, size, type, normalized, relativeoffset);
+            super.vertexArrayAttribFormat(vaobj, attribindex, size, type, normalized, relativeoffset);
         } else if (this.capabilities.glVertexArrayVertexAttribFormatEXT != 0L) {
             ARBVertexAttribBinding.glVertexArrayVertexAttribFormatEXT(vaobj, attribindex, size, type, normalized, relativeoffset);
         } else if (this.capabilities.glVertexAttribFormat != 0L) {
-            final int previousVertexArray = GL11C.glGetInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
-            GL30C.glBindVertexArray(vaobj);
+            final int previousVertexArray = this.getInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
+            this.bindVertexArray(vaobj);
             GL43C.glVertexAttribFormat(attribindex, size, type, normalized, relativeoffset);
-            GL30C.glBindVertexArray(previousVertexArray);
+            this.bindVertexArray(previousVertexArray);
         } else {
             vertexArrayObject.applyAttribute(attribindex);
         }
@@ -1777,14 +1314,14 @@ public class GL41Backend implements GLBackend {
         vertexAttribute.format = new VertexArrayObject.VertexAttribIFormat(size, type, relativeoffset);
 
         if (this.capabilities.glVertexArrayAttribIFormat != 0L) {
-            GL45C.glVertexArrayAttribIFormat(vaobj, attribindex, size, type, relativeoffset);
+            super.vertexArrayAttribIFormat(vaobj, attribindex, size, type, relativeoffset);
         } else if (this.capabilities.glVertexArrayVertexAttribIFormatEXT != 0L) {
             ARBVertexAttribBinding.glVertexArrayVertexAttribIFormatEXT(vaobj, attribindex, size, type, relativeoffset);
         } else if (this.capabilities.glVertexAttribIFormat != 0L) {
-            final int previousVertexArray = GL11C.glGetInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
-            GL30C.glBindVertexArray(vaobj);
+            final int previousVertexArray = this.getInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
+            this.bindVertexArray(vaobj);
             GL43C.glVertexAttribIFormat(attribindex, size, type, relativeoffset);
-            GL30C.glBindVertexArray(previousVertexArray);
+            this.bindVertexArray(previousVertexArray);
         } else {
             vertexArrayObject.applyAttribute(attribindex);
         }
@@ -1797,14 +1334,14 @@ public class GL41Backend implements GLBackend {
         vertexAttribute.format = new VertexArrayObject.VertexAttribLFormat(size, type, relativeoffset);
 
         if (this.capabilities.glVertexArrayAttribLFormat != 0L) {
-            GL45C.glVertexArrayAttribLFormat(vaobj, attribindex, size, type, relativeoffset);
+            super.vertexArrayAttribLFormat(vaobj, attribindex, size, type, relativeoffset);
         } else if (this.capabilities.glVertexArrayVertexAttribLFormatEXT != 0L) {
             ARBVertexAttribBinding.glVertexArrayVertexAttribLFormatEXT(vaobj, attribindex, size, type, relativeoffset);
         } else if (this.capabilities.glVertexAttribLFormat != 0L) {
-            final int previousVertexArray = GL11C.glGetInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
-            GL30C.glBindVertexArray(vaobj);
+            final int previousVertexArray = this.getInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
+            this.bindVertexArray(vaobj);
             GL43C.glVertexAttribLFormat(attribindex, size, type, relativeoffset);
-            GL30C.glBindVertexArray(previousVertexArray);
+            this.bindVertexArray(previousVertexArray);
         } else {
             vertexArrayObject.applyAttribute(attribindex);
         }
@@ -1817,14 +1354,14 @@ public class GL41Backend implements GLBackend {
         vertexBufferBinding.divisor = divisor;
 
         if (this.capabilities.glVertexArrayBindingDivisor != 0L) {
-            GL45C.glVertexArrayBindingDivisor(vaobj, bindingindex, divisor);
+            super.vertexArrayBindingDivisor(vaobj, bindingindex, divisor);
         } else if (this.capabilities.glVertexArrayVertexBindingDivisorEXT != 0L) {
             ARBVertexAttribBinding.glVertexArrayVertexBindingDivisorEXT(vaobj, bindingindex, divisor);
         } else if (this.capabilities.glVertexBindingDivisor != 0L) {
-            final int previousVertexArray = GL11C.glGetInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
-            GL30C.glBindVertexArray(vaobj);
+            final int previousVertexArray = this.getInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
+            this.bindVertexArray(vaobj);
             GL43C.glVertexBindingDivisor(bindingindex, divisor);
-            GL30C.glBindVertexArray(previousVertexArray);
+            this.bindVertexArray(previousVertexArray);
         } else {
             vertexArrayObject.applyVertexBufferBinding(bindingindex);
         }
@@ -1832,13 +1369,13 @@ public class GL41Backend implements GLBackend {
 
     @Override
     public void vertexArrayElementBuffer(final int vaobj, final int buffer) {
-        if (this.capabilities.glVertexArrayElementBuffer != 0L && !(buffer == 0 && ThinGL.workarounds().isDsaVertexArrayElementBufferUnbindBroken())) {
-            GL45C.glVertexArrayElementBuffer(vaobj, buffer);
+        if (this.capabilities.glVertexArrayElementBuffer != 0L) {
+            super.vertexArrayElementBuffer(vaobj, buffer);
         } else {
-            final int previousVertexArray = GL11C.glGetInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
-            GL30C.glBindVertexArray(vaobj);
-            GL15C.glBindBuffer(GL15C.GL_ELEMENT_ARRAY_BUFFER, buffer);
-            GL30C.glBindVertexArray(previousVertexArray);
+            final int previousVertexArray = this.getInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
+            this.bindVertexArray(vaobj);
+            this.bindBuffer(GL15C.GL_ELEMENT_ARRAY_BUFFER, buffer);
+            this.bindVertexArray(previousVertexArray);
         }
     }
 
@@ -1851,14 +1388,14 @@ public class GL41Backend implements GLBackend {
         vertexBufferBinding.stride = stride;
 
         if (this.capabilities.glVertexArrayVertexBuffer != 0L) {
-            GL45C.glVertexArrayVertexBuffer(vaobj, bindingindex, buffer, offset, stride);
+            super.vertexArrayVertexBuffer(vaobj, bindingindex, buffer, offset, stride);
         } else if (this.capabilities.glVertexArrayBindVertexBufferEXT != 0L) {
             ARBVertexAttribBinding.glVertexArrayBindVertexBufferEXT(vaobj, bindingindex, buffer, offset, stride);
         } else if (this.capabilities.glBindVertexBuffer != 0L) {
-            final int previousVertexArray = GL11C.glGetInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
-            GL30C.glBindVertexArray(vaobj);
+            final int previousVertexArray = this.getInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
+            this.bindVertexArray(vaobj);
             GL43C.glBindVertexBuffer(bindingindex, buffer, offset, stride);
-            GL30C.glBindVertexArray(previousVertexArray);
+            this.bindVertexArray(previousVertexArray);
         } else {
             vertexArrayObject.applyVertexBufferBinding(bindingindex);
         }
