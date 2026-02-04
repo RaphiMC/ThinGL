@@ -22,9 +22,11 @@ import org.lwjgl.opengl.*;
 
 public class GL45Backend implements GLBackend {
 
+    private final GLCapabilities capabilities;
     private final boolean isIntelGpu;
 
     public GL45Backend() {
+        this.capabilities = GL.getCapabilities();
         final String gpuVendor = GL11C.glGetString(GL11C.GL_VENDOR);
         this.isIntelGpu = gpuVendor != null && gpuVendor.equalsIgnoreCase("Intel");
     }
@@ -881,6 +883,20 @@ public class GL45Backend implements GLBackend {
 
     @Override
     public void vertexArrayAttribIFormat(final int vaobj, final int attribindex, final int size, final int type, final int relativeoffset) {
+        if (this.isIntelGpu) {
+            // The Intel OpenGL driver has a broken glVertexArrayAttribIFormat implementation.
+            // Confirmed broken on Intel UHD Graphics 630 (Driver version: 31.0.101.2134) and Intel UHD Graphics 770 (Driver version: 32.0.101.7026)
+            if (this.capabilities.glVertexArrayVertexAttribIFormatEXT != 0L) {
+                ARBVertexAttribBinding.glVertexArrayVertexAttribIFormatEXT(vaobj, attribindex, size, type, relativeoffset);
+            } else {
+                final int previousVertexArray = this.getInteger(GL30C.GL_VERTEX_ARRAY_BINDING);
+                this.bindVertexArray(vaobj);
+                GL43C.glVertexAttribIFormat(attribindex, size, type, relativeoffset);
+                this.bindVertexArray(previousVertexArray);
+            }
+            return;
+        }
+
         GL45C.glVertexArrayAttribIFormat(vaobj, attribindex, size, type, relativeoffset);
     }
 
