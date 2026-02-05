@@ -9,3 +9,7 @@ float median(float r, float g, float b) {
 float gaussian(float x, float sigma) {
     return exp(-pow(x, 2.0) / (2.0 * pow(sigma, 2.0)));
 }
+
+float map(float v, float inMin, float inMax, float outMin, float outMax) {
+    return (v - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+}
