@@ -58,7 +58,7 @@ dependencies {
     compileOnly "org.lwjgl:lwjgl-meshoptimizer:3.4.1"
     compileOnly "io.github.earcut4j:earcut4j:2.2.2"
     compileOnly "com.github.RaphiMC:gif-reader:0bdb781a96"
-    compileOnly "com.twelvemonkeys.imageio:imageio-webp:3.13.0"
+    compileOnly "com.twelvemonkeys.imageio:imageio-webp:3.13.1"
     compileOnly "com.github.weisj:jsvg:2.0.0"
 
     // Example dependencies
