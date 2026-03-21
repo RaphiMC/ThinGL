@@ -49,4 +49,4 @@ You can however easily change this by calling ``LoggerFactory.setBuilder(Slf4jLo
 If you encounter any issues, please report them on the
 [issue tracker](https://github.com/RaphiMC/ThinGL/issues).  
 If you just want to talk or need help implementing ThinGL feel free to join my
-[Discord](https://discord.gg/dCzT9XHEWu).
+[Discord](https://raphimc.net/discord).
