@@ -21,9 +21,13 @@ import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import it.unimi.dsi.fastutil.floats.FloatStack;
 import net.raphimc.thingl.gl.renderer.Renderer;
 import net.raphimc.thingl.gl.text.TextRenderer;
+import net.raphimc.thingl.resource.font.Font;
 import net.raphimc.thingl.text.TextBlock;
 import net.raphimc.thingl.text.TextLine;
 import net.raphimc.thingl.text.TextRun;
+import net.raphimc.thingl.text.TextStyle;
+import net.raphimc.thingl.text.font.FontSet;
+import net.raphimc.thingl.text.markup.MarkupTextParser;
 import net.raphimc.thingl.text.shaping.ShapedTextBlock;
 import net.raphimc.thingl.text.shaping.ShapedTextLine;
 import net.raphimc.thingl.text.shaping.ShapedTextRun;
@@ -44,118 +48,124 @@ public class RendererText extends Renderer {
         this.horizontalOriginStack.push(HorizontalOrigin.VISUAL_LEFT);
     }
 
-    public void textBlock(final Matrix4f positionMatrix, final TextBlock textBlock, final float x, final float y) {
-        this.textBlock(positionMatrix, textBlock.shape(), x, y);
+    public ShapedTextRun string(final Matrix4f positionMatrix, final Font font, final String text, final TextStyle style, final float x, final float y) {
+        return this.textRun(positionMatrix, TextRun.fromString(font, text, style), x, y);
     }
 
-    public void textBlock(final Matrix4f positionMatrix, final TextBlock textBlock, final float x, final float y, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
-        this.textBlock(positionMatrix, textBlock.shape(), x, y, verticalOrigin, horizontalOrigin);
+    public ShapedTextRun string(final Matrix4f positionMatrix, final Font font, final String text, final TextStyle style, final float x, final float y, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        return this.textRun(positionMatrix, TextRun.fromString(font, text, style), x, y, verticalOrigin, horizontalOrigin);
     }
 
-    public void textBlock(final Matrix4f positionMatrix, final TextBlock textBlock, final float x, final float y, final float z) {
-        this.textBlock(positionMatrix, textBlock.shape(), x, y, z);
+    public ShapedTextRun string(final Matrix4f positionMatrix, final Font font, final String text, final TextStyle style, final float x, final float y, final float z) {
+        return this.textRun(positionMatrix, TextRun.fromString(font, text, style), x, y, z);
     }
 
-    public void textBlock(final Matrix4f positionMatrix, final TextBlock textBlock, final float x, final float y, final float z, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
-        this.textBlock(positionMatrix, textBlock.shape(), x, y, z, verticalOrigin, horizontalOrigin);
+    public ShapedTextRun string(final Matrix4f positionMatrix, final Font font, final String text, final TextStyle style, final float x, final float y, final float z, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        return this.textRun(positionMatrix, TextRun.fromString(font, text, style), x, y, z, verticalOrigin, horizontalOrigin);
     }
 
-    public void textBlock(final Matrix4f positionMatrix, final ShapedTextBlock textBlock, final float x, final float y) {
-        this.textBlock(positionMatrix, textBlock, x, y, this.getVerticalOrigin(), this.getHorizontalOrigin());
+    public ShapedTextLine string(final Matrix4f positionMatrix, final FontSet fontSet, final String text, final TextStyle style, final float x, final float y) {
+        return this.textLine(positionMatrix, TextLine.fromString(fontSet, text, style), x, y);
     }
 
-    public void textBlock(final Matrix4f positionMatrix, final ShapedTextBlock textBlock, final float x, final float y, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
-        this.textBlock(positionMatrix, textBlock, x, y, 0, verticalOrigin, horizontalOrigin);
+    public ShapedTextLine string(final Matrix4f positionMatrix, final FontSet fontSet, final String text, final TextStyle style, final float x, final float y, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        return this.textLine(positionMatrix, TextLine.fromString(fontSet, text, style), x, y, verticalOrigin, horizontalOrigin);
     }
 
-    public void textBlock(final Matrix4f positionMatrix, final ShapedTextBlock textBlock, final float x, final float y, final float z) {
-        this.textBlock(positionMatrix, textBlock, x, y, z, this.getVerticalOrigin(), this.getHorizontalOrigin());
+    public ShapedTextLine string(final Matrix4f positionMatrix, final FontSet fontSet, final String text, final TextStyle style, final float x, final float y, final float z) {
+        return this.textLine(positionMatrix, TextLine.fromString(fontSet, text, style), x, y, z);
     }
 
-    public void textBlock(final Matrix4f positionMatrix, final ShapedTextBlock textBlock, float x, float y, final float z, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
-        y -= switch (verticalOrigin) {
-            case BASELINE -> 0;
-            case LOGICAL_TOP -> textBlock.logicalBounds().minY;
-            case LOGICAL_CENTER -> textBlock.logicalBounds().minY + textBlock.logicalBounds().lengthY() / 2F;
-            case LOGICAL_BOTTOM -> textBlock.logicalBounds().maxY;
-            case VISUAL_TOP -> textBlock.visualBounds().minY;
-            case VISUAL_CENTER -> textBlock.visualBounds().minY + textBlock.visualBounds().lengthY() / 2F;
-            case VISUAL_BOTTOM -> textBlock.visualBounds().maxY;
-        } * this.textRenderer.getGlobalScale();
-        x -= switch (horizontalOrigin) {
-            case LOGICAL_LEFT -> 0;
-            case VISUAL_LEFT -> textBlock.visualBounds().minX;
-            case VISUAL_CENTER -> textBlock.visualBounds().minX + textBlock.visualBounds().lengthX() / 2F;
-            case VISUAL_RIGHT -> textBlock.visualBounds().maxX;
-        } * this.textRenderer.getGlobalScale();
-
-        this.textRenderer.renderTextBlock(positionMatrix, this.targetMultiDrawBatchDataHolder, textBlock, x, y, z);
-        this.drawIfNotBuffering();
+    public ShapedTextLine string(final Matrix4f positionMatrix, final FontSet fontSet, final String text, final TextStyle style, final float x, final float y, final float z, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        return this.textLine(positionMatrix, TextLine.fromString(fontSet, text, style), x, y, z, verticalOrigin, horizontalOrigin);
     }
 
-    public void textLine(final Matrix4f positionMatrix, final TextLine textLine, final float x, final float y) {
-        this.textLine(positionMatrix, textLine.shape(), x, y);
+    public ShapedTextRun markupString(final Matrix4f positionMatrix, final Font font, final String markupText, final float x, final float y) {
+        return this.textRun(positionMatrix, MarkupTextParser.parseSafe(font, markupText), x, y);
     }
 
-    public void textLine(final Matrix4f positionMatrix, final TextLine textLine, final float x, final float y, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
-        this.textLine(positionMatrix, textLine.shape(), x, y, verticalOrigin, horizontalOrigin);
+    public ShapedTextRun markupString(final Matrix4f positionMatrix, final Font font, final String markupText, final TextStyle style, final float x, final float y) {
+        return this.textRun(positionMatrix, MarkupTextParser.parseSafe(font, markupText, style), x, y);
     }
 
-    public void textLine(final Matrix4f positionMatrix, final TextLine textLine, final float x, final float y, final float z) {
-        this.textLine(positionMatrix, textLine.shape(), x, y, z);
+    public ShapedTextRun markupString(final Matrix4f positionMatrix, final Font font, final String markupText, final float x, final float y, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        return this.textRun(positionMatrix, MarkupTextParser.parseSafe(font, markupText), x, y, verticalOrigin, horizontalOrigin);
     }
 
-    public void textLine(final Matrix4f positionMatrix, final TextLine textLine, final float x, final float y, final float z, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
-        this.textLine(positionMatrix, textLine.shape(), x, y, z, verticalOrigin, horizontalOrigin);
+    public ShapedTextRun markupString(final Matrix4f positionMatrix, final Font font, final String markupText, final TextStyle style, final float x, final float y, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        return this.textRun(positionMatrix, MarkupTextParser.parseSafe(font, markupText, style), x, y, verticalOrigin, horizontalOrigin);
     }
 
-    public void textLine(final Matrix4f positionMatrix, final ShapedTextLine textLine, final float x, final float y) {
-        this.textLine(positionMatrix, textLine, x, y, this.getVerticalOrigin(), this.getHorizontalOrigin());
+    public ShapedTextRun markupString(final Matrix4f positionMatrix, final Font font, final String markupText, final float x, final float y, final float z) {
+        return this.textRun(positionMatrix, MarkupTextParser.parseSafe(font, markupText), x, y, z);
     }
 
-    public void textLine(final Matrix4f positionMatrix, final ShapedTextLine textLine, final float x, final float y, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
-        this.textLine(positionMatrix, textLine, x, y, 0, verticalOrigin, horizontalOrigin);
+    public ShapedTextRun markupString(final Matrix4f positionMatrix, final Font font, final String markupText, final TextStyle style, final float x, final float y, final float z) {
+        return this.textRun(positionMatrix, MarkupTextParser.parseSafe(font, markupText, style), x, y, z);
     }
 
-    public void textLine(final Matrix4f positionMatrix, final ShapedTextLine textLine, final float x, final float y, final float z) {
-        this.textLine(positionMatrix, textLine, x, y, z, this.getVerticalOrigin(), this.getHorizontalOrigin());
+    public ShapedTextRun markupString(final Matrix4f positionMatrix, final Font font, final String markupText, final float x, final float y, final float z, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        return this.textRun(positionMatrix, MarkupTextParser.parseSafe(font, markupText), x, y, z, verticalOrigin, horizontalOrigin);
     }
 
-    public void textLine(final Matrix4f positionMatrix, final ShapedTextLine textLine, float x, float y, final float z, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
-        y -= switch (verticalOrigin) {
-            case BASELINE -> 0;
-            case LOGICAL_TOP -> textLine.logicalBounds().minY;
-            case LOGICAL_CENTER -> textLine.logicalBounds().minY + textLine.logicalBounds().lengthY() / 2F;
-            case LOGICAL_BOTTOM -> textLine.logicalBounds().maxY;
-            case VISUAL_TOP -> textLine.visualBounds().minY;
-            case VISUAL_CENTER -> textLine.visualBounds().minY + textLine.visualBounds().lengthY() / 2F;
-            case VISUAL_BOTTOM -> textLine.visualBounds().maxY;
-        } * this.textRenderer.getGlobalScale();
-        x -= switch (horizontalOrigin) {
-            case LOGICAL_LEFT -> 0;
-            case VISUAL_LEFT -> textLine.visualBounds().minX;
-            case VISUAL_CENTER -> textLine.visualBounds().minX + textLine.visualBounds().lengthX() / 2F;
-            case VISUAL_RIGHT -> textLine.visualBounds().maxX;
-        } * this.textRenderer.getGlobalScale();
-
-        this.textRenderer.renderTextLine(positionMatrix, this.targetMultiDrawBatchDataHolder, textLine, x, y, z);
-        this.drawIfNotBuffering();
+    public ShapedTextRun markupString(final Matrix4f positionMatrix, final Font font, final String markupText, final TextStyle style, final float x, final float y, final float z, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        return this.textRun(positionMatrix, MarkupTextParser.parseSafe(font, markupText, style), x, y, z, verticalOrigin, horizontalOrigin);
     }
 
-    public void textRun(final Matrix4f positionMatrix, final TextRun textRun, final float x, final float y) {
-        this.textRun(positionMatrix, textRun.shape(), x, y);
+    public ShapedTextLine markupString(final Matrix4f positionMatrix, final FontSet fontSet, final String markupText, final float x, final float y) {
+        return this.textLine(positionMatrix, MarkupTextParser.parseSafe(fontSet, markupText), x, y);
     }
 
-    public void textRun(final Matrix4f positionMatrix, final TextRun textRun, final float x, final float y, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
-        this.textRun(positionMatrix, textRun.shape(), x, y, verticalOrigin, horizontalOrigin);
+    public ShapedTextLine markupString(final Matrix4f positionMatrix, final FontSet fontSet, final String markupText, final TextStyle style, final float x, final float y) {
+        return this.textLine(positionMatrix, MarkupTextParser.parseSafe(fontSet, markupText, style), x, y);
     }
 
-    public void textRun(final Matrix4f positionMatrix, final TextRun textRun, final float x, final float y, final float z) {
-        this.textRun(positionMatrix, textRun.shape(), x, y, z);
+    public ShapedTextLine markupString(final Matrix4f positionMatrix, final FontSet fontSet, final String markupText, final float x, final float y, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        return this.textLine(positionMatrix, MarkupTextParser.parseSafe(fontSet, markupText), x, y, verticalOrigin, horizontalOrigin);
     }
 
-    public void textRun(final Matrix4f positionMatrix, final TextRun textRun, final float x, final float y, final float z, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
-        this.textRun(positionMatrix, textRun.shape(), x, y, z, verticalOrigin, horizontalOrigin);
+    public ShapedTextLine markupString(final Matrix4f positionMatrix, final FontSet fontSet, final String markupText, final TextStyle style, final float x, final float y, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        return this.textLine(positionMatrix, MarkupTextParser.parseSafe(fontSet, markupText, style), x, y, verticalOrigin, horizontalOrigin);
+    }
+
+    public ShapedTextLine markupString(final Matrix4f positionMatrix, final FontSet fontSet, final String markupText, final float x, final float y, final float z) {
+        return this.textLine(positionMatrix, MarkupTextParser.parseSafe(fontSet, markupText), x, y, z);
+    }
+
+    public ShapedTextLine markupString(final Matrix4f positionMatrix, final FontSet fontSet, final String markupText, final TextStyle style, final float x, final float y, final float z) {
+        return this.textLine(positionMatrix, MarkupTextParser.parseSafe(fontSet, markupText, style), x, y, z);
+    }
+
+    public ShapedTextLine markupString(final Matrix4f positionMatrix, final FontSet fontSet, final String markupText, final float x, final float y, final float z, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        return this.textLine(positionMatrix, MarkupTextParser.parseSafe(fontSet, markupText), x, y, z, verticalOrigin, horizontalOrigin);
+    }
+
+    public ShapedTextLine markupString(final Matrix4f positionMatrix, final FontSet fontSet, final String markupText, final TextStyle style, final float x, final float y, final float z, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        return this.textLine(positionMatrix, MarkupTextParser.parseSafe(fontSet, markupText, style), x, y, z, verticalOrigin, horizontalOrigin);
+    }
+
+    public ShapedTextRun textRun(final Matrix4f positionMatrix, final TextRun textRun, final float x, final float y) {
+        final ShapedTextRun shapedTextRun = textRun.shape();
+        this.textRun(positionMatrix, shapedTextRun, x, y);
+        return shapedTextRun;
+    }
+
+    public ShapedTextRun textRun(final Matrix4f positionMatrix, final TextRun textRun, final float x, final float y, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        final ShapedTextRun shapedTextRun = textRun.shape();
+        this.textRun(positionMatrix, shapedTextRun, x, y, verticalOrigin, horizontalOrigin);
+        return shapedTextRun;
+    }
+
+    public ShapedTextRun textRun(final Matrix4f positionMatrix, final TextRun textRun, final float x, final float y, final float z) {
+        final ShapedTextRun shapedTextRun = textRun.shape();
+        this.textRun(positionMatrix, shapedTextRun, x, y, z);
+        return shapedTextRun;
+    }
+
+    public ShapedTextRun textRun(final Matrix4f positionMatrix, final TextRun textRun, final float x, final float y, final float z, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        final ShapedTextRun shapedTextRun = textRun.shape();
+        this.textRun(positionMatrix, shapedTextRun, x, y, z, verticalOrigin, horizontalOrigin);
+        return shapedTextRun;
     }
 
     public void textRun(final Matrix4f positionMatrix, final ShapedTextRun textRun, final float x, final float y) {
@@ -191,28 +201,154 @@ public class RendererText extends Renderer {
         this.drawIfNotBuffering();
     }
 
-    public float getVisualWidth(final ShapedTextLine textLine) {
-        return textLine.visualBounds().lengthX() * this.textRenderer.getGlobalScale();
+    public ShapedTextLine textLine(final Matrix4f positionMatrix, final TextLine textLine, final float x, final float y) {
+        final ShapedTextLine shapedTextLine = textLine.shape();
+        this.textLine(positionMatrix, shapedTextLine, x, y);
+        return shapedTextLine;
+    }
+
+    public ShapedTextLine textLine(final Matrix4f positionMatrix, final TextLine textLine, final float x, final float y, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        final ShapedTextLine shapedTextLine = textLine.shape();
+        this.textLine(positionMatrix, shapedTextLine, x, y, verticalOrigin, horizontalOrigin);
+        return shapedTextLine;
+    }
+
+    public ShapedTextLine textLine(final Matrix4f positionMatrix, final TextLine textLine, final float x, final float y, final float z) {
+        final ShapedTextLine shapedTextLine = textLine.shape();
+        this.textLine(positionMatrix, shapedTextLine, x, y, z);
+        return shapedTextLine;
+    }
+
+    public ShapedTextLine textLine(final Matrix4f positionMatrix, final TextLine textLine, final float x, final float y, final float z, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        final ShapedTextLine shapedTextLine = textLine.shape();
+        this.textLine(positionMatrix, shapedTextLine, x, y, z, verticalOrigin, horizontalOrigin);
+        return shapedTextLine;
+    }
+
+    public void textLine(final Matrix4f positionMatrix, final ShapedTextLine textLine, final float x, final float y) {
+        this.textLine(positionMatrix, textLine, x, y, this.getVerticalOrigin(), this.getHorizontalOrigin());
+    }
+
+    public void textLine(final Matrix4f positionMatrix, final ShapedTextLine textLine, final float x, final float y, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        this.textLine(positionMatrix, textLine, x, y, 0, verticalOrigin, horizontalOrigin);
+    }
+
+    public void textLine(final Matrix4f positionMatrix, final ShapedTextLine textLine, final float x, final float y, final float z) {
+        this.textLine(positionMatrix, textLine, x, y, z, this.getVerticalOrigin(), this.getHorizontalOrigin());
+    }
+
+    public void textLine(final Matrix4f positionMatrix, final ShapedTextLine textLine, float x, float y, final float z, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        y -= switch (verticalOrigin) {
+            case BASELINE -> 0;
+            case LOGICAL_TOP -> textLine.logicalBounds().minY;
+            case LOGICAL_CENTER -> textLine.logicalBounds().minY + textLine.logicalBounds().lengthY() / 2F;
+            case LOGICAL_BOTTOM -> textLine.logicalBounds().maxY;
+            case VISUAL_TOP -> textLine.visualBounds().minY;
+            case VISUAL_CENTER -> textLine.visualBounds().minY + textLine.visualBounds().lengthY() / 2F;
+            case VISUAL_BOTTOM -> textLine.visualBounds().maxY;
+        } * this.textRenderer.getGlobalScale();
+        x -= switch (horizontalOrigin) {
+            case LOGICAL_LEFT -> 0;
+            case VISUAL_LEFT -> textLine.visualBounds().minX;
+            case VISUAL_CENTER -> textLine.visualBounds().minX + textLine.visualBounds().lengthX() / 2F;
+            case VISUAL_RIGHT -> textLine.visualBounds().maxX;
+        } * this.textRenderer.getGlobalScale();
+
+        this.textRenderer.renderTextLine(positionMatrix, this.targetMultiDrawBatchDataHolder, textLine, x, y, z);
+        this.drawIfNotBuffering();
+    }
+
+    public ShapedTextBlock textBlock(final Matrix4f positionMatrix, final TextBlock textBlock, final float x, final float y) {
+        final ShapedTextBlock shapedTextBlock = textBlock.shape();
+        this.textBlock(positionMatrix, shapedTextBlock, x, y);
+        return shapedTextBlock;
+    }
+
+    public ShapedTextBlock textBlock(final Matrix4f positionMatrix, final TextBlock textBlock, final float x, final float y, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        final ShapedTextBlock shapedTextBlock = textBlock.shape();
+        this.textBlock(positionMatrix, shapedTextBlock, x, y, verticalOrigin, horizontalOrigin);
+        return shapedTextBlock;
+    }
+
+    public ShapedTextBlock textBlock(final Matrix4f positionMatrix, final TextBlock textBlock, final float x, final float y, final float z) {
+        final ShapedTextBlock shapedTextBlock = textBlock.shape();
+        this.textBlock(positionMatrix, shapedTextBlock, x, y, z);
+        return shapedTextBlock;
+    }
+
+    public ShapedTextBlock textBlock(final Matrix4f positionMatrix, final TextBlock textBlock, final float x, final float y, final float z, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        final ShapedTextBlock shapedTextBlock = textBlock.shape();
+        this.textBlock(positionMatrix, shapedTextBlock, x, y, z, verticalOrigin, horizontalOrigin);
+        return shapedTextBlock;
+    }
+
+    public void textBlock(final Matrix4f positionMatrix, final ShapedTextBlock textBlock, final float x, final float y) {
+        this.textBlock(positionMatrix, textBlock, x, y, this.getVerticalOrigin(), this.getHorizontalOrigin());
+    }
+
+    public void textBlock(final Matrix4f positionMatrix, final ShapedTextBlock textBlock, final float x, final float y, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        this.textBlock(positionMatrix, textBlock, x, y, 0, verticalOrigin, horizontalOrigin);
+    }
+
+    public void textBlock(final Matrix4f positionMatrix, final ShapedTextBlock textBlock, final float x, final float y, final float z) {
+        this.textBlock(positionMatrix, textBlock, x, y, z, this.getVerticalOrigin(), this.getHorizontalOrigin());
+    }
+
+    public void textBlock(final Matrix4f positionMatrix, final ShapedTextBlock textBlock, float x, float y, final float z, final VerticalOrigin verticalOrigin, final HorizontalOrigin horizontalOrigin) {
+        y -= switch (verticalOrigin) {
+            case BASELINE -> 0;
+            case LOGICAL_TOP -> textBlock.logicalBounds().minY;
+            case LOGICAL_CENTER -> textBlock.logicalBounds().minY + textBlock.logicalBounds().lengthY() / 2F;
+            case LOGICAL_BOTTOM -> textBlock.logicalBounds().maxY;
+            case VISUAL_TOP -> textBlock.visualBounds().minY;
+            case VISUAL_CENTER -> textBlock.visualBounds().minY + textBlock.visualBounds().lengthY() / 2F;
+            case VISUAL_BOTTOM -> textBlock.visualBounds().maxY;
+        } * this.textRenderer.getGlobalScale();
+        x -= switch (horizontalOrigin) {
+            case LOGICAL_LEFT -> 0;
+            case VISUAL_LEFT -> textBlock.visualBounds().minX;
+            case VISUAL_CENTER -> textBlock.visualBounds().minX + textBlock.visualBounds().lengthX() / 2F;
+            case VISUAL_RIGHT -> textBlock.visualBounds().maxX;
+        } * this.textRenderer.getGlobalScale();
+
+        this.textRenderer.renderTextBlock(positionMatrix, this.targetMultiDrawBatchDataHolder, textBlock, x, y, z);
+        this.drawIfNotBuffering();
     }
 
     public float getVisualWidth(final ShapedTextRun textRun) {
         return textRun.visualBounds().lengthX() * this.textRenderer.getGlobalScale();
     }
 
-    public float getVisualHeight(final ShapedTextLine textLine) {
-        return textLine.visualBounds().lengthY() * this.textRenderer.getGlobalScale();
-    }
-
     public float getVisualHeight(final ShapedTextRun textRun) {
         return textRun.visualBounds().lengthY() * this.textRenderer.getGlobalScale();
+    }
+
+    public float getLogicalHeight(final ShapedTextRun textRun) {
+        return textRun.logicalBounds().lengthY() * this.textRenderer.getGlobalScale();
+    }
+
+    public float getVisualWidth(final ShapedTextLine textLine) {
+        return textLine.visualBounds().lengthX() * this.textRenderer.getGlobalScale();
+    }
+
+    public float getVisualHeight(final ShapedTextLine textLine) {
+        return textLine.visualBounds().lengthY() * this.textRenderer.getGlobalScale();
     }
 
     public float getLogicalHeight(final ShapedTextLine textLine) {
         return textLine.logicalBounds().lengthY() * this.textRenderer.getGlobalScale();
     }
 
-    public float getLogicalHeight(final ShapedTextRun textRun) {
-        return textRun.logicalBounds().lengthY() * this.textRenderer.getGlobalScale();
+    public float getVisualWidth(final ShapedTextBlock textBlock) {
+        return textBlock.visualBounds().lengthX() * this.textRenderer.getGlobalScale();
+    }
+
+    public float getVisualHeight(final ShapedTextBlock textBlock) {
+        return textBlock.visualBounds().lengthY() * this.textRenderer.getGlobalScale();
+    }
+
+    public float getLogicalHeight(final ShapedTextBlock textBlock) {
+        return textBlock.logicalBounds().lengthY() * this.textRenderer.getGlobalScale();
     }
 
     public void pushGlobalScale(final float scale) {

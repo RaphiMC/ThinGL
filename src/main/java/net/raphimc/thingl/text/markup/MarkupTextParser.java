@@ -140,10 +140,20 @@ import net.raphimc.thingl.text.markup.parser.MarkupParser;
  */
 public class MarkupTextParser {
 
-    private static final TextStyle DEFAULT_STYLE = new TextStyle();
+    public static TextRun parseSafe(final Font font, final String markupText) {
+        return parseSafe(font, markupText, TextStyle.WHITE);
+    }
+
+    public static TextRun parseSafe(final Font font, final String markupText, final TextStyle baseStyle) {
+        try {
+            return parse(font, markupText, baseStyle);
+        } catch (Exception e) {
+            return TextRun.fromString(font, "<markup error: " + e.getMessage() + ">", baseStyle);
+        }
+    }
 
     public static TextRun parse(final Font font, final String markupText) {
-        return parse(font, markupText, DEFAULT_STYLE);
+        return parse(font, markupText, TextStyle.WHITE);
     }
 
     public static TextRun parse(final Font font, final String markupText, final TextStyle baseStyle) {
@@ -153,8 +163,20 @@ public class MarkupTextParser {
         return textRunMarkupHandler.getTextRun();
     }
 
+    public static TextLine parseSafe(final FontSet fontSet, final String markupText) {
+        return parseSafe(fontSet, markupText, TextStyle.WHITE);
+    }
+
+    public static TextLine parseSafe(final FontSet fontSet, final String markupText, final TextStyle baseStyle) {
+        try {
+            return parse(fontSet, markupText, baseStyle);
+        } catch (Exception e) {
+            return TextLine.fromString(fontSet, "<markup error: " + e.getMessage() + ">", baseStyle);
+        }
+    }
+
     public static TextLine parse(final FontSet fontSet, final String markupText) {
-        return parse(fontSet, markupText, DEFAULT_STYLE);
+        return parse(fontSet, markupText, TextStyle.WHITE);
     }
 
     public static TextLine parse(final FontSet fontSet, final String markupText, final TextStyle baseStyle) {

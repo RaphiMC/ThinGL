@@ -35,7 +35,7 @@ public record TextSegment(String text, TextStyle style) {
     }
 
     public TextSegment(final String text) {
-        this(text, new TextStyle());
+        this(text, TextStyle.WHITE);
     }
 
 

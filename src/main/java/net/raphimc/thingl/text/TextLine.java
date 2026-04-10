@@ -51,7 +51,7 @@ public record TextLine(List<TextRun> runs) {
     }
 
     public static TextLine fromString(final FontSet fontSet, final String text) {
-        return fromString(fontSet, text, new TextStyle());
+        return fromString(fontSet, text, TextStyle.WHITE);
     }
 
     public static TextLine fromString(final FontSet fontSet, final String text, final Color color) {

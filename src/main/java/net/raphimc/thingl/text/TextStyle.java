@@ -22,6 +22,9 @@ import org.joml.Vector2f;
 
 public record TextStyle(Color color, int flags, Color outlineColor, Vector2f visualOffset) {
 
+    public static final TextStyle WHITE = new TextStyle(Color.WHITE);
+    public static final TextStyle BLACK = new TextStyle(Color.BLACK);
+
     public static final int STYLE_SHADOW_BIT = 1 << 0;
     public static final int STYLE_BOLD_BIT = 1 << 1;
     public static final int STYLE_ITALIC_BIT = 1 << 2;

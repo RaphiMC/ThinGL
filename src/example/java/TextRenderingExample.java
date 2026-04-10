@@ -27,7 +27,6 @@ import net.raphimc.thingl.resource.font.impl.FreeTypeFont;
 import net.raphimc.thingl.text.TextRun;
 import net.raphimc.thingl.text.TextSegment;
 import net.raphimc.thingl.text.TextStyle;
-import net.raphimc.thingl.text.markup.MarkupTextParser;
 import net.raphimc.thingl.text.shaping.ShapedTextRun;
 import net.raphimc.thingl.text.shaping.impl.HarfBuzzTextShaper;
 import org.joml.Matrix4f;
@@ -87,45 +86,43 @@ public class TextRenderingExample extends GLFWApplicationRunner {
             this.sdfTextRenderer.textRun(positionMatrix, this.multiColoredText, 0, 0);
         }
         { // Text outline
-            positionMatrix.translate(0, this.robotoRegular.getSize(), 0);
-            this.sdfTextRenderer.textRun(positionMatrix, TextRun.fromString(robotoRegular, "Outlined Text", Color.WHITE, 0, Color.RED), 0, 0);
+            positionMatrix.translate(0, this.robotoRegular.getHeight(), 0);
+            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "Outlined Text", new TextStyle(Color.WHITE, 0, Color.RED), 0, 0);
         }
         { // Bold text
-            positionMatrix.translate(0, this.robotoRegular.getSize(), 0);
-            this.sdfTextRenderer.textRun(positionMatrix, TextRun.fromString(robotoRegular, "Bold Text", Color.WHITE, TextStyle.STYLE_BOLD_BIT), 0, 0);
+            positionMatrix.translate(0, this.robotoRegular.getHeight(), 0);
+            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "Bold Text", new TextStyle(Color.WHITE, TextStyle.STYLE_BOLD_BIT), 0, 0);
         }
         { // Shadowed text
-            positionMatrix.translate(0, this.robotoRegular.getSize(), 0);
-            this.sdfTextRenderer.textRun(positionMatrix, TextRun.fromString(robotoRegular, "Shadowed Text", Color.WHITE, TextStyle.STYLE_SHADOW_BIT), 0, 0);
+            positionMatrix.translate(0, this.robotoRegular.getHeight(), 0);
+            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "Shadowed Text", new TextStyle(Color.WHITE, TextStyle.STYLE_SHADOW_BIT), 0, 0);
         }
         { // Italic text
-            positionMatrix.translate(0, this.robotoRegular.getSize(), 0);
-            this.sdfTextRenderer.textRun(positionMatrix, TextRun.fromString(robotoRegular, "Italic Text", Color.WHITE, TextStyle.STYLE_ITALIC_BIT), 0, 0);
+            positionMatrix.translate(0, this.robotoRegular.getHeight(), 0);
+            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "Italic Text", new TextStyle(Color.WHITE, TextStyle.STYLE_ITALIC_BIT), 0, 0);
         }
         { // Underline text
-            positionMatrix.translate(0, this.robotoRegular.getSize(), 0);
-            this.sdfTextRenderer.textRun(positionMatrix, TextRun.fromString(robotoRegular, "Underlined Text", Color.WHITE, TextStyle.STYLE_UNDERLINE_BIT), 0, 0);
+            positionMatrix.translate(0, this.robotoRegular.getHeight(), 0);
+            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "Underlined Text", new TextStyle(Color.WHITE, TextStyle.STYLE_UNDERLINE_BIT), 0, 0);
         }
         { // Strikethrough text
-            positionMatrix.translate(0, this.robotoRegular.getSize(), 0);
-            this.sdfTextRenderer.textRun(positionMatrix, TextRun.fromString(robotoRegular, "Strikethrough Text", Color.WHITE, TextStyle.STYLE_STRIKETHROUGH_BIT), 0, 0);
+            positionMatrix.translate(0, this.robotoRegular.getHeight(), 0);
+            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "Strikethrough Text", new TextStyle(Color.WHITE, TextStyle.STYLE_STRIKETHROUGH_BIT), 0, 0);
         }
         { // Multiple styles text
-            positionMatrix.translate(0, this.robotoRegular.getSize(), 0);
-            final TextRun textRun = TextRun.fromString(robotoRegular, "Multiple Styles", Color.WHITE, TextStyle.STYLE_SHADOW_BIT | TextStyle.STYLE_BOLD_BIT | TextStyle.STYLE_ITALIC_BIT, Color.BLUE);
-            this.sdfTextRenderer.textRun(positionMatrix, textRun, 0, 0);
+            positionMatrix.translate(0, this.robotoRegular.getHeight(), 0);
+            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "Multiple Styles", new TextStyle(Color.WHITE, TextStyle.STYLE_SHADOW_BIT | TextStyle.STYLE_BOLD_BIT | TextStyle.STYLE_ITALIC_BIT, Color.BLUE), 0, 0);
         }
         { // Markup text
-            positionMatrix.translate(0, this.robotoRegular.getSize(), 0);
-            final TextRun textRun = MarkupTextParser.parse(robotoRegular, "<color rgb=#FF0000><u>Mark<i>up</i></u></color> <color value=blue><b>Text</b></color>");
-            this.sdfTextRenderer.textRun(positionMatrix, textRun, 0, 0);
+            positionMatrix.translate(0, this.robotoRegular.getHeight(), 0);
+            this.sdfTextRenderer.markupString(positionMatrix, robotoRegular, "<color rgb=#FF0000><u>Mark<i>up</i></u></color> <color value=blue><b>Text</b></color>", 0, 0);
         }
         positionMatrix.popMatrix();
 
         { // Bitmap text renderer
             positionMatrix.pushMatrix();
             this.animatedScale(positionMatrix);
-            this.bitmapTextRenderer.textRun(positionMatrix, TextRun.fromString(robotoRegular, "Bitmap Text"), 0, 0);
+            this.bitmapTextRenderer.string(positionMatrix, robotoRegular, "Bitmap Text", TextStyle.WHITE, 0, 0);
             positionMatrix.popMatrix();
         }
 
@@ -134,7 +131,7 @@ public class TextRenderingExample extends GLFWApplicationRunner {
         { // SDF text renderer
             positionMatrix.pushMatrix();
             this.animatedScale(positionMatrix);
-            this.sdfTextRenderer.textRun(positionMatrix, TextRun.fromString(robotoRegular, "SDF Text!"), 0, 0);
+            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "SDF Text!", TextStyle.WHITE, 0, 0);
             positionMatrix.popMatrix();
         }
     }
