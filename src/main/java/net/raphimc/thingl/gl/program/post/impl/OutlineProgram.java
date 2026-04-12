@@ -17,14 +17,20 @@
  */
 package net.raphimc.thingl.gl.program.post.impl;
 
+import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.program.post.MultiPassAuxInputPostProcessingProgram;
+import net.raphimc.thingl.gl.resource.framebuffer.Framebuffer;
+import net.raphimc.thingl.gl.resource.sampler.Sampler;
 import net.raphimc.thingl.gl.resource.shader.Shader;
+import net.raphimc.thingl.gl.wrapper.GLStateManager;
 
 public class OutlineProgram extends MultiPassAuxInputPostProcessingProgram {
 
     public static final int STYLE_OUTER_BIT = 1 << 0;
     public static final int STYLE_INNER_BIT = 1 << 1;
     public static final int STYLE_SHARP_CORNERS_BIT = 1 << 2;
+
+    private int yExpand;
 
     public OutlineProgram(final Shader vertexShader, final Shader fragmentShader) {
         super(vertexShader, fragmentShader, 2);
@@ -46,6 +52,21 @@ public class OutlineProgram extends MultiPassAuxInputPostProcessingProgram {
         this.setUniformInt("u_Width", width);
         this.setUniformUnsignedInt("u_StyleFlags", styleFlags);
         this.setUniformUnsignedInt("u_InterpolationType", interpolation.ordinal());
+        if ((styleFlags & STYLE_OUTER_BIT) != 0) {
+            this.yExpand = width;
+        } else {
+            this.yExpand = 0;
+        }
+    }
+
+    @Override
+    protected void renderPass(final int pass, final Framebuffer sourceFramebuffer, final Sampler sourceSampler, final float xtl, final float ytl, final float xbr, final float ybr) {
+        if (pass == 0 && this.yExpand != 0) {
+            final GLStateManager.Viewport viewport = ThinGL.glStateManager().getViewport();
+            super.renderPass(pass, sourceFramebuffer, sourceSampler, xtl, Math.max(ytl - this.yExpand, 0), xbr, Math.min(ybr + this.yExpand, viewport.height()));
+        } else {
+            super.renderPass(pass, sourceFramebuffer, sourceSampler, xtl, ytl, xbr, ybr);
+        }
     }
 
     public enum Interpolation {
