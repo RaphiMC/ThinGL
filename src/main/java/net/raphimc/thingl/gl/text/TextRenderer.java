@@ -101,8 +101,33 @@ public abstract class TextRenderer {
         this.renderTextRun(positionMatrix, multiDrawBatchDataHolder, textRun, x, y, z, textRun.font());
     }
 
+    public void preloadGlyphs(final ShapedTextBlock textBlock) {
+        for (ShapedTextLine textLine : textBlock.lines()) {
+            this.preloadGlyphs(textLine);
+        }
+    }
+
+    public void preloadGlyphs(final ShapedTextLine textLine) {
+        for (ShapedTextRun textRun : textLine.runs()) {
+            this.preloadGlyphs(textRun);
+        }
+    }
+
+    public void preloadGlyphs(final ShapedTextRun textRun) {
+        for (ShapedTextSegment textSegment : textRun.segments()) {
+            this.preloadGlyphs(textSegment);
+        }
+    }
+
+    public void preloadGlyphs(final ShapedTextSegment textSegment) {
+        for (TextShaper.Glyph shapedGlyph : textSegment.glyphs()) {
+            this.getAtlasGlyph(shapedGlyph.fontGlyph());
+        }
+    }
+
     public void free() {
         this.glyphAtlases.forEach(StaticAtlasTexture::free);
+        this.glyphAtlases.clear();
     }
 
     public DrawBatch getDrawBatch() {
@@ -117,8 +142,8 @@ public abstract class TextRenderer {
         return this.globalScale;
     }
 
-    public void setGlobalScale(final float globalScale) {
-        this.globalScale = globalScale;
+    public void setGlobalScale(final float scale) {
+        this.globalScale = scale;
     }
 
     protected void renderTextRun(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextRun textRun, final float x, final float y, final float z, final Font decorationFont) {
