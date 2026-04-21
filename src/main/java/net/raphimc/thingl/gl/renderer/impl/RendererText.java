@@ -37,7 +37,7 @@ import java.util.Stack;
 
 public class RendererText extends Renderer {
 
-    protected final TextRenderer textRenderer;
+    private final TextRenderer textRenderer;
     private final FloatStack globalScaleStack = new FloatArrayList();
     private final Stack<VerticalOrigin> verticalOriginStack = new Stack<>();
     private final Stack<HorizontalOrigin> horizontalOriginStack = new Stack<>();
@@ -313,6 +313,30 @@ public class RendererText extends Renderer {
 
         this.textRenderer.renderTextBlock(positionMatrix, this.targetMultiDrawBatchDataHolder, textBlock, x, y, z);
         this.drawIfNotBuffering();
+    }
+
+    public float getStringVisualWidth(final Font font, final String text, final TextStyle style) {
+        return this.getVisualWidth(TextRun.fromString(font, text, style));
+    }
+
+    public float getStringVisualHeight(final Font font, final String text, final TextStyle style) {
+        return this.getVisualHeight(TextRun.fromString(font, text, style));
+    }
+
+    public float getStringLogicalHeight(final Font font, final String text, final TextStyle style) {
+        return this.getLogicalHeight(TextRun.fromString(font, text, style));
+    }
+
+    public float getStringVisualWidth(final FontSet fontSet, final String text, final TextStyle style) {
+        return this.getVisualWidth(TextLine.fromString(fontSet, text, style));
+    }
+
+    public float getStringVisualHeight(final FontSet fontSet, final String text, final TextStyle style) {
+        return this.getVisualHeight(TextLine.fromString(fontSet, text, style));
+    }
+
+    public float getStringLogicalHeight(final FontSet fontSet, final String text, final TextStyle style) {
+        return this.getLogicalHeight(TextLine.fromString(fontSet, text, style));
     }
 
     public float getVisualWidth(final TextRun textRun) {

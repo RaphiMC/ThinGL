@@ -24,7 +24,7 @@ import net.raphimc.thingl.rendering.dataholder.MultiDrawBatchDataHolder;
 
 public abstract class Renderer {
 
-    protected final MultiDrawBatchDataHolder immediateMultiDrawBatchDataHolder;
+    private final MultiDrawBatchDataHolder immediateMultiDrawBatchDataHolder;
     protected MultiDrawBatchDataHolder targetMultiDrawBatchDataHolder;
 
     public Renderer() {
