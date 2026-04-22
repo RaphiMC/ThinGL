@@ -17,19 +17,19 @@
  */
 package net.raphimc.thingl.resource.font;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.raphimc.thingl.implementation.Capabilities;
 import net.raphimc.thingl.resource.Resource;
 import net.raphimc.thingl.resource.image.Image;
+import org.lwjgl.system.MathUtil;
 import org.lwjgl.util.harfbuzz.HarfBuzz;
+
+import java.util.function.IntFunction;
 
 public abstract class Font extends Resource {
 
     private final int size;
-    private final Int2ObjectMap<Glyph> indexToGlyph = new Int2ObjectOpenHashMap<>();
-    private final Int2ObjectMap<Glyph> codePointToGlyph = new Int2ObjectOpenHashMap<>();
-    private final Glyph[] asciiCodePointToGlyph = new Glyph[256];
+    private final GlyphCache indexToGlyph = new GlyphCache(Integer.MAX_VALUE, this::loadGlyphByIndex);
+    private final GlyphCache codePointToGlyph = new GlyphCache(Character.MAX_CODE_POINT + 1, this::loadGlyphByCodePoint);
     private long harfBuzzInstance = 0L;
 
     protected Font(final int size) {
@@ -37,20 +37,11 @@ public abstract class Font extends Resource {
     }
 
     public Glyph getGlyphByIndex(final int glyphIndex) {
-        return this.indexToGlyph.computeIfAbsent(glyphIndex, this::loadGlyphByIndex);
+        return this.indexToGlyph.getOrLoad(glyphIndex);
     }
 
     public Glyph getGlyphByCodePoint(final int codePoint) {
-        if (codePoint >= 0 && codePoint < this.asciiCodePointToGlyph.length) {
-            final Glyph glyph = this.asciiCodePointToGlyph[codePoint];
-            if (glyph != null) {
-                return glyph;
-            } else {
-                return this.asciiCodePointToGlyph[codePoint] = this.loadGlyphByCodePoint(codePoint);
-            }
-        } else {
-            return this.codePointToGlyph.computeIfAbsent(codePoint, this::loadGlyphByCodePoint);
-        }
+        return this.codePointToGlyph.getOrLoad(codePoint);
     }
 
     public abstract GlyphBitmap createGlyphBitmap(final Glyph glyph, final GlyphBitmap.RenderMode renderMode);
@@ -115,6 +106,61 @@ public abstract class Font extends Resource {
             SDF,
             MSDF,
 
+        }
+
+    }
+
+    private static class GlyphCache {
+
+        private final int blockSize;
+        private final int blockShift;
+        private final int blockMask;
+        private final Glyph[][] blocks;
+        private final IntFunction<Glyph> loadFunction;
+
+        public GlyphCache(final int length, final IntFunction<Glyph> loadFunction) {
+            if (length <= 0) {
+                throw new IllegalArgumentException("Length must be > 0");
+            }
+            this.blockSize = MathUtil.mathRoundPoT((int) Math.ceil(Math.sqrt(length)));
+            this.blockShift = Integer.numberOfTrailingZeros(this.blockSize);
+            this.blockMask = this.blockSize - 1;
+            this.blocks = new Glyph[(int) Math.ceil((double) length / this.blockSize)][];
+            this.loadFunction = loadFunction;
+        }
+
+        public Glyph getOrLoad(final int index) {
+            final Glyph value = this.get(index);
+            if (value != null) {
+                return value;
+            } else {
+                return this.load(index);
+            }
+        }
+
+        private Glyph get(final int index) {
+            final Glyph[] block = this.blocks[index >> this.blockShift];
+            if (block != null) {
+                return block[index & this.blockMask];
+            } else {
+                return null;
+            }
+        }
+
+        private synchronized Glyph load(final int index) {
+            final int blockIndex = index >> this.blockShift;
+            final int blockOffset = index & this.blockMask;
+            Glyph[] block = this.blocks[blockIndex];
+            if (block == null) {
+                block = new Glyph[this.blockSize];
+                this.blocks[blockIndex] = block;
+            }
+            Glyph value = block[blockOffset];
+            if (value == null) {
+                value = this.loadFunction.apply(index);
+                block[blockOffset] = value;
+            }
+            return value;
         }
 
     }

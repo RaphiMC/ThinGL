@@ -51,12 +51,10 @@ public class HarfBuzzTextShaper extends TextShaper {
         for (int segmentIdx = 0; segmentIdx < textRun.segments().size(); segmentIdx++) {
             final TextSegment textSegment = textRun.segments().get(segmentIdx);
             final String text = textSegment.text();
-            for (int i = 0; i < text.length(); i++) {
+            for (int i = 0; i < text.length(); ) {
                 final int codePoint = text.codePointAt(i);
-                if (codePoint >= Character.MIN_SUPPLEMENTARY_CODE_POINT) {
-                    i++;
-                }
                 HarfBuzz.hb_buffer_add(hbBuffer, codePoint, segmentIdx);
+                i += Character.charCount(codePoint);
             }
         }
 

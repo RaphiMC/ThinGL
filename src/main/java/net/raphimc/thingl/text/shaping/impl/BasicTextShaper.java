@@ -38,14 +38,12 @@ public class BasicTextShaper extends TextShaper {
         for (TextSegment textSegment : textRun.segments()) {
             final String text = textSegment.text();
             final List<Glyph> glyphs = new ArrayList<>(text.length());
-            for (int i = 0; i < text.length(); i++) {
+            for (int i = 0; i < text.length(); ) {
                 final int codePoint = text.codePointAt(i);
-                if (codePoint >= Character.MIN_SUPPLEMENTARY_CODE_POINT) {
-                    i++;
-                }
                 final Font.Glyph fontGlyph = textRun.font().getGlyphByCodePoint(codePoint);
                 glyphs.add(new Glyph(fontGlyph, x, 0F));
                 x += fontGlyph.xAdvance();
+                i += Character.charCount(codePoint);
             }
             shapedTextSegments.add(new ShapedTextSegment(glyphs, textSegment.style()));
         }

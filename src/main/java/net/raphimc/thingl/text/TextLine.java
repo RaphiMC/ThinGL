@@ -70,11 +70,8 @@ public record TextLine(List<TextRun> runs) {
         final List<TextRun> runs = new ArrayList<>();
         final StringBuilder currentText = new StringBuilder(text.length());
         Font currentFont = fontSet.getMainFont();
-        for (int i = 0; i < text.length(); i++) {
+        for (int i = 0; i < text.length(); ) {
             final int codePoint = text.codePointAt(i);
-            if (codePoint >= Character.MIN_SUPPLEMENTARY_CODE_POINT) {
-                i++;
-            }
             Font font = fontSet.getFont(codePoint);
             if (font == null) { // If the character is not supported by the font set, use the main font to display the missing glyph character
                 font = fontSet.getMainFont();
@@ -87,6 +84,7 @@ public record TextLine(List<TextRun> runs) {
                 currentFont = font;
             }
             currentText.appendCodePoint(codePoint);
+            i += Character.charCount(codePoint);
         }
         if (!currentText.isEmpty()) {
             runs.add(new TextRun(currentFont, new TextSegment(currentText.toString(), style)));
