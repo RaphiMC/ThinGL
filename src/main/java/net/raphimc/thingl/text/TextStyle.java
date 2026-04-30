@@ -102,7 +102,7 @@ public record TextStyle(Color color, int flags, Color outlineColor, Color shadow
         } else {
             newFlags &= ~STYLE_SHADOW_BIT;
         }
-        return new TextStyle(this.color, newFlags, this.outlineColor, this.shadowColor, this.shadowOffset, this.italicAngle);
+        return this.withFlags(newFlags);
     }
 
     public TextStyle withBold(final boolean bold) {
@@ -112,7 +112,7 @@ public record TextStyle(Color color, int flags, Color outlineColor, Color shadow
         } else {
             newFlags &= ~STYLE_BOLD_BIT;
         }
-        return new TextStyle(this.color, newFlags, this.outlineColor, this.shadowColor, this.shadowOffset, this.italicAngle);
+        return this.withFlags(newFlags);
     }
 
     public TextStyle withItalic(final boolean italic) {
@@ -122,7 +122,7 @@ public record TextStyle(Color color, int flags, Color outlineColor, Color shadow
         } else {
             newFlags &= ~STYLE_ITALIC_BIT;
         }
-        return new TextStyle(this.color, newFlags, this.outlineColor, this.shadowColor, this.shadowOffset, this.italicAngle);
+        return this.withFlags(newFlags);
     }
 
     public TextStyle withUnderline(final boolean underline) {
@@ -132,7 +132,7 @@ public record TextStyle(Color color, int flags, Color outlineColor, Color shadow
         } else {
             newFlags &= ~STYLE_UNDERLINE_BIT;
         }
-        return new TextStyle(this.color, newFlags, this.outlineColor, this.shadowColor, this.shadowOffset, this.italicAngle);
+        return this.withFlags(newFlags);
     }
 
     public TextStyle withStrikethrough(final boolean strikethrough) {
@@ -142,7 +142,11 @@ public record TextStyle(Color color, int flags, Color outlineColor, Color shadow
         } else {
             newFlags &= ~STYLE_STRIKETHROUGH_BIT;
         }
-        return new TextStyle(this.color, newFlags, this.outlineColor, this.shadowColor, this.shadowOffset, this.italicAngle);
+        return this.withFlags(newFlags);
+    }
+
+    public TextStyle withFlags(final int flags) {
+        return new TextStyle(this.color, flags, this.outlineColor, this.shadowColor, this.shadowOffset, this.italicAngle);
     }
 
     public TextStyle withOutlineColor(final Color outlineColor) {
