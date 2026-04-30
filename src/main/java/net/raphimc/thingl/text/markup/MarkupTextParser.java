@@ -78,7 +78,7 @@ import net.raphimc.thingl.text.markup.parser.MarkupParser;
  *         <code>value</code> (required): A color constant name (e.g., <code>red</code>, <code>blue</code>, <code>green</code>, etc.).
  *     </li>
  * </ul>
- * <b>Notes</b>: Only one of the attributes is required. If multiple are provided, the last one takes precedence.
+ * <b>Notes</b>: Only one of the color attributes is required. If multiple are provided, the last one takes precedence.
  *
  * <h3>italic</h3>
  * <b>Description</b>: Makes the text italic.<br>
@@ -87,6 +87,9 @@ import net.raphimc.thingl.text.markup.parser.MarkupParser;
  * <ul>
  *     <li>
  *         <code>enabled</code> (optional): <code>true</code> or <code>false</code> to enable or disable italic formatting. Default: <code>true</code>.
+ *     </li>
+ *     <li>
+ *         <code>angle</code> (optional): Float value (<code>0-90</code>) specifying the angle of the italic slant in degrees. Default: <code>14</code>.
  *     </li>
  * </ul>
  *
@@ -107,7 +110,7 @@ import net.raphimc.thingl.text.markup.parser.MarkupParser;
  *         <code>value</code> (required): A color constant name (e.g., <code>red</code>, <code>blue</code>, <code>green</code>, etc.).
  *     </li>
  * </ul>
- * <b>Notes</b>: Only one of the attributes is required. If multiple are provided, the last one takes precedence.
+ * <b>Notes</b>: Only one of the color attributes is required. If multiple are provided, the last one takes precedence.
  *
  * <h3>shadow</h3>
  * <b>Description</b>: Adds a shadow to the text.<br>
@@ -116,7 +119,23 @@ import net.raphimc.thingl.text.markup.parser.MarkupParser;
  *     <li>
  *         <code>enabled</code> (optional): <code>true</code> or <code>false</code> to enable or disable text shadow. Default: <code>true</code>.
  *     </li>
+ *     <li>
+ *         <code>rgb</code> (optional): Hexadecimal (<code>#RRGGBB</code>) or RGB tuple (<code>(R,G,B)</code>) specifying the color. Default: <code>25% of the text color</code>.
+ *     </li>
+ *     <li>
+ *         <code>rgba</code> (optional): Hexadecimal (<code>#RRGGBBAA</code>) or RGBA tuple (<code>(R,G,B,A)</code>) specifying the color. Default: <code>25% of the text color</code>.
+ *     </li>
+ *     <li>
+ *         <code>argb</code> (optional): Hexadecimal (<code>#AARRGGBB</code>) or ARGB tuple (<code>(A,R,G,B)</code>) specifying the color. Default: <code>25% of the text color</code>.
+ *     </li>
+ *     <li>
+ *         <code>value</code> (optional): A color constant name (e.g., <code>red</code>, <code>blue</code>, <code>green</code>, etc.). Default: <code>25% of the text color</code>.
+ *     </li>
+ *     <li>
+ *         <code>offset</code> (optional): Float value (<code>0-100</code>) specifying the shadow offset in percentage of the font size. Default: <code>7.5</code>.
+ *     </li>
  * </ul>
+ * <b>Notes</b>: Only one of the color attributes is applied. If multiple are provided, the last one takes precedence.
  *
  * <h3>strikethrough</h3>
  * <b>Description</b>: Adds a strikethrough line to the text.<br>

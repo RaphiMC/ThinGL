@@ -76,6 +76,7 @@ public record TextSegment(String text, TextStyle style) {
     }
 
     @Deprecated(forRemoval = true)
+    @SuppressWarnings("removal")
     public TextSegment(final String text, final Color color, final int styleFlags, final Color outlineColor, final Vector2f visualOffset) {
         this(text, new TextStyle(color, styleFlags, outlineColor, visualOffset));
     }
@@ -96,6 +97,7 @@ public record TextSegment(String text, TextStyle style) {
     }
 
     @Deprecated(forRemoval = true)
+    @SuppressWarnings("removal")
     public Vector2f visualOffset() {
         return this.style.visualOffset();
     }

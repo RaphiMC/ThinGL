@@ -44,10 +44,7 @@ import java.util.function.Supplier;
 
 public abstract class TextRenderer {
 
-    public static final float ITALIC_SHEAR_FACTOR = (float) Math.tan(Math.toRadians(14)); // 14 degrees
-    public static final float SHADOW_OFFSET_FACTOR = 0.075F;
     public static final float BOLD_OFFSET_DIVIDER = 64F;
-
     private static final int ATLAS_SIZE = 1024;
 
     private final DrawBatch drawBatch;
@@ -152,24 +149,24 @@ public abstract class TextRenderer {
                 continue;
             }
             final TextStyle style = textSegment.style();
-            final float xOffset = style.visualOffset().x * this.globalScale;
-            final float yOffset = style.visualOffset().y * this.globalScale;
-
             if (style.isShadow()) {
-                final Color shadowColor = style.color().multiply(0.25F);
-                final int shadowStyleFlags = style.flags() & ~TextStyle.STYLE_STRIKETHROUGH_BIT;
-                final Color shadowOutlineColor = style.color().withAlpha(style.outlineColor().getAlpha()).multiply(0.25F);
-
-                final ShapedTextSegment shadowTextSegment = new ShapedTextSegment(textSegment.glyphs(), new TextStyle(shadowColor, shadowStyleFlags, shadowOutlineColor, style.visualOffset()), textSegment.visualBounds(), textSegment.logicalBounds());
+                TextStyle shadowStyle = style.withStrikethrough(false);
+                if (style.shadowColor() != null) {
+                    shadowStyle = shadowStyle.withColor(style.shadowColor()).withOutlineColor(style.shadowColor().withAlpha(style.outlineColor().getAlpha()));
+                } else {
+                    final Color shadowColor = style.color().multiply(0.25F);
+                    shadowStyle = shadowStyle.withColor(shadowColor).withOutlineColor(shadowColor.withAlpha(style.outlineColor().getAlpha()));
+                }
+                final ShapedTextSegment shadowTextSegment = new ShapedTextSegment(textSegment.glyphs(), shadowStyle, textSegment.visualBounds(), textSegment.logicalBounds());
                 final ShapedTextSegment nonShadowTextSegment = new ShapedTextSegment(textSegment.glyphs(), style.withShadow(false), textSegment.visualBounds(), textSegment.logicalBounds());
-                final float shadowOffset = SHADOW_OFFSET_FACTOR * textRun.font().getSize() * this.globalScale;
-                this.renderTextSegment(positionMatrix, multiDrawBatchDataHolder, shadowTextSegment, x + xOffset + shadowOffset, y + yOffset + shadowOffset, z);
-                this.renderTextDecorations(positionMatrix, multiDrawBatchDataHolder, shadowTextSegment, x + xOffset + shadowOffset, y + yOffset + shadowOffset, z, decorationFont);
-                this.renderTextSegment(positionMatrix, multiDrawBatchDataHolder, nonShadowTextSegment, x + xOffset, y + yOffset, z);
-                this.renderTextDecorations(positionMatrix, multiDrawBatchDataHolder, nonShadowTextSegment, x + xOffset, y + yOffset, z, decorationFont);
+                final float shadowOffset = (style.shadowOffset() / 100F) * textRun.font().getSize() * this.globalScale;
+                this.renderTextSegment(positionMatrix, multiDrawBatchDataHolder, shadowTextSegment, x + shadowOffset, y + shadowOffset, z);
+                this.renderTextDecorations(positionMatrix, multiDrawBatchDataHolder, shadowTextSegment, x + shadowOffset, y + shadowOffset, z, decorationFont);
+                this.renderTextSegment(positionMatrix, multiDrawBatchDataHolder, nonShadowTextSegment, x, y, z);
+                this.renderTextDecorations(positionMatrix, multiDrawBatchDataHolder, nonShadowTextSegment, x, y, z, decorationFont);
             } else {
-                this.renderTextSegment(positionMatrix, multiDrawBatchDataHolder, textSegment, x + xOffset, y + yOffset, z);
-                this.renderTextDecorations(positionMatrix, multiDrawBatchDataHolder, textSegment, x + xOffset, y + yOffset, z, decorationFont);
+                this.renderTextSegment(positionMatrix, multiDrawBatchDataHolder, textSegment, x, y, z);
+                this.renderTextDecorations(positionMatrix, multiDrawBatchDataHolder, textSegment, x, y, z, decorationFont);
             }
         }
     }
@@ -223,8 +220,9 @@ public abstract class TextRenderer {
         float topOffset = 0F;
         float bottomOffset = 0F;
         if (textStyle.isItalic()) {
-            topOffset = ITALIC_SHEAR_FACTOR * -(y1 - y);
-            bottomOffset = ITALIC_SHEAR_FACTOR * (y2 - y);
+            final float shearFactor = (float) Math.tan(Math.toRadians(textStyle.italicAngle()));
+            topOffset = shearFactor * -(y1 - y);
+            bottomOffset = shearFactor * (y2 - y);
         }
 
         vertexBufferBuilder.writeVector3f(positionMatrix, x1 - bottomOffset, y2, z).writeTextureCoord(glyph.u1(), glyph.v2()).writeByte((byte) glyph.atlasIndex()).writeShort((short) textDataIndex).endVertex();

@@ -25,6 +25,7 @@ public class ItalicElement extends Element<TextStyle> {
     public ItalicElement() {
         this.attributes.put(null, (style, value) -> style.withItalic(true));
         this.attributes.put("enabled", (style, value) -> style.withItalic(Boolean.parseBoolean(value)));
+        this.attributes.put("angle", (style, value) -> style.withItalicAngle(Float.parseFloat(value)));
     }
 
 }

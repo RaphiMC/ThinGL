@@ -20,7 +20,7 @@ package net.raphimc.thingl.text;
 import net.lenni0451.commons.color.Color;
 import org.joml.Vector2f;
 
-public record TextStyle(Color color, int flags, Color outlineColor, Vector2f visualOffset) {
+public record TextStyle(Color color, int flags, Color outlineColor, Color shadowColor, float shadowOffset, float italicAngle) {
 
     public static final TextStyle WHITE = new TextStyle(Color.WHITE);
     public static final TextStyle BLACK = new TextStyle(Color.BLACK);
@@ -51,8 +51,12 @@ public record TextStyle(Color color, int flags, Color outlineColor, Vector2f vis
         return flags;
     }
 
+    public TextStyle(final Color color, final int flags, final Color outlineColor, final Color shadowColor) {
+        this(color, flags, outlineColor, shadowColor, 7.5F, 14F);
+    }
+
     public TextStyle(final Color color, final int flags, final Color outlineColor) {
-        this(color, flags, outlineColor, new Vector2f());
+        this(color, flags, outlineColor, (Color) null);
     }
 
     public TextStyle(final Color color, final int flags) {
@@ -88,7 +92,7 @@ public record TextStyle(Color color, int flags, Color outlineColor, Vector2f vis
     }
 
     public TextStyle withColor(final Color color) {
-        return new TextStyle(color, this.flags, this.outlineColor, this.visualOffset);
+        return new TextStyle(color, this.flags, this.outlineColor, this.shadowColor, this.shadowOffset, this.italicAngle);
     }
 
     public TextStyle withShadow(final boolean shadow) {
@@ -98,7 +102,7 @@ public record TextStyle(Color color, int flags, Color outlineColor, Vector2f vis
         } else {
             newFlags &= ~STYLE_SHADOW_BIT;
         }
-        return new TextStyle(this.color, newFlags, this.outlineColor, this.visualOffset);
+        return new TextStyle(this.color, newFlags, this.outlineColor, this.shadowColor, this.shadowOffset, this.italicAngle);
     }
 
     public TextStyle withBold(final boolean bold) {
@@ -108,7 +112,7 @@ public record TextStyle(Color color, int flags, Color outlineColor, Vector2f vis
         } else {
             newFlags &= ~STYLE_BOLD_BIT;
         }
-        return new TextStyle(this.color, newFlags, this.outlineColor, this.visualOffset);
+        return new TextStyle(this.color, newFlags, this.outlineColor, this.shadowColor, this.shadowOffset, this.italicAngle);
     }
 
     public TextStyle withItalic(final boolean italic) {
@@ -118,7 +122,7 @@ public record TextStyle(Color color, int flags, Color outlineColor, Vector2f vis
         } else {
             newFlags &= ~STYLE_ITALIC_BIT;
         }
-        return new TextStyle(this.color, newFlags, this.outlineColor, this.visualOffset);
+        return new TextStyle(this.color, newFlags, this.outlineColor, this.shadowColor, this.shadowOffset, this.italicAngle);
     }
 
     public TextStyle withUnderline(final boolean underline) {
@@ -128,7 +132,7 @@ public record TextStyle(Color color, int flags, Color outlineColor, Vector2f vis
         } else {
             newFlags &= ~STYLE_UNDERLINE_BIT;
         }
-        return new TextStyle(this.color, newFlags, this.outlineColor, this.visualOffset);
+        return new TextStyle(this.color, newFlags, this.outlineColor, this.shadowColor, this.shadowOffset, this.italicAngle);
     }
 
     public TextStyle withStrikethrough(final boolean strikethrough) {
@@ -138,15 +142,38 @@ public record TextStyle(Color color, int flags, Color outlineColor, Vector2f vis
         } else {
             newFlags &= ~STYLE_STRIKETHROUGH_BIT;
         }
-        return new TextStyle(this.color, newFlags, this.outlineColor, this.visualOffset);
+        return new TextStyle(this.color, newFlags, this.outlineColor, this.shadowColor, this.shadowOffset, this.italicAngle);
     }
 
     public TextStyle withOutlineColor(final Color outlineColor) {
-        return new TextStyle(this.color, this.flags, outlineColor, this.visualOffset);
+        return new TextStyle(this.color, this.flags, outlineColor, this.shadowColor, this.shadowOffset, this.italicAngle);
     }
 
+    public TextStyle withShadowColor(final Color shadowColor) {
+        return new TextStyle(this.color, this.flags, this.outlineColor, shadowColor, this.shadowOffset, this.italicAngle);
+    }
+
+    public TextStyle withShadowOffset(final float shadowOffset) {
+        return new TextStyle(this.color, this.flags, this.outlineColor, this.shadowColor, shadowOffset, this.italicAngle);
+    }
+
+    public TextStyle withItalicAngle(final float italicAngle) {
+        return new TextStyle(this.color, this.flags, this.outlineColor, this.shadowColor, this.shadowOffset, italicAngle);
+    }
+
+    @Deprecated(forRemoval = true)
+    public TextStyle(final Color color, final int flags, final Color outlineColor, final Vector2f visualOffset) {
+        this(color, flags, outlineColor);
+    }
+
+    @Deprecated(forRemoval = true)
     public TextStyle withVisualOffset(final Vector2f visualOffset) {
-        return new TextStyle(this.color, this.flags, this.outlineColor, visualOffset);
+        return this;
+    }
+
+    @Deprecated(forRemoval = true)
+    public Vector2f visualOffset() {
+        return new Vector2f();
     }
 
 }

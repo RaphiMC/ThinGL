@@ -19,12 +19,19 @@ package net.raphimc.thingl.text.markup.element.style;
 
 import net.raphimc.thingl.text.TextStyle;
 import net.raphimc.thingl.text.markup.element.Element;
+import net.raphimc.thingl.text.markup.util.ConstantColorParser;
+import net.raphimc.thingl.text.markup.util.IntegerColorParser;
 
 public class ShadowElement extends Element<TextStyle> {
 
     public ShadowElement() {
         this.attributes.put(null, (style, value) -> style.withShadow(true));
         this.attributes.put("enabled", (style, value) -> style.withShadow(Boolean.parseBoolean(value)));
+        this.attributes.put("rgb", (style, value) -> style.withShadowColor(IntegerColorParser.RGB.parse(value)));
+        this.attributes.put("rgba", (style, value) -> style.withShadowColor(IntegerColorParser.RGBA.parse(value)));
+        this.attributes.put("argb", (style, value) -> style.withShadowColor(IntegerColorParser.ARGB.parse(value)));
+        this.attributes.put("value", (style, value) -> style.withShadowColor(ConstantColorParser.parse(value)));
+        this.attributes.put("offset", (style, value) -> style.withShadowOffset(Float.parseFloat(value)));
     }
 
 }

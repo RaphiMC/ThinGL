@@ -76,7 +76,7 @@ public record ShapedTextSegment(List<TextShaper.Glyph> glyphs, TextStyle style, 
         }
 
         if (this.style.isShadow()) {
-            final float shadowOffset = TextRenderer.SHADOW_OFFSET_FACTOR * this.glyphs.getLast().fontGlyph().font().getSize();
+            final float shadowOffset = (this.style.shadowOffset() / 100F) * this.glyphs.getLast().fontGlyph().font().getSize();
             this.visualBounds.maxX += shadowOffset;
             this.visualBounds.maxY += shadowOffset;
         }
@@ -88,17 +88,19 @@ public record ShapedTextSegment(List<TextShaper.Glyph> glyphs, TextStyle style, 
             this.visualBounds.maxY += boldOffset;
         }
         if (this.style.isItalic()) {
-            this.visualBounds.maxX += TextRenderer.ITALIC_SHEAR_FACTOR * -this.glyphs.getLast().fontGlyph().bearingY();
+            this.visualBounds.maxX += (float) Math.tan(Math.toRadians(this.style.italicAngle())) * -this.glyphs.getLast().fontGlyph().bearingY();
         }
     }
 
 
     @Deprecated(forRemoval = true)
+    @SuppressWarnings("removal")
     public ShapedTextSegment(final List<TextShaper.Glyph> glyphs, final Color color, final int styleFlags, final Color outlineColor, final Vector2f visualOffset, final Rectanglef visualBounds, final Rectanglef logicalBounds) {
         this(glyphs, new TextStyle(color, styleFlags, outlineColor, visualOffset), visualBounds, logicalBounds);
     }
 
     @Deprecated(forRemoval = true)
+    @SuppressWarnings("removal")
     public ShapedTextSegment(final List<TextShaper.Glyph> glyphs, final Color color, final int styleFlags, final Color outlineColor, final Vector2f visualOffset) {
         this(glyphs, new TextStyle(color, styleFlags, outlineColor, visualOffset));
     }
@@ -119,6 +121,7 @@ public record ShapedTextSegment(List<TextShaper.Glyph> glyphs, TextStyle style, 
     }
 
     @Deprecated(forRemoval = true)
+    @SuppressWarnings("removal")
     public Vector2f visualOffset() {
         return this.style.visualOffset();
     }
