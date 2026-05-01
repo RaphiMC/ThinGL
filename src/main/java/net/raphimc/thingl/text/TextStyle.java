@@ -25,28 +25,28 @@ public record TextStyle(Color color, int flags, Color outlineColor, Color shadow
     public static final TextStyle WHITE = new TextStyle(Color.WHITE);
     public static final TextStyle BLACK = new TextStyle(Color.BLACK);
 
-    public static final int STYLE_SHADOW_BIT = 1 << 0;
-    public static final int STYLE_BOLD_BIT = 1 << 1;
-    public static final int STYLE_ITALIC_BIT = 1 << 2;
-    public static final int STYLE_UNDERLINE_BIT = 1 << 3;
-    public static final int STYLE_STRIKETHROUGH_BIT = 1 << 4;
+    public static final int SHADOW_BIT = 1 << 0;
+    public static final int BOLD_BIT = 1 << 1;
+    public static final int ITALIC_BIT = 1 << 2;
+    public static final int UNDERLINE_BIT = 1 << 3;
+    public static final int STRIKETHROUGH_BIT = 1 << 4;
 
     public static int buildFlags(final boolean shadow, final boolean bold, final boolean italic, final boolean underline, final boolean strikethrough) {
         int flags = 0;
         if (shadow) {
-            flags |= STYLE_SHADOW_BIT;
+            flags |= SHADOW_BIT;
         }
         if (bold) {
-            flags |= STYLE_BOLD_BIT;
+            flags |= BOLD_BIT;
         }
         if (italic) {
-            flags |= STYLE_ITALIC_BIT;
+            flags |= ITALIC_BIT;
         }
         if (underline) {
-            flags |= STYLE_UNDERLINE_BIT;
+            flags |= UNDERLINE_BIT;
         }
         if (strikethrough) {
-            flags |= STYLE_STRIKETHROUGH_BIT;
+            flags |= STRIKETHROUGH_BIT;
         }
         return flags;
     }
@@ -72,23 +72,23 @@ public record TextStyle(Color color, int flags, Color outlineColor, Color shadow
     }
 
     public boolean isShadow() {
-        return (this.flags & STYLE_SHADOW_BIT) != 0;
+        return (this.flags & SHADOW_BIT) != 0;
     }
 
     public boolean isBold() {
-        return (this.flags & STYLE_BOLD_BIT) != 0;
+        return (this.flags & BOLD_BIT) != 0;
     }
 
     public boolean isItalic() {
-        return (this.flags & STYLE_ITALIC_BIT) != 0;
+        return (this.flags & ITALIC_BIT) != 0;
     }
 
     public boolean isUnderline() {
-        return (this.flags & STYLE_UNDERLINE_BIT) != 0;
+        return (this.flags & UNDERLINE_BIT) != 0;
     }
 
     public boolean isStrikethrough() {
-        return (this.flags & STYLE_STRIKETHROUGH_BIT) != 0;
+        return (this.flags & STRIKETHROUGH_BIT) != 0;
     }
 
     public TextStyle withColor(final Color color) {
@@ -98,9 +98,9 @@ public record TextStyle(Color color, int flags, Color outlineColor, Color shadow
     public TextStyle withShadow(final boolean shadow) {
         int newFlags = this.flags;
         if (shadow) {
-            newFlags |= STYLE_SHADOW_BIT;
+            newFlags |= SHADOW_BIT;
         } else {
-            newFlags &= ~STYLE_SHADOW_BIT;
+            newFlags &= ~SHADOW_BIT;
         }
         return this.withFlags(newFlags);
     }
@@ -108,9 +108,9 @@ public record TextStyle(Color color, int flags, Color outlineColor, Color shadow
     public TextStyle withBold(final boolean bold) {
         int newFlags = this.flags;
         if (bold) {
-            newFlags |= STYLE_BOLD_BIT;
+            newFlags |= BOLD_BIT;
         } else {
-            newFlags &= ~STYLE_BOLD_BIT;
+            newFlags &= ~BOLD_BIT;
         }
         return this.withFlags(newFlags);
     }
@@ -118,9 +118,9 @@ public record TextStyle(Color color, int flags, Color outlineColor, Color shadow
     public TextStyle withItalic(final boolean italic) {
         int newFlags = this.flags;
         if (italic) {
-            newFlags |= STYLE_ITALIC_BIT;
+            newFlags |= ITALIC_BIT;
         } else {
-            newFlags &= ~STYLE_ITALIC_BIT;
+            newFlags &= ~ITALIC_BIT;
         }
         return this.withFlags(newFlags);
     }
@@ -128,9 +128,9 @@ public record TextStyle(Color color, int flags, Color outlineColor, Color shadow
     public TextStyle withUnderline(final boolean underline) {
         int newFlags = this.flags;
         if (underline) {
-            newFlags |= STYLE_UNDERLINE_BIT;
+            newFlags |= UNDERLINE_BIT;
         } else {
-            newFlags &= ~STYLE_UNDERLINE_BIT;
+            newFlags &= ~UNDERLINE_BIT;
         }
         return this.withFlags(newFlags);
     }
@@ -138,9 +138,9 @@ public record TextStyle(Color color, int flags, Color outlineColor, Color shadow
     public TextStyle withStrikethrough(final boolean strikethrough) {
         int newFlags = this.flags;
         if (strikethrough) {
-            newFlags |= STYLE_STRIKETHROUGH_BIT;
+            newFlags |= STRIKETHROUGH_BIT;
         } else {
-            newFlags &= ~STYLE_STRIKETHROUGH_BIT;
+            newFlags &= ~STRIKETHROUGH_BIT;
         }
         return this.withFlags(newFlags);
     }
@@ -164,6 +164,21 @@ public record TextStyle(Color color, int flags, Color outlineColor, Color shadow
     public TextStyle withItalicAngle(final float italicAngle) {
         return new TextStyle(this.color, this.flags, this.outlineColor, this.shadowColor, this.shadowOffset, italicAngle);
     }
+
+    @Deprecated(forRemoval = true)
+    public static final int STYLE_SHADOW_BIT = SHADOW_BIT;
+
+    @Deprecated(forRemoval = true)
+    public static final int STYLE_BOLD_BIT = BOLD_BIT;
+
+    @Deprecated(forRemoval = true)
+    public static final int STYLE_ITALIC_BIT = ITALIC_BIT;
+
+    @Deprecated(forRemoval = true)
+    public static final int STYLE_UNDERLINE_BIT = UNDERLINE_BIT;
+
+    @Deprecated(forRemoval = true)
+    public static final int STYLE_STRIKETHROUGH_BIT = STRIKETHROUGH_BIT;
 
     @Deprecated(forRemoval = true)
     public TextStyle(final Color color, final int flags, final Color outlineColor, final Vector2f visualOffset) {

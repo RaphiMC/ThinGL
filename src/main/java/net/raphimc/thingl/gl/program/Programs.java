@@ -86,7 +86,7 @@ public class Programs {
     private final Lazy<RegularProgram> sdfText = Lazy.of(() -> {
         final DefinesMap defines = new DefinesMap();
         defines.putInt("DF_PX_RANGE", SDFTextRenderer.DF_PX_RANGE);
-        defines.putUnsignedInt("STYLE_BOLD_BIT", TextStyle.STYLE_BOLD_BIT);
+        defines.putUnsignedInt("STYLE_BOLD_BIT", TextStyle.BOLD_BIT);
         final RegularProgram program = new RegularProgram(this.shaderLoader.get("regular/sdf_text", VERTEX), this.shaderLoader.get("regular/sdf_text", FRAGMENT, defines));
         program.setDebugName("sdf_text");
         return program;

@@ -91,27 +91,27 @@ public class TextRenderingExample extends GLFWApplicationRunner {
         }
         { // Bold text
             positionMatrix.translate(0, this.robotoRegular.getHeight(), 0);
-            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "Bold Text", new TextStyle(Color.WHITE, TextStyle.STYLE_BOLD_BIT), 0, 0);
+            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "Bold Text", new TextStyle(Color.WHITE, TextStyle.BOLD_BIT), 0, 0);
         }
         { // Shadowed text
             positionMatrix.translate(0, this.robotoRegular.getHeight(), 0);
-            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "Shadowed Text", new TextStyle(Color.WHITE, TextStyle.STYLE_SHADOW_BIT), 0, 0);
+            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "Shadowed Text", new TextStyle(Color.WHITE, TextStyle.SHADOW_BIT), 0, 0);
         }
         { // Italic text
             positionMatrix.translate(0, this.robotoRegular.getHeight(), 0);
-            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "Italic Text", new TextStyle(Color.WHITE, TextStyle.STYLE_ITALIC_BIT), 0, 0);
+            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "Italic Text", new TextStyle(Color.WHITE, TextStyle.ITALIC_BIT), 0, 0);
         }
         { // Underline text
             positionMatrix.translate(0, this.robotoRegular.getHeight(), 0);
-            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "Underlined Text", new TextStyle(Color.WHITE, TextStyle.STYLE_UNDERLINE_BIT), 0, 0);
+            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "Underlined Text", new TextStyle(Color.WHITE, TextStyle.UNDERLINE_BIT), 0, 0);
         }
         { // Strikethrough text
             positionMatrix.translate(0, this.robotoRegular.getHeight(), 0);
-            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "Strikethrough Text", new TextStyle(Color.WHITE, TextStyle.STYLE_STRIKETHROUGH_BIT), 0, 0);
+            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "Strikethrough Text", new TextStyle(Color.WHITE, TextStyle.STRIKETHROUGH_BIT), 0, 0);
         }
         { // Multiple styles text
             positionMatrix.translate(0, this.robotoRegular.getHeight(), 0);
-            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "Multiple Styles", new TextStyle(Color.WHITE, TextStyle.STYLE_SHADOW_BIT | TextStyle.STYLE_BOLD_BIT | TextStyle.STYLE_ITALIC_BIT, Color.BLUE), 0, 0);
+            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "Multiple Styles", new TextStyle(Color.WHITE, TextStyle.SHADOW_BIT | TextStyle.BOLD_BIT | TextStyle.ITALIC_BIT, Color.BLUE), 0, 0);
         }
         { // Markup text
             positionMatrix.translate(0, this.robotoRegular.getHeight(), 0);
