@@ -105,6 +105,21 @@ public record TextLine(List<TextRun> runs) {
         return this.addRun(run);
     }
 
+    public void compact() {
+        for (int i = 1; i < this.runs.size(); i++) {
+            final TextRun previousRun = this.runs.get(i - 1);
+            final TextRun currentRun = this.runs.get(i);
+            if (currentRun.font() == previousRun.font()) {
+                previousRun.segments().addAll(currentRun.segments());
+                this.runs.remove(i);
+                i--;
+            }
+        }
+        for (TextRun run : this.runs) {
+            run.compact();
+        }
+    }
+
     public ShapedTextLine shape() {
         return this.shape(BasicTextShaper.INSTANCE);
     }

@@ -61,6 +61,18 @@ public record TextRun(Font font, List<TextSegment> segments) {
         return this.addSegment(segment);
     }
 
+    public void compact() {
+        for (int i = 1; i < this.segments.size(); i++) {
+            final TextSegment previousSegment = this.segments.get(i - 1);
+            final TextSegment currentSegment = this.segments.get(i);
+            if (currentSegment.style().equals(previousSegment.style())) {
+                this.segments.set(i - 1, new TextSegment(previousSegment.text() + currentSegment.text(), currentSegment.style()));
+                this.segments.remove(i);
+                i--;
+            }
+        }
+    }
+
     public ShapedTextRun shape() {
         return this.shape(BasicTextShaper.INSTANCE);
     }
