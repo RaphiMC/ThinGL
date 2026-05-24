@@ -32,6 +32,7 @@ import net.raphimc.thingl.text.shaping.ShapedTextBlock;
 import net.raphimc.thingl.text.shaping.ShapedTextLine;
 import net.raphimc.thingl.text.shaping.ShapedTextRun;
 import org.joml.Matrix4f;
+import org.joml.primitives.Rectanglef;
 
 import java.util.Stack;
 
@@ -315,100 +316,164 @@ public class RendererText extends Renderer {
         this.drawIfNotBuffering();
     }
 
+    public Rectanglef getScaledVisualBounds(final Font font, final String text, final TextStyle style) {
+        return this.getScaledVisualBounds(TextRun.fromString(font, text, style));
+    }
+
+    public Rectanglef getScaledLogicalBounds(final Font font, final String text, final TextStyle style) {
+        return this.getScaledLogicalBounds(TextRun.fromString(font, text, style));
+    }
+
+    public Rectanglef getScaledVisualBounds(final FontSet fontSet, final String text, final TextStyle style) {
+        return this.getScaledVisualBounds(TextLine.fromString(fontSet, text, style));
+    }
+
+    public Rectanglef getScaledLogicalBounds(final FontSet fontSet, final String text, final TextStyle style) {
+        return this.getScaledLogicalBounds(TextLine.fromString(fontSet, text, style));
+    }
+
+    public Rectanglef getScaledVisualBounds(final TextRun textRun) {
+        return this.getScaledVisualBounds(textRun.shape());
+    }
+
+    public Rectanglef getScaledLogicalBounds(final TextRun textRun) {
+        return this.getScaledLogicalBounds(textRun.shape());
+    }
+
+    public Rectanglef getScaledVisualBounds(final ShapedTextRun textRun) {
+        return textRun.visualBounds().scale(this.textRenderer.getGlobalScale(), new Rectanglef());
+    }
+
+    public Rectanglef getScaledLogicalBounds(final ShapedTextRun textRun) {
+        return textRun.logicalBounds().scale(this.textRenderer.getGlobalScale(), new Rectanglef());
+    }
+
+    public Rectanglef getScaledVisualBounds(final TextLine textLine) {
+        return this.getScaledVisualBounds(textLine.shape());
+    }
+
+    public Rectanglef getScaledLogicalBounds(final TextLine textLine) {
+        return this.getScaledLogicalBounds(textLine.shape());
+    }
+
+    public Rectanglef getScaledVisualBounds(final ShapedTextLine textLine) {
+        return textLine.visualBounds().scale(this.textRenderer.getGlobalScale(), new Rectanglef());
+    }
+
+    public Rectanglef getScaledLogicalBounds(final ShapedTextLine textLine) {
+        return textLine.logicalBounds().scale(this.textRenderer.getGlobalScale(), new Rectanglef());
+    }
+
+    public Rectanglef getScaledVisualBounds(final TextBlock textBlock) {
+        return this.getScaledVisualBounds(textBlock.shape());
+    }
+
+    public Rectanglef getScaledLogicalBounds(final TextBlock textBlock) {
+        return this.getScaledLogicalBounds(textBlock.shape());
+    }
+
+    public Rectanglef getScaledVisualBounds(final ShapedTextBlock textBlock) {
+        return textBlock.visualBounds().scale(this.textRenderer.getGlobalScale(), new Rectanglef());
+    }
+
+    public Rectanglef getScaledLogicalBounds(final ShapedTextBlock textBlock) {
+        return textBlock.logicalBounds().scale(this.textRenderer.getGlobalScale(), new Rectanglef());
+    }
+
     public float getStringVisualWidth(final Font font, final String text, final TextStyle style) {
-        return this.getVisualWidth(TextRun.fromString(font, text, style));
+        return this.getScaledVisualBounds(TextRun.fromString(font, text, style)).lengthX();
     }
 
     public float getStringVisualHeight(final Font font, final String text, final TextStyle style) {
-        return this.getVisualHeight(TextRun.fromString(font, text, style));
+        return this.getScaledVisualBounds(TextRun.fromString(font, text, style)).lengthY();
     }
 
     public float getStringLogicalHeight(final Font font, final String text, final TextStyle style) {
-        return this.getLogicalHeight(TextRun.fromString(font, text, style));
+        return this.getScaledLogicalBounds(TextRun.fromString(font, text, style)).lengthY();
     }
 
     public float getStringVisualWidth(final FontSet fontSet, final String text, final TextStyle style) {
-        return this.getVisualWidth(TextLine.fromString(fontSet, text, style));
+        return this.getScaledVisualBounds(TextLine.fromString(fontSet, text, style)).lengthX();
     }
 
     public float getStringVisualHeight(final FontSet fontSet, final String text, final TextStyle style) {
-        return this.getVisualHeight(TextLine.fromString(fontSet, text, style));
+        return this.getScaledVisualBounds(TextLine.fromString(fontSet, text, style)).lengthY();
     }
 
     public float getStringLogicalHeight(final FontSet fontSet, final String text, final TextStyle style) {
-        return this.getLogicalHeight(TextLine.fromString(fontSet, text, style));
+        return this.getScaledLogicalBounds(TextLine.fromString(fontSet, text, style)).lengthY();
     }
 
     public float getVisualWidth(final TextRun textRun) {
-        return this.getVisualWidth(textRun.shape());
+        return this.getScaledVisualBounds(textRun).lengthX();
     }
 
     public float getVisualHeight(final TextRun textRun) {
-        return this.getVisualHeight(textRun.shape());
+        return this.getScaledVisualBounds(textRun).lengthY();
     }
 
     public float getLogicalHeight(final TextRun textRun) {
-        return this.getLogicalHeight(textRun.shape());
+        return this.getScaledLogicalBounds(textRun).lengthY();
     }
 
     public float getVisualWidth(final ShapedTextRun textRun) {
-        return textRun.visualBounds().lengthX() * this.textRenderer.getGlobalScale();
+        return this.getScaledVisualBounds(textRun).lengthX();
     }
 
     public float getVisualHeight(final ShapedTextRun textRun) {
-        return textRun.visualBounds().lengthY() * this.textRenderer.getGlobalScale();
+        return this.getScaledVisualBounds(textRun).lengthY();
     }
 
     public float getLogicalHeight(final ShapedTextRun textRun) {
-        return textRun.logicalBounds().lengthY() * this.textRenderer.getGlobalScale();
+        return this.getScaledLogicalBounds(textRun).lengthY();
     }
 
     public float getVisualWidth(final TextLine textLine) {
-        return this.getVisualWidth(textLine.shape());
+        return this.getScaledVisualBounds(textLine).lengthX();
     }
 
     public float getVisualHeight(final TextLine textLine) {
-        return this.getVisualHeight(textLine.shape());
+        return this.getScaledVisualBounds(textLine).lengthY();
     }
 
     public float getLogicalHeight(final TextLine textLine) {
-        return this.getLogicalHeight(textLine.shape());
+        return this.getScaledLogicalBounds(textLine).lengthY();
     }
 
     public float getVisualWidth(final ShapedTextLine textLine) {
-        return textLine.visualBounds().lengthX() * this.textRenderer.getGlobalScale();
+        return this.getScaledVisualBounds(textLine).lengthX();
     }
 
     public float getVisualHeight(final ShapedTextLine textLine) {
-        return textLine.visualBounds().lengthY() * this.textRenderer.getGlobalScale();
+        return this.getScaledVisualBounds(textLine).lengthY();
     }
 
     public float getLogicalHeight(final ShapedTextLine textLine) {
-        return textLine.logicalBounds().lengthY() * this.textRenderer.getGlobalScale();
+        return this.getScaledLogicalBounds(textLine).lengthY();
     }
 
     public float getVisualWidth(final TextBlock textBlock) {
-        return this.getVisualWidth(textBlock.shape());
+        return this.getScaledVisualBounds(textBlock).lengthX();
     }
 
     public float getVisualHeight(final TextBlock textBlock) {
-        return this.getVisualHeight(textBlock.shape());
+        return this.getScaledVisualBounds(textBlock).lengthY();
     }
 
     public float getLogicalHeight(final TextBlock textBlock) {
-        return this.getLogicalHeight(textBlock.shape());
+        return this.getScaledLogicalBounds(textBlock).lengthY();
     }
 
     public float getVisualWidth(final ShapedTextBlock textBlock) {
-        return textBlock.visualBounds().lengthX() * this.textRenderer.getGlobalScale();
+        return this.getScaledVisualBounds(textBlock).lengthX();
     }
 
     public float getVisualHeight(final ShapedTextBlock textBlock) {
-        return textBlock.visualBounds().lengthY() * this.textRenderer.getGlobalScale();
+        return this.getScaledVisualBounds(textBlock).lengthY();
     }
 
     public float getLogicalHeight(final ShapedTextBlock textBlock) {
-        return textBlock.logicalBounds().lengthY() * this.textRenderer.getGlobalScale();
+        return this.getScaledLogicalBounds(textBlock).lengthY();
     }
 
     public void pushGlobalScale(final float scale) {
