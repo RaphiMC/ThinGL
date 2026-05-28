@@ -44,7 +44,6 @@ import java.util.function.Supplier;
 
 public abstract class TextRenderer {
 
-    public static final float BOLD_OFFSET_DIVIDER = 64F;
     private static final int ATLAS_SIZE = 1024;
 
     private final DrawBatch drawBatch;
@@ -159,7 +158,7 @@ public abstract class TextRenderer {
                 }
                 final ShapedTextSegment shadowTextSegment = new ShapedTextSegment(textSegment.glyphs(), shadowStyle, textSegment.visualBounds(), textSegment.logicalBounds());
                 final ShapedTextSegment nonShadowTextSegment = new ShapedTextSegment(textSegment.glyphs(), style.withShadow(false), textSegment.visualBounds(), textSegment.logicalBounds());
-                final float shadowOffset = (style.shadowOffset() / 100F) * textRun.font().getSize() * this.globalScale;
+                final float shadowOffset = textRun.font().getSize() * (style.shadowOffset() / 100F) * this.globalScale;
                 this.renderTextSegment(positionMatrix, multiDrawBatchDataHolder, shadowTextSegment, x + shadowOffset, y + shadowOffset, z);
                 this.renderTextDecorations(positionMatrix, multiDrawBatchDataHolder, shadowTextSegment, x + shadowOffset, y + shadowOffset, z, decorationFont);
                 this.renderTextSegment(positionMatrix, multiDrawBatchDataHolder, nonShadowTextSegment, x, y, z);

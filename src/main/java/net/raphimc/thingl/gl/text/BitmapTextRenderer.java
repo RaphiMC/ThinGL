@@ -44,29 +44,24 @@ public class BitmapTextRenderer extends TextRenderer {
     protected void renderTextSegment(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextSegment textSegment, final float x, final float y, float z) {
         final ShaderBufferBuilder textDataBufferBuilder = multiDrawBatchDataHolder.getShaderStorageBufferBuilder(this.getDrawBatch(), "ssbo_TextData", Std430ShaderBufferBuilder.SUPPLIER).ensureInTopLevelArray();
         final TextStyle textStyle = textSegment.style();
+        final float boldnessExpansion = textSegment.glyphs().getFirst().fontGlyph().font().getSize() * (textStyle.boldnessStrength() / 100F);
         final int regularTextDataIndex = textDataBufferBuilder.beginStruct(Integer.BYTES).writeColor(textStyle.color()).endStructAndGetTopLevelArrayIndex();
 
-        if (textStyle.isBold()) {
-            if (textStyle.outlineColor().getAlpha() == 0) {
-                this.renderTextSegmentOutline(positionMatrix, multiDrawBatchDataHolder, textSegment, x, y, z, regularTextDataIndex);
-            } else {
-                // bold and outline isn't supported at the same time (yet). Use SDFTextRenderer for that.
-                final int outlineTextDataIndex = textDataBufferBuilder.beginStruct(Integer.BYTES).writeColor(textStyle.outlineColor()).endStructAndGetTopLevelArrayIndex();
-                this.renderTextSegmentOutline(positionMatrix, multiDrawBatchDataHolder, textSegment, x, y, z, outlineTextDataIndex);
-            }
-        } else if (textStyle.outlineColor().getAlpha() != 0) {
+        if (textStyle.outlineColor().getAlpha() != 0) {
             final int outlineTextDataIndex = textDataBufferBuilder.beginStruct(Integer.BYTES).writeColor(textStyle.outlineColor()).endStructAndGetTopLevelArrayIndex();
-            this.renderTextSegmentOutline(positionMatrix, multiDrawBatchDataHolder, textSegment, x, y, z, outlineTextDataIndex);
+            this.renderTextSegmentGrid(positionMatrix, multiDrawBatchDataHolder, textSegment, x, y, z, outlineTextDataIndex, textStyle.isBold() ? boldnessExpansion * 2F : boldnessExpansion);
+        }
+        if (textStyle.isBold()) {
+            this.renderTextSegmentGrid(positionMatrix, multiDrawBatchDataHolder, textSegment, x, y, z, regularTextDataIndex, boldnessExpansion);
         }
 
         this.renderTextSegment(positionMatrix, multiDrawBatchDataHolder, textSegment, x, y, z, regularTextDataIndex);
     }
 
-    private void renderTextSegmentOutline(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextSegment textSegment, final float x, final float y, final float z, final int textDataIndex) {
-        final float offsetMultiplier = textSegment.glyphs().getFirst().fontGlyph().font().getSize() / TextRenderer.BOLD_OFFSET_DIVIDER;
-        for (int xOffset = -1; xOffset <= 1; xOffset++) {
-            for (int yOffset = -1; yOffset <= 1; yOffset++) {
-                if (xOffset != 0 || yOffset != 0) {
+    private void renderTextSegmentGrid(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextSegment textSegment, final float x, final float y, final float z, final int textDataIndex, final float offsetMultiplier) {
+        for (float xOffset = -1F; xOffset <= 1F; xOffset += 0.5F) {
+            for (float yOffset = -1F; yOffset <= 1F; yOffset += 0.5F) {
+                if (xOffset != 0F || yOffset != 0F) {
                     this.renderTextSegment(positionMatrix, multiDrawBatchDataHolder, textSegment, x + xOffset * offsetMultiplier, y + yOffset * offsetMultiplier, z, textDataIndex);
                 }
             }

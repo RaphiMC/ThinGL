@@ -29,6 +29,7 @@ public class OutlineElement extends Element<TextStyle> {
         this.attributes.put("rgba", (style, value) -> style.withOutlineColor(IntegerColorParser.RGBA.parse(value)));
         this.attributes.put("argb", (style, value) -> style.withOutlineColor(IntegerColorParser.ARGB.parse(value)));
         this.attributes.put("value", (style, value) -> style.withOutlineColor(ConstantColorParser.parse(value)));
+        this.attributes.put("strength", (style, value) -> style.withBoldnessStrength(Float.parseFloat(value)));
     }
 
 }

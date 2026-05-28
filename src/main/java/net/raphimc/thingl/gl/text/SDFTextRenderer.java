@@ -28,7 +28,7 @@ import org.joml.Matrix4f;
 
 public class SDFTextRenderer extends TextRenderer {
 
-    public static final int DF_PX_RANGE = 6;
+    public static final int DF_PX_RANGE = 8;
 
     public SDFTextRenderer() {
         this(Font.GlyphBitmap.RenderMode.BSDF);
@@ -42,8 +42,8 @@ public class SDFTextRenderer extends TextRenderer {
     protected void renderTextSegment(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextSegment textSegment, final float x, final float y, final float z) {
         final ShaderBufferBuilder textDataBufferBuilder = multiDrawBatchDataHolder.getShaderStorageBufferBuilder(this.getDrawBatch(), "ssbo_TextData", Std430ShaderBufferBuilder.SUPPLIER).ensureInTopLevelArray();
         final TextStyle textStyle = textSegment.style();
-        final int fontSize = textSegment.glyphs().getFirst().fontGlyph().font().getSize();
-        final int textDataIndex = textDataBufferBuilder.beginStruct(Integer.BYTES).writeInt(fontSize).writeColor(textStyle.color()).writeColor(textStyle.outlineColor()).writeInt(textStyle.flags()).endStructAndGetTopLevelArrayIndex();
+        final float boldnessExpansion = textSegment.glyphs().getFirst().fontGlyph().font().getSize() * (textStyle.boldnessStrength() / 100F);
+        final int textDataIndex = textDataBufferBuilder.beginStruct(Integer.BYTES).writeColor(textStyle.color()).writeColor(textStyle.outlineColor()).writeInt(textStyle.flags()).writeFloat(boldnessExpansion).endStructAndGetTopLevelArrayIndex();
         this.renderTextSegment(positionMatrix, multiDrawBatchDataHolder, textSegment, x, y, z, textDataIndex);
     }
 

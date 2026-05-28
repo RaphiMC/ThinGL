@@ -18,7 +18,6 @@
 package net.raphimc.thingl.text.shaping;
 
 import net.lenni0451.commons.color.Color;
-import net.raphimc.thingl.gl.text.TextRenderer;
 import net.raphimc.thingl.resource.font.Font;
 import net.raphimc.thingl.text.TextStyle;
 import org.joml.Vector2f;
@@ -76,19 +75,26 @@ public record ShapedTextSegment(List<TextShaper.Glyph> glyphs, TextStyle style, 
         }
 
         if (this.style.isShadow()) {
-            final float shadowOffset = (this.style.shadowOffset() / 100F) * this.glyphs.getLast().fontGlyph().font().getSize();
-            this.visualBounds.maxX += shadowOffset;
-            this.visualBounds.maxY += shadowOffset;
+            final float expansion = this.glyphs.getLast().fontGlyph().font().getSize() * (this.style.shadowOffset() / 100F);
+            this.visualBounds.maxX += expansion;
+            this.visualBounds.maxY += expansion;
         }
-        if (this.style.isBold() || this.style.outlineColor().getAlpha() > 0) {
-            final float boldOffset = this.glyphs.getFirst().fontGlyph().font().getSize() / TextRenderer.BOLD_OFFSET_DIVIDER;
-            this.visualBounds.minX -= boldOffset;
-            this.visualBounds.minY -= boldOffset;
-            this.visualBounds.maxX += boldOffset;
-            this.visualBounds.maxY += boldOffset;
+        if (this.style.isBold()) {
+            final float expansion = this.glyphs.getFirst().fontGlyph().font().getSize() * (this.style.boldnessStrength() / 100F);
+            this.visualBounds.minX -= expansion;
+            this.visualBounds.minY -= expansion;
+            this.visualBounds.maxX += expansion;
+            this.visualBounds.maxY += expansion;
         }
         if (this.style.isItalic()) {
             this.visualBounds.maxX += (float) Math.tan(Math.toRadians(this.style.italicAngle())) * -this.glyphs.getLast().fontGlyph().bearingY();
+        }
+        if (this.style.outlineColor().getAlpha() > 0) {
+            final float expansion = this.glyphs.getFirst().fontGlyph().font().getSize() * (this.style.boldnessStrength() / 100F);
+            this.visualBounds.minX -= expansion;
+            this.visualBounds.minY -= expansion;
+            this.visualBounds.maxX += expansion;
+            this.visualBounds.maxY += expansion;
         }
     }
 

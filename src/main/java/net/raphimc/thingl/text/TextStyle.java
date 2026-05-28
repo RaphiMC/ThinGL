@@ -20,7 +20,7 @@ package net.raphimc.thingl.text;
 import net.lenni0451.commons.color.Color;
 import org.joml.Vector2f;
 
-public record TextStyle(Color color, int flags, Color outlineColor, Color shadowColor, float shadowOffset, float italicAngle) {
+public record TextStyle(Color color, int flags, Color outlineColor, Color shadowColor, float shadowOffset, float boldnessStrength, float italicAngle) {
 
     public static final TextStyle WHITE = new TextStyle(Color.WHITE);
     public static final TextStyle BLACK = new TextStyle(Color.BLACK);
@@ -52,7 +52,7 @@ public record TextStyle(Color color, int flags, Color outlineColor, Color shadow
     }
 
     public TextStyle(final Color color, final int flags, final Color outlineColor, final Color shadowColor) {
-        this(color, flags, outlineColor, shadowColor, 7.5F, 14F);
+        this(color, flags, outlineColor, shadowColor, 7.5F, 2.5F, 14F);
     }
 
     public TextStyle(final Color color, final int flags, final Color outlineColor) {
@@ -92,7 +92,7 @@ public record TextStyle(Color color, int flags, Color outlineColor, Color shadow
     }
 
     public TextStyle withColor(final Color color) {
-        return new TextStyle(color, this.flags, this.outlineColor, this.shadowColor, this.shadowOffset, this.italicAngle);
+        return new TextStyle(color, this.flags, this.outlineColor, this.shadowColor, this.shadowOffset, this.boldnessStrength, this.italicAngle);
     }
 
     public TextStyle withShadow(final boolean shadow) {
@@ -146,23 +146,27 @@ public record TextStyle(Color color, int flags, Color outlineColor, Color shadow
     }
 
     public TextStyle withFlags(final int flags) {
-        return new TextStyle(this.color, flags, this.outlineColor, this.shadowColor, this.shadowOffset, this.italicAngle);
+        return new TextStyle(this.color, flags, this.outlineColor, this.shadowColor, this.shadowOffset, this.boldnessStrength, this.italicAngle);
     }
 
     public TextStyle withOutlineColor(final Color outlineColor) {
-        return new TextStyle(this.color, this.flags, outlineColor, this.shadowColor, this.shadowOffset, this.italicAngle);
+        return new TextStyle(this.color, this.flags, outlineColor, this.shadowColor, this.shadowOffset, this.boldnessStrength, this.italicAngle);
     }
 
     public TextStyle withShadowColor(final Color shadowColor) {
-        return new TextStyle(this.color, this.flags, this.outlineColor, shadowColor, this.shadowOffset, this.italicAngle);
+        return new TextStyle(this.color, this.flags, this.outlineColor, shadowColor, this.shadowOffset, this.boldnessStrength, this.italicAngle);
     }
 
     public TextStyle withShadowOffset(final float shadowOffset) {
-        return new TextStyle(this.color, this.flags, this.outlineColor, this.shadowColor, shadowOffset, this.italicAngle);
+        return new TextStyle(this.color, this.flags, this.outlineColor, this.shadowColor, shadowOffset, this.boldnessStrength, this.italicAngle);
+    }
+
+    public TextStyle withBoldnessStrength(final float boldnessStrength) {
+        return new TextStyle(this.color, this.flags, this.outlineColor, this.shadowColor, this.shadowOffset, boldnessStrength, this.italicAngle);
     }
 
     public TextStyle withItalicAngle(final float italicAngle) {
-        return new TextStyle(this.color, this.flags, this.outlineColor, this.shadowColor, this.shadowOffset, italicAngle);
+        return new TextStyle(this.color, this.flags, this.outlineColor, this.shadowColor, this.shadowOffset, this.boldnessStrength, italicAngle);
     }
 
     @Deprecated(forRemoval = true)

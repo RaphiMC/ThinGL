@@ -58,6 +58,9 @@ import net.raphimc.thingl.text.markup.parser.MarkupParser;
  *     <li>
  *         <code>enabled</code> (optional): <code>true</code> or <code>false</code> to enable or disable bold formatting. Default: <code>true</code>.
  *     </li>
+ *     <li>
+ *         <code>strength</code> (optional): Float value (<code>0-5</code>) specifying the strength of the bold effect. Default: <code>2.5</code>.
+ *     </li>
  * </ul>
  *
  * <h3>color</h3>
@@ -108,6 +111,9 @@ import net.raphimc.thingl.text.markup.parser.MarkupParser;
  *     </li>
  *     <li>
  *         <code>value</code> (required): A color constant name (e.g., <code>red</code>, <code>blue</code>, <code>green</code>, etc.).
+ *     </li>
+ *     <li>
+ *         <code>strength</code> (optional): Float value (<code>0-5</code>) specifying the strength of the outline effect. Default: <code>2.5</code>.
  *     </li>
  * </ul>
  * <b>Notes</b>: Only one of the color attributes is required. If multiple are provided, the last one takes precedence.
