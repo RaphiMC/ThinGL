@@ -29,7 +29,7 @@ public abstract class StdShaderBufferBuilder extends ShaderBufferBuilder {
     private static final int STRUCT_DATA_CALCULATED_MAX_MEMBER_ALIGNMENT = 0;
     private static final int STRUCT_DATA_GIVEN_MAX_MEMBER_ALIGNMENT = 1;
 
-    protected final Stack<int[]> structDataStack = new ObjectArrayList<>(2);
+    protected final Stack<int[]> structDataStack = new ObjectArrayList<>(0);
 
     public StdShaderBufferBuilder(final MemoryBuffer memoryBuffer) {
         super(memoryBuffer);

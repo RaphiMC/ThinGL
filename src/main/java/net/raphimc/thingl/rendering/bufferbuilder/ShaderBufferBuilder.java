@@ -25,8 +25,8 @@ import net.raphimc.thingl.memory.MemoryBuffer;
 
 public abstract class ShaderBufferBuilder extends DataBufferBuilder<ShaderBufferBuilder> {
 
-    protected final BooleanStack inArrayStack = new BooleanArrayList(2);
-    protected final LongStack structStartPositionStack = new LongArrayList(2);
+    protected final BooleanStack inArrayStack = new BooleanArrayList(0);
+    protected final LongStack structStartPositionStack = new LongArrayList(0);
 
     public ShaderBufferBuilder(final MemoryBuffer memoryBuffer) {
         super(memoryBuffer);
