@@ -26,11 +26,12 @@ import net.raphimc.thingl.gl.texture.StaticAtlasTexture;
 import net.raphimc.thingl.rendering.DrawBatch;
 import net.raphimc.thingl.rendering.DrawBatches;
 import net.raphimc.thingl.rendering.bufferbuilder.impl.VertexBufferBuilder;
-import net.raphimc.thingl.rendering.dataholder.DrawBatchDataHolder;
 import net.raphimc.thingl.rendering.dataholder.MultiDrawBatchDataHolder;
-import net.raphimc.thingl.resource.font.Font;
+import net.raphimc.thingl.resource.font.instance.FontInstance;
+import net.raphimc.thingl.resource.font.instance.ScaledFontInstance;
 import net.raphimc.thingl.text.TextStyle;
 import net.raphimc.thingl.text.shaping.*;
+import net.raphimc.thingl.util.ArrayCache;
 import net.raphimc.thingl.util.rectpack.Slot;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11C;
@@ -47,17 +48,16 @@ public abstract class TextRenderer {
     private static final int ATLAS_SIZE = 1024;
 
     private final DrawBatch drawBatch;
-    private final Font.GlyphBitmap.RenderMode glyphRenderMode;
+    private final FontInstance.GlyphBitmap.RenderMode glyphRenderMode;
     private final List<StaticAtlasTexture> glyphAtlases = new ArrayList<>();
-    private final Reference2ObjectMap<Font.Glyph, AtlasGlyph> atlasGlyphs = new Reference2ObjectOpenHashMap<>();
-    private float globalScale = 1F;
+    private final Reference2ObjectMap<FontInstance, ArrayCache<AtlasGlyph>> fontAtlasGlyphs = new Reference2ObjectOpenHashMap<>();
 
-    protected TextRenderer(final Supplier<Program> program, final Font.GlyphBitmap.RenderMode glyphRenderMode) {
+    protected TextRenderer(final Supplier<Program> program, final FontInstance.GlyphBitmap.RenderMode glyphRenderMode) {
         this(program, glyphRenderMode, _ -> {
         });
     }
 
-    protected TextRenderer(final Supplier<Program> program, final Font.GlyphBitmap.RenderMode glyphRenderMode, final Consumer<Program> programSetup) {
+    protected TextRenderer(final Supplier<Program> program, final FontInstance.GlyphBitmap.RenderMode glyphRenderMode, final Consumer<Program> programSetup) {
         this.drawBatch = new DrawBatch.Builder(DrawBatches.TEXTURE_SNIPPET)
                 .program(program)
                 .vertexDataLayout(DrawBatches.TEXT_GLYPH_LAYOUT)
@@ -76,20 +76,14 @@ public abstract class TextRenderer {
     public void renderTextBlock(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextBlock textBlock, final float x, float y, final float z) {
         for (ShapedTextLine textLine : textBlock.lines()) {
             this.renderTextLine(positionMatrix, multiDrawBatchDataHolder, textLine, x, y, z);
-            y += textLine.logicalBounds().lengthY() * this.globalScale;
+            y += textLine.logicalBounds().lengthY();
         }
     }
 
     public void renderTextLine(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextLine textLine, float x, final float y, final float z) {
-        for (int i = 0; i < textLine.runs().size(); i++) {
-            final ShapedTextRun textRun = textLine.runs().get(i);
-            if (i == 0) {
-                this.renderTextRun(positionMatrix, multiDrawBatchDataHolder, textRun, x, y, z, textRun.font());
-                x += textRun.visualBounds().minX * this.globalScale;
-            } else {
-                this.renderTextRun(positionMatrix, multiDrawBatchDataHolder, textRun, x - textRun.visualBounds().minX * this.globalScale, y, z, textLine.runs().getFirst().font());
-            }
-            x += textRun.logicalBounds().maxX * this.globalScale;
+        for (ShapedTextRun textRun : textLine.runs()) {
+            this.renderTextRun(positionMatrix, multiDrawBatchDataHolder, textRun, x, y, z, textLine.runs().getFirst().font());
+            x += textRun.logicalBounds().lengthX();
         }
     }
 
@@ -110,39 +104,30 @@ public abstract class TextRenderer {
     }
 
     public void preloadGlyphs(final ShapedTextRun textRun) {
+        final ArrayCache<AtlasGlyph> atlasGlyphs = this.getAtlasGlyphs(textRun.font());
         for (ShapedTextSegment textSegment : textRun.segments()) {
-            this.preloadGlyphs(textSegment);
-        }
-    }
-
-    public void preloadGlyphs(final ShapedTextSegment textSegment) {
-        for (TextShaper.Glyph shapedGlyph : textSegment.glyphs()) {
-            this.getAtlasGlyph(shapedGlyph.fontGlyph());
+            for (TextShaper.Glyph shapedGlyph : textSegment.glyphs()) {
+                atlasGlyphs.getOrLoad(shapedGlyph.index());
+            }
         }
     }
 
     public void free() {
         this.glyphAtlases.forEach(StaticAtlasTexture::free);
         this.glyphAtlases.clear();
+        this.fontAtlasGlyphs.clear();
     }
 
     public DrawBatch getDrawBatch() {
         return this.drawBatch;
     }
 
-    public Font.GlyphBitmap.RenderMode getGlyphRenderMode() {
+    public FontInstance.GlyphBitmap.RenderMode getGlyphRenderMode() {
         return this.glyphRenderMode;
     }
 
-    public float getGlobalScale() {
-        return this.globalScale;
-    }
-
-    public void setGlobalScale(final float scale) {
-        this.globalScale = scale;
-    }
-
-    protected void renderTextRun(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextRun textRun, final float x, final float y, final float z, final Font decorationFont) {
+    protected void renderTextRun(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextRun textRun, final float x, final float y, final float z, final FontInstance decorationFont) {
+        final FontInstance font = textRun.font();
         for (ShapedTextSegment textSegment : textRun.segments()) {
             if (textSegment.glyphs().isEmpty()) {
                 continue;
@@ -158,63 +143,50 @@ public abstract class TextRenderer {
                 }
                 final ShapedTextSegment shadowTextSegment = new ShapedTextSegment(textSegment.glyphs(), shadowStyle, textSegment.visualBounds(), textSegment.logicalBounds());
                 final ShapedTextSegment nonShadowTextSegment = new ShapedTextSegment(textSegment.glyphs(), style.withShadow(false), textSegment.visualBounds(), textSegment.logicalBounds());
-                final float shadowOffset = textRun.font().getSize() * (style.shadowOffset() / 100F) * this.globalScale;
-                this.renderTextSegment(positionMatrix, multiDrawBatchDataHolder, shadowTextSegment, x + shadowOffset, y + shadowOffset, z);
-                this.renderTextDecorations(positionMatrix, multiDrawBatchDataHolder, shadowTextSegment, x + shadowOffset, y + shadowOffset, z, decorationFont);
-                this.renderTextSegment(positionMatrix, multiDrawBatchDataHolder, nonShadowTextSegment, x, y, z);
-                this.renderTextDecorations(positionMatrix, multiDrawBatchDataHolder, nonShadowTextSegment, x, y, z, decorationFont);
+                final float shadowOffset = font.getSize() * (style.shadowOffset() / 100F);
+                this.renderTextSegment(positionMatrix, multiDrawBatchDataHolder, font, shadowTextSegment, x + shadowOffset, y + shadowOffset, z);
+                this.renderTextDecorations(positionMatrix, multiDrawBatchDataHolder, decorationFont, shadowTextSegment, x + shadowOffset, y + shadowOffset, z);
+                this.renderTextSegment(positionMatrix, multiDrawBatchDataHolder, font, nonShadowTextSegment, x, y, z);
+                this.renderTextDecorations(positionMatrix, multiDrawBatchDataHolder, decorationFont, nonShadowTextSegment, x, y, z);
             } else {
-                this.renderTextSegment(positionMatrix, multiDrawBatchDataHolder, textSegment, x, y, z);
-                this.renderTextDecorations(positionMatrix, multiDrawBatchDataHolder, textSegment, x, y, z, decorationFont);
+                this.renderTextSegment(positionMatrix, multiDrawBatchDataHolder, font, textSegment, x, y, z);
+                this.renderTextDecorations(positionMatrix, multiDrawBatchDataHolder, decorationFont, textSegment, x, y, z);
             }
         }
     }
 
-    protected abstract void renderTextSegment(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextSegment textSegment, final float x, final float y, final float z);
+    protected abstract void renderTextSegment(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final FontInstance font, final ShapedTextSegment textSegment, final float x, final float y, final float z);
 
-    protected void renderTextSegment(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextSegment textSegment, final float x, final float y, final float z, final int textDataIndex) {
-        final DrawBatchDataHolder drawBatchDataHolder = multiDrawBatchDataHolder.getDrawBatchDataHolder(this.drawBatch);
-        final VertexBufferBuilder vertexBufferBuilder = drawBatchDataHolder.getVertexBufferBuilder();
-
+    protected void renderTextSegment(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final FontInstance font, final ShapedTextSegment textSegment, final float x, final float y, final float z, final int textDataIndex) {
+        final VertexBufferBuilder vertexBufferBuilder = multiDrawBatchDataHolder.getVertexBufferBuilder(this.drawBatch);
+        final ArrayCache<AtlasGlyph> atlasGlyphs = this.getAtlasGlyphs(font);
         for (TextShaper.Glyph shapedGlyph : textSegment.glyphs()) {
-            final Font.Glyph fontGlyph = shapedGlyph.fontGlyph();
-            final AtlasGlyph atlasGlyph = this.getAtlasGlyph(fontGlyph);
-            if (atlasGlyph != null) {
-                final float glyphX = shapedGlyph.x() * this.globalScale;
-                final float glyphY = shapedGlyph.y() * this.globalScale;
-                this.renderGlyph(positionMatrix, vertexBufferBuilder, atlasGlyph, x + glyphX, y + glyphY, z, textSegment.style(), textDataIndex);
+            final AtlasGlyph atlasGlyph = atlasGlyphs.getOrLoad(shapedGlyph.index());
+            if (atlasGlyph != AtlasGlyph.EMPTY) {
+                this.renderGlyph(positionMatrix, vertexBufferBuilder, atlasGlyph, x + shapedGlyph.x(), y + shapedGlyph.y(), z, textSegment.style(), textDataIndex);
             }
         }
     }
 
-    protected void renderTextDecorations(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextSegment textSegment, final float x, final float y, final float z, final Font font) {
+    protected void renderTextDecorations(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final FontInstance font, final ShapedTextSegment textSegment, final float x, final float y, final float z) {
         final TextStyle style = textSegment.style();
-        if (style.isUnderline() || style.isStrikethrough()) {
-            final int color = style.color().toABGR();
-            if (style.isUnderline()) {
-                float halfLineThickness = (font.getUnderlineThickness() * this.globalScale) / 2F;
-                if (style.isBold()) {
-                    halfLineThickness *= 1.5F;
-                }
-                final float lineY = y + font.getUnderlinePosition() * this.globalScale;
-                Primitives.filledRectangle(positionMatrix, multiDrawBatchDataHolder, x + textSegment.logicalBounds().minX * this.globalScale, lineY - halfLineThickness, x + textSegment.logicalBounds().maxX * this.globalScale, lineY + halfLineThickness, z, color);
-            }
-            if (style.isStrikethrough()) {
-                float halfLineThickness = (font.getStrikethroughThickness() * this.globalScale) / 2F;
-                if (style.isBold()) {
-                    halfLineThickness *= 1.5F;
-                }
-                final float lineY = y + font.getStrikethroughPosition() * this.globalScale;
-                Primitives.filledRectangle(positionMatrix, multiDrawBatchDataHolder, x + textSegment.logicalBounds().minX * this.globalScale, lineY - halfLineThickness, x + textSegment.logicalBounds().maxX * this.globalScale, lineY + halfLineThickness, z, color);
-            }
+        if (style.isUnderline()) {
+            final float lineY = y + font.getUnderlinePosition();
+            final float halfLineThickness = font.getUnderlineThickness() / 2F;
+            Primitives.filledRectangle(positionMatrix, multiDrawBatchDataHolder, x + textSegment.logicalBounds().minX, lineY - halfLineThickness, x + textSegment.logicalBounds().maxX, lineY + halfLineThickness, z, style.color().toABGR());
+        }
+        if (style.isStrikethrough()) {
+            final float lineY = y + font.getStrikethroughPosition();
+            final float halfLineThickness = font.getStrikethroughThickness() / 2F;
+            Primitives.filledRectangle(positionMatrix, multiDrawBatchDataHolder, x + textSegment.logicalBounds().minX, lineY - halfLineThickness, x + textSegment.logicalBounds().maxX, lineY + halfLineThickness, z, style.color().toABGR());
         }
     }
 
     private void renderGlyph(final Matrix4f positionMatrix, final VertexBufferBuilder vertexBufferBuilder, final AtlasGlyph glyph, final float x, final float y, final float z, final TextStyle textStyle, final int textDataIndex) {
-        final float x1 = x + glyph.xOffset() * this.globalScale;
-        final float x2 = x1 + glyph.width() * this.globalScale;
-        final float y1 = y + glyph.yOffset() * this.globalScale;
-        final float y2 = y1 + glyph.height() * this.globalScale;
+        final float x1 = x + glyph.xOffset();
+        final float x2 = x1 + glyph.width();
+        final float y1 = y + glyph.yOffset();
+        final float y2 = y1 + glyph.height();
 
         float topOffset = 0F;
         float bottomOffset = 0F;
@@ -230,17 +202,35 @@ public abstract class TextRenderer {
         vertexBufferBuilder.writeVector3f(positionMatrix, x1 + topOffset, y1, z).writeTextureCoord(glyph.u1(), glyph.v1()).writeByte((byte) glyph.atlasIndex()).writeShort((short) textDataIndex).endVertex();
     }
 
-    private AtlasGlyph getAtlasGlyph(final Font.Glyph fontGlyph) {
-        if (!this.atlasGlyphs.containsKey(fontGlyph)) {
-            this.atlasGlyphs.put(fontGlyph, this.createAtlasGlyph(fontGlyph));
+    private ArrayCache<AtlasGlyph> getAtlasGlyphs(final FontInstance font) {
+        if (!this.fontAtlasGlyphs.containsKey(font)) {
+            this.fontAtlasGlyphs.put(font, new ArrayCache<>(Integer.MAX_VALUE, glyphIndex -> this.loadAtlasGlyph(font, glyphIndex)));
         }
-        return this.atlasGlyphs.get(fontGlyph);
+        return this.fontAtlasGlyphs.get(font);
     }
 
-    private AtlasGlyph createAtlasGlyph(final Font.Glyph fontGlyph) {
-        final Font.GlyphBitmap glyphBitmap = fontGlyph.font().createGlyphBitmap(fontGlyph, this.glyphRenderMode);
+    private AtlasGlyph getAtlasGlyph(final FontInstance font, final int glyphIndex) {
+        return this.getAtlasGlyphs(font).getOrLoad(glyphIndex);
+    }
+
+    private AtlasGlyph loadAtlasGlyph(final FontInstance font, final int glyphIndex) {
+        if (font instanceof ScaledFontInstance scaledFont) {
+            final AtlasGlyph baseAtlasGlyph = this.getAtlasGlyph(scaledFont.getBaseInstance(), glyphIndex);
+            if (baseAtlasGlyph != AtlasGlyph.EMPTY) {
+                return new AtlasGlyph(baseAtlasGlyph.atlasIndex(), baseAtlasGlyph.u1(), baseAtlasGlyph.v1(), baseAtlasGlyph.u2(), baseAtlasGlyph.v2(),
+                        baseAtlasGlyph.xOffset() * scaledFont.getScale(),
+                        baseAtlasGlyph.yOffset() * scaledFont.getScale(),
+                        baseAtlasGlyph.width() * scaledFont.getScale(),
+                        baseAtlasGlyph.height() * scaledFont.getScale()
+                );
+            } else {
+                return AtlasGlyph.EMPTY;
+            }
+        }
+
+        final FontInstance.GlyphBitmap glyphBitmap = font.createGlyphBitmap(glyphIndex, this.glyphRenderMode);
         if (glyphBitmap == null) {
-            return null;
+            return AtlasGlyph.EMPTY;
         }
 
         Slot atlasSlot = null;
@@ -288,10 +278,13 @@ public abstract class TextRenderer {
             this.glyphAtlases.add(atlas);
         }
 
-        return new AtlasGlyph(this.glyphAtlases.indexOf(atlas), atlasSlot.u1(), atlasSlot.v1(), atlasSlot.u2(), atlasSlot.v2(), atlasSlot.width(), atlasSlot.height(), glyphBitmap.xOffset(), glyphBitmap.yOffset());
+        return new AtlasGlyph(this.glyphAtlases.indexOf(atlas), atlasSlot.u1(), atlasSlot.v1(), atlasSlot.u2(), atlasSlot.v2(), glyphBitmap.xOffset(), glyphBitmap.yOffset(), atlasSlot.width(), atlasSlot.height());
     }
 
-    private record AtlasGlyph(int atlasIndex, float u1, float v1, float u2, float v2, float width, float height, float xOffset, float yOffset) {
+    private record AtlasGlyph(int atlasIndex, float u1, float v1, float u2, float v2, float xOffset, float yOffset, float width, float height) {
+
+        private static final AtlasGlyph EMPTY = new AtlasGlyph(0, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F);
+
     }
 
 }

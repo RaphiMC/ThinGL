@@ -22,8 +22,8 @@ import net.raphimc.thingl.gl.renderer.impl.RendererText;
 import net.raphimc.thingl.gl.text.BitmapTextRenderer;
 import net.raphimc.thingl.gl.text.SDFTextRenderer;
 import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
-import net.raphimc.thingl.resource.font.Font;
-import net.raphimc.thingl.resource.font.impl.FreeTypeFont;
+import net.raphimc.thingl.resource.font.face.impl.FreeTypeFontFace;
+import net.raphimc.thingl.resource.font.instance.FontInstance;
 import net.raphimc.thingl.text.TextRun;
 import net.raphimc.thingl.text.TextSegment;
 import net.raphimc.thingl.text.TextStyle;
@@ -47,7 +47,7 @@ public class TextRenderingExample extends GLFWApplicationRunner {
     // Instead of creating a new RendererText instance, you can use ThinGL.rendererText() to get the default text renderer.
     private RendererText bitmapTextRenderer = new RendererText(new BitmapTextRenderer());
     private RendererText sdfTextRenderer = new RendererText(new SDFTextRenderer());
-    private Font robotoRegular;
+    private FontInstance robotoRegular;
     private ShapedTextRun multiColoredText;
 
     @Override
@@ -55,10 +55,10 @@ public class TextRenderingExample extends GLFWApplicationRunner {
         super.init();
         try {
             final byte[] fontData = TextRenderingExample.class.getResourceAsStream("/fonts/Roboto-Regular.ttf").readAllBytes();
-            this.robotoRegular = new FreeTypeFont(fontData, 32);
+            this.robotoRegular = new FreeTypeFontFace(fontData).getInstance(32);
 
-            // this.robotoRegular = new StbFont(fontData, 32); // Its also possible to use STB for font rendering, but it has less features than FreeType
-            // this.robotoRegular = new AwtFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 32)); // Or use AWT to load system fonts (AWT only work with the BitmapTextRenderer)
+            // this.robotoRegular = new StbFontFace(fontData).getInstance(32); // Its also possible to use STB for font rendering, but it has less features than FreeType
+            // this.robotoRegular = new AwtFontFace(new Font("Arial", Font.PLAIN, 32)).getInstance(32); // Or use AWT to load system fonts (AWT only work with the BitmapTextRenderer)
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

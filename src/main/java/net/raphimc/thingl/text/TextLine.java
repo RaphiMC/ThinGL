@@ -19,8 +19,8 @@ package net.raphimc.thingl.text;
 
 import net.lenni0451.commons.collections.Lists;
 import net.lenni0451.commons.color.Color;
-import net.raphimc.thingl.resource.font.Font;
-import net.raphimc.thingl.text.font.FontSet;
+import net.raphimc.thingl.resource.font.instance.FontInstance;
+import net.raphimc.thingl.resource.font.instance.FontInstanceSet;
 import net.raphimc.thingl.text.shaping.ShapedTextLine;
 import net.raphimc.thingl.text.shaping.TextShaper;
 import net.raphimc.thingl.text.shaping.impl.BasicTextShaper;
@@ -30,51 +30,51 @@ import java.util.List;
 
 public record TextLine(List<TextRun> runs) {
 
-    public static TextLine fromString(final Font font, final String text) {
+    public static TextLine fromString(final FontInstance font, final String text) {
         return new TextLine(TextRun.fromString(font, text));
     }
 
-    public static TextLine fromString(final Font font, final String text, final Color color) {
+    public static TextLine fromString(final FontInstance font, final String text, final Color color) {
         return new TextLine(TextRun.fromString(font, text, color));
     }
 
-    public static TextLine fromString(final Font font, final String text, final Color color, final int styleFlags) {
+    public static TextLine fromString(final FontInstance font, final String text, final Color color, final int styleFlags) {
         return new TextLine(TextRun.fromString(font, text, color, styleFlags));
     }
 
-    public static TextLine fromString(final Font font, final String text, final Color color, final int styleFlags, final Color outlineColor) {
+    public static TextLine fromString(final FontInstance font, final String text, final Color color, final int styleFlags, final Color outlineColor) {
         return new TextLine(TextRun.fromString(font, text, color, styleFlags, outlineColor));
     }
 
-    public static TextLine fromString(final Font font, final String text, final TextStyle style) {
+    public static TextLine fromString(final FontInstance font, final String text, final TextStyle style) {
         return new TextLine(TextRun.fromString(font, text, style));
     }
 
-    public static TextLine fromString(final FontSet fontSet, final String text) {
+    public static TextLine fromString(final FontInstanceSet fontSet, final String text) {
         return fromString(fontSet, text, TextStyle.WHITE);
     }
 
-    public static TextLine fromString(final FontSet fontSet, final String text, final Color color) {
+    public static TextLine fromString(final FontInstanceSet fontSet, final String text, final Color color) {
         return fromString(fontSet, text, new TextStyle(color));
     }
 
-    public static TextLine fromString(final FontSet fontSet, final String text, final Color color, final int styleFlags) {
+    public static TextLine fromString(final FontInstanceSet fontSet, final String text, final Color color, final int styleFlags) {
         return fromString(fontSet, text, new TextStyle(color, styleFlags));
     }
 
-    public static TextLine fromString(final FontSet fontSet, final String text, final Color color, final int styleFlags, final Color outlineColor) {
+    public static TextLine fromString(final FontInstanceSet fontSet, final String text, final Color color, final int styleFlags, final Color outlineColor) {
         return fromString(fontSet, text, new TextStyle(color, styleFlags, outlineColor));
     }
 
-    public static TextLine fromString(final FontSet fontSet, final String text, final TextStyle style) {
+    public static TextLine fromString(final FontInstanceSet fontSet, final String text, final TextStyle style) {
         final List<TextRun> runs = new ArrayList<>();
         final StringBuilder currentText = new StringBuilder(text.length());
-        Font currentFont = fontSet.getMainFont();
+        FontInstance currentFont = fontSet.getMainInstance();
         for (int i = 0; i < text.length(); ) {
             final int codePoint = text.codePointAt(i);
-            Font font = fontSet.getFont(codePoint);
+            FontInstance font = fontSet.getInstance(codePoint);
             if (font == null) { // If the character is not supported by the font set, use the main font to display the missing glyph character
-                font = fontSet.getMainFont();
+                font = fontSet.getMainInstance();
             }
             if (font != currentFont) {
                 if (!currentText.isEmpty()) {

@@ -38,17 +38,10 @@ public record ShapedTextLine(List<ShapedTextRun> runs, Rectanglef visualBounds, 
         this.visualBounds.setMin(Float.MAX_VALUE, Float.MAX_VALUE).setMax(-Float.MAX_VALUE, -Float.MAX_VALUE);
         this.logicalBounds.setMin(Float.MAX_VALUE, Float.MAX_VALUE).setMax(-Float.MAX_VALUE, -Float.MAX_VALUE);
         float x = 0F;
-        for (int i = 0; i < this.runs.size(); i++) {
-            final ShapedTextRun run = this.runs.get(i);
-            if (i == 0) {
-                this.visualBounds.union(run.visualBounds());
-                this.logicalBounds.union(run.logicalBounds());
-                x += run.visualBounds().minX;
-            } else {
-                this.visualBounds.union(run.visualBounds().translate(x - run.visualBounds().minX, 0F, new Rectanglef()));
-                this.logicalBounds.union(run.logicalBounds().translate(x - run.visualBounds().minX, 0F, new Rectanglef()));
-            }
-            x += run.logicalBounds().maxX;
+        for (ShapedTextRun run : this.runs) {
+            this.visualBounds.union(run.visualBounds().translate(x, 0F, new Rectanglef()));
+            this.logicalBounds.union(run.logicalBounds().translate(x, 0F, new Rectanglef()));
+            x += run.logicalBounds().lengthX();
         }
     }
 

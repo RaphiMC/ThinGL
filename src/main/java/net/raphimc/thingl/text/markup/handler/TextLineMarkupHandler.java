@@ -17,17 +17,17 @@
  */
 package net.raphimc.thingl.text.markup.handler;
 
+import net.raphimc.thingl.resource.font.instance.FontInstanceSet;
 import net.raphimc.thingl.text.TextLine;
 import net.raphimc.thingl.text.TextRun;
 import net.raphimc.thingl.text.TextStyle;
-import net.raphimc.thingl.text.font.FontSet;
 
 public class TextLineMarkupHandler extends TextMarkupHandler {
 
-    private final FontSet fontSet;
+    private final FontInstanceSet fontSet;
     private final TextLine textLine;
 
-    public TextLineMarkupHandler(final FontSet fontSet, final TextStyle baseStyle) {
+    public TextLineMarkupHandler(final FontInstanceSet fontSet, final TextStyle baseStyle) {
         super(baseStyle);
         this.fontSet = fontSet;
         this.textLine = new TextLine();

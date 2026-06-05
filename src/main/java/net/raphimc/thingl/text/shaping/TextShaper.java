@@ -17,7 +17,6 @@
  */
 package net.raphimc.thingl.text.shaping;
 
-import net.raphimc.thingl.resource.font.Font;
 import net.raphimc.thingl.text.TextBlock;
 import net.raphimc.thingl.text.TextLine;
 import net.raphimc.thingl.text.TextRun;
@@ -45,7 +44,7 @@ public abstract class TextShaper {
 
     public abstract ShapedTextRun shape(final TextRun textRun);
 
-    public record Glyph(Font.Glyph fontGlyph, float x, float y) {
+    public record Glyph(int index, float x, float y) {
     }
 
 }

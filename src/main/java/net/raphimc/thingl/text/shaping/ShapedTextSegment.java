@@ -18,7 +18,7 @@
 package net.raphimc.thingl.text.shaping;
 
 import net.lenni0451.commons.color.Color;
-import net.raphimc.thingl.resource.font.Font;
+import net.raphimc.thingl.resource.font.instance.FontInstance;
 import net.raphimc.thingl.text.TextStyle;
 import org.joml.Vector2f;
 import org.joml.primitives.Rectanglef;
@@ -27,28 +27,27 @@ import java.util.List;
 
 public record ShapedTextSegment(List<TextShaper.Glyph> glyphs, TextStyle style, Rectanglef visualBounds, Rectanglef logicalBounds) {
 
-    public ShapedTextSegment(final List<TextShaper.Glyph> glyphs, final TextStyle style) {
+    public ShapedTextSegment(final FontInstance font, final List<TextShaper.Glyph> glyphs, final TextStyle style) {
         this(glyphs, style, new Rectanglef(), new Rectanglef());
-        this.calculateBounds();
+        this.calculateBounds(font);
     }
 
-    public void calculateBounds() {
+    public void calculateBounds(final FontInstance font) {
         if (this.glyphs.isEmpty()) {
             this.visualBounds.setMin(0F, 0F).setMax(0F, 0F);
             this.logicalBounds.setMin(0F, 0F).setMax(0F, 0F);
             return;
         }
 
-        final Font font = this.glyphs.getFirst().fontGlyph().font();
         this.visualBounds.setMin(Float.MAX_VALUE, Float.MAX_VALUE).setMax(-Float.MAX_VALUE, -Float.MAX_VALUE);
         this.logicalBounds.setMin(Float.MAX_VALUE, -font.getAscent()).setMax(-Float.MAX_VALUE, font.getDescent());
         for (TextShaper.Glyph shapedGlyph : this.glyphs) {
-            final Font.Glyph fontGlyph = shapedGlyph.fontGlyph();
+            final FontInstance.GlyphMetrics metrics = font.getGlyphMetrics(shapedGlyph.index());
             { // Visual bounds
-                final float minX = shapedGlyph.x() + fontGlyph.bearingX();
-                final float minY = shapedGlyph.y() + fontGlyph.bearingY();
-                final float maxX = minX + fontGlyph.width();
-                final float maxY = minY + fontGlyph.height();
+                final float minX = shapedGlyph.x() + metrics.bearingX();
+                final float minY = shapedGlyph.y() + metrics.bearingY();
+                final float maxX = minX + metrics.width();
+                final float maxY = minY + metrics.height();
                 if (minX < this.visualBounds.minX) {
                     this.visualBounds.minX = minX;
                 }
@@ -64,7 +63,7 @@ public record ShapedTextSegment(List<TextShaper.Glyph> glyphs, TextStyle style, 
             }
             { // Logical bounds
                 final float minX = shapedGlyph.x();
-                final float maxX = minX + fontGlyph.xAdvance();
+                final float maxX = minX + metrics.xAdvance();
                 if (minX < this.logicalBounds.minX) {
                     this.logicalBounds.minX = minX;
                 }
@@ -75,22 +74,23 @@ public record ShapedTextSegment(List<TextShaper.Glyph> glyphs, TextStyle style, 
         }
 
         if (this.style.isShadow()) {
-            final float expansion = this.glyphs.getLast().fontGlyph().font().getSize() * (this.style.shadowOffset() / 100F);
+            final float expansion = font.getSize() * (this.style.shadowOffset() / 100F);
             this.visualBounds.maxX += expansion;
             this.visualBounds.maxY += expansion;
         }
         if (this.style.isBold()) {
-            final float expansion = this.glyphs.getFirst().fontGlyph().font().getSize() * (this.style.boldnessStrength() / 100F);
+            final float expansion = font.getSize() * (this.style.boldnessStrength() / 100F);
             this.visualBounds.minX -= expansion;
             this.visualBounds.minY -= expansion;
             this.visualBounds.maxX += expansion;
             this.visualBounds.maxY += expansion;
         }
         if (this.style.isItalic()) {
-            this.visualBounds.maxX += (float) Math.tan(Math.toRadians(this.style.italicAngle())) * -this.glyphs.getLast().fontGlyph().bearingY();
+            final float shearFactor = (float) Math.tan(Math.toRadians(this.style.italicAngle()));
+            this.visualBounds.maxX += shearFactor * -font.getGlyphMetrics(this.glyphs.getLast().index()).bearingY();
         }
         if (this.style.outlineColor().getAlpha() > 0) {
-            final float expansion = this.glyphs.getFirst().fontGlyph().font().getSize() * (this.style.boldnessStrength() / 100F);
+            final float expansion = font.getSize() * (this.style.boldnessStrength() / 100F);
             this.visualBounds.minX -= expansion;
             this.visualBounds.minY -= expansion;
             this.visualBounds.maxX += expansion;
@@ -98,18 +98,6 @@ public record ShapedTextSegment(List<TextShaper.Glyph> glyphs, TextStyle style, 
         }
     }
 
-
-    @Deprecated(forRemoval = true)
-    @SuppressWarnings("removal")
-    public ShapedTextSegment(final List<TextShaper.Glyph> glyphs, final Color color, final int styleFlags, final Color outlineColor, final Vector2f visualOffset, final Rectanglef visualBounds, final Rectanglef logicalBounds) {
-        this(glyphs, new TextStyle(color, styleFlags, outlineColor, visualOffset), visualBounds, logicalBounds);
-    }
-
-    @Deprecated(forRemoval = true)
-    @SuppressWarnings("removal")
-    public ShapedTextSegment(final List<TextShaper.Glyph> glyphs, final Color color, final int styleFlags, final Color outlineColor, final Vector2f visualOffset) {
-        this(glyphs, new TextStyle(color, styleFlags, outlineColor, visualOffset));
-    }
 
     @Deprecated(forRemoval = true)
     public Color color() {

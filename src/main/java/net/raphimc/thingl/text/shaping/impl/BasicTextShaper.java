@@ -17,7 +17,7 @@
  */
 package net.raphimc.thingl.text.shaping.impl;
 
-import net.raphimc.thingl.resource.font.Font;
+import net.raphimc.thingl.resource.font.instance.FontInstance;
 import net.raphimc.thingl.text.TextRun;
 import net.raphimc.thingl.text.TextSegment;
 import net.raphimc.thingl.text.shaping.ShapedTextRun;
@@ -33,6 +33,7 @@ public class BasicTextShaper extends TextShaper {
 
     @Override
     public ShapedTextRun shape(final TextRun textRun) {
+        final FontInstance font = textRun.font();
         float x = 0F;
         final List<ShapedTextSegment> shapedTextSegments = new ArrayList<>(textRun.segments().size());
         for (TextSegment textSegment : textRun.segments()) {
@@ -40,14 +41,14 @@ public class BasicTextShaper extends TextShaper {
             final List<Glyph> glyphs = new ArrayList<>(text.length());
             for (int i = 0; i < text.length(); ) {
                 final int codePoint = text.codePointAt(i);
-                final Font.Glyph fontGlyph = textRun.font().getGlyphByCodePoint(codePoint);
-                glyphs.add(new Glyph(fontGlyph, x, 0F));
-                x += fontGlyph.xAdvance();
+                final int glyphIndex = font.getFace().getGlyphIndex(codePoint);
+                glyphs.add(new Glyph(glyphIndex, x, 0F));
+                x += font.getGlyphMetrics(glyphIndex).xAdvance();
                 i += Character.charCount(codePoint);
             }
-            shapedTextSegments.add(new ShapedTextSegment(glyphs, textSegment.style()));
+            shapedTextSegments.add(new ShapedTextSegment(font, glyphs, textSegment.style()));
         }
-        return new ShapedTextRun(textRun.font(), shapedTextSegments);
+        return new ShapedTextRun(font, shapedTextSegments);
     }
 
 }

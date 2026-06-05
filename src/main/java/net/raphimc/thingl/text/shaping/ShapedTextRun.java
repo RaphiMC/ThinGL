@@ -17,14 +17,14 @@
  */
 package net.raphimc.thingl.text.shaping;
 
-import net.raphimc.thingl.resource.font.Font;
+import net.raphimc.thingl.resource.font.instance.FontInstance;
 import org.joml.primitives.Rectanglef;
 
 import java.util.List;
 
-public record ShapedTextRun(Font font, List<ShapedTextSegment> segments, Rectanglef visualBounds, Rectanglef logicalBounds) {
+public record ShapedTextRun(FontInstance font, List<ShapedTextSegment> segments, Rectanglef visualBounds, Rectanglef logicalBounds) {
 
-    public ShapedTextRun(final Font font, final List<ShapedTextSegment> segments) {
+    public ShapedTextRun(final FontInstance font, final List<ShapedTextSegment> segments) {
         this(font, segments, new Rectanglef(), new Rectanglef());
         this.calculateBounds();
     }

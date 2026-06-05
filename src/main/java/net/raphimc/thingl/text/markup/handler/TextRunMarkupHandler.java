@@ -17,7 +17,7 @@
  */
 package net.raphimc.thingl.text.markup.handler;
 
-import net.raphimc.thingl.resource.font.Font;
+import net.raphimc.thingl.resource.font.instance.FontInstance;
 import net.raphimc.thingl.text.TextRun;
 import net.raphimc.thingl.text.TextSegment;
 import net.raphimc.thingl.text.TextStyle;
@@ -26,7 +26,7 @@ public class TextRunMarkupHandler extends TextMarkupHandler {
 
     private final TextRun textRun;
 
-    public TextRunMarkupHandler(final Font font, final TextStyle baseStyle) {
+    public TextRunMarkupHandler(final FontInstance font, final TextStyle baseStyle) {
         super(baseStyle);
         this.textRun = new TextRun(font);
     }

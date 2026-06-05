@@ -17,8 +17,8 @@
  */
 package net.raphimc.thingl.gl.util.pool;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ReferenceMap;
+import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2LongMap;
 import it.unimi.dsi.fastutil.objects.Reference2LongOpenHashMap;
 import net.raphimc.thingl.ThinGL;
@@ -30,7 +30,7 @@ import org.lwjgl.opengl.GL15C;
 
 public class ImmediateVertexArrays {
 
-    private final Object2ObjectMap<CacheKey, VertexArray> vertexArrayCache = new Object2ObjectOpenHashMap<>();
+    private final Object2ReferenceMap<CacheKey, VertexArray> vertexArrayCache = new Object2ReferenceOpenHashMap<>();
     private final Reference2LongMap<VertexArray> vertexArrayAccessTime = new Reference2LongOpenHashMap<>();
     private final VertexArray postProcessingVao;
 

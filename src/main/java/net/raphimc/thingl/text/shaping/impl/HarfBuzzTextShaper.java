@@ -18,12 +18,13 @@
 package net.raphimc.thingl.text.shaping.impl;
 
 import net.raphimc.thingl.implementation.Capabilities;
-import net.raphimc.thingl.resource.font.Font;
 import net.raphimc.thingl.text.TextRun;
 import net.raphimc.thingl.text.TextSegment;
 import net.raphimc.thingl.text.shaping.ShapedTextRun;
 import net.raphimc.thingl.text.shaping.ShapedTextSegment;
 import net.raphimc.thingl.text.shaping.TextShaper;
+import net.raphimc.thingl.util.MathUtil;
+import org.joml.primitives.Rectanglef;
 import org.lwjgl.util.harfbuzz.HarfBuzz;
 import org.lwjgl.util.harfbuzz.hb_glyph_info_t;
 import org.lwjgl.util.harfbuzz.hb_glyph_position_t;
@@ -72,20 +73,19 @@ public class HarfBuzzTextShaper extends TextShaper {
         }
         final List<ShapedTextSegment> shapedTextSegments = new ArrayList<>(textRun.segments().size());
         for (TextSegment textSegment : textRun.segments()) {
-            shapedTextSegments.add(new ShapedTextSegment(new ArrayList<>(textSegment.text().length()), textSegment.style()));
+            shapedTextSegments.add(new ShapedTextSegment(new ArrayList<>(textSegment.text().length()), textSegment.style(), new Rectanglef(), new Rectanglef()));
         }
         float x = 0F;
         float y = 0F;
         for (int i = 0; i < length; i++) {
             final hb_glyph_info_t info = infos.get(i);
             final hb_glyph_position_t position = positions.get(i);
-            final Font.Glyph fontGlyph = textRun.font().getGlyphByIndex(info.codepoint());
-            shapedTextSegments.get(info.cluster()).glyphs().add(new Glyph(fontGlyph, x + position.x_offset() / 64F, y - position.y_offset() / 64F));
-            x += position.x_advance() / 64F;
-            y -= position.y_advance() / 64F;
+            shapedTextSegments.get(info.cluster()).glyphs().add(new Glyph(info.codepoint(), x + position.x_offset() / MathUtil.FIXED_26_6, y - position.y_offset() / MathUtil.FIXED_26_6));
+            x += position.x_advance() / MathUtil.FIXED_26_6;
+            y -= position.y_advance() / MathUtil.FIXED_26_6;
         }
         for (ShapedTextSegment textSegment : shapedTextSegments) {
-            textSegment.calculateBounds();
+            textSegment.calculateBounds(textRun.font());
         }
 
         HarfBuzz.hb_buffer_destroy(hbBuffer);

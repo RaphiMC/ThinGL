@@ -19,36 +19,36 @@ package net.raphimc.thingl.text;
 
 import net.lenni0451.commons.collections.Lists;
 import net.lenni0451.commons.color.Color;
-import net.raphimc.thingl.resource.font.Font;
+import net.raphimc.thingl.resource.font.instance.FontInstance;
 import net.raphimc.thingl.text.shaping.ShapedTextRun;
 import net.raphimc.thingl.text.shaping.TextShaper;
 import net.raphimc.thingl.text.shaping.impl.BasicTextShaper;
 
 import java.util.List;
 
-public record TextRun(Font font, List<TextSegment> segments) {
+public record TextRun(FontInstance font, List<TextSegment> segments) {
 
-    public static TextRun fromString(final Font font, final String text) {
+    public static TextRun fromString(final FontInstance font, final String text) {
         return new TextRun(font, new TextSegment(text));
     }
 
-    public static TextRun fromString(final Font font, final String text, final Color color) {
+    public static TextRun fromString(final FontInstance font, final String text, final Color color) {
         return new TextRun(font, new TextSegment(text, color));
     }
 
-    public static TextRun fromString(final Font font, final String text, final Color color, final int styleFlags) {
+    public static TextRun fromString(final FontInstance font, final String text, final Color color, final int styleFlags) {
         return new TextRun(font, new TextSegment(text, color, styleFlags));
     }
 
-    public static TextRun fromString(final Font font, final String text, final Color color, final int styleFlags, final Color outlineColor) {
+    public static TextRun fromString(final FontInstance font, final String text, final Color color, final int styleFlags, final Color outlineColor) {
         return new TextRun(font, new TextSegment(text, color, styleFlags, outlineColor));
     }
 
-    public static TextRun fromString(final Font font, final String text, final TextStyle style) {
+    public static TextRun fromString(final FontInstance font, final String text, final TextStyle style) {
         return new TextRun(font, new TextSegment(text, style));
     }
 
-    public TextRun(final Font font, final TextSegment... segments) {
+    public TextRun(final FontInstance font, final TextSegment... segments) {
         this(font, Lists.arrayList(segments));
     }
 

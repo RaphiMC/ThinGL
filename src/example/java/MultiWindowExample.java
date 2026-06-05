@@ -21,8 +21,8 @@ import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
 import net.raphimc.thingl.implementation.instance.ThreadLocalInstanceManager;
 import net.raphimc.thingl.implementation.window.GLFWWindowInterface;
-import net.raphimc.thingl.resource.font.Font;
-import net.raphimc.thingl.resource.font.impl.FreeTypeFont;
+import net.raphimc.thingl.resource.font.face.impl.FreeTypeFontFace;
+import net.raphimc.thingl.resource.font.instance.FontInstance;
 import net.raphimc.thingl.text.TextRun;
 import org.joml.Matrix4fStack;
 
@@ -79,7 +79,7 @@ public class MultiWindowExample extends GLFWApplicationRunner {
     private static class Window extends GLFWApplicationRunner {
 
         private final int num;
-        private Font robotoRegular;
+        private FontInstance robotoRegular;
 
         public Window(final int num) {
             super(new Configuration().setWindowTitle("ThinGL Example - Multi Window Example | Window #" + num).setWindowCentered(false).setExtendedDebugMode(true));
@@ -102,7 +102,7 @@ public class MultiWindowExample extends GLFWApplicationRunner {
             super.init();
             try {
                 final byte[] fontData = MultiWindowExample.class.getResourceAsStream("/fonts/Roboto-Regular.ttf").readAllBytes();
-                this.robotoRegular = new FreeTypeFont(fontData, 32);
+                this.robotoRegular = new FreeTypeFontFace(fontData).getInstance(32);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

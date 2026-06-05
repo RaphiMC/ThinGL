@@ -17,11 +17,11 @@
  */
 package net.raphimc.thingl.text.markup;
 
-import net.raphimc.thingl.resource.font.Font;
+import net.raphimc.thingl.resource.font.instance.FontInstance;
+import net.raphimc.thingl.resource.font.instance.FontInstanceSet;
 import net.raphimc.thingl.text.TextLine;
 import net.raphimc.thingl.text.TextRun;
 import net.raphimc.thingl.text.TextStyle;
-import net.raphimc.thingl.text.font.FontSet;
 import net.raphimc.thingl.text.markup.handler.TextLineMarkupHandler;
 import net.raphimc.thingl.text.markup.handler.TextRunMarkupHandler;
 import net.raphimc.thingl.text.markup.parser.MarkupParser;
@@ -165,11 +165,11 @@ import net.raphimc.thingl.text.markup.parser.MarkupParser;
  */
 public class MarkupTextParser {
 
-    public static TextRun parseSafe(final Font font, final String markupText) {
+    public static TextRun parseSafe(final FontInstance font, final String markupText) {
         return parseSafe(font, markupText, TextStyle.WHITE);
     }
 
-    public static TextRun parseSafe(final Font font, final String markupText, final TextStyle baseStyle) {
+    public static TextRun parseSafe(final FontInstance font, final String markupText, final TextStyle baseStyle) {
         try {
             return parse(font, markupText, baseStyle);
         } catch (Exception e) {
@@ -177,22 +177,22 @@ public class MarkupTextParser {
         }
     }
 
-    public static TextRun parse(final Font font, final String markupText) {
+    public static TextRun parse(final FontInstance font, final String markupText) {
         return parse(font, markupText, TextStyle.WHITE);
     }
 
-    public static TextRun parse(final Font font, final String markupText, final TextStyle baseStyle) {
+    public static TextRun parse(final FontInstance font, final String markupText, final TextStyle baseStyle) {
         final MarkupParser markupParser = new MarkupParser(markupText);
         final TextRunMarkupHandler textRunMarkupHandler = new TextRunMarkupHandler(font, baseStyle);
         markupParser.process(textRunMarkupHandler);
         return textRunMarkupHandler.getTextRun();
     }
 
-    public static TextLine parseSafe(final FontSet fontSet, final String markupText) {
+    public static TextLine parseSafe(final FontInstanceSet fontSet, final String markupText) {
         return parseSafe(fontSet, markupText, TextStyle.WHITE);
     }
 
-    public static TextLine parseSafe(final FontSet fontSet, final String markupText, final TextStyle baseStyle) {
+    public static TextLine parseSafe(final FontInstanceSet fontSet, final String markupText, final TextStyle baseStyle) {
         try {
             return parse(fontSet, markupText, baseStyle);
         } catch (Exception e) {
@@ -200,11 +200,11 @@ public class MarkupTextParser {
         }
     }
 
-    public static TextLine parse(final FontSet fontSet, final String markupText) {
+    public static TextLine parse(final FontInstanceSet fontSet, final String markupText) {
         return parse(fontSet, markupText, TextStyle.WHITE);
     }
 
-    public static TextLine parse(final FontSet fontSet, final String markupText, final TextStyle baseStyle) {
+    public static TextLine parse(final FontInstanceSet fontSet, final String markupText, final TextStyle baseStyle) {
         final MarkupParser markupParser = new MarkupParser(markupText);
         final TextLineMarkupHandler textLineMarkupHandler = new TextLineMarkupHandler(fontSet, baseStyle);
         markupParser.process(textLineMarkupHandler);
