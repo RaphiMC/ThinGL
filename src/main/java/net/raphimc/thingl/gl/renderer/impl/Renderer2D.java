@@ -39,7 +39,6 @@ import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.primitives.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.IntFunction;
 
@@ -639,27 +638,6 @@ public class Renderer2D extends Renderer {
         vertexBufferBuilder.writeVector3f(positionMatrix, x + width, y, 0F).writeColor(color).writeTextureCoord(u + uWidth, v).endVertex();
         vertexBufferBuilder.writeVector3f(positionMatrix, x, y, 0F).writeColor(color).writeTextureCoord(u, v).endVertex();
         this.drawIfNotBuffering();
-    }
-
-    @Deprecated(forRemoval = true)
-    public void connectedLine(final Matrix4f positionMatrix, final List<Vector2f> points, final float width, final Color color) {
-        this.connectedLine(positionMatrix, points, width, color, false);
-    }
-
-    @Deprecated(forRemoval = true)
-    public void connectedLine(final Matrix4f positionMatrix, final List<Vector2f> points, final float width, final Color color, final boolean closedLoop) {
-        if (points.isEmpty()) {
-            return;
-        }
-
-        if (closedLoop) {
-            final List<Vector2f> newPoints = new ArrayList<>(points.size() + 1);
-            newPoints.addAll(points);
-            newPoints.add(points.getFirst());
-            this.polyLine(positionMatrix, newPoints, width, color);
-        } else {
-            this.polyLine(positionMatrix, points, width, color);
-        }
     }
 
 }

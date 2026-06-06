@@ -32,7 +32,6 @@ import net.raphimc.thingl.gl.wrapper.*;
 import net.raphimc.thingl.implementation.Capabilities;
 import net.raphimc.thingl.implementation.Config;
 import net.raphimc.thingl.implementation.GlobalUniforms;
-import net.raphimc.thingl.implementation.Workarounds;
 import net.raphimc.thingl.implementation.gl.GLBackend;
 import net.raphimc.thingl.implementation.gl.impl.GL41Backend;
 import net.raphimc.thingl.implementation.gl.impl.GL45Backend;
@@ -84,11 +83,6 @@ public class ThinGL {
 
     public static GLBackend glBackend() {
         return get().getGLBackend();
-    }
-
-    @Deprecated(forRemoval = true)
-    public static Workarounds workarounds() {
-        return get().getWorkarounds();
     }
 
     public static Capabilities capabilities() {
@@ -171,8 +165,6 @@ public class ThinGL {
     private final WindowInterface windowInterface;
     private final Config config;
     private final GLBackend glBackend;
-    @SuppressWarnings("deprecation")
-    private final Workarounds workarounds;
     private final Capabilities capabilities;
     private final GLStateManager glStateManager;
 
@@ -224,7 +216,6 @@ public class ThinGL {
         this.windowInterface = windowInterface;
         this.config = this.createConfig();
         this.glBackend = this.createGLBackend();
-        this.workarounds = this.createWorkarounds();
         this.capabilities = this.createCapabilities();
         this.glStateManager = this.createGLStateManager();
         this.glStateStack = this.createGLStateStack();
@@ -427,11 +418,6 @@ public class ThinGL {
         return this.glBackend;
     }
 
-    @Deprecated(forRemoval = true)
-    public Workarounds getWorkarounds() {
-        return this.workarounds;
-    }
-
     public Capabilities getCapabilities() {
         return this.capabilities;
     }
@@ -522,12 +508,6 @@ public class ThinGL {
         } else {
             throw new RuntimeException("ThinGL requires at least OpenGL 4.1 to run (detected version: " + majorVersion + "." + minorVersion + ")");
         }
-    }
-
-    @Deprecated(forRemoval = true)
-    @SuppressWarnings("DeprecatedIsStillUsed")
-    protected Workarounds createWorkarounds() {
-        return new Workarounds();
     }
 
     protected Capabilities createCapabilities() {

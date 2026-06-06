@@ -17,10 +17,8 @@
  */
 package net.raphimc.thingl.text.shaping;
 
-import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.resource.font.instance.FontInstance;
 import net.raphimc.thingl.text.TextStyle;
-import org.joml.Vector2f;
 import org.joml.primitives.Rectanglef;
 
 import java.util.List;
@@ -96,28 +94,6 @@ public record ShapedTextSegment(List<TextShaper.Glyph> glyphs, TextStyle style, 
             this.visualBounds.maxX += expansion;
             this.visualBounds.maxY += expansion;
         }
-    }
-
-
-    @Deprecated(forRemoval = true)
-    public Color color() {
-        return this.style.color();
-    }
-
-    @Deprecated(forRemoval = true)
-    public int styleFlags() {
-        return this.style.flags();
-    }
-
-    @Deprecated(forRemoval = true)
-    public Color outlineColor() {
-        return this.style.outlineColor();
-    }
-
-    @Deprecated(forRemoval = true)
-    @SuppressWarnings("removal")
-    public Vector2f visualOffset() {
-        return this.style.visualOffset();
     }
 
 }

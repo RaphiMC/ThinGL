@@ -18,7 +18,6 @@
 package net.raphimc.thingl.text;
 
 import net.lenni0451.commons.color.Color;
-import org.joml.Vector2f;
 
 public record TextSegment(String text, TextStyle style) {
 
@@ -36,70 +35,6 @@ public record TextSegment(String text, TextStyle style) {
 
     public TextSegment(final String text) {
         this(text, TextStyle.WHITE);
-    }
-
-
-    @Deprecated(forRemoval = true)
-    public static final int STYLE_SHADOW_BIT = 1 << 0;
-
-    @Deprecated(forRemoval = true)
-    public static final int STYLE_BOLD_BIT = 1 << 1;
-
-    @Deprecated(forRemoval = true)
-    public static final int STYLE_ITALIC_BIT = 1 << 2;
-
-    @Deprecated(forRemoval = true)
-    public static final int STYLE_UNDERLINE_BIT = 1 << 3;
-
-    @Deprecated(forRemoval = true)
-    public static final int STYLE_STRIKETHROUGH_BIT = 1 << 4;
-
-    @Deprecated(forRemoval = true)
-    public static int buildStyleFlags(final boolean shadow, final boolean bold, final boolean italic, final boolean underline, final boolean strikethrough) {
-        int flags = 0;
-        if (shadow) {
-            flags |= STYLE_SHADOW_BIT;
-        }
-        if (bold) {
-            flags |= STYLE_BOLD_BIT;
-        }
-        if (italic) {
-            flags |= STYLE_ITALIC_BIT;
-        }
-        if (underline) {
-            flags |= STYLE_UNDERLINE_BIT;
-        }
-        if (strikethrough) {
-            flags |= STYLE_STRIKETHROUGH_BIT;
-        }
-        return flags;
-    }
-
-    @Deprecated(forRemoval = true)
-    @SuppressWarnings("removal")
-    public TextSegment(final String text, final Color color, final int styleFlags, final Color outlineColor, final Vector2f visualOffset) {
-        this(text, new TextStyle(color, styleFlags, outlineColor, visualOffset));
-    }
-
-    @Deprecated(forRemoval = true)
-    public Color color() {
-        return this.style.color();
-    }
-
-    @Deprecated(forRemoval = true)
-    public int styleFlags() {
-        return this.style.flags();
-    }
-
-    @Deprecated(forRemoval = true)
-    public Color outlineColor() {
-        return this.style.outlineColor();
-    }
-
-    @Deprecated(forRemoval = true)
-    @SuppressWarnings("removal")
-    public Vector2f visualOffset() {
-        return this.style.visualOffset();
     }
 
 }

@@ -23,8 +23,8 @@ public class MathUtil {
     public static final float TWO_PI = org.joml.Math.PI_TIMES_2_f;
     public static final float HALF_PI = org.joml.Math.PI_OVER_2_f;
 
-    public static final float FIXED_16_16 = Math.powExact(2, 16);
-    public static final float FIXED_26_6 = Math.powExact(2, 6);
+    public static final float FIXED_16_16 = /*Math.powExact(2, 16)*/ 65536;
+    public static final float FIXED_26_6 = /*Math.powExact(2, 6)*/ 64;
 
     /**
      * Encodes a float value into a half precision float (IEEE-754 fp16) value.

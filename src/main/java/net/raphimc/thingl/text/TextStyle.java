@@ -18,7 +18,6 @@
 package net.raphimc.thingl.text;
 
 import net.lenni0451.commons.color.Color;
-import org.joml.Vector2f;
 
 public record TextStyle(Color color, int flags, Color outlineColor, Color shadowColor, float shadowOffset, float boldnessStrength, float italicAngle) {
 
@@ -167,36 +166,6 @@ public record TextStyle(Color color, int flags, Color outlineColor, Color shadow
 
     public TextStyle withItalicAngle(final float italicAngle) {
         return new TextStyle(this.color, this.flags, this.outlineColor, this.shadowColor, this.shadowOffset, this.boldnessStrength, italicAngle);
-    }
-
-    @Deprecated(forRemoval = true)
-    public static final int STYLE_SHADOW_BIT = SHADOW_BIT;
-
-    @Deprecated(forRemoval = true)
-    public static final int STYLE_BOLD_BIT = BOLD_BIT;
-
-    @Deprecated(forRemoval = true)
-    public static final int STYLE_ITALIC_BIT = ITALIC_BIT;
-
-    @Deprecated(forRemoval = true)
-    public static final int STYLE_UNDERLINE_BIT = UNDERLINE_BIT;
-
-    @Deprecated(forRemoval = true)
-    public static final int STYLE_STRIKETHROUGH_BIT = STRIKETHROUGH_BIT;
-
-    @Deprecated(forRemoval = true)
-    public TextStyle(final Color color, final int flags, final Color outlineColor, final Vector2f visualOffset) {
-        this(color, flags, outlineColor);
-    }
-
-    @Deprecated(forRemoval = true)
-    public TextStyle withVisualOffset(final Vector2f visualOffset) {
-        return this;
-    }
-
-    @Deprecated(forRemoval = true)
-    public Vector2f visualOffset() {
-        return new Vector2f();
     }
 
 }

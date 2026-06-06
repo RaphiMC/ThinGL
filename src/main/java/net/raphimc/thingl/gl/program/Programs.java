@@ -260,20 +260,6 @@ public class Programs {
         }
     }
 
-    @Deprecated(forRemoval = true)
-    protected Shader getShader(final String name, final Shader.Type type) {
-        return this.shaderLoader.get(name, type);
-    }
-
-    @Deprecated(forRemoval = true)
-    protected Shader getShader(final String name, final Shader.Type type, final Map<String, Object> defines) {
-        final DefinesMap definesMap = new DefinesMap();
-        for (Map.Entry<String, Object> entry : defines.entrySet()) {
-            definesMap.put(entry.getKey(), entry.getValue().toString());
-        }
-        return this.shaderLoader.get(name, type, definesMap);
-    }
-
     protected static class ShaderLoader {
 
         private final String basePath;

@@ -210,12 +210,6 @@ public abstract class ApplicationRunner implements Runnable {
 
     protected abstract void freeWindowSystem();
 
-    @Deprecated(forRemoval = true)
-    protected void launch() {
-        this.run();
-    }
-
-
     public static class Configuration {
 
         private String windowTitle = "ThinGL Application";
