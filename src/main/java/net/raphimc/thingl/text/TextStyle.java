@@ -55,7 +55,7 @@ public record TextStyle(Color color, int flags, Color outlineColor, Color shadow
     }
 
     public TextStyle(final Color color, final int flags, final Color outlineColor) {
-        this(color, flags, outlineColor, (Color) null);
+        this(color, flags, outlineColor, null);
     }
 
     public TextStyle(final Color color, final int flags) {

@@ -32,11 +32,13 @@ public class AwtFontFace extends FontFace {
     private final Font font;
     private final String postScriptName;
     private final String familyName;
+    private final int glyphCount;
 
     public AwtFontFace(final Font font) {
         this.font = font;
         this.postScriptName = font.getPSName();
         this.familyName = font.getFamily();
+        this.glyphCount = font.getNumGlyphs();
     }
 
     @Override
@@ -61,6 +63,11 @@ public class AwtFontFace extends FontFace {
     @Override
     public String getSubFamilyName() {
         return null;
+    }
+
+    @Override
+    public int getGlyphCount() {
+        return this.glyphCount;
     }
 
     @Override

@@ -46,6 +46,8 @@ public abstract class FontFace extends Resource {
 
     public abstract String getSubFamilyName();
 
+    public abstract int getGlyphCount();
+
     public long getHarfBuzzInstance() {
         if (this.harfBuzzInstance == 0L) {
             Capabilities.assertHarfBuzzAvailable();

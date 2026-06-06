@@ -204,7 +204,7 @@ public abstract class TextRenderer {
 
     private ArrayCache<AtlasGlyph> getAtlasGlyphs(final FontInstance font) {
         if (!this.fontAtlasGlyphs.containsKey(font)) {
-            this.fontAtlasGlyphs.put(font, new ArrayCache<>(Integer.MAX_VALUE, glyphIndex -> this.loadAtlasGlyph(font, glyphIndex)));
+            this.fontAtlasGlyphs.put(font, new ArrayCache<>(font.getFace().getGlyphCount(), glyphIndex -> this.loadAtlasGlyph(font, glyphIndex)));
         }
         return this.fontAtlasGlyphs.get(font);
     }

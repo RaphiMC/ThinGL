@@ -26,6 +26,8 @@ import net.raphimc.thingl.resource.memory.Memory;
 import org.joml.primitives.Rectanglei;
 import org.lwjgl.stb.STBTTFontinfo;
 import org.lwjgl.stb.STBTruetype;
+import org.lwjgl.system.MemoryUtil;
+import org.lwjgl.system.Pointer;
 import org.lwjgl.util.harfbuzz.HarfBuzz;
 
 public class StbFontFace extends FontFace {
@@ -40,6 +42,7 @@ public class StbFontFace extends FontFace {
     private final int ascent;
     private final int descent;
     private final int lineGap;
+    private final int glyphCount;
 
     public StbFontFace(final byte[] fontBytes) {
         this(MemoryAllocator.allocateMemory(fontBytes));
@@ -57,6 +60,7 @@ public class StbFontFace extends FontFace {
             if (!STBTruetype.stbtt_InitFont(this.fontInfo, fontData.asByteBuffer())) {
                 throw new IllegalStateException("Failed to load font");
             }
+            this.glyphCount = MemoryUtil.memGetInt(this.fontInfo.address() + Pointer.POINTER_SIZE + Pointer.POINTER_SIZE + Integer.BYTES);
 
             final int[] ascent = new int[1];
             final int[] descent = new int[1];
@@ -125,6 +129,11 @@ public class StbFontFace extends FontFace {
     @Override
     public String getSubFamilyName() {
         return null;
+    }
+
+    @Override
+    public int getGlyphCount() {
+        return this.glyphCount;
     }
 
     @Override

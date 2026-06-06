@@ -32,13 +32,14 @@ public abstract class FontInstance extends Resource {
 
     private final FontFace face;
     private final int size;
-    private final ArrayCache<GlyphMetrics> glyphMetricsCache = new ArrayCache<>(Integer.MAX_VALUE, this::loadGlyphMetrics);
+    private final ArrayCache<GlyphMetrics> glyphMetricsCache;
     private final Int2ObjectMap<FontInstance> scaledInstances = Int2ObjectMaps.synchronize(new Int2ObjectOpenHashMap<>());
     private long harfBuzzInstance = 0L;
 
     protected FontInstance(final FontFace face, final int size) {
         this.face = face;
         this.size = size;
+        this.glyphMetricsCache = new ArrayCache<>(face.getGlyphCount(), this::loadGlyphMetrics);
     }
 
     public GlyphMetrics getGlyphMetrics(final int glyphIndex) {

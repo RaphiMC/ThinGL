@@ -55,6 +55,7 @@ public class FreeTypeFontFace extends FontFace {
     private final String postScriptName;
     private final String familyName;
     private final String subFamilyName;
+    private final int glyphCount;
     private final Semaphore sizeContextSemaphore = new Semaphore(1);
 
     public FreeTypeFontFace(final byte[] fontBytes) {
@@ -90,6 +91,7 @@ public class FreeTypeFontFace extends FontFace {
             this.postScriptName = FreeType.FT_Get_Postscript_Name(this.face);
             this.familyName = this.face.family_nameString();
             this.subFamilyName = this.face.style_nameString();
+            this.glyphCount = Math.toIntExact(this.face.num_glyphs());
         } catch (Throwable e) {
             this.free();
             throw e;
@@ -150,6 +152,11 @@ public class FreeTypeFontFace extends FontFace {
     @Override
     public String getSubFamilyName() {
         return this.subFamilyName;
+    }
+
+    @Override
+    public int getGlyphCount() {
+        return this.glyphCount;
     }
 
     @Override
