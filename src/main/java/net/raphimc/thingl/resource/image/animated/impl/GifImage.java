@@ -15,12 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.thingl.image.animated.impl;
+package net.raphimc.thingl.resource.image.animated.impl;
 
 import com.ibasco.image.gif.GifFrame;
 import com.ibasco.image.gif.GifImageReader;
-import net.raphimc.thingl.image.animated.AnimatedImage;
 import net.raphimc.thingl.implementation.Capabilities;
+import net.raphimc.thingl.resource.image.animated.AnimatedImage;
 import net.raphimc.thingl.resource.memory.Memory;
 import org.lwjgl.opengl.GL12C;
 

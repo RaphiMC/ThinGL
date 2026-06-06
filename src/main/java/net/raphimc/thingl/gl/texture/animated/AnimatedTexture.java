@@ -20,7 +20,7 @@ package net.raphimc.thingl.gl.texture.animated;
 import net.lenni0451.commons.threading.ThreadUtils;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.resource.image.texture.impl.Texture2D;
-import net.raphimc.thingl.image.animated.AnimatedImage;
+import net.raphimc.thingl.resource.image.animated.AnimatedImage;
 import net.raphimc.thingl.util.TimerHack;
 import org.lwjgl.opengl.GL11C;
 

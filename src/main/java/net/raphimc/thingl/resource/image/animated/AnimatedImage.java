@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.thingl.image.animated;
+package net.raphimc.thingl.resource.image.animated;
 
 import net.raphimc.thingl.resource.image.impl.ByteImage2D;
 import net.raphimc.thingl.resource.memory.Memory;

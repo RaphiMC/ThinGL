@@ -18,8 +18,8 @@
 
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.texture.animated.SequencedTexture;
-import net.raphimc.thingl.image.animated.impl.AwtGifImage;
 import net.raphimc.thingl.implementation.application.GLFWApplicationRunner;
+import net.raphimc.thingl.resource.image.animated.impl.AwtGifImage;
 import org.joml.Matrix4fStack;
 
 import java.io.IOException;

@@ -19,7 +19,7 @@ package net.raphimc.thingl.gl.texture.animated;
 
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.resource.image.texture.impl.Texture2DArray;
-import net.raphimc.thingl.image.animated.AnimatedImage;
+import net.raphimc.thingl.resource.image.animated.AnimatedImage;
 import org.lwjgl.opengl.GL11C;
 
 import java.util.NavigableMap;
