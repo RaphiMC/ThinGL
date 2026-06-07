@@ -17,7 +17,6 @@
  */
 package net.raphimc.thingl.gl.renderer;
 
-import net.lenni0451.commons.math.MathUtils;
 import net.raphimc.thingl.rendering.DrawBatches;
 import net.raphimc.thingl.rendering.bufferbuilder.impl.VertexBufferBuilder;
 import net.raphimc.thingl.rendering.dataholder.MultiDrawBatchDataHolder;
@@ -332,30 +331,25 @@ public class Primitives {
 
 
     public static void _filledCircle(final Matrix4f positionMatrix, final VertexBufferBuilder vertexBufferBuilder, final float x, final float y, final float z, final float radius, final float degStart, final float degEnd, final int c) {
-        _circle(radius, degStart, degEnd, (xc, yc) -> vertexBufferBuilder.writeVector3f(positionMatrix, x + xc, y + yc, z).writeColor(c).endVertex());
+        _circle(degStart, degEnd, (xc, yc) -> vertexBufferBuilder.writeVector3f(positionMatrix, x + xc * radius, y + yc * radius, z).writeColor(c).endVertex());
     }
 
     public static void _outlinedCircle(final Matrix4f positionMatrix, final VertexBufferBuilder vertexBufferBuilder, final float x, final float y, final float z, final float radius, final float w, final float degStart, final float degEnd, final int c) {
-        _circle(radius, degStart, degEnd, (xc, yc) -> {
-            vertexBufferBuilder.writeVector3f(positionMatrix, x + (xc / radius * (radius - w / 2F)), y + (yc / radius * (radius - w / 2F)), z).writeColor(c).endVertex();
-            vertexBufferBuilder.writeVector3f(positionMatrix, x + (xc / radius * (radius + w / 2F)), y + (yc / radius * (radius + w / 2F)), z).writeColor(c).endVertex();
+        final float innerRadius = radius - w / 2F;
+        final float outerRadius = radius + w / 2F;
+        _circle(degStart, degEnd, (xc, yc) -> {
+            vertexBufferBuilder.writeVector3f(positionMatrix, x + xc * innerRadius, y + yc * innerRadius, z).writeColor(c).endVertex();
+            vertexBufferBuilder.writeVector3f(positionMatrix, x + xc * outerRadius, y + yc * outerRadius, z).writeColor(c).endVertex();
         });
     }
 
-    public static void _circle(final float radius, final float degStart, final float degEnd, final BiConsumer<Float, Float> valueConsumer) {
-        final float stepSize = MathUtils.clamp(180F / (MathUtil.PI * radius), 2F, 20F);
-
-        for (float angle = degEnd; angle >= degStart; angle -= stepSize) {
+    public static void _circle(final float degStart, final float degEnd, final BiConsumer<Float, Float> valueConsumer) {
+        for (float angle = degEnd; angle >= degStart; angle -= 4F) {
             final float rad = Math.toRadians(angle) - MathUtil.HALF_PI;
-            final float x = radius * Math.cos(rad);
-            final float y = radius * Math.sin(rad);
-            valueConsumer.accept(x, y);
+            valueConsumer.accept(Math.cos(rad), Math.sin(rad));
         }
-
         final float radStart = Math.toRadians(degStart) - MathUtil.HALF_PI;
-        final float xStart = radius * Math.cos(radStart);
-        final float yStart = radius * Math.sin(radStart);
-        valueConsumer.accept(xStart, yStart);
+        valueConsumer.accept(Math.cos(radStart), Math.sin(radStart));
     }
 
 }
