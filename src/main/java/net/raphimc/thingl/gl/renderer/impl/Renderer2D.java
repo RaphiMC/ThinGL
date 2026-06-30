@@ -180,11 +180,27 @@ public class Renderer2D extends Renderer {
         final int abgrColor = color.toABGR();
 
         vertexBufferBuilder.writeVector3f(positionMatrix, (xtl + xbr) / 2F, (ytl + ybr) / 2F, 0F).writeColor(abgrColor).endVertex();
-        Primitives._filledCircle(positionMatrix, vertexBufferBuilder, xtl + rtl, ytl + rtl, 0F, rtl, 270, 360, abgrColor);
-        Primitives._filledCircle(positionMatrix, vertexBufferBuilder, xtl + rbl, ybr - rbl, 0F, rbl, 180, 270, abgrColor);
-        Primitives._filledCircle(positionMatrix, vertexBufferBuilder, xbr - rbr, ybr - rbr, 0F, rbr, 90, 180, abgrColor);
-        Primitives._filledCircle(positionMatrix, vertexBufferBuilder, xbr - rtr, ytl + rtr, 0F, rtr, 0, 90, abgrColor);
-        vertexBufferBuilder.writeVector3f(positionMatrix, xtl + rtl, ytl, 0F).writeColor(abgrColor).endVertex();
+        if (rtl >= 0) {
+            Primitives._filledCircle(positionMatrix, vertexBufferBuilder, xtl + rtl, ytl + rtl, 0F, rtl, 270, 360, abgrColor);
+        } else {
+            Primitives._filledCircle(positionMatrix, vertexBufferBuilder, xtl, ytl, 0F, -rtl, 180, 90, abgrColor);
+        }
+        if (rbl >= 0) {
+            Primitives._filledCircle(positionMatrix, vertexBufferBuilder, xtl + rbl, ybr - rbl, 0F, rbl, 180, 270, abgrColor);
+        } else {
+            Primitives._filledCircle(positionMatrix, vertexBufferBuilder, xtl, ybr, 0F, -rbl, 90, 0, abgrColor);
+        }
+        if (rbr >= 0) {
+            Primitives._filledCircle(positionMatrix, vertexBufferBuilder, xbr - rbr, ybr - rbr, 0F, rbr, 90, 180, abgrColor);
+        } else {
+            Primitives._filledCircle(positionMatrix, vertexBufferBuilder, xbr, ybr, 0F, -rbr, 360, 270, abgrColor);
+        }
+        if (rtr >= 0) {
+            Primitives._filledCircle(positionMatrix, vertexBufferBuilder, xbr - rtr, ytl + rtr, 0F, rtr, 0, 90, abgrColor);
+        } else {
+            Primitives._filledCircle(positionMatrix, vertexBufferBuilder, xbr, ytl, 0F, -rtr, 270, 180, abgrColor);
+        }
+        vertexBufferBuilder.writeVector3f(positionMatrix, xtl + Math.abs(rtl), ytl, 0F).writeColor(abgrColor).endVertex();
         vertexBufferBuilder.endConnectedPrimitive();
 
         this.drawIfNotBuffering();
@@ -239,21 +255,89 @@ public class Renderer2D extends Renderer {
         final int abgrColor = color.toABGR();
 
         if ((styleFlags & OUTLINE_STYLE_OUTER_BIT) != 0) {
-            Primitives._outlinedCircle(positionMatrix, vertexBufferBuilder, xtl + rtl, ytl + rtl, 0F, rtl + width / 2F, width, 270, 360, abgrColor);
-            Primitives._outlinedCircle(positionMatrix, vertexBufferBuilder, xtl + rbl, ybr - rbl, 0F, rbl + width / 2F, width, 180, 270, abgrColor);
-            Primitives._outlinedCircle(positionMatrix, vertexBufferBuilder, xbr - rbr, ybr - rbr, 0F, rbr + width / 2F, width, 90, 180, abgrColor);
-            Primitives._outlinedCircle(positionMatrix, vertexBufferBuilder, xbr - rtr, ytl + rtr, 0F, rtr + width / 2F, width, 0, 90, abgrColor);
-            vertexBufferBuilder.writeVector3f(positionMatrix, xtl + rtl, ytl, 0F).writeColor(abgrColor).endVertex();
-            vertexBufferBuilder.writeVector3f(positionMatrix, xtl + rtl, ytl - width, 0F).writeColor(abgrColor).endVertex();
+            if (rtl >= 0) {
+                Primitives._outlinedCircle(positionMatrix, vertexBufferBuilder, xtl + rtl, ytl + rtl, 0F, rtl + width / 2F, width, 270, 360, abgrColor);
+            } else {
+                Primitives._outlinedCircle(positionMatrix, vertexBufferBuilder, xtl, ytl, 0F, -rtl - width / 2F, -width, 180, 90, abgrColor);
+                vertexBufferBuilder.writeVector3f(positionMatrix, xtl, ytl - rtl, 0F).writeColor(abgrColor).endVertex();
+                vertexBufferBuilder.writeVector3f(positionMatrix, xtl - width, ytl - rtl, 0F).writeColor(abgrColor).endVertex();
+            }
+            if (rbl >= 0) {
+                Primitives._outlinedCircle(positionMatrix, vertexBufferBuilder, xtl + rbl, ybr - rbl, 0F, rbl + width / 2F, width, 180, 270, abgrColor);
+            } else {
+                vertexBufferBuilder.writeVector3f(positionMatrix, xtl, ybr + rbl, 0F).writeColor(abgrColor).endVertex();
+                vertexBufferBuilder.writeVector3f(positionMatrix, xtl - width, ybr + rbl, 0F).writeColor(abgrColor).endVertex();
+                Primitives._outlinedCircle(positionMatrix, vertexBufferBuilder, xtl, ybr, 0F, -rbl - width / 2F, -width, 90, 0, abgrColor);
+                vertexBufferBuilder.writeVector3f(positionMatrix, xtl - rbl, ybr, 0F).writeColor(abgrColor).endVertex();
+                vertexBufferBuilder.writeVector3f(positionMatrix, xtl - rbl, ybr + width, 0F).writeColor(abgrColor).endVertex();
+            }
+            if (rbr >= 0) {
+                Primitives._outlinedCircle(positionMatrix, vertexBufferBuilder, xbr - rbr, ybr - rbr, 0F, rbr + width / 2F, width, 90, 180, abgrColor);
+            } else {
+                vertexBufferBuilder.writeVector3f(positionMatrix, xbr + rbr, ybr, 0F).writeColor(abgrColor).endVertex();
+                vertexBufferBuilder.writeVector3f(positionMatrix, xbr + rbr, ybr + width, 0F).writeColor(abgrColor).endVertex();
+                Primitives._outlinedCircle(positionMatrix, vertexBufferBuilder, xbr, ybr, 0F, -rbr - width / 2F, -width, 360, 270, abgrColor);
+                vertexBufferBuilder.writeVector3f(positionMatrix, xbr, ybr + rbr, 0F).writeColor(abgrColor).endVertex();
+                vertexBufferBuilder.writeVector3f(positionMatrix, xbr + width, ybr + rbr, 0F).writeColor(abgrColor).endVertex();
+            }
+            if (rtr >= 0) {
+                Primitives._outlinedCircle(positionMatrix, vertexBufferBuilder, xbr - rtr, ytl + rtr, 0F, rtr + width / 2F, width, 0, 90, abgrColor);
+            } else {
+                vertexBufferBuilder.writeVector3f(positionMatrix, xbr, ytl - rtr, 0F).writeColor(abgrColor).endVertex();
+                vertexBufferBuilder.writeVector3f(positionMatrix, xbr + width, ytl - rtr, 0F).writeColor(abgrColor).endVertex();
+                Primitives._outlinedCircle(positionMatrix, vertexBufferBuilder, xbr, ytl, 0F, -rtr - width / 2F, -width, 270, 180, abgrColor);
+                vertexBufferBuilder.writeVector3f(positionMatrix, xbr + rtr, ytl, 0F).writeColor(abgrColor).endVertex();
+                vertexBufferBuilder.writeVector3f(positionMatrix, xbr + rtr, ytl - width, 0F).writeColor(abgrColor).endVertex();
+            }
+            vertexBufferBuilder.writeVector3f(positionMatrix, xtl + Math.abs(rtl), ytl, 0F).writeColor(abgrColor).endVertex();
+            vertexBufferBuilder.writeVector3f(positionMatrix, xtl + Math.abs(rtl), ytl - width, 0F).writeColor(abgrColor).endVertex();
+            if (rtl < 0) {
+                vertexBufferBuilder.writeVector3f(positionMatrix, xtl - rtl, ytl, 0F).writeColor(abgrColor).endVertex();
+                vertexBufferBuilder.writeVector3f(positionMatrix, xtl - rtl - width, ytl, 0F).writeColor(abgrColor).endVertex();
+            }
             vertexBufferBuilder.endConnectedPrimitive();
         }
         if ((styleFlags & OUTLINE_STYLE_INNER_BIT) != 0) {
-            Primitives._outlinedCircle(positionMatrix, vertexBufferBuilder, xtl + rtl, ytl + rtl, 0F, rtl - width / 2F, width, 270, 360, abgrColor);
-            Primitives._outlinedCircle(positionMatrix, vertexBufferBuilder, xtl + rbl, ybr - rbl, 0F, rbl - width / 2F, width, 180, 270, abgrColor);
-            Primitives._outlinedCircle(positionMatrix, vertexBufferBuilder, xbr - rbr, ybr - rbr, 0F, rbr - width / 2F, width, 90, 180, abgrColor);
-            Primitives._outlinedCircle(positionMatrix, vertexBufferBuilder, xbr - rtr, ytl + rtr, 0F, rtr - width / 2F, width, 0, 90, abgrColor);
-            vertexBufferBuilder.writeVector3f(positionMatrix, xtl + rtl, ytl + width, 0F).writeColor(abgrColor).endVertex();
-            vertexBufferBuilder.writeVector3f(positionMatrix, xtl + rtl, ytl, 0F).writeColor(abgrColor).endVertex();
+            if (rtl >= 0) {
+                Primitives._outlinedCircle(positionMatrix, vertexBufferBuilder, xtl + rtl, ytl + rtl, 0F, rtl - width / 2F, width, 270, 360, abgrColor);
+            } else {
+                Primitives._outlinedCircle(positionMatrix, vertexBufferBuilder, xtl, ytl, 0F, -rtl + width / 2F, -width, 180, 90, abgrColor);
+                vertexBufferBuilder.writeVector3f(positionMatrix, xtl + width, ytl - rtl, 0F).writeColor(abgrColor).endVertex();
+                vertexBufferBuilder.writeVector3f(positionMatrix, xtl, ytl - rtl, 0F).writeColor(abgrColor).endVertex();
+            }
+            if (rbl >= 0) {
+                Primitives._outlinedCircle(positionMatrix, vertexBufferBuilder, xtl + rbl, ybr - rbl, 0F, rbl - width / 2F, width, 180, 270, abgrColor);
+            } else {
+                vertexBufferBuilder.writeVector3f(positionMatrix, xtl + width, ybr + rbl, 0F).writeColor(abgrColor).endVertex();
+                vertexBufferBuilder.writeVector3f(positionMatrix, xtl, ybr + rbl, 0F).writeColor(abgrColor).endVertex();
+                Primitives._outlinedCircle(positionMatrix, vertexBufferBuilder, xtl, ybr, 0F, -rbl + width / 2F, -width, 90, 0, abgrColor);
+                vertexBufferBuilder.writeVector3f(positionMatrix, xtl - rbl, ybr - width, 0F).writeColor(abgrColor).endVertex();
+                vertexBufferBuilder.writeVector3f(positionMatrix, xtl - rbl, ybr, 0F).writeColor(abgrColor).endVertex();
+            }
+            if (rbr >= 0) {
+                Primitives._outlinedCircle(positionMatrix, vertexBufferBuilder, xbr - rbr, ybr - rbr, 0F, rbr - width / 2F, width, 90, 180, abgrColor);
+            } else {
+                vertexBufferBuilder.writeVector3f(positionMatrix, xbr + rbr, ybr - width, 0F).writeColor(abgrColor).endVertex();
+                vertexBufferBuilder.writeVector3f(positionMatrix, xbr + rbr, ybr, 0F).writeColor(abgrColor).endVertex();
+                Primitives._outlinedCircle(positionMatrix, vertexBufferBuilder, xbr, ybr, 0F, -rbr + width / 2F, -width, 360, 270, abgrColor);
+                vertexBufferBuilder.writeVector3f(positionMatrix, xbr - width, ybr + rbr, 0F).writeColor(abgrColor).endVertex();
+                vertexBufferBuilder.writeVector3f(positionMatrix, xbr, ybr + rbr, 0F).writeColor(abgrColor).endVertex();
+            }
+            if (rtr >= 0) {
+                Primitives._outlinedCircle(positionMatrix, vertexBufferBuilder, xbr - rtr, ytl + rtr, 0F, rtr - width / 2F, width, 0, 90, abgrColor);
+            } else {
+                vertexBufferBuilder.writeVector3f(positionMatrix, xbr - width, ytl - rtr, 0F).writeColor(abgrColor).endVertex();
+                vertexBufferBuilder.writeVector3f(positionMatrix, xbr, ytl - rtr, 0F).writeColor(abgrColor).endVertex();
+                Primitives._outlinedCircle(positionMatrix, vertexBufferBuilder, xbr, ytl, 0F, -rtr + width / 2F, -width, 270, 180, abgrColor);
+                vertexBufferBuilder.writeVector3f(positionMatrix, xbr + rtr, ytl + width, 0F).writeColor(abgrColor).endVertex();
+                vertexBufferBuilder.writeVector3f(positionMatrix, xbr + rtr, ytl, 0F).writeColor(abgrColor).endVertex();
+            }
+            vertexBufferBuilder.writeVector3f(positionMatrix, xtl + Math.abs(rtl), ytl + width, 0F).writeColor(abgrColor).endVertex();
+            vertexBufferBuilder.writeVector3f(positionMatrix, xtl + Math.abs(rtl), ytl, 0F).writeColor(abgrColor).endVertex();
+            if (rtl < 0) {
+                vertexBufferBuilder.writeVector3f(positionMatrix, xtl - rtl + width, ytl, 0F).writeColor(abgrColor).endVertex();
+                vertexBufferBuilder.writeVector3f(positionMatrix, xtl - rtl, ytl, 0F).writeColor(abgrColor).endVertex();
+            }
             vertexBufferBuilder.endConnectedPrimitive();
         }
 

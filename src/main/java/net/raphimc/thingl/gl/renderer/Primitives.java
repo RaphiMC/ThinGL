@@ -330,26 +330,33 @@ public class Primitives {
     }
 
 
-    public static void _filledCircle(final Matrix4f positionMatrix, final VertexBufferBuilder vertexBufferBuilder, final float x, final float y, final float z, final float radius, final float degStart, final float degEnd, final int c) {
-        _circle(degStart, degEnd, (xc, yc) -> vertexBufferBuilder.writeVector3f(positionMatrix, x + xc * radius, y + yc * radius, z).writeColor(c).endVertex());
+    public static void _filledCircle(final Matrix4f positionMatrix, final VertexBufferBuilder vertexBufferBuilder, final float x, final float y, final float z, final float radius, final float degFrom, final float degTo, final int c) {
+        _circle(degFrom, degTo, (xc, yc) -> vertexBufferBuilder.writeVector3f(positionMatrix, x + xc * radius, y + yc * radius, z).writeColor(c).endVertex());
     }
 
-    public static void _outlinedCircle(final Matrix4f positionMatrix, final VertexBufferBuilder vertexBufferBuilder, final float x, final float y, final float z, final float radius, final float w, final float degStart, final float degEnd, final int c) {
+    public static void _outlinedCircle(final Matrix4f positionMatrix, final VertexBufferBuilder vertexBufferBuilder, final float x, final float y, final float z, final float radius, final float w, final float degFrom, final float degTo, final int c) {
         final float innerRadius = radius - w / 2F;
         final float outerRadius = radius + w / 2F;
-        _circle(degStart, degEnd, (xc, yc) -> {
+        _circle(degFrom, degTo, (xc, yc) -> {
             vertexBufferBuilder.writeVector3f(positionMatrix, x + xc * innerRadius, y + yc * innerRadius, z).writeColor(c).endVertex();
             vertexBufferBuilder.writeVector3f(positionMatrix, x + xc * outerRadius, y + yc * outerRadius, z).writeColor(c).endVertex();
         });
     }
 
-    public static void _circle(final float degStart, final float degEnd, final BiConsumer<Float, Float> valueConsumer) {
-        for (float angle = degEnd; angle >= degStart; angle -= 4F) {
-            final float rad = Math.toRadians(angle) - MathUtil.HALF_PI;
-            valueConsumer.accept(Math.cos(rad), Math.sin(rad));
+    public static void _circle(final float degFrom, final float degTo, final BiConsumer<Float, Float> valueConsumer) {
+        if (degTo >= degFrom) {
+            for (float angle = degTo; angle >= degFrom; angle -= 4F) {
+                final float rad = Math.toRadians(angle) - MathUtil.HALF_PI;
+                valueConsumer.accept(Math.cos(rad), Math.sin(rad));
+            }
+        } else {
+            for (float angle = degTo; angle <= degFrom; angle += 4F) {
+                final float rad = Math.toRadians(angle) - MathUtil.HALF_PI;
+                valueConsumer.accept(Math.cos(rad), Math.sin(rad));
+            }
         }
-        final float radStart = Math.toRadians(degStart) - MathUtil.HALF_PI;
-        valueConsumer.accept(Math.cos(radStart), Math.sin(radStart));
+        final float radFrom = Math.toRadians(degFrom) - MathUtil.HALF_PI;
+        valueConsumer.accept(Math.cos(radFrom), Math.sin(radFrom));
     }
 
 }
