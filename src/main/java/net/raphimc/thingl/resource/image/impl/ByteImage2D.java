@@ -420,6 +420,12 @@ public class ByteImage2D extends Image {
                 return (r + g + b) / 3;
             }
         },
+        MAXIMUM {
+            @Override
+            protected int convert(final int r, final int g, final int b) {
+                return Math.max(r, Math.max(g, b));
+            }
+        },
         REC601 {
             @Override
             protected int convert(final int r, final int g, final int b) {
