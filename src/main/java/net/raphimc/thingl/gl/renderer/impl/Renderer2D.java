@@ -63,6 +63,8 @@ public class Renderer2D extends Renderer {
             .appendSetupAction(p -> p.setUniformSampler("u_Texture", textureId))
             .build());
 
+    @SuppressWarnings("removal")
+    @Deprecated(forRemoval = true)
     protected final IntFunction<DrawBatch> colorizedTextureQuad = CacheUtil.memoizeInt(textureId -> new DrawBatch.Builder(DrawBatches.TEXTURE_SNIPPET)
             .program(() -> ThinGL.programs().getColorizedTexture())
             .vertexDataLayout(DrawBatches.POSITION_COLOR_TEXTURE_LAYOUT)
@@ -675,46 +677,71 @@ public class Renderer2D extends Renderer {
     }
 
     public void coloredTexture(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final Color color) {
-        this.coloredTexture(positionMatrix, texture, x, y, texture.getWidth(), texture.getHeight(), color);
+        this.coloredTexture(positionMatrix, texture, x, y, color, color, color, color);
+    }
+
+    public void coloredTexture(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final Color cbl, final Color cbr, final Color ctr, final Color ctl) {
+        this.coloredTexture(positionMatrix, texture, x, y, texture.getWidth(), texture.getHeight(), cbl, cbr, ctr, ctl);
     }
 
     public void coloredTexture(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final float width, final float height, final Color color) {
-        this.coloredTextureWithRawTexCoord(positionMatrix, texture, x, y, width, height, 0F, 0F, 1F, 1F, color);
+        this.coloredTexture(positionMatrix, texture, x, y, width, height, color, color, color, color);
+    }
+
+    public void coloredTexture(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final float width, final float height, final Color cbl, final Color cbr, final Color ctr, final Color ctl) {
+        this.coloredTextureWithRawTexCoord(positionMatrix, texture, x, y, width, height, 0F, 0F, 1F, 1F, cbl, cbr, ctr, ctl);
     }
 
     public void coloredTexture(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final float width, final float height, final float u, final float v, final Color color) {
-        this.coloredTexture(positionMatrix, texture, x, y, width, height, u, v, width, height, color);
+        this.coloredTexture(positionMatrix, texture, x, y, width, height, u, v, color, color, color, color);
+    }
+
+    public void coloredTexture(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final float width, final float height, final float u, final float v, final Color cbl, final Color cbr, final Color ctr, final Color ctl) {
+        this.coloredTexture(positionMatrix, texture, x, y, width, height, u, v, width, height, cbl, cbr, ctr, ctl);
     }
 
     public void coloredTexture(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final float width, final float height, final float u, final float v, final float uWidth, final float vHeight, final Color color) {
-        this.coloredTextureWithRawTexCoord(positionMatrix, texture, x, y, width, height, u / texture.getWidth(), v / texture.getHeight(), uWidth / texture.getWidth(), vHeight / texture.getHeight(), color);
+        this.coloredTexture(positionMatrix, texture, x, y, width, height, u, v, uWidth, vHeight, color, color, color, color);
+    }
+
+    public void coloredTexture(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final float width, final float height, final float u, final float v, final float uWidth, final float vHeight, final Color cbl, final Color cbr, final Color ctr, final Color ctl) {
+        this.coloredTextureWithRawTexCoord(positionMatrix, texture, x, y, width, height, u / texture.getWidth(), v / texture.getHeight(), uWidth / texture.getWidth(), vHeight / texture.getHeight(), cbl, cbr, ctr, ctl);
     }
 
     public void coloredTextureWithRawTexCoord(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final float width, final float height, final float u, final float v, final float uWidth, final float vHeight, final Color color) {
+        this.coloredTextureWithRawTexCoord(positionMatrix, texture, x, y, width, height, u, v, uWidth, vHeight, color, color, color, color);
+    }
+
+    public void coloredTextureWithRawTexCoord(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final float width, final float height, final float u, final float v, final float uWidth, final float vHeight, final Color cbl, final Color cbr, final Color ctr, final Color ctl) {
         final VertexBufferBuilder vertexBufferBuilder = this.targetMultiDrawBatchDataHolder.getVertexBufferBuilder(this.coloredTextureQuad.apply(texture.getGlId()));
-        vertexBufferBuilder.writeVector3f(positionMatrix, x, y + height, 0F).writeColor(color).writeTextureCoord(u, v + vHeight).endVertex();
-        vertexBufferBuilder.writeVector3f(positionMatrix, x + width, y + height, 0F).writeColor(color).writeTextureCoord(u + uWidth, v + vHeight).endVertex();
-        vertexBufferBuilder.writeVector3f(positionMatrix, x + width, y, 0F).writeColor(color).writeTextureCoord(u + uWidth, v).endVertex();
-        vertexBufferBuilder.writeVector3f(positionMatrix, x, y, 0F).writeColor(color).writeTextureCoord(u, v).endVertex();
+        vertexBufferBuilder.writeVector3f(positionMatrix, x, y + height, 0F).writeColor(cbl).writeTextureCoord(u, v + vHeight).endVertex();
+        vertexBufferBuilder.writeVector3f(positionMatrix, x + width, y + height, 0F).writeColor(cbr).writeTextureCoord(u + uWidth, v + vHeight).endVertex();
+        vertexBufferBuilder.writeVector3f(positionMatrix, x + width, y, 0F).writeColor(ctr).writeTextureCoord(u + uWidth, v).endVertex();
+        vertexBufferBuilder.writeVector3f(positionMatrix, x, y, 0F).writeColor(ctl).writeTextureCoord(u, v).endVertex();
         this.drawIfNotBuffering();
     }
 
+    @Deprecated(forRemoval = true)
     public void colorizedTexture(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final Color color) {
         this.colorizedTexture(positionMatrix, texture, x, y, texture.getWidth(), texture.getHeight(), color);
     }
 
+    @Deprecated(forRemoval = true)
     public void colorizedTexture(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final float width, final float height, final Color color) {
         this.colorizedTextureWithRawTexCoord(positionMatrix, texture, x, y, width, height, 0F, 0F, 1F, 1F, color);
     }
 
+    @Deprecated(forRemoval = true)
     public void colorizedTexture(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final float width, final float height, final float u, final float v, final Color color) {
         this.colorizedTexture(positionMatrix, texture, x, y, width, height, u, v, width, height, color);
     }
 
+    @Deprecated(forRemoval = true)
     public void colorizedTexture(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final float width, final float height, final float u, final float v, final float uWidth, final float vHeight, final Color color) {
         this.colorizedTextureWithRawTexCoord(positionMatrix, texture, x, y, width, height, u / texture.getWidth(), v / texture.getHeight(), uWidth / texture.getWidth(), vHeight / texture.getHeight(), color);
     }
 
+    @Deprecated(forRemoval = true)
     public void colorizedTextureWithRawTexCoord(final Matrix4f positionMatrix, final Texture2D texture, final float x, final float y, final float width, final float height, final float u, final float v, final float uWidth, final float vHeight, final Color color) {
         final VertexBufferBuilder vertexBufferBuilder = this.targetMultiDrawBatchDataHolder.getVertexBufferBuilder(this.colorizedTextureQuad.apply(texture.getGlId()));
         vertexBufferBuilder.writeVector3f(positionMatrix, x, y + height, 0F).writeColor(color).writeTextureCoord(u, v + vHeight).endVertex();

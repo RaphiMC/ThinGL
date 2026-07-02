@@ -65,6 +65,7 @@ public class Programs {
         return program;
     });
 
+    @Deprecated(forRemoval = true)
     private final Lazy<RegularProgram> colorizedTexture = Lazy.of(() -> {
         final RegularProgram program = new RegularProgram(this.shaderLoader.get("regular/colored_texture", VERTEX), this.shaderLoader.get("regular/colorized_texture", FRAGMENT));
         program.setDebugName("colorized_texture");
@@ -181,6 +182,7 @@ public class Programs {
         return this.coloredTexture.get();
     }
 
+    @Deprecated(forRemoval = true)
     public RegularProgram getColorizedTexture() {
         return this.colorizedTexture.get();
     }
