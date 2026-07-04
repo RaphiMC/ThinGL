@@ -17,7 +17,7 @@
  */
 package net.raphimc.thingl.gl.renderer.impl;
 
-import earcut4j.Earcut;
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.lenni0451.commons.color.Color;
 import net.lenni0451.commons.math.shapes.triangle.TriangleD;
 import net.lenni0451.commons.math.shapes.triangle.TriangleF;
@@ -27,12 +27,12 @@ import net.raphimc.thingl.gl.renderer.Primitives;
 import net.raphimc.thingl.gl.renderer.Renderer;
 import net.raphimc.thingl.gl.resource.image.texture.impl.Texture2D;
 import net.raphimc.thingl.gl.resource.image.texture.impl.Texture2DArray;
-import net.raphimc.thingl.implementation.Capabilities;
 import net.raphimc.thingl.rendering.DrawBatch;
 import net.raphimc.thingl.rendering.DrawBatches;
 import net.raphimc.thingl.rendering.bufferbuilder.impl.IndexBufferBuilder;
 import net.raphimc.thingl.rendering.bufferbuilder.impl.VertexBufferBuilder;
 import net.raphimc.thingl.util.CacheUtil;
+import net.raphimc.thingl.util.Earcut;
 import org.joml.Matrix4f;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
@@ -606,21 +606,16 @@ public class Renderer2D extends Renderer {
     }
 
     public void filledPolygon(final Matrix4f positionMatrix, final List<Vector2f> points, final Color color) {
-        Capabilities.assertEarcut4jAvailable();
         final VertexBufferBuilder vertexBufferBuilder = this.targetMultiDrawBatchDataHolder.getVertexBufferBuilder(DrawBatches.INDEXED_COLOR_TRIANGLE);
         final IndexBufferBuilder indexBufferBuilder = this.targetMultiDrawBatchDataHolder.getIndexBufferBuilder(DrawBatches.INDEXED_COLOR_TRIANGLE);
         final int abgrColor = color.toABGR();
 
-        final double[] data = new double[points.size() * 2];
-        for (int i = 0; i < points.size(); i++) {
-            final Vector2f point = points.get(i);
-            data[i * 2] = point.x;
-            data[i * 2 + 1] = point.y;
+        final IntList indices = Earcut.earcut(points);
+        for (Vector2f point : points) {
             vertexBufferBuilder.writeVector3f(positionMatrix, point.x, point.y, 0F).writeColor(abgrColor).endVertex();
         }
-        final List<Integer> indices = Earcut.earcut(data);
         for (int i = indices.size() - 1; i >= 0; i--) {
-            indexBufferBuilder.writeRelativeIndex(indices.get(i));
+            indexBufferBuilder.writeRelativeIndex(indices.getInt(i));
         }
 
         this.drawIfNotBuffering();

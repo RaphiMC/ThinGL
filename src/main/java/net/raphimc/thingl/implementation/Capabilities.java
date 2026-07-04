@@ -28,7 +28,6 @@ public class Capabilities {
     private static final boolean FREE_TYPE_AVAILABLE;
     private static final boolean HARF_BUZZ_AVAILABLE;
     private static final boolean MESH_OPTIMIZER_AVAILABLE;
-    private static final boolean EARCUT4J_AVAILABLE;
     private static final boolean GIF_READER_AVAILABLE;
     private static final boolean TWELVE_MONKEYS_WEBP_READER_AVAILABLE;
     private static final boolean JSVG_AVAILABLE;
@@ -38,7 +37,6 @@ public class Capabilities {
         FREE_TYPE_AVAILABLE = isClassPresent("org.lwjgl.util.freetype.FreeType");
         HARF_BUZZ_AVAILABLE = isClassPresent("org.lwjgl.util.harfbuzz.HarfBuzz");
         MESH_OPTIMIZER_AVAILABLE = isClassPresent("org.lwjgl.util.meshoptimizer.LibMeshOptimizer");
-        EARCUT4J_AVAILABLE = isClassPresent("earcut4j.Earcut");
         GIF_READER_AVAILABLE = isClassPresent("com.ibasco.image.gif.GifImageReader");
         TWELVE_MONKEYS_WEBP_READER_AVAILABLE = isClassPresent("com.twelvemonkeys.imageio.plugins.webp.WebPImageReader");
         JSVG_AVAILABLE = isClassPresent("com.github.weisj.jsvg.SVGDocument");
@@ -75,12 +73,6 @@ public class Capabilities {
         }
     }
 
-    public static void assertEarcut4jAvailable() {
-        if (!EARCUT4J_AVAILABLE) {
-            throw new IllegalStateException("Earcut4j is not available. Please add https://github.com/earcut4j/earcut4j to your project.");
-        }
-    }
-
     public static void assertGifReaderAvailable() {
         if (!GIF_READER_AVAILABLE) {
             throw new IllegalStateException("GIF Reader is not available. Please add https://github.com/RaphiMC/gif-reader to your project.");
@@ -113,10 +105,6 @@ public class Capabilities {
 
     public static boolean isMeshOptimizerAvailable() {
         return MESH_OPTIMIZER_AVAILABLE;
-    }
-
-    public static boolean isEarcut4jAvailable() {
-        return EARCUT4J_AVAILABLE;
     }
 
     public static boolean isGifReaderAvailable() {
