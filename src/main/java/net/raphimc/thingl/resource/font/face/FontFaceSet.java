@@ -64,7 +64,7 @@ public class FontFaceSet {
                 return face;
             }
         }
-        return null;
+        return this.mainFace;
     }
 
     public void free() {

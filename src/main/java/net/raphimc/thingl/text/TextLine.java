@@ -72,10 +72,7 @@ public record TextLine(List<TextRun> runs) {
         FontInstance currentFont = fontSet.getMainInstance();
         for (int i = 0; i < text.length(); ) {
             final int codePoint = text.codePointAt(i);
-            FontInstance font = fontSet.getInstance(codePoint);
-            if (font == null) { // If the character is not supported by the font set, use the main font to display the missing glyph character
-                font = fontSet.getMainInstance();
-            }
+            final FontInstance font = fontSet.getInstance(codePoint);
             if (font != currentFont) {
                 if (!currentText.isEmpty()) {
                     runs.add(new TextRun(currentFont, new TextSegment(currentText.toString(), style)));

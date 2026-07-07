@@ -62,7 +62,7 @@ public class FontInstanceSet {
                 return instance;
             }
         }
-        return null;
+        return this.mainInstance;
     }
 
     public void free() {
