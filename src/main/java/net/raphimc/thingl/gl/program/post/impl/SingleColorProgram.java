@@ -28,7 +28,12 @@ public class SingleColorProgram extends AuxInputPostProcessingProgram {
     }
 
     public void configureParameters(final Color color) {
+        this.configureParameters(color, true);
+    }
+
+    public void configureParameters(final Color color, final boolean useInputAlpha) {
         this.setUniformVector4f("u_Color", color);
+        this.setUniformBoolean("u_UseInputAlpha", useInputAlpha);
     }
 
 }
