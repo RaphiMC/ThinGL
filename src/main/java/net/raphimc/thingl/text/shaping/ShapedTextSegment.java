@@ -33,7 +33,7 @@ public record ShapedTextSegment(List<TextShaper.Glyph> glyphs, TextStyle style, 
     public void calculateBounds(final FontInstance font) {
         if (this.glyphs.isEmpty()) {
             this.visualBounds.setMin(0F, 0F).setMax(0F, 0F);
-            this.logicalBounds.setMin(0F, 0F).setMax(0F, 0F);
+            this.logicalBounds.setMin(0F, -font.getAscent()).setMax(0F, font.getDescent());
             return;
         }
 

@@ -32,7 +32,7 @@ public record ShapedTextRun(FontInstance font, List<ShapedTextSegment> segments,
     public void calculateBounds() {
         if (this.segments.isEmpty()) {
             this.visualBounds.setMin(0F, 0F).setMax(0F, 0F);
-            this.logicalBounds.setMin(0F, 0F).setMax(0F, 0F);
+            this.logicalBounds.setMin(0F, -this.font.getAscent()).setMax(0F, this.font.getDescent());
             return;
         }
 
