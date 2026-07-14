@@ -41,35 +41,35 @@ dependencies {
     api "net.lenni0451.commons:logging:1.9.2"
 
     // LWJGL needs to be provided by the application using ThinGL
-    compileOnly "org.lwjgl:lwjgl:3.4.1"
-    compileOnly "org.lwjgl:lwjgl-opengl:3.4.1"
+    compileOnly "org.lwjgl:lwjgl:3.4.2"
+    compileOnly "org.lwjgl:lwjgl-opengl:3.4.2"
 
     // Optional dependencies
-    compileOnly "org.lwjgl:lwjgl-glfw:3.4.1"
-    compileOnly "org.lwjgl:lwjgl-sdl:3.4.1"
+    compileOnly "org.lwjgl:lwjgl-glfw:3.4.2"
+    compileOnly "org.lwjgl:lwjgl-sdl:3.4.2"
     compileOnly("org.lwjglx:lwjgl3-awt:0.2.4") {
         exclude group: "org.lwjgl", module: "lwjgl"
         exclude group: "org.lwjgl", module: "lwjgl-opengl"
         exclude group: "org.lwjgl", module: "lwjgl-vulkan"
     }
-    compileOnly "org.lwjgl:lwjgl-stb:3.4.1"
-    compileOnly "org.lwjgl:lwjgl-freetype:3.4.1"
-    compileOnly "org.lwjgl:lwjgl-harfbuzz:3.4.1"
-    compileOnly "org.lwjgl:lwjgl-meshoptimizer:3.4.1"
+    compileOnly "org.lwjgl:lwjgl-stb:3.4.2"
+    compileOnly "org.lwjgl:lwjgl-freetype:3.4.2"
+    compileOnly "org.lwjgl:lwjgl-harfbuzz:3.4.2"
+    compileOnly "org.lwjgl:lwjgl-meshoptimizer:3.4.2"
     compileOnly "com.github.RaphiMC:gif-reader:0bdb781a96"
     compileOnly "com.twelvemonkeys.imageio:imageio-webp:3.13.1"
     compileOnly "com.github.weisj:jsvg:2.1.0"
 
     // Example dependencies
     ["natives-windows", "natives-windows-arm64", "natives-linux", "natives-linux-arm64", "natives-macos", "natives-macos-arm64"].each {
-        exampleImplementation "org.lwjgl:lwjgl:3.4.1:$it"
-        exampleImplementation "org.lwjgl:lwjgl-opengl:3.4.1:$it"
-        exampleImplementation "org.lwjgl:lwjgl-glfw:3.4.1:$it"
-        exampleImplementation "org.lwjgl:lwjgl-sdl:3.4.1:$it"
-        exampleImplementation "org.lwjgl:lwjgl-stb:3.4.1:$it"
-        exampleImplementation "org.lwjgl:lwjgl-freetype:3.4.1:$it"
+        exampleImplementation "org.lwjgl:lwjgl:3.4.2:$it"
+        exampleImplementation "org.lwjgl:lwjgl-opengl:3.4.2:$it"
+        exampleImplementation "org.lwjgl:lwjgl-glfw:3.4.2:$it"
+        exampleImplementation "org.lwjgl:lwjgl-sdl:3.4.2:$it"
+        exampleImplementation "org.lwjgl:lwjgl-stb:3.4.2:$it"
+        exampleImplementation "org.lwjgl:lwjgl-freetype:3.4.2:$it"
         // exampleImplementation "org.lwjgl:lwjgl-harfbuzz:3.4.0:$it" // Already included in FreeType
-        exampleImplementation "org.lwjgl:lwjgl-meshoptimizer:3.4.1:$it"
+        exampleImplementation "org.lwjgl:lwjgl-meshoptimizer:3.4.2:$it"
     }
 }
 
