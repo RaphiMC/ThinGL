@@ -57,7 +57,7 @@ dependencies {
     compileOnly "org.lwjgl:lwjgl-harfbuzz:3.4.2"
     compileOnly "org.lwjgl:lwjgl-meshoptimizer:3.4.2"
     compileOnly "com.github.RaphiMC:gif-reader:0bdb781a96"
-    compileOnly "com.twelvemonkeys.imageio:imageio-webp:3.13.1"
+    compileOnly "com.twelvemonkeys.imageio:imageio-webp:3.14.0"
     compileOnly "com.github.weisj:jsvg:2.1.0"
 
     // Example dependencies
