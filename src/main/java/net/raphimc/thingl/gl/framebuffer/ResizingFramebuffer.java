@@ -17,12 +17,12 @@
  */
 package net.raphimc.thingl.gl.framebuffer;
 
+import it.unimi.dsi.fastutil.ints.IntIntBiConsumer;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.resource.framebuffer.Framebuffer;
 import net.raphimc.thingl.gl.resource.image.ImageStorage;
 import org.lwjgl.opengl.GL30C;
 
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
 public abstract class ResizingFramebuffer extends Framebuffer {
@@ -30,7 +30,7 @@ public abstract class ResizingFramebuffer extends Framebuffer {
     private final BiFunction<Integer, Integer, ImageStorage> colorAttachmentSupplier;
     private final BiFunction<Integer, Integer, ImageStorage> depthAttachmentSupplier;
     private final BiFunction<Integer, Integer, ImageStorage> stencilAttachmentSupplier;
-    private final BiConsumer<Integer, Integer> framebufferResizeCallback = this::resize;
+    private final IntIntBiConsumer framebufferResizeCallback = this::resize;
 
     protected ResizingFramebuffer(final BiFunction<Integer, Integer, ImageStorage> colorAttachmentSupplier) {
         this(colorAttachmentSupplier, null, null);

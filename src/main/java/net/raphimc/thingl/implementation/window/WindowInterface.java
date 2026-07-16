@@ -17,6 +17,7 @@
  */
 package net.raphimc.thingl.implementation.window;
 
+import it.unimi.dsi.fastutil.ints.IntIntBiConsumer;
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceMap;
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
 import net.lenni0451.commons.threading.ThreadUtils;
@@ -25,13 +26,12 @@ import net.raphimc.thingl.util.TimerHack;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 public abstract class WindowInterface {
 
     private final Thread windowThread;
-    private final List<BiConsumer<Integer, Integer>> framebufferResizeCallbacks = new ArrayList<>();
-    private final Reference2ReferenceMap<BiConsumer<Integer, Integer>, BiConsumer<Integer, Integer>> renderThreadFramebufferResizeCallbacksMap = new Reference2ReferenceOpenHashMap<>();
+    private final List<IntIntBiConsumer> framebufferResizeCallbacks = new ArrayList<>();
+    private final Reference2ReferenceMap<IntIntBiConsumer, IntIntBiConsumer> renderThreadFramebufferResizeCallbacksMap = new Reference2ReferenceOpenHashMap<>();
     private final List<Runnable> actions = new ArrayList<>();
     private int framebufferWidth;
     private int framebufferHeight;
@@ -55,9 +55,9 @@ public abstract class WindowInterface {
         this.actions.clear();
     }
 
-    public synchronized void addRenderThreadFramebufferResizeCallback(final BiConsumer<Integer, Integer> callback) {
+    public synchronized void addRenderThreadFramebufferResizeCallback(final IntIntBiConsumer callback) {
         final ThinGL thinGL = ThinGL.get();
-        final BiConsumer<Integer, Integer> wrappedCallback = (width, height) -> thinGL.runOnRenderThread(() -> callback.accept(width, height));
+        final IntIntBiConsumer wrappedCallback = (width, height) -> thinGL.runOnRenderThread(() -> callback.accept(width, height));
         if (this.renderThreadFramebufferResizeCallbacksMap.containsKey(callback)) {
             throw new RuntimeException("Render thread framebuffer resize callback already registered");
         }
@@ -65,14 +65,14 @@ public abstract class WindowInterface {
         this.addFramebufferResizeCallback(wrappedCallback);
     }
 
-    public synchronized void addFramebufferResizeCallback(final BiConsumer<Integer, Integer> callback) {
+    public synchronized void addFramebufferResizeCallback(final IntIntBiConsumer callback) {
         if (this.framebufferResizeCallbacks.contains(callback)) {
             throw new RuntimeException("Framebuffer resize callback already registered");
         }
         this.framebufferResizeCallbacks.add(callback);
     }
 
-    public synchronized void removeFramebufferResizeCallback(final BiConsumer<Integer, Integer> callback) {
+    public synchronized void removeFramebufferResizeCallback(final IntIntBiConsumer callback) {
         if (!this.framebufferResizeCallbacks.remove(this.renderThreadFramebufferResizeCallbacksMap.getOrDefault(callback, callback))) {
             throw new RuntimeException("Framebuffer resize callback not registered");
         }
@@ -122,7 +122,7 @@ public abstract class WindowInterface {
         if (width <= 0 || height <= 0) {
             return;
         }
-        for (BiConsumer<Integer, Integer> callback : this.framebufferResizeCallbacks) {
+        for (IntIntBiConsumer callback : this.framebufferResizeCallbacks) {
             try {
                 callback.accept(width, height);
             } catch (Throwable e) {

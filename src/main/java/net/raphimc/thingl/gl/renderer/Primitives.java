@@ -17,14 +17,13 @@
  */
 package net.raphimc.thingl.gl.renderer;
 
+import it.unimi.dsi.fastutil.floats.FloatFloatBiConsumer;
 import net.raphimc.thingl.rendering.DrawBatches;
 import net.raphimc.thingl.rendering.bufferbuilder.impl.VertexBufferBuilder;
 import net.raphimc.thingl.rendering.dataholder.MultiDrawBatchDataHolder;
 import net.raphimc.thingl.util.MathUtil;
 import org.joml.Math;
 import org.joml.Matrix4f;
-
-import java.util.function.BiConsumer;
 
 public class Primitives {
 
@@ -343,7 +342,7 @@ public class Primitives {
         });
     }
 
-    public static void _circle(final float degFrom, final float degTo, final BiConsumer<Float, Float> valueConsumer) {
+    public static void _circle(final float degFrom, final float degTo, final FloatFloatBiConsumer valueConsumer) {
         if (degTo >= degFrom) {
             for (float angle = degTo; angle >= degFrom; angle -= 4F) {
                 final float rad = Math.toRadians(angle) - MathUtil.HALF_PI;
