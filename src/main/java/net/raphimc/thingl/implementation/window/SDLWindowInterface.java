@@ -27,7 +27,7 @@ public class SDLWindowInterface extends WindowInterface {
 
     private final long windowHandle;
     private final int windowId;
-    private final SDL_EventFilterI eventWatch = this::onEvent;
+    private final SDL_EventFilter eventWatch;
 
     public SDLWindowInterface() {
         this(SDLVideo.SDL_GL_GetCurrentWindow());
@@ -46,6 +46,7 @@ public class SDLWindowInterface extends WindowInterface {
             this.callFramebufferResizeCallbacks(width.get(0), height.get(0));
         }
 
+        this.eventWatch = SDL_EventFilter.create(this::onEvent);
         SDLErrorUtil.checkError(SDLEvents.SDL_AddEventWatch(this.eventWatch, 0L), "Failed to add event watch");
     }
 
@@ -61,6 +62,7 @@ public class SDLWindowInterface extends WindowInterface {
     public void free() {
         this.assertOnWindowThread();
         SDLEvents.SDL_RemoveEventWatch(this.eventWatch, 0L);
+        this.eventWatch.free();
     }
 
     private boolean onEvent(final long userData, final long eventPtr) {

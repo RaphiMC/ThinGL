@@ -24,6 +24,8 @@ import org.lwjgl.glfw.GLFWVidMode;
 
 public abstract class GLFWApplicationRunner extends ApplicationRunner {
 
+    private GLFWErrorCallback errorCallback;
+    private GLFWErrorCallback previousErrorCallback;
     protected long window;
 
     public GLFWApplicationRunner(final Configuration configuration) {
@@ -38,7 +40,8 @@ public abstract class GLFWApplicationRunner extends ApplicationRunner {
     }
 
     protected void initGLFW() {
-        GLFWErrorCallback.createPrint(System.err).set();
+        this.errorCallback = GLFWErrorCallback.createPrint(System.err);
+        this.previousErrorCallback = GLFW.glfwSetErrorCallback(this.errorCallback);
         if (!GLFW.glfwInit()) {
             throw new IllegalStateException("Failed to initialize GLFW");
         }
@@ -113,7 +116,14 @@ public abstract class GLFWApplicationRunner extends ApplicationRunner {
 
     protected void freeGLFW() {
         GLFW.glfwTerminate();
-        GLFW.glfwSetErrorCallback(null).free();
+        final GLFWErrorCallback previousErrorCallback = GLFW.glfwSetErrorCallback(this.previousErrorCallback);
+        if (previousErrorCallback != this.errorCallback) {
+            GLFW.glfwSetErrorCallback(previousErrorCallback);
+        }
+        if (this.errorCallback != null) {
+            this.errorCallback.free();
+            this.errorCallback = null;
+        }
     }
 
 }

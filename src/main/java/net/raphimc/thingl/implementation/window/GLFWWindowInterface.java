@@ -24,7 +24,8 @@ import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 public class GLFWWindowInterface extends WindowInterface {
 
     private final long windowHandle;
-    private final GLFWFramebufferSizeCallback originalFramebufferSizeCallback;
+    private final GLFWFramebufferSizeCallback framebufferSizeCallback;
+    private final GLFWFramebufferSizeCallback previousFramebufferSizeCallback;
 
     public GLFWWindowInterface() {
         this(GLFW.glfwGetCurrentContext());
@@ -38,7 +39,8 @@ public class GLFWWindowInterface extends WindowInterface {
         GLFW.glfwGetFramebufferSize(windowHandle, framebufferWidth, framebufferHeight);
         this.callFramebufferResizeCallbacks(framebufferWidth[0], framebufferHeight[0]);
 
-        this.originalFramebufferSizeCallback = GLFW.glfwSetFramebufferSizeCallback(windowHandle, this::onSetFramebufferSize);
+        this.framebufferSizeCallback = GLFWFramebufferSizeCallback.create(this::onSetFramebufferSize);
+        this.previousFramebufferSizeCallback = GLFW.glfwSetFramebufferSizeCallback(windowHandle, this.framebufferSizeCallback);
     }
 
     @Override
@@ -61,12 +63,16 @@ public class GLFWWindowInterface extends WindowInterface {
     @Override
     public void free() {
         this.assertOnWindowThread();
-        GLFW.glfwSetFramebufferSizeCallback(this.windowHandle, this.originalFramebufferSizeCallback).free();
+        final GLFWFramebufferSizeCallback previousFramebufferSizeCallback = GLFW.glfwSetFramebufferSizeCallback(this.windowHandle, this.previousFramebufferSizeCallback);
+        if (previousFramebufferSizeCallback != this.framebufferSizeCallback) {
+            GLFW.glfwSetFramebufferSizeCallback(this.windowHandle, previousFramebufferSizeCallback);
+        }
+        this.framebufferSizeCallback.free();
     }
 
     private void onSetFramebufferSize(final long windowHandle, final int width, final int height) {
-        if (this.originalFramebufferSizeCallback != null) {
-            this.originalFramebufferSizeCallback.invoke(windowHandle, width, height);
+        if (this.previousFramebufferSizeCallback != null) {
+            this.previousFramebufferSizeCallback.invoke(windowHandle, width, height);
         }
         this.callFramebufferResizeCallbacks(width, height);
     }
