@@ -17,7 +17,7 @@
  */
 package net.raphimc.thingl.implementation.window;
 
-import net.raphimc.thingl.util.SDLErrorUtil;
+import net.raphimc.thingl.implementation.util.sdl.SDLErrorUtil;
 import org.lwjgl.sdl.*;
 import org.lwjgl.system.MemoryStack;
 

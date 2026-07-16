@@ -22,7 +22,7 @@ import net.raphimc.thingl.gl.framebuffer.impl.TextureFramebuffer;
 import net.raphimc.thingl.gl.framebuffer.impl.WindowFramebuffer;
 import net.raphimc.thingl.gl.resource.framebuffer.Framebuffer;
 import net.raphimc.thingl.gl.wrapper.Blending;
-import net.raphimc.thingl.implementation.DebugMessageCallback;
+import net.raphimc.thingl.implementation.util.GlDebugMessageCallback;
 import net.raphimc.thingl.implementation.window.WindowInterface;
 import org.joml.Matrix4fStack;
 import org.lwjgl.opengl.GL;
@@ -123,7 +123,7 @@ public abstract class ApplicationRunner implements Runnable {
         GL.createCapabilities();
         this.initThinGL();
         if (this.configuration.isDebugMode()) {
-            this.debugMessageCallback = DebugMessageCallback.install(this.configuration.isExtendedDebugMode());
+            this.debugMessageCallback = GlDebugMessageCallback.install(this.configuration.isExtendedDebugMode());
         }
         this.init();
     }

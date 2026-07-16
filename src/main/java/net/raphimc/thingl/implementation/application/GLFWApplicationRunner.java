@@ -17,6 +17,7 @@
  */
 package net.raphimc.thingl.implementation.application;
 
+import net.raphimc.thingl.implementation.util.glfw.GLFWErrorCallbackImpl;
 import net.raphimc.thingl.implementation.window.GLFWWindowInterface;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -40,7 +41,7 @@ public abstract class GLFWApplicationRunner extends ApplicationRunner {
     }
 
     protected void initGLFW() {
-        this.errorCallback = GLFWErrorCallback.createPrint(System.err);
+        this.errorCallback = new GLFWErrorCallbackImpl();
         this.previousErrorCallback = GLFW.glfwSetErrorCallback(this.errorCallback);
         if (!GLFW.glfwInit()) {
             throw new IllegalStateException("Failed to initialize GLFW");

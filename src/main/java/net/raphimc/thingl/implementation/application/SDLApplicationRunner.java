@@ -17,16 +17,18 @@
  */
 package net.raphimc.thingl.implementation.application;
 
+import net.raphimc.thingl.implementation.util.sdl.SDLErrorUtil;
+import net.raphimc.thingl.implementation.util.sdl.SDLLogOutputFunctionImpl;
 import net.raphimc.thingl.implementation.window.SDLWindowInterface;
-import net.raphimc.thingl.util.SDLErrorUtil;
 import org.lwjgl.sdl.*;
 import org.lwjgl.system.MemoryStack;
 
 public abstract class SDLApplicationRunner extends ApplicationRunner {
 
+    private SDL_LogOutputFunction logOutputFunction;
     protected long window;
     protected int windowId;
-    protected long openGLContext;
+    protected long glContext;
 
     public SDLApplicationRunner(final Configuration configuration) {
         super(configuration);
@@ -40,6 +42,9 @@ public abstract class SDLApplicationRunner extends ApplicationRunner {
     }
 
     protected void initSDL() {
+        this.logOutputFunction = new SDLLogOutputFunctionImpl();
+        SDLLog.SDL_SetLogOutputFunction(this.logOutputFunction, 0L);
+        SDLLog.SDL_SetLogPriorities(SDLLog.SDL_LOG_PRIORITY_WARN);
         SDLErrorUtil.checkError(SDLInit.SDL_Init(SDLInit.SDL_INIT_VIDEO | SDLInit.SDL_INIT_EVENTS));
     }
 
@@ -80,8 +85,8 @@ public abstract class SDLApplicationRunner extends ApplicationRunner {
 
     @Override
     protected void configureGLContext() {
-        this.openGLContext = SDLVideo.SDL_GL_CreateContext(this.window);
-        SDLErrorUtil.checkError(this.openGLContext, "Failed to create OpenGL context");
+        this.glContext = SDLVideo.SDL_GL_CreateContext(this.window);
+        SDLErrorUtil.checkError(this.glContext, "Failed to create OpenGL context");
         SDLErrorUtil.checkError(SDLVideo.SDL_GL_SetSwapInterval(this.configuration.shouldUseVSync() ? 1 : 0), "Failed to set swap interval");
     }
 
@@ -117,9 +122,9 @@ public abstract class SDLApplicationRunner extends ApplicationRunner {
             this.windowInterface.free();
             this.windowInterface = null;
         }
-        if (this.openGLContext != 0L) {
-            SDLVideo.SDL_GL_DestroyContext(this.openGLContext);
-            this.openGLContext = 0L;
+        if (this.glContext != 0L) {
+            SDLVideo.SDL_GL_DestroyContext(this.glContext);
+            this.glContext = 0L;
         }
         if (this.window != 0L) {
             SDLVideo.SDL_DestroyWindow(this.window);
@@ -129,6 +134,11 @@ public abstract class SDLApplicationRunner extends ApplicationRunner {
 
     protected void freeSDL() {
         SDLInit.SDL_Quit();
+        SDLLog.nSDL_SetLogOutputFunction(SDLLog.nSDL_GetDefaultLogOutputFunction(), 0L);
+        if (this.logOutputFunction != null) {
+            this.logOutputFunction.free();
+            this.logOutputFunction = null;
+        }
     }
 
 }

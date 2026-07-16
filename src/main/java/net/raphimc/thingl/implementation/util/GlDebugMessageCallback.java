@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.thingl.implementation;
+package net.raphimc.thingl.implementation.util;
 
 import net.raphimc.thingl.ThinGL;
 import org.lwjgl.opengl.GL11C;
@@ -28,7 +28,7 @@ import java.io.PrintStream;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class DebugMessageCallback {
+public class GlDebugMessageCallback {
 
     public static Callback install(final boolean appendStackTrace) {
         final Callback callback = GLUtil.setupDebugMessageCallback(new PrintStream(APIUtil.DEBUG_STREAM) {

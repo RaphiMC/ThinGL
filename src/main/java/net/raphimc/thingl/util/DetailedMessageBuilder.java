@@ -17,26 +17,23 @@
  */
 package net.raphimc.thingl.util;
 
-import org.lwjgl.sdl.SDLError;
+public class DetailedMessageBuilder {
 
-public class SDLErrorUtil {
+    private final StringBuilder message;
 
-    public static void checkError(final long result) {
-        SDLErrorUtil.checkError(result, "SDL Error");
+    public DetailedMessageBuilder(final String message) {
+        this.message = new StringBuilder(message + '\n');
     }
 
-    public static void checkError(final long result, final String message) {
-        SDLErrorUtil.checkError(result != 0, message);
-    }
-
-    public static void checkError(final boolean result) {
-        SDLErrorUtil.checkError(result, "SDL Error");
-    }
-
-    public static void checkError(final boolean result, final String message) {
-        if (!result) {
-            throw new IllegalStateException(message + ": " + SDLError.SDL_GetError());
+    public void appendField(final String name, final String value) {
+        if (value != null) {
+            this.message.append('\t').append(name).append(": ").append(value).append('\n');
         }
+    }
+
+    public String build() {
+        this.message.setLength(this.message.length() - 1); // Remove last newline
+        return this.message.toString();
     }
 
 }
