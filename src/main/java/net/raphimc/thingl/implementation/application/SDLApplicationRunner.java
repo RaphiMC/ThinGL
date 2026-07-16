@@ -68,6 +68,7 @@ public abstract class SDLApplicationRunner extends ApplicationRunner {
     protected void setWindowProperties(final int properties) {
         SDLErrorUtil.checkError(SDLProperties.SDL_SetBooleanProperty(properties, SDLVideo.SDL_PROP_WINDOW_CREATE_OPENGL_BOOLEAN, true));
         SDLErrorUtil.checkError(SDLProperties.SDL_SetBooleanProperty(properties, SDLVideo.SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN, true));
+        SDLErrorUtil.checkError(SDLProperties.SDL_SetBooleanProperty(properties, SDLVideo.SDL_PROP_WINDOW_CREATE_HIGH_PIXEL_DENSITY_BOOLEAN, true));
         SDLErrorUtil.checkError(SDLProperties.SDL_SetStringProperty(properties, SDLVideo.SDL_PROP_WINDOW_CREATE_TITLE_STRING, this.configuration.getWindowTitle()));
         SDLErrorUtil.checkError(SDLProperties.SDL_SetNumberProperty(properties, SDLVideo.SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, this.configuration.getWindowWidth()));
         SDLErrorUtil.checkError(SDLProperties.SDL_SetNumberProperty(properties, SDLVideo.SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, this.configuration.getWindowHeight()));
