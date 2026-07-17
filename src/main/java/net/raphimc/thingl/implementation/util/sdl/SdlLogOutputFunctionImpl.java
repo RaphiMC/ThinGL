@@ -25,7 +25,7 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.util.Map;
 
-public class SDLLogOutputFunctionImpl extends SDL_LogOutputFunction {
+public class SdlLogOutputFunctionImpl extends SDL_LogOutputFunction {
 
     private static final Map<Integer, String> CATEGORY = Map.of(
             SDLLog.SDL_LOG_CATEGORY_APPLICATION, "Application",

@@ -17,7 +17,7 @@
  */
 package net.raphimc.thingl.implementation.window;
 
-import net.raphimc.thingl.implementation.util.sdl.SDLErrorUtil;
+import net.raphimc.thingl.implementation.util.sdl.SdlException;
 import org.lwjgl.sdl.*;
 import org.lwjgl.system.MemoryStack;
 
@@ -30,24 +30,22 @@ public class SDLWindowInterface extends WindowInterface {
     private final SDL_EventFilter eventWatch;
 
     public SDLWindowInterface() {
-        this(SDLVideo.SDL_GL_GetCurrentWindow());
+        this(SdlException.check(SDLVideo.SDL_GL_GetCurrentWindow(), "Failed to get OpenGL context window handle"));
     }
 
     public SDLWindowInterface(final long windowHandle) {
-        SDLErrorUtil.checkError(windowHandle, "Failed to get OpenGL context window handle");
         this.windowHandle = windowHandle;
-        this.windowId = SDLVideo.SDL_GetWindowID(windowHandle);
-        SDLErrorUtil.checkError(this.windowId, "Failed to get window id");
+        this.windowId = SdlException.check(SDLVideo.SDL_GetWindowID(windowHandle), "Failed to get window id");
 
         try (MemoryStack memoryStack = MemoryStack.stackPush()) {
             final IntBuffer width = memoryStack.mallocInt(1);
             final IntBuffer height = memoryStack.mallocInt(1);
-            SDLErrorUtil.checkError(SDLVideo.SDL_GetWindowSizeInPixels(windowHandle, width, height), "Failed to get window size");
+            SdlException.check(SDLVideo.SDL_GetWindowSizeInPixels(windowHandle, width, height), "Failed to get window size");
             this.callFramebufferResizeCallbacks(width.get(0), height.get(0));
         }
 
         this.eventWatch = SDL_EventFilter.create(this::onEvent);
-        SDLErrorUtil.checkError(SDLEvents.SDL_AddEventWatch(this.eventWatch, 0L), "Failed to add event watch");
+        SdlException.check(SDLEvents.SDL_AddEventWatch(this.eventWatch, 0L), "Failed to add event watch");
     }
 
     public long getWindowHandle() {

@@ -26,7 +26,7 @@ public class DetailedMessageBuilder {
     }
 
     public void appendField(final String name, final String value) {
-        if (value != null) {
+        if (value != null && !value.isBlank()) {
             this.message.append('\t').append(name).append(": ").append(value).append('\n');
         }
     }

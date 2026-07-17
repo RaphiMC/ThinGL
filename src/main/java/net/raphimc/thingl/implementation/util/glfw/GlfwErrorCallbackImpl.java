@@ -26,7 +26,7 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.util.Map;
 
-public class GLFWErrorCallbackImpl extends GLFWErrorCallback {
+public class GlfwErrorCallbackImpl extends GLFWErrorCallback {
 
     private static final Map<Integer, String> ERRORS = APIUtil.apiClassTokens((_, value) -> 0x10000 < value && value < 0x20000, null, GLFW.class);
 

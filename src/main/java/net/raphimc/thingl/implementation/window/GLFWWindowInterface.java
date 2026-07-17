@@ -28,7 +28,11 @@ public class GLFWWindowInterface extends WindowInterface {
     private final GLFWFramebufferSizeCallback previousFramebufferSizeCallback;
 
     public GLFWWindowInterface() {
-        this(GLFW.glfwGetCurrentContext());
+        final long windowHandle = GLFW.glfwGetCurrentContext();
+        if (windowHandle == 0L) {
+            throw new IllegalStateException("Failed to get OpenGL context window handle");
+        }
+        this(windowHandle);
     }
 
     public GLFWWindowInterface(final long windowHandle) {

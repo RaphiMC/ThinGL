@@ -38,7 +38,7 @@ import net.raphimc.thingl.implementation.gl.impl.GL45Backend;
 import net.raphimc.thingl.implementation.instance.InstanceManager;
 import net.raphimc.thingl.implementation.instance.SingleInstanceManager;
 import net.raphimc.thingl.implementation.window.WindowInterface;
-import net.raphimc.thingl.text.util.FreeTypeLibrary;
+import net.raphimc.thingl.text.util.freetype.FreeTypeLibrary;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL30C;
 
@@ -321,14 +321,14 @@ public class ThinGL {
 
     public synchronized void addFrameFinishedCallback(final Runnable callback) {
         if (this.frameFinishedCallbacks.contains(callback)) {
-            throw new RuntimeException("Frame finished callback already registered");
+            throw new IllegalStateException("Frame finished callback already registered");
         }
         this.frameFinishedCallbacks.add(callback);
     }
 
     public synchronized void removeFrameFinishedCallback(final Runnable callback) {
         if (!this.frameFinishedCallbacks.remove(callback)) {
-            throw new RuntimeException("Frame finished callback not registered");
+            throw new IllegalStateException("Frame finished callback not registered");
         }
     }
 
@@ -358,7 +358,7 @@ public class ThinGL {
 
     public void assertOnRenderThread() {
         if (!this.isOnRenderThread()) {
-            throw new RuntimeException("Not on render thread");
+            throw new AssertionError("Not on render thread");
         }
     }
 

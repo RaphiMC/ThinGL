@@ -17,8 +17,8 @@
  */
 package net.raphimc.thingl.implementation.application;
 
-import net.raphimc.thingl.implementation.util.sdl.SDLErrorUtil;
-import net.raphimc.thingl.implementation.util.sdl.SDLLogOutputFunctionImpl;
+import net.raphimc.thingl.implementation.util.sdl.SdlException;
+import net.raphimc.thingl.implementation.util.sdl.SdlLogOutputFunctionImpl;
 import net.raphimc.thingl.implementation.window.SDLWindowInterface;
 import org.lwjgl.sdl.*;
 import org.lwjgl.system.MemoryStack;
@@ -42,21 +42,18 @@ public abstract class SDLApplicationRunner extends ApplicationRunner {
     }
 
     protected void initSDL() {
-        this.logOutputFunction = new SDLLogOutputFunctionImpl();
+        this.logOutputFunction = new SdlLogOutputFunctionImpl();
         SDLLog.SDL_SetLogOutputFunction(this.logOutputFunction, 0L);
         SDLLog.SDL_SetLogPriorities(SDLLog.SDL_LOG_PRIORITY_WARN);
-        SDLErrorUtil.checkError(SDLInit.SDL_Init(SDLInit.SDL_INIT_VIDEO | SDLInit.SDL_INIT_EVENTS));
+        SdlException.check(SDLInit.SDL_Init(SDLInit.SDL_INIT_VIDEO | SDLInit.SDL_INIT_EVENTS), "Failed to initialize SDL");
     }
 
     protected void createWindow() {
-        final int properties = SDLProperties.SDL_CreateProperties();
-        SDLErrorUtil.checkError(properties, "Failed to create SDL properties");
+        final int properties = SdlException.check(SDLProperties.SDL_CreateProperties(), "Failed to create SDL properties");
         try {
             this.setWindowProperties(properties);
-            this.window = SDLVideo.SDL_CreateWindowWithProperties(properties);
-            SDLErrorUtil.checkError(this.window, "Failed to create window");
-            this.windowId = SDLVideo.SDL_GetWindowID(this.window);
-            SDLErrorUtil.checkError(this.windowId, "Failed to get window id");
+            this.window = SdlException.check(SDLVideo.SDL_CreateWindowWithProperties(properties), "Failed to create window");
+            this.windowId = SdlException.check(SDLVideo.SDL_GetWindowID(this.window), "Failed to get window id");
         } finally {
             SDLProperties.SDL_DestroyProperties(properties);
         }
@@ -64,30 +61,29 @@ public abstract class SDLApplicationRunner extends ApplicationRunner {
     }
 
     protected void setGLAttributes() {
-        SDLErrorUtil.checkError(SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_CONTEXT_MAJOR_VERSION, this.configuration.getOpenGLMajorVersion()));
-        SDLErrorUtil.checkError(SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_CONTEXT_MINOR_VERSION, this.configuration.getOpenGLMinorVersion()));
-        SDLErrorUtil.checkError(SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_CONTEXT_PROFILE_MASK, SDLVideo.SDL_GL_CONTEXT_PROFILE_CORE));
-        SDLErrorUtil.checkError(SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_CONTEXT_FLAGS, SDLVideo.SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG));
+        SdlException.check(SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_CONTEXT_MAJOR_VERSION, this.configuration.getOpenGLMajorVersion()));
+        SdlException.check(SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_CONTEXT_MINOR_VERSION, this.configuration.getOpenGLMinorVersion()));
+        SdlException.check(SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_CONTEXT_PROFILE_MASK, SDLVideo.SDL_GL_CONTEXT_PROFILE_CORE));
+        SdlException.check(SDLVideo.SDL_GL_SetAttribute(SDLVideo.SDL_GL_CONTEXT_FLAGS, SDLVideo.SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG));
     }
 
     protected void setWindowProperties(final int properties) {
-        SDLErrorUtil.checkError(SDLProperties.SDL_SetBooleanProperty(properties, SDLVideo.SDL_PROP_WINDOW_CREATE_OPENGL_BOOLEAN, true));
-        SDLErrorUtil.checkError(SDLProperties.SDL_SetBooleanProperty(properties, SDLVideo.SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN, true));
-        SDLErrorUtil.checkError(SDLProperties.SDL_SetBooleanProperty(properties, SDLVideo.SDL_PROP_WINDOW_CREATE_HIGH_PIXEL_DENSITY_BOOLEAN, true));
-        SDLErrorUtil.checkError(SDLProperties.SDL_SetStringProperty(properties, SDLVideo.SDL_PROP_WINDOW_CREATE_TITLE_STRING, this.configuration.getWindowTitle()));
-        SDLErrorUtil.checkError(SDLProperties.SDL_SetNumberProperty(properties, SDLVideo.SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, this.configuration.getWindowWidth()));
-        SDLErrorUtil.checkError(SDLProperties.SDL_SetNumberProperty(properties, SDLVideo.SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, this.configuration.getWindowHeight()));
+        SdlException.check(SDLProperties.SDL_SetBooleanProperty(properties, SDLVideo.SDL_PROP_WINDOW_CREATE_OPENGL_BOOLEAN, true));
+        SdlException.check(SDLProperties.SDL_SetBooleanProperty(properties, SDLVideo.SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN, true));
+        SdlException.check(SDLProperties.SDL_SetBooleanProperty(properties, SDLVideo.SDL_PROP_WINDOW_CREATE_HIGH_PIXEL_DENSITY_BOOLEAN, true));
+        SdlException.check(SDLProperties.SDL_SetStringProperty(properties, SDLVideo.SDL_PROP_WINDOW_CREATE_TITLE_STRING, this.configuration.getWindowTitle()));
+        SdlException.check(SDLProperties.SDL_SetNumberProperty(properties, SDLVideo.SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, this.configuration.getWindowWidth()));
+        SdlException.check(SDLProperties.SDL_SetNumberProperty(properties, SDLVideo.SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, this.configuration.getWindowHeight()));
         if (this.configuration.isWindowCentered()) {
-            SDLErrorUtil.checkError(SDLProperties.SDL_SetNumberProperty(properties, SDLVideo.SDL_PROP_WINDOW_CREATE_X_NUMBER, SDLVideo.SDL_WINDOWPOS_CENTERED));
-            SDLErrorUtil.checkError(SDLProperties.SDL_SetNumberProperty(properties, SDLVideo.SDL_PROP_WINDOW_CREATE_Y_NUMBER, SDLVideo.SDL_WINDOWPOS_CENTERED));
+            SdlException.check(SDLProperties.SDL_SetNumberProperty(properties, SDLVideo.SDL_PROP_WINDOW_CREATE_X_NUMBER, SDLVideo.SDL_WINDOWPOS_CENTERED));
+            SdlException.check(SDLProperties.SDL_SetNumberProperty(properties, SDLVideo.SDL_PROP_WINDOW_CREATE_Y_NUMBER, SDLVideo.SDL_WINDOWPOS_CENTERED));
         }
     }
 
     @Override
     protected void configureGLContext() {
-        this.glContext = SDLVideo.SDL_GL_CreateContext(this.window);
-        SDLErrorUtil.checkError(this.glContext, "Failed to create OpenGL context");
-        SDLErrorUtil.checkError(SDLVideo.SDL_GL_SetSwapInterval(this.configuration.shouldUseVSync() ? 1 : 0), "Failed to set swap interval");
+        this.glContext = SdlException.check(SDLVideo.SDL_GL_CreateContext(this.window), "Failed to create OpenGL context");
+        SdlException.check(SDLVideo.SDL_GL_SetSwapInterval(this.configuration.shouldUseVSync() ? 1 : 0), "Failed to set swap interval");
     }
 
     @Override
@@ -108,7 +104,7 @@ public abstract class SDLApplicationRunner extends ApplicationRunner {
 
     @Override
     protected void swapWindowBuffers() {
-        SDLErrorUtil.checkError(SDLVideo.SDL_GL_SwapWindow(this.window), "Failed to swap buffers");
+        SdlException.check(SDLVideo.SDL_GL_SwapWindow(this.window), "Failed to swap buffers");
     }
 
     @Override

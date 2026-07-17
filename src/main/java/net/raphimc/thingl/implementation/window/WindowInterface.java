@@ -59,7 +59,7 @@ public abstract class WindowInterface {
         final ThinGL thinGL = ThinGL.get();
         final IntIntBiConsumer wrappedCallback = (width, height) -> thinGL.runOnRenderThread(() -> callback.accept(width, height));
         if (this.renderThreadFramebufferResizeCallbacksMap.containsKey(callback)) {
-            throw new RuntimeException("Render thread framebuffer resize callback already registered");
+            throw new IllegalStateException("Render thread framebuffer resize callback already registered");
         }
         this.renderThreadFramebufferResizeCallbacksMap.put(callback, wrappedCallback);
         this.addFramebufferResizeCallback(wrappedCallback);
@@ -67,14 +67,14 @@ public abstract class WindowInterface {
 
     public synchronized void addFramebufferResizeCallback(final IntIntBiConsumer callback) {
         if (this.framebufferResizeCallbacks.contains(callback)) {
-            throw new RuntimeException("Framebuffer resize callback already registered");
+            throw new IllegalStateException("Framebuffer resize callback already registered");
         }
         this.framebufferResizeCallbacks.add(callback);
     }
 
     public synchronized void removeFramebufferResizeCallback(final IntIntBiConsumer callback) {
         if (!this.framebufferResizeCallbacks.remove(this.renderThreadFramebufferResizeCallbacksMap.getOrDefault(callback, callback))) {
-            throw new RuntimeException("Framebuffer resize callback not registered");
+            throw new IllegalStateException("Framebuffer resize callback not registered");
         }
         this.renderThreadFramebufferResizeCallbacksMap.remove(callback);
     }
@@ -96,7 +96,7 @@ public abstract class WindowInterface {
 
     public void assertOnWindowThread() {
         if (!this.isOnWindowThread()) {
-            throw new RuntimeException("Not on window thread");
+            throw new AssertionError("Not on window thread");
         }
     }
 

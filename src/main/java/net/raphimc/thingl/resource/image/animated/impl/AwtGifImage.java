@@ -50,7 +50,7 @@ public class AwtGifImage extends AnimatedImage {
         this.imageStream = imageStream;
         final Iterator<ImageReader> gifReaders = ImageIO.getImageReadersByFormatName("gif");
         if (!gifReaders.hasNext()) {
-            throw new RuntimeException("No GIF reader available");
+            throw new IllegalStateException("No GIF reader available");
         }
         final ImageReader gifReader = this.gifReader = gifReaders.next();
         final ImageInputStream imageInputStream = this.imageInputStream = ImageIO.createImageInputStream(imageStream);

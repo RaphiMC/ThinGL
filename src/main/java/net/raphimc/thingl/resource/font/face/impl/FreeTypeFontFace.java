@@ -24,7 +24,7 @@ import net.raphimc.thingl.resource.font.face.FontFace;
 import net.raphimc.thingl.resource.font.instance.FontInstance;
 import net.raphimc.thingl.resource.font.instance.impl.FreeTypeFontInstance;
 import net.raphimc.thingl.resource.memory.Memory;
-import net.raphimc.thingl.text.util.FreeTypeLibrary;
+import net.raphimc.thingl.text.util.freetype.FreeTypeException;
 import net.raphimc.thingl.util.MathUtil;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
@@ -72,7 +72,7 @@ public class FreeTypeFontFace extends FontFace {
         try {
             try (MemoryStack memoryStack = MemoryStack.stackPush()) {
                 final PointerBuffer fontFaceBuffer = memoryStack.mallocPointer(1);
-                FreeTypeLibrary.checkError(FreeType.FT_New_Memory_Face(ThinGL.freeTypeLibrary().getPointer(), fontData.asByteBuffer(), 0L, fontFaceBuffer), "Failed to load font face");
+                FreeTypeException.check(FreeType.FT_New_Memory_Face(ThinGL.freeTypeLibrary().getPointer(), fontData.asByteBuffer(), 0L, fontFaceBuffer), "Failed to load font face");
                 this.face = FT_Face.create(fontFaceBuffer.get(0));
             }
             this.ascender = this.face.ascender() / MathUtil.FIXED_26_6;
@@ -178,7 +178,7 @@ public class FreeTypeFontFace extends FontFace {
     protected void free0() {
         super.free0();
         if (this.face != null) {
-            FreeTypeLibrary.checkError(FreeType.FT_Done_Face(this.face), "Failed to free font face");
+            FreeTypeException.check(FreeType.FT_Done_Face(this.face), "Failed to free font face");
         }
         if (this.freeFontData) {
             this.fontData.free();
@@ -198,16 +198,16 @@ public class FreeTypeFontFace extends FontFace {
         }
 
         public void setPixelSizes(final int pixelWidth, final int pixelHeight) {
-            FreeTypeLibrary.checkError(FreeType.FT_Set_Pixel_Sizes(FreeTypeFontFace.this.face, pixelWidth, pixelHeight), "Failed to set pixel sizes");
+            FreeTypeException.check(FreeType.FT_Set_Pixel_Sizes(FreeTypeFontFace.this.face, pixelWidth, pixelHeight), "Failed to set pixel sizes");
         }
 
         public FT_GlyphSlot loadGlyph(final int glyphIndex, final int loadFlags) {
-            FreeTypeLibrary.checkError(FreeType.FT_Load_Glyph(FreeTypeFontFace.this.face, glyphIndex, loadFlags), "Failed to load glyph");
+            FreeTypeException.check(FreeType.FT_Load_Glyph(FreeTypeFontFace.this.face, glyphIndex, loadFlags), "Failed to load glyph");
             return FreeTypeFontFace.this.face.glyph();
         }
 
         public void renderGlyph(final FT_GlyphSlot slot, final int renderMode) {
-            FreeTypeLibrary.checkError(FreeType.FT_Render_Glyph(slot, renderMode), "Failed to render glyph");
+            FreeTypeException.check(FreeType.FT_Render_Glyph(slot, renderMode), "Failed to render glyph");
         }
 
         public float getMetricsYScale() {

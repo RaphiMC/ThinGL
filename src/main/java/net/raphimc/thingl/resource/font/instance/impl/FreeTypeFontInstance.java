@@ -24,7 +24,7 @@ import net.raphimc.thingl.resource.font.face.impl.FreeTypeFontFace;
 import net.raphimc.thingl.resource.font.instance.FontInstance;
 import net.raphimc.thingl.resource.image.impl.ByteImage2D;
 import net.raphimc.thingl.resource.memory.Memory;
-import net.raphimc.thingl.text.util.FreeTypeLibrary;
+import net.raphimc.thingl.text.util.freetype.FreeTypeException;
 import net.raphimc.thingl.util.MathUtil;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL12C;
@@ -103,7 +103,7 @@ public class FreeTypeFontInstance extends FontInstance {
                         final FT_Bitmap convertedBitmap = FT_Bitmap.calloc(memoryStack);
                         FreeType.FT_Bitmap_Init(convertedBitmap);
                         try {
-                            FreeTypeLibrary.checkError(FreeType.FT_Bitmap_Convert(ThinGL.freeTypeLibrary().getPointer(), bitmap, convertedBitmap, 1), "Failed to convert bitmap to grayscale");
+                            FreeTypeException.check(FreeType.FT_Bitmap_Convert(ThinGL.freeTypeLibrary().getPointer(), bitmap, convertedBitmap, 1), "Failed to convert bitmap to grayscale");
                             if (convertedBitmap.pitch() != convertedBitmap.width()) {
                                 throw new IllegalStateException("Bitmap is not tightly packed");
                             }
@@ -113,7 +113,7 @@ public class FreeTypeFontInstance extends FontInstance {
                             }
                             yield new ByteImage2D(convertedBitmap.width(), convertedBitmap.rows(), GL11C.GL_RED, MemoryAllocator.copyMemory(pixels));
                         } finally {
-                            FreeTypeLibrary.checkError(FreeType.FT_Bitmap_Done(ThinGL.freeTypeLibrary().getPointer(), convertedBitmap), "Failed to free converted bitmap");
+                            FreeTypeException.check(FreeType.FT_Bitmap_Done(ThinGL.freeTypeLibrary().getPointer(), convertedBitmap), "Failed to free converted bitmap");
                         }
                     }
                 }
