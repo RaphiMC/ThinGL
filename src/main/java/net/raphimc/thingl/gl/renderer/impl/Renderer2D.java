@@ -578,28 +578,27 @@ public class Renderer2D extends Renderer {
 
         final VertexBufferBuilder vertexBufferBuilder = this.targetMultiDrawBatchDataHolder.getVertexBufferBuilder(DrawBatches.INDEXED_COLOR_TRIANGLE);
         final IndexBufferBuilder indexBufferBuilder = this.targetMultiDrawBatchDataHolder.getIndexBufferBuilder(DrawBatches.INDEXED_COLOR_TRIANGLE);
-        float halfWidth = width * 0.5F;
-        float maxMiterLength = halfWidth * 10F;
+        final float halfWidth = width * 0.5F;
+        final float maxMiterLength = halfWidth * 10F;
         final int abgrColor = color.toABGR();
 
         for (int i = 0; i < points.size(); i++) {
             final Vector2f curr = points.get(i);
-            int prevIndex = i - 1;
-            while (prevIndex >= 0 && points.get(prevIndex).equals(curr)) {
+            int prevIndex = i;
+            do {
                 prevIndex--;
-            }
+            } while (prevIndex >= 0 && points.get(prevIndex).equals(curr));
             final Vector2f prev = prevIndex >= 0 ? points.get(prevIndex) : curr;
-            int nextIndex = i + 1;
-            while (nextIndex < points.size() && points.get(nextIndex).equals(curr)) {
+            int nextIndex = i;
+            do {
                 nextIndex++;
-            }
+            } while (nextIndex < points.size() && points.get(nextIndex).equals(curr));
             final Vector2f next = nextIndex < points.size() ? points.get(nextIndex) : curr;
+
             final Vector2f dirPrev = (prev.equals(curr) ? new Vector2f(next).sub(curr) : new Vector2f(curr).sub(prev)).normalize();
             final Vector2f dirNext = (next.equals(curr) ? new Vector2f(curr).sub(prev) : new Vector2f(next).sub(curr)).normalize();
-
-            final Vector2f tangent = new Vector2f(dirPrev).add(dirNext).normalize().perpendicular().mul(-1F);
-            final float dot = tangent.dot(dirPrev.perpendicular().mul(-1F));
-            tangent.mul(Math.min(halfWidth / dot, maxMiterLength));
+            final Vector2f tangent = new Vector2f(dirPrev).add(dirNext).perpendicular().normalize(-1F);
+            tangent.mul(Math.min(halfWidth / tangent.dot(dirPrev.perpendicular().mul(-1F)), maxMiterLength));
 
             vertexBufferBuilder.writeVector3f(positionMatrix, curr.x + tangent.x, curr.y + tangent.y, 0F).writeColor(abgrColor).endVertex();
             vertexBufferBuilder.writeVector3f(positionMatrix, curr.x - tangent.x, curr.y - tangent.y, 0F).writeColor(abgrColor).endVertex();
