@@ -568,6 +568,14 @@ public class Renderer2D extends Renderer {
     }
 
     public void polyLine(final Matrix4f positionMatrix, final List<Vector2f> points, final float width, final Color color) {
+        if (points.size() < 2) {
+            return;
+        }
+        if (points.size() == 2) {
+            this.line(positionMatrix, points.get(0), points.get(1), width, color);
+            return;
+        }
+
         final VertexBufferBuilder vertexBufferBuilder = this.targetMultiDrawBatchDataHolder.getVertexBufferBuilder(DrawBatches.INDEXED_COLOR_TRIANGLE);
         final IndexBufferBuilder indexBufferBuilder = this.targetMultiDrawBatchDataHolder.getIndexBufferBuilder(DrawBatches.INDEXED_COLOR_TRIANGLE);
         float halfWidth = width * 0.5F;
@@ -605,11 +613,46 @@ public class Renderer2D extends Renderer {
         this.drawIfNotBuffering();
     }
 
+    public void filledConvexPolygon(final Matrix4f positionMatrix, final List<Vector2f> points, final Color color) {
+        if (points.size() < 3) {
+            return;
+        }
+
+        float signedArea = 0F;
+        Vector2f previousPoint = points.getLast();
+        for (Vector2f point : points) {
+            signedArea += (previousPoint.x - point.x) * (point.y + previousPoint.y);
+            previousPoint = point;
+        }
+        if (signedArea == 0F) {
+            return;
+        }
+
+        final VertexBufferBuilder vertexBufferBuilder = this.targetMultiDrawBatchDataHolder.getVertexBufferBuilder(DrawBatches.COLOR_TRIANGLE_FAN);
+        final int abgrColor = color.toABGR();
+        if (signedArea > 0) { // Clockwise winding order
+            for (int i = points.size() - 1; i >= 0; i--) {
+                final Vector2f point = points.get(i);
+                vertexBufferBuilder.writeVector3f(positionMatrix, point.x, point.y, 0F).writeColor(abgrColor).endVertex();
+            }
+        } else { // Counter-clockwise winding order
+            for (Vector2f point : points) {
+                vertexBufferBuilder.writeVector3f(positionMatrix, point.x, point.y, 0F).writeColor(abgrColor).endVertex();
+            }
+        }
+        vertexBufferBuilder.endConnectedPrimitive();
+
+        this.drawIfNotBuffering();
+    }
+
     public void filledPolygon(final Matrix4f positionMatrix, final List<Vector2f> points, final Color color) {
+        if (points.size() < 3) {
+            return;
+        }
+
         final VertexBufferBuilder vertexBufferBuilder = this.targetMultiDrawBatchDataHolder.getVertexBufferBuilder(DrawBatches.INDEXED_COLOR_TRIANGLE);
         final IndexBufferBuilder indexBufferBuilder = this.targetMultiDrawBatchDataHolder.getIndexBufferBuilder(DrawBatches.INDEXED_COLOR_TRIANGLE);
         final int abgrColor = color.toABGR();
-
         final IntList indices = Earcut.earcut(points);
         for (Vector2f point : points) {
             vertexBufferBuilder.writeVector3f(positionMatrix, point.x, point.y, 0F).writeColor(abgrColor).endVertex();
