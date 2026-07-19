@@ -619,13 +619,14 @@ public class Renderer2D extends Renderer {
         }
 
         float twiceArea = 0F;
-        final Vector2f centroid = new Vector2f();
+        float centroidX = 0F;
+        float centroidY = 0F;
         Vector2f previousPoint = points.getLast();
         for (Vector2f point : points) {
             final float cross = previousPoint.x * point.y - point.x * previousPoint.y;
             twiceArea += cross;
-            centroid.x += (previousPoint.x + point.x) * cross;
-            centroid.y += (previousPoint.y + point.y) * cross;
+            centroidX += (previousPoint.x + point.x) * cross;
+            centroidY += (previousPoint.y + point.y) * cross;
             previousPoint = point;
         }
         if (twiceArea == 0F) {
@@ -635,20 +636,17 @@ public class Renderer2D extends Renderer {
 
         final VertexBufferBuilder vertexBufferBuilder = this.targetMultiDrawBatchDataHolder.getVertexBufferBuilder(DrawBatches.COLOR_TRIANGLE_FAN);
         final int abgrColor = color.toABGR();
-        vertexBufferBuilder.writeVector3f(positionMatrix, centroid.x * centerFactor, centroid.y * centerFactor, 0F).writeColor(abgrColor).endVertex();
+        vertexBufferBuilder.writeVector3f(positionMatrix, centroidX * centerFactor, centroidY * centerFactor, 0F).writeColor(abgrColor).endVertex();
         if (twiceArea > 0F) { // Clockwise winding order
             for (int i = points.size() - 1; i >= 0; i--) {
-                final Vector2f point = points.get(i);
-                vertexBufferBuilder.writeVector3f(positionMatrix, point.x, point.y, 0F).writeColor(abgrColor).endVertex();
+                vertexBufferBuilder.writeVector3f(positionMatrix, points.get(i), 0F).writeColor(abgrColor).endVertex();
             }
-            final Vector2f firstPoint = points.getLast();
-            vertexBufferBuilder.writeVector3f(positionMatrix, firstPoint.x, firstPoint.y, 0F).writeColor(abgrColor).endVertex();
+            vertexBufferBuilder.writeVector3f(positionMatrix, points.getLast(), 0F).writeColor(abgrColor).endVertex();
         } else { // Counter-clockwise winding order
             for (Vector2f point : points) {
-                vertexBufferBuilder.writeVector3f(positionMatrix, point.x, point.y, 0F).writeColor(abgrColor).endVertex();
+                vertexBufferBuilder.writeVector3f(positionMatrix, point, 0F).writeColor(abgrColor).endVertex();
             }
-            final Vector2f firstPoint = points.getFirst();
-            vertexBufferBuilder.writeVector3f(positionMatrix, firstPoint.x, firstPoint.y, 0F).writeColor(abgrColor).endVertex();
+            vertexBufferBuilder.writeVector3f(positionMatrix, points.getFirst(), 0F).writeColor(abgrColor).endVertex();
         }
         vertexBufferBuilder.endConnectedPrimitive();
 
@@ -663,10 +661,10 @@ public class Renderer2D extends Renderer {
         final VertexBufferBuilder vertexBufferBuilder = this.targetMultiDrawBatchDataHolder.getVertexBufferBuilder(DrawBatches.INDEXED_COLOR_TRIANGLE);
         final IndexBufferBuilder indexBufferBuilder = this.targetMultiDrawBatchDataHolder.getIndexBufferBuilder(DrawBatches.INDEXED_COLOR_TRIANGLE);
         final int abgrColor = color.toABGR();
-        final IntList indices = Earcut.earcut(points);
         for (Vector2f point : points) {
-            vertexBufferBuilder.writeVector3f(positionMatrix, point.x, point.y, 0F).writeColor(abgrColor).endVertex();
+            vertexBufferBuilder.writeVector3f(positionMatrix, point, 0F).writeColor(abgrColor).endVertex();
         }
+        final IntList indices = Earcut.earcut(points);
         for (int i = indices.size() - 1; i >= 0; i--) {
             indexBufferBuilder.writeRelativeIndex(indices.getInt(i));
         }

@@ -128,6 +128,10 @@ public abstract class DataBufferBuilder<T extends DataBufferBuilder<T>> extends 
         return this.writeVector3f(positionMatrix, vector.x, vector.y, vector.z);
     }
 
+    public T writeVector3f(final Matrix4f positionMatrix, final Vector2f vector, final float z) {
+        return this.writeVector3f(positionMatrix, vector.x, vector.y, z);
+    }
+
     public T writeVector3f(final Matrix4f positionMatrix, final float x, final float y, final float z) {
         // Code from Vector3f#mulPosition
         if ((positionMatrix.properties() & Matrix4fc.PROPERTY_IDENTITY) != 0) {
