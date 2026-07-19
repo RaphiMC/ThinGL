@@ -618,27 +618,37 @@ public class Renderer2D extends Renderer {
             return;
         }
 
-        float signedArea = 0F;
+        float twiceArea = 0F;
+        final Vector2f centroid = new Vector2f();
         Vector2f previousPoint = points.getLast();
         for (Vector2f point : points) {
-            signedArea += (previousPoint.x - point.x) * (point.y + previousPoint.y);
+            final float cross = previousPoint.x * point.y - point.x * previousPoint.y;
+            twiceArea += cross;
+            centroid.x += (previousPoint.x + point.x) * cross;
+            centroid.y += (previousPoint.y + point.y) * cross;
             previousPoint = point;
         }
-        if (signedArea == 0F) {
+        if (twiceArea == 0F) {
             return;
         }
+        final float centerFactor = 1F / (3F * twiceArea);
 
         final VertexBufferBuilder vertexBufferBuilder = this.targetMultiDrawBatchDataHolder.getVertexBufferBuilder(DrawBatches.COLOR_TRIANGLE_FAN);
         final int abgrColor = color.toABGR();
-        if (signedArea > 0) { // Clockwise winding order
+        vertexBufferBuilder.writeVector3f(positionMatrix, centroid.x * centerFactor, centroid.y * centerFactor, 0F).writeColor(abgrColor).endVertex();
+        if (twiceArea > 0F) { // Clockwise winding order
             for (int i = points.size() - 1; i >= 0; i--) {
                 final Vector2f point = points.get(i);
                 vertexBufferBuilder.writeVector3f(positionMatrix, point.x, point.y, 0F).writeColor(abgrColor).endVertex();
             }
+            final Vector2f firstPoint = points.getLast();
+            vertexBufferBuilder.writeVector3f(positionMatrix, firstPoint.x, firstPoint.y, 0F).writeColor(abgrColor).endVertex();
         } else { // Counter-clockwise winding order
             for (Vector2f point : points) {
                 vertexBufferBuilder.writeVector3f(positionMatrix, point.x, point.y, 0F).writeColor(abgrColor).endVertex();
             }
+            final Vector2f firstPoint = points.getFirst();
+            vertexBufferBuilder.writeVector3f(positionMatrix, firstPoint.x, firstPoint.y, 0F).writeColor(abgrColor).endVertex();
         }
         vertexBufferBuilder.endConnectedPrimitive();
 
