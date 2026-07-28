@@ -17,56 +17,126 @@
  */
 package net.raphimc.thingl.util.rectpack;
 
-import net.raphimc.thingl.implementation.Capabilities;
-import org.lwjgl.stb.STBRPContext;
-import org.lwjgl.stb.STBRPNode;
-import org.lwjgl.stb.STBRPRect;
-import org.lwjgl.stb.STBRectPack;
-import org.lwjgl.system.MemoryStack;
-
+/**
+ * Based on <a href="https://github.com/nothings/stb/blob/31c1ad37456438565541f4919958214b6e762fb4/stb_rect_pack.h">stb_rect_pack</a>.<br>
+ */
 public class StaticRectanglePacker {
 
-    static {
-        Capabilities.assertStbAvailable();
-    }
+    private final int width;
+    private final int height;
+    private final int spacing;
 
-    private final STBRPContext rectPackContext;
-    private final STBRPNode.Buffer rectPackNodes;
+    private SkylineNode skylineHead;
 
     public StaticRectanglePacker(final int width, final int height) {
-        this.rectPackContext = STBRPContext.create();
-        this.rectPackNodes = STBRPNode.malloc(width);
-        STBRectPack.stbrp_init_target(this.rectPackContext, width, height, this.rectPackNodes);
+        this(width, height, 1);
+    }
+
+    public StaticRectanglePacker(final int width, final int height, final int spacing) {
+        this.width = width;
+        this.height = height;
+        this.spacing = spacing;
+        this.skylineHead = new SkylineNode(0, 0, new SkylineNode(width, Integer.MAX_VALUE, null));
     }
 
     public Slot pack(final int rectWidth, final int rectHeight) {
-        try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-            final STBRPRect.Buffer rect = STBRPRect.malloc(1, memoryStack).w(rectWidth + 1).h(rectHeight + 1);
-            STBRectPack.stbrp_pack_rects(this.rectPackContext, rect);
-            if (!rect.was_packed()) {
-                return null;
-            }
+        final int paddedRectWidth = rectWidth + this.spacing;
+        final int paddedRectHeight = rectHeight + this.spacing;
+        if (paddedRectWidth > this.width || paddedRectHeight > this.height) {
+            return null;
+        }
+        final Placement placement = this.findBestPlacement(paddedRectWidth, paddedRectHeight);
+        if (placement == null) {
+            return null;
+        }
+        this.updateSkyline(placement);
 
-            final int x = rect.x();
-            final int y = rect.y();
-            final float u1 = x / (float) this.getWidth();
-            final float v1 = y / (float) this.getHeight();
-            final float u2 = (x + rectWidth) / (float) this.getWidth();
-            final float v2 = (y + rectHeight) / (float) this.getHeight();
-            return new Slot(x, y, rectWidth, rectHeight, u1, v1, u2, v2);
+        final int x = placement.x();
+        final int y = placement.y();
+        final float u1 = x / (float) this.width;
+        final float v1 = y / (float) this.height;
+        final float u2 = (x + rectWidth) / (float) this.width;
+        final float v2 = (y + rectHeight) / (float) this.height;
+        return new Slot(x, y, rectWidth, rectHeight, u1, v1, u2, v2);
+    }
+
+    private void updateSkyline(final Placement placement) {
+        SkylineNode current = placement.current();
+        final int right = placement.x() + placement.width();
+        while (current.next != null && current.next.x <= right) {
+            current = current.next;
+        }
+        if (current.x < right) {
+            current.x = right;
+        }
+
+        final SkylineNode newNode = new SkylineNode(placement.x(), placement.y() + placement.height(), current);
+        if (newNode.y == newNode.next.y) {
+            newNode.next = newNode.next.next;
+        }
+
+        final SkylineNode previous = placement.previous();
+        if (previous != null) {
+            if (previous.y == newNode.y) {
+                previous.next = newNode.next;
+            } else {
+                previous.next = newNode;
+            }
+        } else {
+            this.skylineHead = newNode;
         }
     }
 
     public int getWidth() {
-        return this.rectPackContext.width();
+        return this.width;
     }
 
     public int getHeight() {
-        return this.rectPackContext.height();
+        return this.height;
     }
 
-    public void free() {
-        this.rectPackNodes.free();
+    private Placement findBestPlacement(final int width, final int height) {
+        int bestY = Integer.MAX_VALUE;
+        SkylineNode bestPrevious = null;
+        SkylineNode bestCurrent = null;
+
+        SkylineNode previous = null;
+        SkylineNode current = this.skylineHead;
+        while (current.x + width <= this.width) {
+            int candidateY = 0;
+            for (SkylineNode node = current; node.x < current.x + width; node = node.next) {
+                candidateY = Math.max(candidateY, node.y);
+            }
+            if (candidateY < bestY) {
+                bestY = candidateY;
+                bestPrevious = previous;
+                bestCurrent = current;
+            }
+            previous = current;
+            current = current.next;
+        }
+
+        if (bestCurrent == null || bestY + height > this.height) {
+            return null;
+        }
+        return new Placement(bestCurrent.x, bestY, width, height, bestPrevious, bestCurrent);
+    }
+
+    private static class SkylineNode {
+
+        private int x;
+        private int y;
+        private SkylineNode next;
+
+        private SkylineNode(final int x, final int y, final SkylineNode next) {
+            this.x = x;
+            this.y = y;
+            this.next = next;
+        }
+
+    }
+
+    private record Placement(int x, int y, int width, int height, SkylineNode previous, SkylineNode current) {
     }
 
 }

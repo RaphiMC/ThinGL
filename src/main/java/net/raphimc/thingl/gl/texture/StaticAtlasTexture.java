@@ -47,10 +47,4 @@ public class StaticAtlasTexture extends Texture2D {
         return slot;
     }
 
-    @Override
-    protected void free0() {
-        super.free0();
-        this.rectanglePacker.free();
-    }
-
 }

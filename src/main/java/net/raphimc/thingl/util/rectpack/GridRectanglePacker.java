@@ -30,11 +30,15 @@ public class GridRectanglePacker {
     private final int height;
 
     public GridRectanglePacker(final int rectCount, final int rectWidth, final int rectHeight) {
+        this(rectCount, rectWidth, rectHeight, 1);
+    }
+
+    public GridRectanglePacker(final int rectCount, final int rectWidth, final int rectHeight, final int spacing) {
         this.rectsPerRow = MathUtils.ceilInt(Math.sqrt(rectCount));
         this.rectWidth = rectWidth;
         this.rectHeight = rectHeight;
-        this.paddedRectWidth = rectWidth + 1;
-        this.paddedRectHeight = rectHeight + 1;
+        this.paddedRectWidth = rectWidth + spacing;
+        this.paddedRectHeight = rectHeight + spacing;
         this.width = this.rectsPerRow * this.paddedRectWidth;
         this.height = this.rectsPerRow * this.paddedRectHeight;
     }
