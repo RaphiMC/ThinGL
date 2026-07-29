@@ -20,21 +20,21 @@ package net.raphimc.thingl.gl.texture;
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.gl.resource.image.texture.impl.Texture2D;
 import net.raphimc.thingl.resource.image.Image;
+import net.raphimc.thingl.util.rectpack.SkylineRectanglePacker;
 import net.raphimc.thingl.util.rectpack.Slot;
-import net.raphimc.thingl.util.rectpack.StaticRectanglePacker;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL13C;
 
 public class StaticAtlasTexture extends Texture2D {
 
-    private final StaticRectanglePacker rectanglePacker;
+    private final SkylineRectanglePacker rectanglePacker;
 
     public StaticAtlasTexture(final int internalFormat, final int width, final int height) {
         super(internalFormat, width, height);
         this.setWrap(GL13C.GL_CLAMP_TO_BORDER);
         this.setParameterFloatArray(GL11C.GL_TEXTURE_BORDER_COLOR, new float[4]);
         this.clear(Color.TRANSPARENT);
-        this.rectanglePacker = new StaticRectanglePacker(width, height);
+        this.rectanglePacker = new SkylineRectanglePacker(width, height);
     }
 
     public Slot addSlot(final Image image) {

@@ -20,7 +20,7 @@ package net.raphimc.thingl.util.rectpack;
 /**
  * Based on <a href="https://github.com/nothings/stb/blob/31c1ad37456438565541f4919958214b6e762fb4/stb_rect_pack.h">stb_rect_pack</a>.<br>
  */
-public class StaticRectanglePacker {
+public class SkylineRectanglePacker {
 
     private final int width;
     private final int height;
@@ -28,11 +28,11 @@ public class StaticRectanglePacker {
 
     private SkylineNode skylineHead;
 
-    public StaticRectanglePacker(final int width, final int height) {
+    public SkylineRectanglePacker(final int width, final int height) {
         this(width, height, 1);
     }
 
-    public StaticRectanglePacker(final int width, final int height, final int spacing) {
+    public SkylineRectanglePacker(final int width, final int height, final int spacing) {
         this.width = width;
         this.height = height;
         this.spacing = spacing;
@@ -51,13 +51,50 @@ public class StaticRectanglePacker {
         }
         this.updateSkyline(placement);
 
-        final int x = placement.x();
-        final int y = placement.y();
-        final float u1 = x / (float) this.width;
-        final float v1 = y / (float) this.height;
-        final float u2 = (x + rectWidth) / (float) this.width;
-        final float v2 = (y + rectHeight) / (float) this.height;
-        return new Slot(x, y, rectWidth, rectHeight, u1, v1, u2, v2);
+        final float u1 = placement.x() / (float) this.width;
+        final float v1 = placement.y() / (float) this.height;
+        final float u2 = (placement.x() + rectWidth) / (float) this.width;
+        final float v2 = (placement.y() + rectHeight) / (float) this.height;
+        return new Slot(placement.x(), placement.y(), rectWidth, rectHeight, u1, v1, u2, v2);
+    }
+
+    public int getWidth() {
+        return this.width;
+    }
+
+    public int getHeight() {
+        return this.height;
+    }
+
+    private Placement findBestPlacement(final int width, final int height) {
+        int bestY = Integer.MAX_VALUE;
+        SkylineNode bestPrevious = null;
+        SkylineNode bestCurrent = null;
+
+        SkylineNode previous = null;
+        SkylineNode current = this.skylineHead;
+        while (current.x + width <= this.width) {
+            int candidateY = 0;
+            for (SkylineNode node = current; node.x < current.x + width; node = node.next) {
+                candidateY = Math.max(node.y, candidateY);
+                if (candidateY >= bestY) {
+                    break;
+                }
+            }
+            if (candidateY < bestY && candidateY + height <= this.height) {
+                bestY = candidateY;
+                bestPrevious = previous;
+                bestCurrent = current;
+            }
+            previous = current;
+            current = current.next;
+        }
+
+        if (bestCurrent != null) {
+            return new Placement(bestCurrent.x, bestY, width, height, bestPrevious, bestCurrent);
+        } else {
+            return null;
+        }
     }
 
     private void updateSkyline(final Placement placement) {
@@ -85,41 +122,6 @@ public class StaticRectanglePacker {
         } else {
             this.skylineHead = newNode;
         }
-    }
-
-    public int getWidth() {
-        return this.width;
-    }
-
-    public int getHeight() {
-        return this.height;
-    }
-
-    private Placement findBestPlacement(final int width, final int height) {
-        int bestY = Integer.MAX_VALUE;
-        SkylineNode bestPrevious = null;
-        SkylineNode bestCurrent = null;
-
-        SkylineNode previous = null;
-        SkylineNode current = this.skylineHead;
-        while (current.x + width <= this.width) {
-            int candidateY = 0;
-            for (SkylineNode node = current; node.x < current.x + width; node = node.next) {
-                candidateY = Math.max(candidateY, node.y);
-            }
-            if (candidateY < bestY) {
-                bestY = candidateY;
-                bestPrevious = previous;
-                bestCurrent = current;
-            }
-            previous = current;
-            current = current.next;
-        }
-
-        if (bestCurrent == null || bestY + height > this.height) {
-            return null;
-        }
-        return new Placement(bestCurrent.x, bestY, width, height, bestPrevious, bestCurrent);
     }
 
     private static class SkylineNode {
