@@ -87,6 +87,7 @@ public class GlSlPreprocessor {
         this.insertLines(defineLine, index, List.of(defineLine));
     }
 
+    @SuppressWarnings("checkstyle:ModifiedControlVariable")
     public void resolveIncludes(final Function<String, String> includeResolver) {
         if (includeResolver == null) {
             throw new IllegalArgumentException("Include resolver cannot be null");
@@ -165,7 +166,7 @@ public class GlSlPreprocessor {
                         final int lineNumber = Integer.parseInt(parts[1]);
                         final int sourceHash = Integer.parseInt(parts[2]);
                         return "#line " + (lineNumber + relativeLineNumber) + " " + sourceHash;
-                    } catch (NumberFormatException e) {
+                    } catch (final NumberFormatException _) {
                         throw new IllegalArgumentException("Invalid #line directive format at line " + (i + 1));
                     }
                 }

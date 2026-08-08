@@ -112,7 +112,7 @@ public abstract class AnimatedImage extends ByteImage2D {
 
         OPAQUE,
         MASKED,
-        ALPHA_BLENDED,
+        ALPHA_BLENDED
 
     }
 

@@ -70,7 +70,7 @@ public class AnimatedTexture extends Texture2D {
                         ThreadUtils.hybridSleep(timeToSleep);
                     }
                 }
-            } catch (Throwable e) {
+            } catch (final Throwable e) {
                 if (e.getCause() instanceof InterruptedException) {
                     return;
                 }
@@ -97,7 +97,7 @@ public class AnimatedTexture extends Texture2D {
             this.loadingThread.interrupt();
             try {
                 this.loadingThread.join(1000);
-            } catch (InterruptedException _) {
+            } catch (final InterruptedException _) {
             }
         }
         this.animatedImage.free();

@@ -61,7 +61,7 @@ public class PersistentMultiDrawBatchDataHolder extends MultiDrawBatchDataHolder
     }
 
     public void optimize() {
-        this.preparedDrawBatches.replaceAll((drawBatch, preparedDrawBatchData) -> DrawBatchDataOptimizer.optimize(preparedDrawBatchData));
+        this.preparedDrawBatches.replaceAll((_, preparedDrawBatchData) -> DrawBatchDataOptimizer.optimize(preparedDrawBatchData));
     }
 
     public void upload() {

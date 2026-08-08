@@ -23,7 +23,7 @@ import net.raphimc.thingl.text.markup.element.Element;
 public class UnderlineElement extends Element<TextStyle> {
 
     public UnderlineElement() {
-        this.attributes.put(null, (style, value) -> style.withUnderline(true));
+        this.attributes.put(null, (style, _) -> style.withUnderline(true));
         this.attributes.put("enabled", (style, value) -> style.withUnderline(Boolean.parseBoolean(value)));
     }
 

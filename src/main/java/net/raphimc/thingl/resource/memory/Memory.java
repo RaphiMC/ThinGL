@@ -18,7 +18,19 @@
 package net.raphimc.thingl.resource.memory;
 
 import net.raphimc.thingl.resource.Resource;
-import org.joml.*;
+import org.joml.Matrix3d;
+import org.joml.Matrix3f;
+import org.joml.Matrix4d;
+import org.joml.Matrix4f;
+import org.joml.Vector2d;
+import org.joml.Vector2f;
+import org.joml.Vector2i;
+import org.joml.Vector3d;
+import org.joml.Vector3f;
+import org.joml.Vector3i;
+import org.joml.Vector4d;
+import org.joml.Vector4f;
+import org.joml.Vector4i;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
@@ -95,8 +107,8 @@ public abstract class Memory extends Resource {
 
     public Vector2i getVector2i(final long offset) {
         return new Vector2i(
-                this.getInt(offset + Integer.BYTES * 0),
-                this.getInt(offset + Integer.BYTES * 1)
+            this.getInt(offset + Integer.BYTES * 0),
+            this.getInt(offset + Integer.BYTES * 1)
         );
     }
 
@@ -112,9 +124,9 @@ public abstract class Memory extends Resource {
 
     public Vector3i getVector3i(final long offset) {
         return new Vector3i(
-                this.getInt(offset + Integer.BYTES * 0),
-                this.getInt(offset + Integer.BYTES * 1),
-                this.getInt(offset + Integer.BYTES * 2)
+            this.getInt(offset + Integer.BYTES * 0),
+            this.getInt(offset + Integer.BYTES * 1),
+            this.getInt(offset + Integer.BYTES * 2)
         );
     }
 
@@ -131,10 +143,10 @@ public abstract class Memory extends Resource {
 
     public Vector4i getVector4i(final long offset) {
         return new Vector4i(
-                this.getInt(offset + Integer.BYTES * 0),
-                this.getInt(offset + Integer.BYTES * 1),
-                this.getInt(offset + Integer.BYTES * 2),
-                this.getInt(offset + Integer.BYTES * 3)
+            this.getInt(offset + Integer.BYTES * 0),
+            this.getInt(offset + Integer.BYTES * 1),
+            this.getInt(offset + Integer.BYTES * 2),
+            this.getInt(offset + Integer.BYTES * 3)
         );
     }
 
@@ -152,8 +164,8 @@ public abstract class Memory extends Resource {
 
     public Vector2f getVector2f(final long offset) {
         return new Vector2f(
-                this.getFloat(offset + Float.BYTES * 0),
-                this.getFloat(offset + Float.BYTES * 1)
+            this.getFloat(offset + Float.BYTES * 0),
+            this.getFloat(offset + Float.BYTES * 1)
         );
     }
 
@@ -169,9 +181,9 @@ public abstract class Memory extends Resource {
 
     public Vector3f getVector3f(final long offset) {
         return new Vector3f(
-                this.getFloat(offset + Float.BYTES * 0),
-                this.getFloat(offset + Float.BYTES * 1),
-                this.getFloat(offset + Float.BYTES * 2)
+            this.getFloat(offset + Float.BYTES * 0),
+            this.getFloat(offset + Float.BYTES * 1),
+            this.getFloat(offset + Float.BYTES * 2)
         );
     }
 
@@ -188,10 +200,10 @@ public abstract class Memory extends Resource {
 
     public Vector4f getVector4f(final long offset) {
         return new Vector4f(
-                this.getFloat(offset + Float.BYTES * 0),
-                this.getFloat(offset + Float.BYTES * 1),
-                this.getFloat(offset + Float.BYTES * 2),
-                this.getFloat(offset + Float.BYTES * 3)
+            this.getFloat(offset + Float.BYTES * 0),
+            this.getFloat(offset + Float.BYTES * 1),
+            this.getFloat(offset + Float.BYTES * 2),
+            this.getFloat(offset + Float.BYTES * 3)
         );
     }
 
@@ -209,8 +221,8 @@ public abstract class Memory extends Resource {
 
     public Vector2d getVector2d(final long offset) {
         return new Vector2d(
-                this.getDouble(offset + Double.BYTES * 0),
-                this.getDouble(offset + Double.BYTES * 1)
+            this.getDouble(offset + Double.BYTES * 0),
+            this.getDouble(offset + Double.BYTES * 1)
         );
     }
 
@@ -226,9 +238,9 @@ public abstract class Memory extends Resource {
 
     public Vector3d getVector3d(final long offset) {
         return new Vector3d(
-                this.getDouble(offset + Double.BYTES * 0),
-                this.getDouble(offset + Double.BYTES * 1),
-                this.getDouble(offset + Double.BYTES * 2)
+            this.getDouble(offset + Double.BYTES * 0),
+            this.getDouble(offset + Double.BYTES * 1),
+            this.getDouble(offset + Double.BYTES * 2)
         );
     }
 
@@ -245,10 +257,10 @@ public abstract class Memory extends Resource {
 
     public Vector4d getVector4d(final long offset) {
         return new Vector4d(
-                this.getDouble(offset + Double.BYTES * 0),
-                this.getDouble(offset + Double.BYTES * 1),
-                this.getDouble(offset + Double.BYTES * 2),
-                this.getDouble(offset + Double.BYTES * 3)
+            this.getDouble(offset + Double.BYTES * 0),
+            this.getDouble(offset + Double.BYTES * 1),
+            this.getDouble(offset + Double.BYTES * 2),
+            this.getDouble(offset + Double.BYTES * 3)
         );
     }
 
@@ -266,15 +278,15 @@ public abstract class Memory extends Resource {
 
     public Matrix3f getMatrix3f(final long offset) {
         return new Matrix3f(
-                this.getFloat(offset + Float.BYTES * 0),
-                this.getFloat(offset + Float.BYTES * 1),
-                this.getFloat(offset + Float.BYTES * 2),
-                this.getFloat(offset + Float.BYTES * 3),
-                this.getFloat(offset + Float.BYTES * 4),
-                this.getFloat(offset + Float.BYTES * 5),
-                this.getFloat(offset + Float.BYTES * 6),
-                this.getFloat(offset + Float.BYTES * 7),
-                this.getFloat(offset + Float.BYTES * 8)
+            this.getFloat(offset + Float.BYTES * 0),
+            this.getFloat(offset + Float.BYTES * 1),
+            this.getFloat(offset + Float.BYTES * 2),
+            this.getFloat(offset + Float.BYTES * 3),
+            this.getFloat(offset + Float.BYTES * 4),
+            this.getFloat(offset + Float.BYTES * 5),
+            this.getFloat(offset + Float.BYTES * 6),
+            this.getFloat(offset + Float.BYTES * 7),
+            this.getFloat(offset + Float.BYTES * 8)
         );
     }
 
@@ -293,22 +305,22 @@ public abstract class Memory extends Resource {
 
     public Matrix4f getMatrix4f(final long offset) {
         return new Matrix4f(
-                this.getFloat(offset + Float.BYTES * 0),
-                this.getFloat(offset + Float.BYTES * 1),
-                this.getFloat(offset + Float.BYTES * 2),
-                this.getFloat(offset + Float.BYTES * 3),
-                this.getFloat(offset + Float.BYTES * 4),
-                this.getFloat(offset + Float.BYTES * 5),
-                this.getFloat(offset + Float.BYTES * 6),
-                this.getFloat(offset + Float.BYTES * 7),
-                this.getFloat(offset + Float.BYTES * 8),
-                this.getFloat(offset + Float.BYTES * 9),
-                this.getFloat(offset + Float.BYTES * 10),
-                this.getFloat(offset + Float.BYTES * 11),
-                this.getFloat(offset + Float.BYTES * 12),
-                this.getFloat(offset + Float.BYTES * 13),
-                this.getFloat(offset + Float.BYTES * 14),
-                this.getFloat(offset + Float.BYTES * 15)
+            this.getFloat(offset + Float.BYTES * 0),
+            this.getFloat(offset + Float.BYTES * 1),
+            this.getFloat(offset + Float.BYTES * 2),
+            this.getFloat(offset + Float.BYTES * 3),
+            this.getFloat(offset + Float.BYTES * 4),
+            this.getFloat(offset + Float.BYTES * 5),
+            this.getFloat(offset + Float.BYTES * 6),
+            this.getFloat(offset + Float.BYTES * 7),
+            this.getFloat(offset + Float.BYTES * 8),
+            this.getFloat(offset + Float.BYTES * 9),
+            this.getFloat(offset + Float.BYTES * 10),
+            this.getFloat(offset + Float.BYTES * 11),
+            this.getFloat(offset + Float.BYTES * 12),
+            this.getFloat(offset + Float.BYTES * 13),
+            this.getFloat(offset + Float.BYTES * 14),
+            this.getFloat(offset + Float.BYTES * 15)
         );
     }
 
@@ -334,15 +346,15 @@ public abstract class Memory extends Resource {
 
     public Matrix3d getMatrix3d(final long offset) {
         return new Matrix3d(
-                this.getDouble(offset + Double.BYTES * 0),
-                this.getDouble(offset + Double.BYTES * 1),
-                this.getDouble(offset + Double.BYTES * 2),
-                this.getDouble(offset + Double.BYTES * 3),
-                this.getDouble(offset + Double.BYTES * 4),
-                this.getDouble(offset + Double.BYTES * 5),
-                this.getDouble(offset + Double.BYTES * 6),
-                this.getDouble(offset + Double.BYTES * 7),
-                this.getDouble(offset + Double.BYTES * 8)
+            this.getDouble(offset + Double.BYTES * 0),
+            this.getDouble(offset + Double.BYTES * 1),
+            this.getDouble(offset + Double.BYTES * 2),
+            this.getDouble(offset + Double.BYTES * 3),
+            this.getDouble(offset + Double.BYTES * 4),
+            this.getDouble(offset + Double.BYTES * 5),
+            this.getDouble(offset + Double.BYTES * 6),
+            this.getDouble(offset + Double.BYTES * 7),
+            this.getDouble(offset + Double.BYTES * 8)
         );
     }
 
@@ -361,22 +373,22 @@ public abstract class Memory extends Resource {
 
     public Matrix4d getMatrix4d(final long offset) {
         return new Matrix4d(
-                this.getDouble(offset + Double.BYTES * 0),
-                this.getDouble(offset + Double.BYTES * 1),
-                this.getDouble(offset + Double.BYTES * 2),
-                this.getDouble(offset + Double.BYTES * 3),
-                this.getDouble(offset + Double.BYTES * 4),
-                this.getDouble(offset + Double.BYTES * 5),
-                this.getDouble(offset + Double.BYTES * 6),
-                this.getDouble(offset + Double.BYTES * 7),
-                this.getDouble(offset + Double.BYTES * 8),
-                this.getDouble(offset + Double.BYTES * 9),
-                this.getDouble(offset + Double.BYTES * 10),
-                this.getDouble(offset + Double.BYTES * 11),
-                this.getDouble(offset + Double.BYTES * 12),
-                this.getDouble(offset + Double.BYTES * 13),
-                this.getDouble(offset + Double.BYTES * 14),
-                this.getDouble(offset + Double.BYTES * 15)
+            this.getDouble(offset + Double.BYTES * 0),
+            this.getDouble(offset + Double.BYTES * 1),
+            this.getDouble(offset + Double.BYTES * 2),
+            this.getDouble(offset + Double.BYTES * 3),
+            this.getDouble(offset + Double.BYTES * 4),
+            this.getDouble(offset + Double.BYTES * 5),
+            this.getDouble(offset + Double.BYTES * 6),
+            this.getDouble(offset + Double.BYTES * 7),
+            this.getDouble(offset + Double.BYTES * 8),
+            this.getDouble(offset + Double.BYTES * 9),
+            this.getDouble(offset + Double.BYTES * 10),
+            this.getDouble(offset + Double.BYTES * 11),
+            this.getDouble(offset + Double.BYTES * 12),
+            this.getDouble(offset + Double.BYTES * 13),
+            this.getDouble(offset + Double.BYTES * 14),
+            this.getDouble(offset + Double.BYTES * 15)
         );
     }
 

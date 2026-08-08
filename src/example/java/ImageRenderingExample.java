@@ -25,15 +25,15 @@ import java.io.IOException;
 
 public class ImageRenderingExample extends GLFWApplicationRunner {
 
-    public static void main(String[] args) {
-        new ImageRenderingExample().run();
-    }
+    private Texture2D texture;
 
     public ImageRenderingExample() {
         super(new Configuration().setWindowTitle("ThinGL Example - Image rendering").setExtendedDebugMode(true));
     }
 
-    private Texture2D texture;
+    void main() {
+        this.run();
+    }
 
     @Override
     protected void init() {
@@ -43,7 +43,7 @@ public class ImageRenderingExample extends GLFWApplicationRunner {
             this.texture = Texture2D.fromImage(imageBytes); // Standard image formats like PNG, JPEG, BMP, and GIF are supported
             // this.texture = Texture2D.fromImage(new AwtByteImage2D(...)); // Its also possible to create a Texture2D from a BufferedImage directly
             // this.texture = Texture2D.fromImage(new AwtSvgByteImage2D(...); // SVG is also supported, but requires a library
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException(e);
         }
     }

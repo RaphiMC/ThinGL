@@ -28,27 +28,27 @@ import java.util.Map;
 public class SdlLogOutputFunctionImpl extends SDL_LogOutputFunction {
 
     private static final Map<Integer, String> CATEGORY = Map.of(
-            SDLLog.SDL_LOG_CATEGORY_APPLICATION, "Application",
-            SDLLog.SDL_LOG_CATEGORY_ERROR, "Error",
-            SDLLog.SDL_LOG_CATEGORY_ASSERT, "Assert",
-            SDLLog.SDL_LOG_CATEGORY_SYSTEM, "System",
-            SDLLog.SDL_LOG_CATEGORY_AUDIO, "Audio",
-            SDLLog.SDL_LOG_CATEGORY_VIDEO, "Video",
-            SDLLog.SDL_LOG_CATEGORY_RENDER, "Render",
-            SDLLog.SDL_LOG_CATEGORY_INPUT, "Input",
-            SDLLog.SDL_LOG_CATEGORY_TEST, "Test",
-            SDLLog.SDL_LOG_CATEGORY_GPU, "GPU"
+        SDLLog.SDL_LOG_CATEGORY_APPLICATION, "Application",
+        SDLLog.SDL_LOG_CATEGORY_ERROR, "Error",
+        SDLLog.SDL_LOG_CATEGORY_ASSERT, "Assert",
+        SDLLog.SDL_LOG_CATEGORY_SYSTEM, "System",
+        SDLLog.SDL_LOG_CATEGORY_AUDIO, "Audio",
+        SDLLog.SDL_LOG_CATEGORY_VIDEO, "Video",
+        SDLLog.SDL_LOG_CATEGORY_RENDER, "Render",
+        SDLLog.SDL_LOG_CATEGORY_INPUT, "Input",
+        SDLLog.SDL_LOG_CATEGORY_TEST, "Test",
+        SDLLog.SDL_LOG_CATEGORY_GPU, "GPU"
     );
 
     private static final Map<Integer, String> PRIORITY = Map.of(
-            SDLLog.SDL_LOG_PRIORITY_INVALID, "Invalid",
-            SDLLog.SDL_LOG_PRIORITY_TRACE, "Trace",
-            SDLLog.SDL_LOG_PRIORITY_VERBOSE, "Verbose",
-            SDLLog.SDL_LOG_PRIORITY_DEBUG, "Debug",
-            SDLLog.SDL_LOG_PRIORITY_INFO, "Info",
-            SDLLog.SDL_LOG_PRIORITY_WARN, "Warn",
-            SDLLog.SDL_LOG_PRIORITY_ERROR, "Error",
-            SDLLog.SDL_LOG_PRIORITY_CRITICAL, "Critical"
+        SDLLog.SDL_LOG_PRIORITY_INVALID, "Invalid",
+        SDLLog.SDL_LOG_PRIORITY_TRACE, "Trace",
+        SDLLog.SDL_LOG_PRIORITY_VERBOSE, "Verbose",
+        SDLLog.SDL_LOG_PRIORITY_DEBUG, "Debug",
+        SDLLog.SDL_LOG_PRIORITY_INFO, "Info",
+        SDLLog.SDL_LOG_PRIORITY_WARN, "Warn",
+        SDLLog.SDL_LOG_PRIORITY_ERROR, "Error",
+        SDLLog.SDL_LOG_PRIORITY_CRITICAL, "Critical"
     );
 
     @Override

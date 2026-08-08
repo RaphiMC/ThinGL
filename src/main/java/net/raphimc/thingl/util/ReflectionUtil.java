@@ -20,7 +20,10 @@ package net.raphimc.thingl.util;
 import java.lang.reflect.Field;
 import java.util.function.Function;
 
-public class ReflectionUtil {
+public final class ReflectionUtil {
+
+    private ReflectionUtil() {
+    }
 
     public static Function<Object, Object> createGetter(final String className, final String fieldName) {
         try {
@@ -30,13 +33,13 @@ public class ReflectionUtil {
             return obj -> {
                 try {
                     return field.get(obj);
-                } catch (IllegalAccessException e) {
+                } catch (final IllegalAccessException e) {
                     throw new RuntimeException("Failed to access field: " + fieldName, e);
                 }
             };
-        } catch (ClassNotFoundException e) {
+        } catch (final ClassNotFoundException e) {
             throw new RuntimeException("Class not found: " + className, e);
-        } catch (NoSuchFieldException e) {
+        } catch (final NoSuchFieldException e) {
             throw new RuntimeException("Field not found: " + fieldName, e);
         }
     }

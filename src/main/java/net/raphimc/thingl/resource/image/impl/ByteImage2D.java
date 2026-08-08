@@ -47,7 +47,7 @@ public class ByteImage2D extends Image {
             if (image.getPixelDataType() != GL11C.GL_UNSIGNED_BYTE) {
                 throw new IllegalArgumentException("Image pixel data type must be GL_UNSIGNED_BYTE");
             }
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             this.free();
             throw e;
         }
@@ -242,7 +242,9 @@ public class ByteImage2D extends Image {
         if (this.getPixelFormat() == GL11C.GL_RGBA || this.getPixelFormat() == GL12C.GL_BGRA) {
             for (long i = 0; i < pixels.getSize(); i += 4) {
                 final int a = pixels.getByte(i + 3) & 0xFF;
-                if (a == 0) continue;
+                if (a == 0) {
+                    continue;
+                }
                 final int c1 = pixels.getByte(i) & 0xFF;
                 final int c2 = pixels.getByte(i + 1) & 0xFF;
                 final int c3 = pixels.getByte(i + 2) & 0xFF;
@@ -455,8 +457,7 @@ public class ByteImage2D extends Image {
             protected int convert(final int r, final int g, final int b) {
                 return b;
             }
-        },
-        ;
+        };
 
         protected abstract int convert(final int r, final int g, final int b);
 

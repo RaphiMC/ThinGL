@@ -59,7 +59,7 @@ public class GifImage extends AnimatedImage {
                 pixels.putInt((long) i * Integer.BYTES, frameData[i]);
             }
             return frame.getDelay() * 10;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
     }
@@ -73,7 +73,7 @@ public class GifImage extends AnimatedImage {
     protected void free0() {
         try {
             this.gifReader.close();
-        } catch (IOException _) {
+        } catch (final IOException _) {
         }
         super.free0();
     }

@@ -40,7 +40,7 @@ public abstract class ResizingFramebuffer extends Framebuffer {
         this(colorAttachmentSupplier, depthStencilAttachmentSupplier, depthStencilAttachmentSupplier);
     }
 
-    protected ResizingFramebuffer(final BiFunction<Integer, Integer, ImageStorage> colorAttachmentSupplier, final BiFunction<Integer, Integer, ImageStorage> depthAttachmentSupplier, BiFunction<Integer, Integer, ImageStorage> stencilAttachmentSupplier) {
+    protected ResizingFramebuffer(final BiFunction<Integer, Integer, ImageStorage> colorAttachmentSupplier, final BiFunction<Integer, Integer, ImageStorage> depthAttachmentSupplier, final BiFunction<Integer, Integer, ImageStorage> stencilAttachmentSupplier) {
         this.colorAttachmentSupplier = colorAttachmentSupplier;
         this.depthAttachmentSupplier = depthAttachmentSupplier;
         this.stencilAttachmentSupplier = stencilAttachmentSupplier;
@@ -71,7 +71,7 @@ public abstract class ResizingFramebuffer extends Framebuffer {
             }
             this.checkStatus();
             this.clear();
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             this.freeFully();
             throw e;
         }

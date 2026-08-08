@@ -62,13 +62,15 @@ public record TextRun(FontInstance font, List<TextSegment> segments) {
     }
 
     public void compact() {
-        for (int i = 1; i < this.segments.size(); i++) {
+        int i = 1;
+        while (i < this.segments.size()) {
             final TextSegment previousSegment = this.segments.get(i - 1);
             final TextSegment currentSegment = this.segments.get(i);
             if (currentSegment.style().equals(previousSegment.style())) {
                 this.segments.set(i - 1, new TextSegment(previousSegment.text() + currentSegment.text(), currentSegment.style()));
                 this.segments.remove(i);
-                i--;
+            } else {
+                i++;
             }
         }
     }

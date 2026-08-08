@@ -18,7 +18,13 @@
 package net.raphimc.thingl.gl.program;
 
 import net.lenni0451.commons.lazy.Lazy;
-import net.raphimc.thingl.gl.program.post.impl.*;
+import net.raphimc.thingl.gl.program.post.impl.ColorTweakProgram;
+import net.raphimc.thingl.gl.program.post.impl.GaussianBlurProgram;
+import net.raphimc.thingl.gl.program.post.impl.KawaseBlurProgram;
+import net.raphimc.thingl.gl.program.post.impl.MSAAProgram;
+import net.raphimc.thingl.gl.program.post.impl.OutlineProgram;
+import net.raphimc.thingl.gl.program.post.impl.RainbowColorProgram;
+import net.raphimc.thingl.gl.program.post.impl.SingleColorProgram;
 import net.raphimc.thingl.gl.resource.program.Program;
 import net.raphimc.thingl.gl.resource.shader.Shader;
 import net.raphimc.thingl.gl.text.SDFTextRenderer;
@@ -253,7 +259,7 @@ public class Programs {
                         if (lazy.isInitialized()) {
                             lazy.get().freeFully();
                         }
-                    } catch (IllegalAccessException e) {
+                    } catch (final IllegalAccessException e) {
                         throw new RuntimeException("Failed to free program", e);
                     }
                 }
@@ -303,7 +309,7 @@ public class Programs {
                     return innerPreprocessor.getCode();
                 });
                 return preprocessor.getCode();
-            } catch (Throwable e) {
+            } catch (final Throwable e) {
                 throw new RuntimeException("Failed to process shader file: " + path, e);
             }
         }

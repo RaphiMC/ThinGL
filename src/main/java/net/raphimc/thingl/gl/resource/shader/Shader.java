@@ -19,7 +19,12 @@ package net.raphimc.thingl.gl.resource.shader;
 
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.resource.GLObject;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL20C;
+import org.lwjgl.opengl.GL32C;
+import org.lwjgl.opengl.GL40C;
+import org.lwjgl.opengl.GL43C;
+import org.lwjgl.opengl.NVMeshShader;
 
 public class Shader extends GLObject {
 
@@ -32,7 +37,7 @@ public class Shader extends GLObject {
         try {
             this.setSource(source);
             this.compile();
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             this.free();
             throw e;
         }
@@ -105,8 +110,11 @@ public class Shader extends GLObject {
         TESSELLATION_EVALUATION(GL40C.GL_TESS_EVALUATION_SHADER, "Tessellation evaluation Shader", "tese"),
         COMPUTE(GL43C.GL_COMPUTE_SHADER, "Compute Shader", "comp"),
         NV_MESH(NVMeshShader.GL_MESH_SHADER_NV, "NVIDIA Mesh Shader", "mesh"),
-        NV_TASK(NVMeshShader.GL_TASK_SHADER_NV, "NVIDIA Task Shader", "task"),
-        ;
+        NV_TASK(NVMeshShader.GL_TASK_SHADER_NV, "NVIDIA Task Shader", "task");
+
+        private final int glType;
+        private final String displayName;
+        private final String fileExtension;
 
         public static Type fromGlType(final int glType) {
             for (Type type : values()) {
@@ -117,10 +125,6 @@ public class Shader extends GLObject {
 
             throw new IllegalArgumentException("Unknown shader type: " + glType);
         }
-
-        private final int glType;
-        private final String displayName;
-        private final String fileExtension;
 
         Type(final int glType, final String displayName, final String fileExtension) {
             this.glType = glType;

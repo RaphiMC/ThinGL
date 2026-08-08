@@ -48,7 +48,7 @@ public abstract class WindowInterface {
         for (Runnable action : this.actions) {
             try {
                 action.run();
-            } catch (Throwable e) {
+            } catch (final Throwable e) {
                 ThinGL.LOGGER.error("Exception while invoking action", e);
             }
         }
@@ -125,7 +125,7 @@ public abstract class WindowInterface {
         for (IntIntBiConsumer callback : this.framebufferResizeCallbacks) {
             try {
                 callback.accept(width, height);
-            } catch (Throwable e) {
+            } catch (final Throwable e) {
                 ThinGL.LOGGER.error("Exception while invoking framebuffer resize callback", e);
             }
         }

@@ -19,7 +19,13 @@ package net.raphimc.thingl.text.markup.handler;
 
 import net.raphimc.thingl.text.TextStyle;
 import net.raphimc.thingl.text.markup.element.Element;
-import net.raphimc.thingl.text.markup.element.style.*;
+import net.raphimc.thingl.text.markup.element.style.BoldElement;
+import net.raphimc.thingl.text.markup.element.style.ColorElement;
+import net.raphimc.thingl.text.markup.element.style.ItalicElement;
+import net.raphimc.thingl.text.markup.element.style.OutlineElement;
+import net.raphimc.thingl.text.markup.element.style.ShadowElement;
+import net.raphimc.thingl.text.markup.element.style.StrikethroughElement;
+import net.raphimc.thingl.text.markup.element.style.UnderlineElement;
 import net.raphimc.thingl.text.markup.parser.MarkupEventHandler;
 
 import java.util.HashMap;
@@ -68,7 +74,7 @@ public abstract class TextMarkupHandler implements MarkupEventHandler {
             } else {
                 throw new IllegalArgumentException("Unknown element: '" + name + "'");
             }
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             throw new RuntimeException("Error handling '" + name + "' element: " + e.getMessage(), e);
         }
 

@@ -19,8 +19,18 @@ package net.raphimc.thingl.rendering.bufferbuilder;
 
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.memory.MemoryBuffer;
-import org.joml.*;
 import org.joml.Math;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
+import org.joml.Vector2d;
+import org.joml.Vector2f;
+import org.joml.Vector2i;
+import org.joml.Vector3d;
+import org.joml.Vector3f;
+import org.joml.Vector3i;
+import org.joml.Vector4d;
+import org.joml.Vector4f;
+import org.joml.Vector4i;
 
 public abstract class DataBufferBuilder<T extends DataBufferBuilder<T>> extends BufferBuilder<T> {
 
@@ -88,6 +98,29 @@ public abstract class DataBufferBuilder<T extends DataBufferBuilder<T>> extends 
         return (T) this;
     }
 
+    public T writeVector3f(final Matrix4f positionMatrix, final Vector3f vector) {
+        return this.writeVector3f(positionMatrix, vector.x, vector.y, vector.z);
+    }
+
+    public T writeVector3f(final Matrix4f positionMatrix, final Vector2f vector, final float z) {
+        return this.writeVector3f(positionMatrix, vector.x, vector.y, z);
+    }
+
+    public T writeVector3f(final Matrix4f positionMatrix, final float x, final float y, final float z) {
+        // Code from Vector3f#mulPosition
+        if ((positionMatrix.properties() & Matrix4fc.PROPERTY_IDENTITY) != 0) {
+            return this.writeVector3f(x, y, z);
+        } else if ((positionMatrix.properties() & Matrix4fc.PROPERTY_TRANSLATION) != 0) {
+            return this.writeVector3f(x + positionMatrix.m30(), y + positionMatrix.m31(), z + positionMatrix.m32());
+        } else {
+            return this.writeVector3f(
+                Math.fma(positionMatrix.m00(), x, Math.fma(positionMatrix.m10(), y, Math.fma(positionMatrix.m20(), z, positionMatrix.m30()))),
+                Math.fma(positionMatrix.m01(), x, Math.fma(positionMatrix.m11(), y, Math.fma(positionMatrix.m21(), z, positionMatrix.m31()))),
+                Math.fma(positionMatrix.m02(), x, Math.fma(positionMatrix.m12(), y, Math.fma(positionMatrix.m22(), z, positionMatrix.m32())))
+            );
+        }
+    }
+
     public T writeVector4f(final Vector4f vector) {
         return this.writeVector4f(vector.x, vector.y, vector.z, vector.w);
     }
@@ -122,29 +155,6 @@ public abstract class DataBufferBuilder<T extends DataBufferBuilder<T>> extends 
     public T writeVector4d(final double x, final double y, final double z, final double w) {
         this.memoryBuffer.writeVector4d(x, y, z, w);
         return (T) this;
-    }
-
-    public T writeVector3f(final Matrix4f positionMatrix, final Vector3f vector) {
-        return this.writeVector3f(positionMatrix, vector.x, vector.y, vector.z);
-    }
-
-    public T writeVector3f(final Matrix4f positionMatrix, final Vector2f vector, final float z) {
-        return this.writeVector3f(positionMatrix, vector.x, vector.y, z);
-    }
-
-    public T writeVector3f(final Matrix4f positionMatrix, final float x, final float y, final float z) {
-        // Code from Vector3f#mulPosition
-        if ((positionMatrix.properties() & Matrix4fc.PROPERTY_IDENTITY) != 0) {
-            return this.writeVector3f(x, y, z);
-        } else if ((positionMatrix.properties() & Matrix4fc.PROPERTY_TRANSLATION) != 0) {
-            return this.writeVector3f(x + positionMatrix.m30(), y + positionMatrix.m31(), z + positionMatrix.m32());
-        } else {
-            return this.writeVector3f(
-                    Math.fma(positionMatrix.m00(), x, Math.fma(positionMatrix.m10(), y, Math.fma(positionMatrix.m20(), z, positionMatrix.m30()))),
-                    Math.fma(positionMatrix.m01(), x, Math.fma(positionMatrix.m11(), y, Math.fma(positionMatrix.m21(), z, positionMatrix.m31()))),
-                    Math.fma(positionMatrix.m02(), x, Math.fma(positionMatrix.m12(), y, Math.fma(positionMatrix.m22(), z, positionMatrix.m32())))
-            );
-        }
     }
 
     public T writeColor(final int r, final int g, final int b, final int a) {

@@ -61,7 +61,7 @@ public class Image extends Resource {
             if (pixels.getSize() < (long) width * height * depth * this.bytesPerPixel) {
                 throw new IllegalArgumentException("Pixel data is too small for the given width, height, depth and pixel format");
             }
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             this.free();
             throw e;
         }

@@ -31,7 +31,10 @@ import org.lwjgl.util.meshoptimizer.MeshOptimizer;
 
 import java.util.List;
 
-public class DrawBatchDataOptimizer {
+public final class DrawBatchDataOptimizer {
+
+    private DrawBatchDataOptimizer() {
+    }
 
     static {
         Capabilities.assertMeshOptimizerAvailable();

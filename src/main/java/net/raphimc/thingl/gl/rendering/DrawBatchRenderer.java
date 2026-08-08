@@ -32,7 +32,10 @@ import org.joml.Matrix4f;
 import java.util.List;
 import java.util.Map;
 
-public class DrawBatchRenderer {
+public final class DrawBatchRenderer {
+
+    private DrawBatchRenderer() {
+    }
 
     public static void render(final UploadedDrawBatchData uploadedDrawBatchData, final Matrix4f modelMatrix) {
         final DrawBatch drawBatch = uploadedDrawBatchData.drawBatch();

@@ -23,7 +23,7 @@ import net.raphimc.thingl.text.markup.element.Element;
 public class StrikethroughElement extends Element<TextStyle> {
 
     public StrikethroughElement() {
-        this.attributes.put(null, (style, value) -> style.withStrikethrough(true));
+        this.attributes.put(null, (style, _) -> style.withStrikethrough(true));
         this.attributes.put("enabled", (style, value) -> style.withStrikethrough(Boolean.parseBoolean(value)));
     }
 

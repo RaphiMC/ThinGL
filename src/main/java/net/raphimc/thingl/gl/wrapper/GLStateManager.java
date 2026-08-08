@@ -49,10 +49,10 @@ public class GLStateManager {
 
     public BlendFunc getBlendFunc() {
         return new BlendFunc(
-                ThinGL.glBackend().getInteger(GL14C.GL_BLEND_SRC_RGB),
-                ThinGL.glBackend().getInteger(GL14C.GL_BLEND_DST_RGB),
-                ThinGL.glBackend().getInteger(GL14C.GL_BLEND_SRC_ALPHA),
-                ThinGL.glBackend().getInteger(GL14C.GL_BLEND_DST_ALPHA)
+            ThinGL.glBackend().getInteger(GL14C.GL_BLEND_SRC_RGB),
+            ThinGL.glBackend().getInteger(GL14C.GL_BLEND_DST_RGB),
+            ThinGL.glBackend().getInteger(GL14C.GL_BLEND_SRC_ALPHA),
+            ThinGL.glBackend().getInteger(GL14C.GL_BLEND_DST_ALPHA)
         );
     }
 
@@ -92,9 +92,9 @@ public class GLStateManager {
         final int[] colorMask = new int[4];
         ThinGL.glBackend().getIntegerv(GL11C.GL_COLOR_WRITEMASK, colorMask);
         return new ColorMask(colorMask[0] != GL11C.GL_FALSE,
-                colorMask[1] != GL11C.GL_FALSE,
-                colorMask[2] != GL11C.GL_FALSE,
-                colorMask[3] != GL11C.GL_FALSE);
+            colorMask[1] != GL11C.GL_FALSE,
+            colorMask[2] != GL11C.GL_FALSE,
+            colorMask[3] != GL11C.GL_FALSE);
     }
 
     public void setColorMask(final ColorMask colorMask) {
@@ -115,8 +115,8 @@ public class GLStateManager {
 
     public StencilMask getStencilMask() {
         return new StencilMask(
-                ThinGL.glBackend().getInteger(GL11C.GL_STENCIL_WRITEMASK),
-                ThinGL.glBackend().getInteger(GL20C.GL_STENCIL_BACK_WRITEMASK)
+            ThinGL.glBackend().getInteger(GL11C.GL_STENCIL_WRITEMASK),
+            ThinGL.glBackend().getInteger(GL20C.GL_STENCIL_BACK_WRITEMASK)
         );
     }
 
@@ -199,8 +199,8 @@ public class GLStateManager {
 
     public PolygonOffset getPolygonOffset() {
         return new PolygonOffset(
-                ThinGL.glBackend().getFloat(GL11C.GL_POLYGON_OFFSET_FACTOR),
-                ThinGL.glBackend().getFloat(GL11C.GL_POLYGON_OFFSET_UNITS)
+            ThinGL.glBackend().getFloat(GL11C.GL_POLYGON_OFFSET_FACTOR),
+            ThinGL.glBackend().getFloat(GL11C.GL_POLYGON_OFFSET_UNITS)
         );
     }
 

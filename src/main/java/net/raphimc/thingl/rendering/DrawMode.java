@@ -30,8 +30,12 @@ public enum DrawMode {
     TRIANGLE_FAN(GL11C.GL_TRIANGLE_FAN, "Triangle Fan", true, false),
     QUADS(GL11C.GL_TRIANGLES, "Quads", false, true),
     INDEXED_LINES(GL11C.GL_LINES, "Indexed Lines", false, true),
-    INDEXED_TRIANGLES(GL11C.GL_TRIANGLES, "Indexed Triangles", false, true),
-    ;
+    INDEXED_TRIANGLES(GL11C.GL_TRIANGLES, "Indexed Triangles", false, true);
+
+    private final int glMode;
+    private final String displayName;
+    private final boolean connectedPrimitives;
+    private final boolean indexed;
 
     public static DrawMode fromGlMode(final int glMode) {
         for (DrawMode type : values()) {
@@ -42,11 +46,6 @@ public enum DrawMode {
 
         throw new IllegalArgumentException("Unknown draw mode: " + glMode);
     }
-
-    private final int glMode;
-    private final String displayName;
-    private final boolean connectedPrimitives;
-    private final boolean indexed;
 
     DrawMode(final int glMode, final String displayName, final boolean connectedPrimitives, final boolean indexed) {
         this.glMode = glMode;

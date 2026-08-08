@@ -63,15 +63,17 @@ public abstract class GLObject {
     }
 
     @Override
-    public final boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        GLObject that = (GLObject) o;
-        return glId == that.glId;
+    public final boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final GLObject that = (GLObject) o;
+        return this.glId == that.glId;
     }
 
     @Override
     public final int hashCode() {
-        return Objects.hashCode(glId);
+        return Objects.hashCode(this.glId);
     }
 
     protected final void assertAllocated() {

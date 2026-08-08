@@ -49,7 +49,7 @@ public class StringReader {
     }
 
     public char peek() {
-        return peek(0);
+        return this.peek(0);
     }
 
     public char peek(final int offset) {

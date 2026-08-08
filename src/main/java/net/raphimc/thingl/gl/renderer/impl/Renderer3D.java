@@ -48,16 +48,16 @@ public class Renderer3D extends Renderer {
     private static final byte ALL_FACES = 0b00111111;
 
     protected final IntFunction<DrawBatch> skyBox = CacheUtil.memoizeInt(textureId -> new DrawBatch.Builder(DrawBatches.TEXTURE_SNIPPET)
-            .program(() -> ThinGL.programs().getSkyBox())
-            .vertexDataLayout(DrawBatches.POSITION_LAYOUT)
-            .appendSetupAction(p -> {
-                ThinGL.glStateStack().enable(GL32C.GL_TEXTURE_CUBE_MAP_SEAMLESS);
-                ThinGL.glStateStack().pushDepthMask();
-                ThinGL.glStateManager().setDepthMask(false);
-                p.setUniformSampler("u_Texture", textureId);
-            })
-            .prependCleanupAction(() -> ThinGL.glStateStack().popDepthMask())
-            .build());
+        .program(() -> ThinGL.programs().getSkyBox())
+        .vertexDataLayout(DrawBatches.POSITION_LAYOUT)
+        .appendSetupAction(p -> {
+            ThinGL.glStateStack().enable(GL32C.GL_TEXTURE_CUBE_MAP_SEAMLESS);
+            ThinGL.glStateStack().pushDepthMask();
+            ThinGL.glStateManager().setDepthMask(false);
+            p.setUniformSampler("u_Texture", textureId);
+        })
+        .prependCleanupAction(() -> ThinGL.glStateStack().popDepthMask())
+        .build());
 
     public void filledBox(final Matrix4f positionMatrix, final AABBd aabb, final Color color) {
         this.filledBox(positionMatrix, (float) aabb.minX, (float) aabb.minY, (float) aabb.minZ, (float) aabb.maxX, (float) aabb.maxY, (float) aabb.maxZ, color);
@@ -71,7 +71,7 @@ public class Renderer3D extends Renderer {
         this.filledBox(positionMatrix, aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, color);
     }
 
-    public void filledBox(final Matrix4f positionMatrix, final float minX, float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final Color color) {
+    public void filledBox(final Matrix4f positionMatrix, final float minX, final float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final Color color) {
         this.filledBox(positionMatrix, minX, minY, minZ, maxX, maxY, maxZ, color, (byte) 0);
     }
 
@@ -87,8 +87,10 @@ public class Renderer3D extends Renderer {
         this.filledBox(positionMatrix, aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, color, excludedFaces);
     }
 
-    public void filledBox(final Matrix4f positionMatrix, final float minX, float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final Color color, final byte excludedFaces) {
-        if (excludedFaces == ALL_FACES) return;
+    public void filledBox(final Matrix4f positionMatrix, final float minX, final float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final Color color, final byte excludedFaces) {
+        if (excludedFaces == ALL_FACES) {
+            return;
+        }
         final int abgrColor = color.toABGR();
 
         if ((excludedFaces & FACE_DOWN) == 0) {
@@ -125,7 +127,7 @@ public class Renderer3D extends Renderer {
         this.outlinedBox(positionMatrix, aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, lineWidth, color);
     }
 
-    public void outlinedBox(final Matrix4f positionMatrix, final float minX, float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final float lineWidth, final Color color) {
+    public void outlinedBox(final Matrix4f positionMatrix, final float minX, final float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final float lineWidth, final Color color) {
         this.outlinedBox(positionMatrix, minX, minY, minZ, maxX, maxY, maxZ, lineWidth, color, (byte) 0);
     }
 
@@ -141,8 +143,10 @@ public class Renderer3D extends Renderer {
         this.outlinedBox(positionMatrix, aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, lineWidth, color, excludedFaces);
     }
 
-    public void outlinedBox(final Matrix4f positionMatrix, final float minX, float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final float lineWidth, final Color color, final byte excludedFaces) {
-        if (excludedFaces == ALL_FACES) return;
+    public void outlinedBox(final Matrix4f positionMatrix, final float minX, final float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final float lineWidth, final Color color, final byte excludedFaces) {
+        if (excludedFaces == ALL_FACES) {
+            return;
+        }
         final int abgrColor = color.toABGR();
 
         if ((excludedFaces & FACE_DOWN) == 0) {

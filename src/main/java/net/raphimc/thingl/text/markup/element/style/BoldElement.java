@@ -23,7 +23,7 @@ import net.raphimc.thingl.text.markup.element.Element;
 public class BoldElement extends Element<TextStyle> {
 
     public BoldElement() {
-        this.attributes.put(null, (style, value) -> style.withBold(true));
+        this.attributes.put(null, (style, _) -> style.withBold(true));
         this.attributes.put("enabled", (style, value) -> style.withBold(Boolean.parseBoolean(value)));
         this.attributes.put("strength", (style, value) -> style.withBoldnessStrength(Float.parseFloat(value)));
     }

@@ -19,8 +19,18 @@ package net.raphimc.thingl.util.glsl;
 
 import io.github.ocelot.glslprocessor.api.node.GlslCompoundNode;
 import io.github.ocelot.glslprocessor.api.node.GlslNode;
-import io.github.ocelot.glslprocessor.api.node.branch.*;
-import io.github.ocelot.glslprocessor.api.node.expression.*;
+import io.github.ocelot.glslprocessor.api.node.branch.GlslCaseLabelNode;
+import io.github.ocelot.glslprocessor.api.node.branch.GlslForLoopNode;
+import io.github.ocelot.glslprocessor.api.node.branch.GlslIfNode;
+import io.github.ocelot.glslprocessor.api.node.branch.GlslReturnNode;
+import io.github.ocelot.glslprocessor.api.node.branch.GlslSwitchNode;
+import io.github.ocelot.glslprocessor.api.node.branch.GlslWhileLoopNode;
+import io.github.ocelot.glslprocessor.api.node.expression.GlslAssignmentNode;
+import io.github.ocelot.glslprocessor.api.node.expression.GlslBitwiseNode;
+import io.github.ocelot.glslprocessor.api.node.expression.GlslCompareNode;
+import io.github.ocelot.glslprocessor.api.node.expression.GlslConditionalNode;
+import io.github.ocelot.glslprocessor.api.node.expression.GlslOperationNode;
+import io.github.ocelot.glslprocessor.api.node.expression.GlslUnaryNode;
 import io.github.ocelot.glslprocessor.api.node.function.GlslFunctionNode;
 import io.github.ocelot.glslprocessor.api.node.function.GlslInvokeFunctionNode;
 import io.github.ocelot.glslprocessor.api.node.variable.GlslGetArrayNode;
@@ -31,7 +41,10 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-public class GlslNodeMutator {
+public final class GlslNodeMutator {
+
+    private GlslNodeMutator() {
+    }
 
     public static void mutate(final List<GlslNode> nodes, final Function<GlslNode, GlslNode> mutator) {
         if (nodes != null) {

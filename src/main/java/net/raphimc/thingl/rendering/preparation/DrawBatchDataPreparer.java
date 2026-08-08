@@ -39,7 +39,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class DrawBatchDataPreparer {
+public final class DrawBatchDataPreparer {
+
+    private DrawBatchDataPreparer() {
+    }
 
     public static PreparedDrawBatchData prepareDrawBatchData(final DrawBatch drawBatch, final DrawBatchDataHolder drawBatchDataHolder) {
         final VertexBufferBuilder vertexBufferBuilder = drawBatchDataHolder.getVertexBufferBuilder();

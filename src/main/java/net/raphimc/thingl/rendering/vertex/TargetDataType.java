@@ -22,6 +22,6 @@ public enum TargetDataType {
     INT,
     FLOAT,
     FLOAT_NORMALIZED,
-    DOUBLE,
+    DOUBLE
 
 }

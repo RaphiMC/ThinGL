@@ -28,7 +28,10 @@ import java.io.PrintStream;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class GlDebugMessageCallback {
+public final class GlDebugMessageCallback {
+
+    private GlDebugMessageCallback() {
+    }
 
     public static Callback install(final boolean appendStackTrace) {
         final Callback callback = GLUtil.setupDebugMessageCallback(new PrintStream(APIUtil.DEBUG_STREAM) {
@@ -36,7 +39,7 @@ public class GlDebugMessageCallback {
             private final AtomicLong lastMessageTime = new AtomicLong();
 
             @Override
-            public void print(Object obj) {
+            public void print(final Object obj) {
                 super.print(obj);
 
                 if (appendStackTrace) {

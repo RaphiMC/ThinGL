@@ -28,7 +28,7 @@ import org.lwjgl.opengl.GL12C;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-import java.awt.*;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -107,7 +107,7 @@ public class AwtWebpImage extends AnimatedImage {
             }
 
             return duration;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
     }
@@ -123,11 +123,11 @@ public class AwtWebpImage extends AnimatedImage {
         this.webpReader.dispose();
         try {
             this.imageInputStream.close();
-        } catch (IOException _) {
+        } catch (final IOException _) {
         }
         try {
             this.imageStream.close();
-        } catch (IOException _) {
+        } catch (final IOException _) {
         }
         super.free0();
     }

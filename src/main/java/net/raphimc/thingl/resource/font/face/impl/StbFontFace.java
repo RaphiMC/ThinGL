@@ -69,7 +69,7 @@ public class StbFontFace extends FontFace {
             this.ascent = ascent[0];
             this.descent = descent[0];
             this.lineGap = lineGap[0];
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             this.free();
             throw e;
         }

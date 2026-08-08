@@ -33,7 +33,9 @@ public class ScissorStack {
         ThinGL.get().addFrameFinishedCallback(() -> {
             if (!this.stack.isEmpty()) {
                 ThinGL.LOGGER.warn("ScissorStack was not empty at the end of the frame!");
-                while (!this.stack.isEmpty()) this.pop();
+                while (!this.stack.isEmpty()) {
+                    this.pop();
+                }
             }
         });
     }
@@ -81,7 +83,9 @@ public class ScissorStack {
     }
 
     public boolean intersectsRectangle(final Matrix4f positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr) {
-        if (this.stack.isEmpty()) return true;
+        if (this.stack.isEmpty()) {
+            return true;
+        }
 
         final Rectanglei rectangle = RenderMathUtil.getWindowRectangle(positionMatrix, xtl, ytl, xbr, ybr);
         return this.stack.peek().intersectsRectangle(rectangle);
@@ -92,7 +96,9 @@ public class ScissorStack {
     }
 
     public boolean containsRectangle(final Matrix4f positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr) {
-        if (this.stack.isEmpty()) return true;
+        if (this.stack.isEmpty()) {
+            return true;
+        }
 
         final Rectanglei rectangle = RenderMathUtil.getWindowRectangle(positionMatrix, xtl, ytl, xbr, ybr);
         return this.stack.peek().containsRectangle(rectangle);

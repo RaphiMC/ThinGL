@@ -119,11 +119,11 @@ public class StbFontInstance extends FontInstance {
         final StbFontFace.GlyphHMetrics hMetrics = this.getFace().getGlyphHMetrics(glyphIndex);
         final Rectanglei box = this.getFace().getGlyphBox(glyphIndex);
         return new GlyphMetrics(
-                box.lengthX() * this.scale,
-                box.lengthY() * this.scale,
-                hMetrics.advanceWidth() * this.scale,
-                box.minX * this.scale,
-                -box.maxY * this.scale
+            box.lengthX() * this.scale,
+            box.lengthY() * this.scale,
+            hMetrics.advanceWidth() * this.scale,
+            box.minX * this.scale,
+            -box.maxY * this.scale
         );
     }
 

@@ -23,24 +23,27 @@ import net.lenni0451.commons.color.Color;
 import java.util.Locale;
 import java.util.Map;
 
-public class ConstantColorParser {
+public final class ConstantColorParser {
 
     private static final Map<String, Color> COLORS = Maps.hashMap(
-            "transparent", Color.TRANSPARENT,
-            "black", Color.BLACK,
-            "light_gray", Color.LIGHT_GRAY,
-            "gray", Color.GRAY,
-            "dark_gray", Color.DARK_GRAY,
-            "white", Color.WHITE,
-            "red", Color.RED,
-            "green", Color.GREEN,
-            "blue", Color.BLUE,
-            "orange", Color.ORANGE,
-            "yellow", Color.YELLOW,
-            "cyan", Color.CYAN,
-            "pink", Color.PINK,
-            "magenta", Color.MAGENTA
+        "transparent", Color.TRANSPARENT,
+        "black", Color.BLACK,
+        "light_gray", Color.LIGHT_GRAY,
+        "gray", Color.GRAY,
+        "dark_gray", Color.DARK_GRAY,
+        "white", Color.WHITE,
+        "red", Color.RED,
+        "green", Color.GREEN,
+        "blue", Color.BLUE,
+        "orange", Color.ORANGE,
+        "yellow", Color.YELLOW,
+        "cyan", Color.CYAN,
+        "pink", Color.PINK,
+        "magenta", Color.MAGENTA
     );
+
+    private ConstantColorParser() {
+    }
 
     public static Color parse(final String value) {
         final Color color = COLORS.get(value.toLowerCase(Locale.ROOT));

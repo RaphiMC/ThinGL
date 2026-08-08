@@ -68,8 +68,7 @@ public class RainbowColorProgram extends AuxInputPostProcessingProgram {
         RIGHT_UP(1F, 1F),
         RIGHT_DOWN(1F, -1F),
         LEFT_UP(-1F, 1F),
-        LEFT_DOWN(-1F, -1F),
-        ;
+        LEFT_DOWN(-1F, -1F);
 
         private final float x;
         private final float y;

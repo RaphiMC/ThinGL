@@ -102,7 +102,7 @@ public class AwtGifImage extends AnimatedImage {
             }
 
             return delayTime;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
     }
@@ -118,11 +118,11 @@ public class AwtGifImage extends AnimatedImage {
         this.gifReader.dispose();
         try {
             this.imageInputStream.close();
-        } catch (IOException _) {
+        } catch (final IOException _) {
         }
         try {
             this.imageStream.close();
-        } catch (IOException _) {
+        } catch (final IOException _) {
         }
         super.free0();
     }

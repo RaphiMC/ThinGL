@@ -41,7 +41,7 @@ public class BitmapTextRenderer extends TextRenderer {
     }
 
     @Override
-    protected void renderTextSegment(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final FontInstance font, final ShapedTextSegment textSegment, final float x, final float y, float z) {
+    protected void renderTextSegment(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final FontInstance font, final ShapedTextSegment textSegment, final float x, final float y, final float z) {
         final ShaderBufferBuilder textDataBufferBuilder = multiDrawBatchDataHolder.getShaderStorageBufferBuilder(this.getDrawBatch(), "ssbo_TextData", Std430ShaderBufferBuilder.SUPPLIER).ensureInTopLevelArray();
         final TextStyle textStyle = textSegment.style();
         final float boldnessExpansion = font.getSize() * (textStyle.boldnessStrength() / 100F);

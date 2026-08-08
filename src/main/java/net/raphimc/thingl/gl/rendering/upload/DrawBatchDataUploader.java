@@ -32,7 +32,10 @@ import net.raphimc.thingl.resource.memory.Memory;
 
 import java.util.Map;
 
-public class DrawBatchDataUploader {
+public final class DrawBatchDataUploader {
+
+    private DrawBatchDataUploader() {
+    }
 
     public static UploadedDrawBatchData uploadTemporary(final PreparedDrawBatchData preparedDrawBatchData) {
         final DrawBatch drawBatch = preparedDrawBatchData.drawBatch();

@@ -92,7 +92,7 @@ public class FreeTypeFontFace extends FontFace {
             this.familyName = this.face.family_nameString();
             this.subFamilyName = this.face.style_nameString();
             this.glyphCount = Math.toIntExact(this.face.num_glyphs());
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             this.free();
             throw e;
         }
@@ -185,12 +185,12 @@ public class FreeTypeFontFace extends FontFace {
         }
     }
 
-    public class SizeContext implements AutoCloseable {
+    public final class SizeContext implements AutoCloseable {
 
         private SizeContext(final int size) {
             try {
                 FreeTypeFontFace.this.sizeContextSemaphore.acquire();
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new RuntimeException(e);
             }

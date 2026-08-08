@@ -25,15 +25,18 @@ import net.raphimc.thingl.util.MathUtil;
 import org.joml.Math;
 import org.joml.Matrix4f;
 
-public class Primitives {
+public final class Primitives {
+
+    private Primitives() {
+    }
 
     /**
      * <pre>
-     * (xtl, ytl, c) ───── (xbr, ytl, c)
-     * │                               │
-     * │                               │
-     * │                               │
-     * (xtl, ybr, c) ───── (xbr, ybr, c)
+     * (xtl, ytl, c) ----- (xbr, ytl, c)
+     * |                               |
+     * |                               |
+     * |                               |
+     * (xtl, ybr, c) ----- (xbr, ybr, c)
      * </pre>
      */
     public static void filledRectangle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xtl, final float ytl, final float xbr, final float ybr, final int c) {
@@ -42,11 +45,11 @@ public class Primitives {
 
     /**
      * <pre>
-     * (xtl, ytl, ctl) ───── (xbr, ytl, ctr)
-     * │                                   │
-     * │                                   │
-     * │                                   │
-     * (xtl, ybr, cbl) ───── (xbr, ybr, cbr)
+     * (xtl, ytl, ctl) ----- (xbr, ytl, ctr)
+     * |                                   |
+     * |                                   |
+     * |                                   |
+     * (xtl, ybr, cbl) ----- (xbr, ybr, cbr)
      * </pre>
      */
     public static void filledRectangle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xtl, final float ytl, final float xbr, final float ybr, final int cbl, final int cbr, final int ctr, final int ctl) {
@@ -55,11 +58,11 @@ public class Primitives {
 
     /**
      * <pre>
-     * (xtl, ytl, z, c) ───── (xbr, ytl, z, c)
-     * │                                     │
-     * │                                     │
-     * │                                     │
-     * (xtl, ybr, z, c) ───── (xbr, ybr, z, c)
+     * (xtl, ytl, z, c) ----- (xbr, ytl, z, c)
+     * |                                     |
+     * |                                     |
+     * |                                     |
+     * (xtl, ybr, z, c) ----- (xbr, ybr, z, c)
      * </pre>
      */
     public static void filledRectangle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xtl, final float ytl, final float xbr, final float ybr, final float z, final int c) {
@@ -68,25 +71,24 @@ public class Primitives {
 
     /**
      * <pre>
-     * (xtl, ytl, z, ctl) ───── (xbr, ytl, z, ctr)
-     * │                                         │
-     * │                                         │
-     * │                                         │
-     * (xtl, ybr, z, cbl) ───── (xbr, ybr, z, cbr)
+     * (xtl, ytl, z, ctl) ----- (xbr, ytl, z, ctr)
+     * |                                         |
+     * |                                         |
+     * |                                         |
+     * (xtl, ybr, z, cbl) ----- (xbr, ybr, z, cbr)
      * </pre>
      */
     public static void filledRectangle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xtl, final float ytl, final float xbr, final float ybr, final float z, final int cbl, final int cbr, final int ctr, final int ctl) {
         filledRectangle(positionMatrix, multiDrawBatchDataHolder, xtl, ybr, z, xbr, ybr, z, xbr, ytl, z, xtl, ytl, z, cbl, cbr, ctr, ctl);
     }
 
-
     /**
      * <pre>
-     * (xtl, ytl, c) ───── (xtr, ytr, c)
-     * │                               │
-     * │                               │
-     * │                               │
-     * (xbl, ybl, c) ───── (xbr, ybr, c)
+     * (xtl, ytl, c) ----- (xtr, ytr, c)
+     * |                               |
+     * |                               |
+     * |                               |
+     * (xbl, ybl, c) ----- (xbr, ybr, c)
      * </pre>
      */
     public static void filledRectangle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xbl, final float ybl, final float xbr, final float ybr, final float xtr, final float ytr, final float xtl, final float ytl, final int c) {
@@ -95,11 +97,11 @@ public class Primitives {
 
     /**
      * <pre>
-     * (xtl, ytl, ctl) ───── (xtr, ytr, ctr)
-     * │                                   │
-     * │                                   │
-     * │                                   │
-     * (xbl, ybl, cbl) ───── (xbr, ybr, cbr)
+     * (xtl, ytl, ctl) ----- (xtr, ytr, ctr)
+     * |                                   |
+     * |                                   |
+     * |                                   |
+     * (xbl, ybl, cbl) ----- (xbr, ybr, cbr)
      * </pre>
      */
     public static void filledRectangle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xbl, final float ybl, final float xbr, final float ybr, final float xtr, final float ytr, final float xtl, final float ytl, final int cbl, final int cbr, final int ctr, final int ctl) {
@@ -108,11 +110,11 @@ public class Primitives {
 
     /**
      * <pre>
-     * (xtl, ytl, ztl, c) ───── (xtr, ytr, ztr, c)
-     * │                                         │
-     * │                                         │
-     * │                                         │
-     * (xbl, ybl, zbl, c) ───── (xbr, ybr, zbr, c)
+     * (xtl, ytl, ztl, c) ----- (xtr, ytr, ztr, c)
+     * |                                         |
+     * |                                         |
+     * |                                         |
+     * (xbl, ybl, zbl, c) ----- (xbr, ybr, zbr, c)
      * </pre>
      */
     public static void filledRectangle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xbl, final float ybl, final float zbl, final float xbr, final float ybr, final float zbr, final float xtr, final float ytr, final float ztr, final float xtl, final float ytl, final float ztl, final int c) {
@@ -121,11 +123,11 @@ public class Primitives {
 
     /**
      * <pre>
-     * (xtl, ytl, ztl, ctl) ───── (xtr, ytr, ztr, ctr)
-     * │                                             │
-     * │                                             │
-     * │                                             │
-     * (xbl, ybl, zbl, cbl) ───── (xbr, ybr, zbr, cbr)
+     * (xtl, ytl, ztl, ctl) ----- (xtr, ytr, ztr, ctr)
+     * |                                             |
+     * |                                             |
+     * |                                             |
+     * (xbl, ybl, zbl, cbl) ----- (xbr, ybr, zbr, cbr)
      * </pre>
      */
     public static void filledRectangle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xbl, final float ybl, final float zbl, final float xbr, final float ybr, final float zbr, final float xtr, final float ytr, final float ztr, final float xtl, final float ytl, final float ztl, final int cbl, final int cbr, final int ctr, final int ctl) {
@@ -142,7 +144,7 @@ public class Primitives {
      *         (xm, ym, c)
      *         /         \
      *   /                    \
-     * (xl, yl, c) ───── (xr, yr, c)
+     * (xl, yl, c) ----- (xr, yr, c)
      * </pre>
      */
     public static void filledTriangle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xl, final float yl, final float xm, final float ym, final float xr, final float yr, final int c) {
@@ -154,7 +156,7 @@ public class Primitives {
      *           (xm, ym, cm)
      *           /         \
      *     /                    \
-     * (xl, yl, cl) ───── (xr, yr, cr)
+     * (xl, yl, cl) ----- (xr, yr, cr)
      * </pre>
      */
     public static void filledTriangle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xl, final float yl, final float xm, final float ym, final float xr, final float yr, final int cl, final int cm, final int cr) {
@@ -166,7 +168,7 @@ public class Primitives {
      *            (xm, ym, zm, c)
      *            /            \
      *      /                       \
-     * (xl, yl, zl, c) ───── (xr, yr, zr, c)
+     * (xl, yl, zl, c) ----- (xr, yr, zr, c)
      * </pre>
      */
     public static void filledTriangle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xl, final float yl, final float zl, final float xm, final float ym, final float zm, final float xr, final float yr, final float zr, final int c) {
@@ -178,7 +180,7 @@ public class Primitives {
      *           (xm, ym, zm, cm)
      *            /            \
      *      /                       \
-     * (xl, yl, zl, cl) ───── (xr, yr, zr, cr)
+     * (xl, yl, zl, cl) ----- (xr, yr, zr, cr)
      * </pre>
      */
     public static void filledTriangle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xl, final float yl, final float zl, final float xm, final float ym, final float zm, final float xr, final float yr, final float zr, final int cl, final int cm, final int cr) {
@@ -230,7 +232,7 @@ public class Primitives {
 
     /**
      * <pre>
-     * (x1, y1, c) ───── (x2, y2, c)
+     * (x1, y1, c) ----- (x2, y2, c)
      * </pre>
      */
     public static void rectLine(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float x2, final float y2, final float w, final int c) {
@@ -239,7 +241,7 @@ public class Primitives {
 
     /**
      * <pre>
-     * (x1, y1, c1) ───── (x2, y2, c2)
+     * (x1, y1, c1) ----- (x2, y2, c2)
      * </pre>
      */
     public static void rectLine(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float x2, final float y2, final float w, final int c1, final int c2) {
@@ -252,7 +254,7 @@ public class Primitives {
 
     /**
      * <pre>
-     * (x1, y1, c) ───── (x2, y2, c)
+     * (x1, y1, c) ----- (x2, y2, c)
      * </pre>
      */
     public static void glLine(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float x2, final float y2, final int c) {
@@ -261,7 +263,7 @@ public class Primitives {
 
     /**
      * <pre>
-     * (x1, y1, z1, c) ───── (x2, y2, z2, c)
+     * (x1, y1, z1, c) ----- (x2, y2, z2, c)
      * </pre>
      */
     public static void glLine(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float z1, final float x2, final float y2, final float z2, final int c) {
@@ -270,7 +272,7 @@ public class Primitives {
 
     /**
      * <pre>
-     * (x1, y1, c1) ───── (x2, y2, c2)
+     * (x1, y1, c1) ----- (x2, y2, c2)
      * </pre>
      */
     public static void glLine(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float x2, final float y2, final int c1, final int c2) {
@@ -279,7 +281,7 @@ public class Primitives {
 
     /**
      * <pre>
-     * (x1, y1, z1, c1) ───── (x2, y2, z2, c2)
+     * (x1, y1, z1, c1) ----- (x2, y2, z2, c2)
      * </pre>
      */
     public static void glLine(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float z1, final float x2, final float y2, final float z2, final int c1, final int c2) {
@@ -291,7 +293,7 @@ public class Primitives {
 
     /**
      * <pre>
-     * (x1, y1, c) ───── (x2, y2, c)
+     * (x1, y1, c) ----- (x2, y2, c)
      * </pre>
      */
     public static void line(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float x2, final float y2, final float width, final int c) {
@@ -300,7 +302,7 @@ public class Primitives {
 
     /**
      * <pre>
-     * (x1, y1, z1, c) ───── (x2, y2, z2, c)
+     * (x1, y1, z1, c) ----- (x2, y2, z2, c)
      * </pre>
      */
     public static void line(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float z1, final float x2, final float y2, final float z2, final float width, final int c) {
@@ -309,7 +311,7 @@ public class Primitives {
 
     /**
      * <pre>
-     * (x1, y1, c1) ───── (x2, y2, c2)
+     * (x1, y1, c1) ----- (x2, y2, c2)
      * </pre>
      */
     public static void line(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float x2, final float y2, final float width, final int c1, final int c2) {
@@ -318,7 +320,7 @@ public class Primitives {
 
     /**
      * <pre>
-     * (x1, y1, z1, c1) ───── (x2, y2, z2, c2)
+     * (x1, y1, z1, c1) ----- (x2, y2, z2, c2)
      * </pre>
      */
     public static void line(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float z1, final float x2, final float y2, final float z2, final float width, final int c1, final int c2) {
@@ -327,7 +329,6 @@ public class Primitives {
         vertexBufferBuilder.writeVector3f(positionMatrix, x1, y1, z1).writeColor(c1).writeFloat(width).endVertex();
         vertexBufferBuilder.writeVector3f(positionMatrix, x2, y2, z2).writeColor(c2).writeFloat(width).endVertex();
     }
-
 
     public static void _filledCircle(final Matrix4f positionMatrix, final VertexBufferBuilder vertexBufferBuilder, final float x, final float y, final float z, final float radius, final float degFrom, final float degTo, final int c) {
         _circle(degFrom, degTo, (xc, yc) -> vertexBufferBuilder.writeVector3f(positionMatrix, x + xc * radius, y + yc * radius, z).writeColor(c).endVertex());

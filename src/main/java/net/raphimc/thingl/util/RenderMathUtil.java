@@ -23,9 +23,12 @@ import org.joml.Matrix4fc;
 import org.joml.Vector3f;
 import org.joml.primitives.Rectanglei;
 
-public class RenderMathUtil {
+public final class RenderMathUtil {
 
     private static final Matrix4f IDENTITY_MATRIX = new Matrix4f();
+
+    private RenderMathUtil() {
+    }
 
     public static int getMaxMipMapLevels(final int width, final int height) {
         return getMaxMipMapLevels(Math.max(width, height));

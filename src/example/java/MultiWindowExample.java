@@ -33,12 +33,12 @@ import java.util.List;
 
 public class MultiWindowExample extends GLFWApplicationRunner {
 
-    public static void main(String[] args) {
-        new MultiWindowExample().run();
-    }
-
     public MultiWindowExample() {
         super(new Configuration());
+    }
+
+    void main() {
+        this.run();
     }
 
     @Override
@@ -75,20 +75,19 @@ public class MultiWindowExample extends GLFWApplicationRunner {
         throw new UnsupportedOperationException();
     }
 
-
-    private static class Window extends GLFWApplicationRunner {
+    private static final class Window extends GLFWApplicationRunner {
 
         private final int num;
         private FontInstance robotoRegular;
 
-        public Window(final int num) {
+        private Window(final int num) {
             super(new Configuration().setWindowTitle("ThinGL Example - Multi Window Example | Window #" + num).setWindowCentered(false).setExtendedDebugMode(true));
             this.num = num;
             this.createWindow();
             new Thread(() -> {
                 try {
                     this.runRenderLifecycle();
-                } catch (Throwable e) {
+                } catch (final Throwable e) {
                     this.launchFuture.completeExceptionally(e);
                     this.freeFuture.completeExceptionally(e);
                     throw e;
@@ -103,7 +102,7 @@ public class MultiWindowExample extends GLFWApplicationRunner {
             try {
                 final byte[] fontData = MultiWindowExample.class.getResourceAsStream("/fonts/Roboto-Regular.ttf").readAllBytes();
                 this.robotoRegular = new FreeTypeFontFace(fontData).getInstance(32);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new RuntimeException(e);
             }
         }

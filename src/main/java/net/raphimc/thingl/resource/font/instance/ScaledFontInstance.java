@@ -80,11 +80,11 @@ public class ScaledFontInstance extends FontInstance {
     protected GlyphMetrics loadGlyphMetrics(final int glyphIndex) {
         final GlyphMetrics baseMetrics = this.baseInstance.getGlyphMetrics(glyphIndex);
         return new GlyphMetrics(
-                baseMetrics.width() * this.scale,
-                baseMetrics.height() * this.scale,
-                baseMetrics.xAdvance() * this.scale,
-                baseMetrics.bearingX() * this.scale,
-                baseMetrics.bearingY() * this.scale
+            baseMetrics.width() * this.scale,
+            baseMetrics.height() * this.scale,
+            baseMetrics.xAdvance() * this.scale,
+            baseMetrics.bearingX() * this.scale,
+            baseMetrics.bearingY() * this.scale
         );
     }
 

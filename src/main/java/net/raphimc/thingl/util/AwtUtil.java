@@ -19,12 +19,17 @@ package net.raphimc.thingl.util;
 
 import org.joml.Vector2f;
 
-import java.awt.*;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.geom.PathIterator;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AwtUtil {
+public final class AwtUtil {
+
+    private AwtUtil() {
+    }
 
     public static void configureGraphics2DForMaximumQuality(final Graphics2D graphics) {
         // General

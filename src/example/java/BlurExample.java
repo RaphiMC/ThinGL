@@ -26,15 +26,15 @@ import java.io.IOException;
 
 public class BlurExample extends GLFWApplicationRunner {
 
-    public static void main(String[] args) {
-        new BlurExample().run();
-    }
+    private Texture2D texture;
 
     public BlurExample() {
         super(new Configuration().setWindowTitle("ThinGL Example - Blur").setExtendedDebugMode(true));
     }
 
-    private Texture2D texture;
+    void main() {
+        this.run();
+    }
 
     @Override
     protected void init() {
@@ -42,7 +42,7 @@ public class BlurExample extends GLFWApplicationRunner {
         try {
             final byte[] imageBytes = BlurExample.class.getResourceAsStream("/images/triangles-1430105_640.png").readAllBytes();
             this.texture = Texture2D.fromImage(imageBytes);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException(e);
         }
     }

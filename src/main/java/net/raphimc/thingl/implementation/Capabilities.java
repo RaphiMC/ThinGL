@@ -32,6 +32,10 @@ public class Capabilities {
     private static final boolean TWELVE_MONKEYS_WEBP_READER_AVAILABLE;
     private static final boolean JSVG_AVAILABLE;
 
+    private final int maxSamples;
+    private final int maxColorAttachments;
+    private final int maxArrayTextureLayers;
+
     static {
         STB_AVAILABLE = isClassPresent("org.lwjgl.stb.LibSTB");
         FREE_TYPE_AVAILABLE = isClassPresent("org.lwjgl.util.freetype.FreeType");
@@ -119,10 +123,6 @@ public class Capabilities {
         return JSVG_AVAILABLE;
     }
 
-    private final int maxSamples;
-    private final int maxColorAttachments;
-    private final int maxArrayTextureLayers;
-
     public Capabilities() {
         this.maxSamples = ThinGL.glBackend().getInteger(GL30C.GL_MAX_SAMPLES);
         this.maxColorAttachments = ThinGL.glBackend().getInteger(GL30C.GL_MAX_COLOR_ATTACHMENTS);
@@ -145,7 +145,7 @@ public class Capabilities {
         try {
             Class.forName(className, false, Capabilities.class.getClassLoader());
             return true;
-        } catch (Throwable e) {
+        } catch (final Throwable _) {
             return false;
         }
     }
@@ -154,7 +154,7 @@ public class Capabilities {
         try {
             runnable.run();
             return true;
-        } catch (Throwable e) {
+        } catch (final Throwable _) {
             return false;
         }
     }

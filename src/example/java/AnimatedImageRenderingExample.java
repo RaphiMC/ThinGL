@@ -26,16 +26,16 @@ import java.io.IOException;
 
 public class AnimatedImageRenderingExample extends GLFWApplicationRunner {
 
-    public static void main(String[] args) {
-        new AnimatedImageRenderingExample().run();
-    }
+    private SequencedTexture texture;
+    private long startTime;
 
     public AnimatedImageRenderingExample() {
         super(new Configuration().setWindowTitle("ThinGL Example - Animated Image rendering").setExtendedDebugMode(true));
     }
 
-    private SequencedTexture texture;
-    private long startTime;
+    void main() {
+        this.run();
+    }
 
     @Override
     protected void init() {
@@ -46,7 +46,7 @@ public class AnimatedImageRenderingExample extends GLFWApplicationRunner {
             // this.texture = new SequencedTexture(new GifImage(imageBytes)); // Alternative method which uses a library. This is faster than using AWT
             // this.texture = new SequencedTexture(new AwtWebpImage(imageBytes)); // WebP is also supported, but requires a library
             this.startTime = System.currentTimeMillis();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException(e);
         }
     }

@@ -26,7 +26,7 @@ import com.github.weisj.jsvg.view.ViewBox;
 import net.raphimc.thingl.implementation.Capabilities;
 import net.raphimc.thingl.util.AwtUtil;
 
-import java.awt.*;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -38,8 +38,8 @@ public class AwtSvgByteImage2D extends AwtByteImage2D {
     }
 
     private static final LoaderContext LOADER_CONTEXT = LoaderContext.builder()
-            .documentLimits(new DocumentLimits(DocumentLimits.DEFAULT_MAX_USE_NESTING_DEPTH, DocumentLimits.DEFAULT_MAX_NESTING_DEPTH, Integer.MAX_VALUE))
-            .build();
+        .documentLimits(new DocumentLimits(DocumentLimits.DEFAULT_MAX_USE_NESTING_DEPTH, DocumentLimits.DEFAULT_MAX_NESTING_DEPTH, Integer.MAX_VALUE))
+        .build();
 
     public AwtSvgByteImage2D(final byte[] documentBytes, final int width, final int height) {
         this(new ByteArrayInputStream(documentBytes), width, height);

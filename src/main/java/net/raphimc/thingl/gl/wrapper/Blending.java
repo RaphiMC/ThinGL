@@ -20,7 +20,10 @@ package net.raphimc.thingl.gl.wrapper;
 import net.raphimc.thingl.ThinGL;
 import org.lwjgl.opengl.GL11C;
 
-public class Blending {
+public final class Blending {
+
+    private Blending() {
+    }
 
     public static void noBlending() {
         ThinGL.glStateManager().setBlendFunc(GL11C.GL_ONE, GL11C.GL_ZERO);

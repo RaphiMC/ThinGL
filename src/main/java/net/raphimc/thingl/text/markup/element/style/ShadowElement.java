@@ -25,7 +25,7 @@ import net.raphimc.thingl.text.markup.util.IntegerColorParser;
 public class ShadowElement extends Element<TextStyle> {
 
     public ShadowElement() {
-        this.attributes.put(null, (style, value) -> style.withShadow(true));
+        this.attributes.put(null, (style, _) -> style.withShadow(true));
         this.attributes.put("enabled", (style, value) -> style.withShadow(Boolean.parseBoolean(value)));
         this.attributes.put("rgb", (style, value) -> style.withShadowColor(IntegerColorParser.RGB.parse(value)));
         this.attributes.put("rgba", (style, value) -> style.withShadowColor(IntegerColorParser.RGBA.parse(value)));

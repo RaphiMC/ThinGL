@@ -23,8 +23,24 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.resource.GLObject;
-import net.raphimc.thingl.gl.resource.image.texture.impl.*;
-import org.lwjgl.opengl.*;
+import net.raphimc.thingl.gl.resource.image.texture.impl.BufferTexture;
+import net.raphimc.thingl.gl.resource.image.texture.impl.CubeMapArrayTexture;
+import net.raphimc.thingl.gl.resource.image.texture.impl.CubeMapTexture;
+import net.raphimc.thingl.gl.resource.image.texture.impl.MultisampleTexture2D;
+import net.raphimc.thingl.gl.resource.image.texture.impl.MultisampleTexture2DArray;
+import net.raphimc.thingl.gl.resource.image.texture.impl.Texture1D;
+import net.raphimc.thingl.gl.resource.image.texture.impl.Texture1DArray;
+import net.raphimc.thingl.gl.resource.image.texture.impl.Texture2D;
+import net.raphimc.thingl.gl.resource.image.texture.impl.Texture2DArray;
+import net.raphimc.thingl.gl.resource.image.texture.impl.Texture3D;
+import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL12C;
+import org.lwjgl.opengl.GL13C;
+import org.lwjgl.opengl.GL30C;
+import org.lwjgl.opengl.GL31C;
+import org.lwjgl.opengl.GL32C;
+import org.lwjgl.opengl.GL40C;
+import org.lwjgl.opengl.GL45C;
 
 public abstract class Texture extends GLObject {
 

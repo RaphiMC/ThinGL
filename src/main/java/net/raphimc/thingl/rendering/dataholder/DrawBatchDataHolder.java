@@ -69,11 +69,11 @@ public class DrawBatchDataHolder {
     }
 
     public ShaderBufferBuilder getUniformBufferBuilder(final String name, final Function<MemoryBuffer, ? extends ShaderBufferBuilder> uniformBufferBuilderSupplier) {
-        return this.uniformBufferBuilders.computeIfAbsent(name, key -> uniformBufferBuilderSupplier.apply(this.memoryBufferSupplier.get()));
+        return this.uniformBufferBuilders.computeIfAbsent(name, _ -> uniformBufferBuilderSupplier.apply(this.memoryBufferSupplier.get()));
     }
 
     public ShaderBufferBuilder getShaderStorageBufferBuilder(final String name, final Function<MemoryBuffer, ? extends ShaderBufferBuilder> shaderStorageBufferBuilderSupplier) {
-        return this.shaderStorageBufferBuilders.computeIfAbsent(name, key -> shaderStorageBufferBuilderSupplier.apply(this.memoryBufferSupplier.get()));
+        return this.shaderStorageBufferBuilders.computeIfAbsent(name, _ -> shaderStorageBufferBuilderSupplier.apply(this.memoryBufferSupplier.get()));
     }
 
     public boolean hasVertexData() {

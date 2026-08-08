@@ -44,12 +44,12 @@ public class ComputeShaderExample extends GLFWApplicationRunner {
                 }
             """;
 
-    public static void main(String[] args) {
-        new ComputeShaderExample().run();
-    }
-
     public ComputeShaderExample() {
         super(new Configuration().setWindowTitle("ThinGL Example - Compute Shader").setExtendedDebugMode(true));
+    }
+
+    void main() {
+        this.run();
     }
 
     @Override

@@ -21,7 +21,7 @@ import net.raphimc.thingl.implementation.Capabilities;
 import net.raphimc.thingl.util.DetailedMessageBuilder;
 import org.lwjgl.util.freetype.FreeType;
 
-public class FreeTypeException extends RuntimeException {
+public final class FreeTypeException extends RuntimeException {
 
     static {
         Capabilities.assertFreeTypeAvailable();

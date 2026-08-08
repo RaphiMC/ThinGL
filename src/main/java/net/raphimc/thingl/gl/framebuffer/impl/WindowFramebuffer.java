@@ -21,7 +21,7 @@ import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.resource.framebuffer.Framebuffer;
 import net.raphimc.thingl.gl.resource.image.ImageStorage;
 
-public class WindowFramebuffer extends Framebuffer {
+public final class WindowFramebuffer extends Framebuffer {
 
     public static final WindowFramebuffer INSTANCE = new WindowFramebuffer();
 

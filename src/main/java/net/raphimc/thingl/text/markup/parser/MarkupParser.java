@@ -98,7 +98,7 @@ public class MarkupParser {
                     eventHandler.handleText(textBuilder.toString());
                 }
             }
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             throw new RuntimeException(e.getMessage() + ", at index " + this.reader.getPosition() + ", context: '" + this.reader.getContext() + "'", e);
         }
     }

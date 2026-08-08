@@ -163,7 +163,10 @@ import net.raphimc.thingl.text.markup.parser.MarkupParser;
  *     </li>
  * </ul>
  */
-public class MarkupTextParser {
+public final class MarkupTextParser {
+
+    private MarkupTextParser() {
+    }
 
     public static TextRun parseSafe(final FontInstance font, final String markupText) {
         return parseSafe(font, markupText, TextStyle.WHITE);
@@ -172,8 +175,20 @@ public class MarkupTextParser {
     public static TextRun parseSafe(final FontInstance font, final String markupText, final TextStyle baseStyle) {
         try {
             return parse(font, markupText, baseStyle);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             return TextRun.fromString(font, "<markup error: " + e.getMessage() + ">", baseStyle);
+        }
+    }
+
+    public static TextLine parseSafe(final FontInstanceSet fontSet, final String markupText) {
+        return parseSafe(fontSet, markupText, TextStyle.WHITE);
+    }
+
+    public static TextLine parseSafe(final FontInstanceSet fontSet, final String markupText, final TextStyle baseStyle) {
+        try {
+            return parse(fontSet, markupText, baseStyle);
+        } catch (final Exception e) {
+            return TextLine.fromString(fontSet, "<markup error: " + e.getMessage() + ">", baseStyle);
         }
     }
 
@@ -186,18 +201,6 @@ public class MarkupTextParser {
         final TextRunMarkupHandler textRunMarkupHandler = new TextRunMarkupHandler(font, baseStyle);
         markupParser.process(textRunMarkupHandler);
         return textRunMarkupHandler.getTextRun();
-    }
-
-    public static TextLine parseSafe(final FontInstanceSet fontSet, final String markupText) {
-        return parseSafe(fontSet, markupText, TextStyle.WHITE);
-    }
-
-    public static TextLine parseSafe(final FontInstanceSet fontSet, final String markupText, final TextStyle baseStyle) {
-        try {
-            return parse(fontSet, markupText, baseStyle);
-        } catch (Exception e) {
-            return TextLine.fromString(fontSet, "<markup error: " + e.getMessage() + ">", baseStyle);
-        }
     }
 
     public static TextLine parse(final FontInstanceSet fontSet, final String markupText) {

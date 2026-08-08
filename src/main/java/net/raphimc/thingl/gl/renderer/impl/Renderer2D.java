@@ -37,7 +37,11 @@ import org.joml.Matrix4f;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
-import org.joml.primitives.*;
+import org.joml.primitives.Circled;
+import org.joml.primitives.Circlef;
+import org.joml.primitives.Rectangled;
+import org.joml.primitives.Rectanglef;
+import org.joml.primitives.Rectanglei;
 
 import java.util.List;
 import java.util.function.IntFunction;
@@ -48,28 +52,28 @@ public class Renderer2D extends Renderer {
     public static final int OUTLINE_STYLE_INNER_BIT = 1 << 1;
 
     protected final IntFunction<DrawBatch> textureQuad = CacheUtil.memoizeInt(textureId -> new DrawBatch.Builder(DrawBatches.TEXTURE_SNIPPET)
-            .appendSetupAction(p -> p.setUniformSampler("u_Texture", textureId))
-            .build());
+        .appendSetupAction(p -> p.setUniformSampler("u_Texture", textureId))
+        .build());
 
     protected final IntFunction<DrawBatch> textureArrayLayerQuad = CacheUtil.memoizeInt(textureId -> new DrawBatch.Builder(DrawBatches.TEXTURE_SNIPPET)
-            .program(() -> ThinGL.programs().getTextureArrayLayer())
-            .vertexDataLayout(DrawBatches.POSITION_TEXTURE_ARRAY_LAYER_LAYOUT)
-            .appendSetupAction(p -> p.setUniformSampler("u_Texture", textureId))
-            .build());
+        .program(() -> ThinGL.programs().getTextureArrayLayer())
+        .vertexDataLayout(DrawBatches.POSITION_TEXTURE_ARRAY_LAYER_LAYOUT)
+        .appendSetupAction(p -> p.setUniformSampler("u_Texture", textureId))
+        .build());
 
     protected final IntFunction<DrawBatch> coloredTextureQuad = CacheUtil.memoizeInt(textureId -> new DrawBatch.Builder(DrawBatches.TEXTURE_SNIPPET)
-            .program(() -> ThinGL.programs().getColoredTexture())
-            .vertexDataLayout(DrawBatches.POSITION_COLOR_TEXTURE_LAYOUT)
-            .appendSetupAction(p -> p.setUniformSampler("u_Texture", textureId))
-            .build());
+        .program(() -> ThinGL.programs().getColoredTexture())
+        .vertexDataLayout(DrawBatches.POSITION_COLOR_TEXTURE_LAYOUT)
+        .appendSetupAction(p -> p.setUniformSampler("u_Texture", textureId))
+        .build());
 
     @SuppressWarnings("removal")
     @Deprecated(forRemoval = true)
     protected final IntFunction<DrawBatch> colorizedTextureQuad = CacheUtil.memoizeInt(textureId -> new DrawBatch.Builder(DrawBatches.TEXTURE_SNIPPET)
-            .program(() -> ThinGL.programs().getColorizedTexture())
-            .vertexDataLayout(DrawBatches.POSITION_COLOR_TEXTURE_LAYOUT)
-            .appendSetupAction(p -> p.setUniformSampler("u_Texture", textureId))
-            .build());
+        .program(() -> ThinGL.programs().getColorizedTexture())
+        .vertexDataLayout(DrawBatches.POSITION_COLOR_TEXTURE_LAYOUT)
+        .appendSetupAction(p -> p.setUniformSampler("u_Texture", textureId))
+        .build());
 
     public void filledRectangle(final Matrix4f positionMatrix, final Rectangled rectangle, final Color color) {
         this.filledRectangle(positionMatrix, rectangle, color, color, color, color);

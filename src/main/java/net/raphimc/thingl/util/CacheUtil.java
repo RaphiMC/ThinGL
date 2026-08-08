@@ -25,9 +25,12 @@ import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 
-public class CacheUtil {
+public final class CacheUtil {
 
     private static final int MEMOIZE_MAX_SIZE = 1024;
+
+    private CacheUtil() {
+    }
 
     public static <T, R> Function<T, R> memoizeReference(final Function<T, R> function) {
         return new Function<>() {

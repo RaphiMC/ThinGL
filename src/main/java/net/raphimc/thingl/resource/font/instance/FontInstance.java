@@ -111,7 +111,7 @@ public abstract class FontInstance extends Resource {
             COLORED_ANTIALIASED,
             BSDF,
             SDF,
-            MSDF,
+            MSDF
 
         }
 

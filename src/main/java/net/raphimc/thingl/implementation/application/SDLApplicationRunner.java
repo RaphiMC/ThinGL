@@ -20,7 +20,13 @@ package net.raphimc.thingl.implementation.application;
 import net.raphimc.thingl.implementation.util.sdl.SdlException;
 import net.raphimc.thingl.implementation.util.sdl.SdlLogOutputFunctionImpl;
 import net.raphimc.thingl.implementation.window.SDLWindowInterface;
-import org.lwjgl.sdl.*;
+import org.lwjgl.sdl.SDLEvents;
+import org.lwjgl.sdl.SDLInit;
+import org.lwjgl.sdl.SDLLog;
+import org.lwjgl.sdl.SDLProperties;
+import org.lwjgl.sdl.SDLVideo;
+import org.lwjgl.sdl.SDL_Event;
+import org.lwjgl.sdl.SDL_LogOutputFunction;
 import org.lwjgl.system.MemoryStack;
 
 public abstract class SDLApplicationRunner extends ApplicationRunner {

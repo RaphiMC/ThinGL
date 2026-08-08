@@ -20,7 +20,7 @@ package net.raphimc.thingl.implementation.util.sdl;
 import net.raphimc.thingl.util.DetailedMessageBuilder;
 import org.lwjgl.sdl.SDLError;
 
-public class SdlException extends RuntimeException {
+public final class SdlException extends RuntimeException {
 
     public static void check(final boolean result) {
         check(result, "Failed to execute SDL operation");

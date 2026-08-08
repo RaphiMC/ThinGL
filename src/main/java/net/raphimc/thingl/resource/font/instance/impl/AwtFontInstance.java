@@ -23,7 +23,11 @@ import net.raphimc.thingl.resource.image.impl.AwtByteImage2D;
 import net.raphimc.thingl.resource.image.impl.ByteImage2D;
 import net.raphimc.thingl.util.AwtUtil;
 
-import java.awt.*;
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.font.GlyphVector;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;

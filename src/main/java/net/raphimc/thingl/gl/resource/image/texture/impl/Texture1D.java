@@ -52,7 +52,7 @@ public class Texture1D extends SampledTexture implements ImageStorage1D {
     }
 
     public Image downloadImage(final int x, final int width, final int pixelFormat) {
-        return this.downloadImage(x, width,  pixelFormat, GL11C.GL_UNSIGNED_BYTE);
+        return this.downloadImage(x, width, pixelFormat, GL11C.GL_UNSIGNED_BYTE);
     }
 
     public Image downloadImage(final int x, final int width, final int pixelFormat, final int pixelDataType) {

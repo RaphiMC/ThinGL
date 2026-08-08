@@ -350,7 +350,7 @@ public class RendererText extends Renderer {
         LOGICAL_BOTTOM,
         VISUAL_TOP,
         VISUAL_CENTER,
-        VISUAL_BOTTOM,
+        VISUAL_BOTTOM
 
     }
 
@@ -359,7 +359,7 @@ public class RendererText extends Renderer {
         LOGICAL_LEFT,
         VISUAL_LEFT,
         VISUAL_CENTER,
-        VISUAL_RIGHT,
+        VISUAL_RIGHT
 
     }
 

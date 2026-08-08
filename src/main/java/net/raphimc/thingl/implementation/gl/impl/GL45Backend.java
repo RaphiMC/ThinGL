@@ -18,7 +18,24 @@
 package net.raphimc.thingl.implementation.gl.impl;
 
 import net.raphimc.thingl.implementation.gl.GLBackend;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.ARBVertexAttribBinding;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL12C;
+import org.lwjgl.opengl.GL14C;
+import org.lwjgl.opengl.GL15C;
+import org.lwjgl.opengl.GL20C;
+import org.lwjgl.opengl.GL30C;
+import org.lwjgl.opengl.GL31C;
+import org.lwjgl.opengl.GL32C;
+import org.lwjgl.opengl.GL33C;
+import org.lwjgl.opengl.GL40C;
+import org.lwjgl.opengl.GL41C;
+import org.lwjgl.opengl.GL42C;
+import org.lwjgl.opengl.GL43C;
+import org.lwjgl.opengl.GL44C;
+import org.lwjgl.opengl.GL45C;
+import org.lwjgl.opengl.GLCapabilities;
 
 public class GL45Backend implements GLBackend {
 

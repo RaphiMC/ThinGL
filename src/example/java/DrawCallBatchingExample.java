@@ -25,12 +25,12 @@ import org.joml.Matrix4fStack;
 
 public class DrawCallBatchingExample extends GLFWApplicationRunner {
 
-    public static void main(String[] args) {
-        new DrawCallBatchingExample().run();
-    }
-
     public DrawCallBatchingExample() {
         super(new Configuration().setWindowTitle("ThinGL Example - Draw call batching").setExtendedDebugMode(true));
+    }
+
+    void main() {
+        this.run();
     }
 
     @Override

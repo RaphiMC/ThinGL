@@ -93,7 +93,7 @@ public class OutlineProgram extends MultiPassAuxInputPostProcessingProgram {
         EASE_IN_OUT_EXPO,
         EASE_IN_CIRC,
         EASE_OUT_CIRC,
-        EASE_IN_OUT_CIRC,
+        EASE_IN_OUT_CIRC
 
     }
 

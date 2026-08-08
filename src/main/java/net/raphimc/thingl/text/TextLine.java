@@ -102,6 +102,7 @@ public record TextLine(List<TextRun> runs) {
         return this.addRun(run);
     }
 
+    @SuppressWarnings("checkstyle:ModifiedControlVariable")
     public void compact() {
         for (int i = 1; i < this.runs.size(); i++) {
             final TextRun previousRun = this.runs.get(i - 1);

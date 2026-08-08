@@ -69,7 +69,7 @@ public class ArenaMemoryAllocator {
         }
 
         long start = ptr;
-        long end = start + segmentSize;
+        final long end = start + segmentSize;
         final Long lower = this.freeMap.floorKey(start);
         if (lower != null && lower + this.freeMap.get(lower) == start) {
             start = lower;

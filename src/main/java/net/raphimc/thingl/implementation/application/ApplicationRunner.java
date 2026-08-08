@@ -54,7 +54,7 @@ public abstract class ApplicationRunner implements Runnable {
         new Thread(this, this.getClass().getSimpleName() + " Main Thread").start();
         try {
             this.launchFuture.join();
-        } catch (CancellationException ignored) {
+        } catch (final CancellationException _) {
         }
     }
 
@@ -69,7 +69,7 @@ public abstract class ApplicationRunner implements Runnable {
                     new Thread(() -> {
                         try {
                             this.runRenderLifecycle();
-                        } catch (Throwable e) {
+                        } catch (final Throwable e) {
                             this.launchFuture.completeExceptionally(e);
                             this.freeFuture.completeExceptionally(e);
                             throw e;
@@ -82,7 +82,7 @@ public abstract class ApplicationRunner implements Runnable {
                 this.freeWindowSystem();
             }
             this.freeFuture.complete(null);
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             this.launchFuture.completeExceptionally(e);
             this.freeFuture.completeExceptionally(e);
             throw e;
@@ -101,7 +101,7 @@ public abstract class ApplicationRunner implements Runnable {
             }
             try {
                 this.freeFuture.join();
-            } catch (CancellationException ignored) {
+            } catch (final CancellationException _) {
             }
         }
     }

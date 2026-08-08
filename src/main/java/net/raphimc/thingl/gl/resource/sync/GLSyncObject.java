@@ -67,15 +67,17 @@ public abstract class GLSyncObject {
     }
 
     @Override
-    public final boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        GLSyncObject that = (GLSyncObject) o;
-        return pointer == that.pointer;
+    public final boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final GLSyncObject that = (GLSyncObject) o;
+        return this.pointer == that.pointer;
     }
 
     @Override
     public final int hashCode() {
-        return Objects.hashCode(pointer);
+        return Objects.hashCode(this.pointer);
     }
 
     protected final void assertAllocated() {

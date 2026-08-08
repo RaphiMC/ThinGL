@@ -23,8 +23,13 @@ import org.lwjgl.opengl.awt.AWTGLCanvas;
 import org.lwjgl.opengl.awt.GLData;
 import org.lwjgl.opengl.awt.PlatformWin32GLCanvas;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import javax.swing.WindowConstants;
+import java.awt.AWTException;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.SecondaryLoop;
+import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.concurrent.CompletableFuture;
@@ -193,7 +198,7 @@ public abstract class AwtApplicationRunner extends ApplicationRunner {
 
         @Override
         public void disposeCanvas() {
-            if (this.platformCanvas instanceof PlatformWin32GLCanvas canvas && canvas.ds == null) {
+            if (this.platformCanvas instanceof PlatformWin32GLCanvas win32Canvas && win32Canvas.ds == null) {
                 return; // Prevent a crash on Windows when disposing after the device context has already been destroyed
             }
             super.disposeCanvas();
@@ -203,7 +208,7 @@ public abstract class AwtApplicationRunner extends ApplicationRunner {
             super.beforeRender();
             try {
                 this.platformCanvas.unlock();
-            } catch (AWTException e) {
+            } catch (final AWTException e) {
                 throw new RuntimeException("Failed to unlock Canvas", e);
             }
         }

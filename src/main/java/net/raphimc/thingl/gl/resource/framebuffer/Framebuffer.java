@@ -72,7 +72,7 @@ public class Framebuffer extends GLContainerObject {
             }
             this.checkStatus();
             this.clear();
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             this.free();
             throw e;
         }
@@ -99,26 +99,17 @@ public class Framebuffer extends GLContainerObject {
     public void checkStatus() {
         final int status = ThinGL.glBackend().checkNamedFramebufferStatus(this.getGlId(), GL30C.GL_FRAMEBUFFER);
         switch (status) {
-            case GL30C.GL_FRAMEBUFFER_COMPLETE:
-                break;
-            case GL30C.GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-                throw new IllegalStateException("Framebuffer is not complete: GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
-            case GL30C.GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-                throw new IllegalStateException("Framebuffer is not complete: GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
-            case GL30C.GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
-                throw new IllegalStateException("Framebuffer is not complete: GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER");
-            case GL30C.GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-                throw new IllegalStateException("Framebuffer is not complete: GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER");
-            case GL30C.GL_FRAMEBUFFER_UNSUPPORTED:
-                throw new IllegalStateException("Framebuffer is not complete: GL_FRAMEBUFFER_UNSUPPORTED");
-            case GL30C.GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
-                throw new IllegalStateException("Framebuffer is not complete: GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE");
-            case GL32C.GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
-                throw new IllegalStateException("Framebuffer is not complete: GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS");
-            case GL11C.GL_OUT_OF_MEMORY:
-                throw new IllegalStateException("Framebuffer is not complete: GL_OUT_OF_MEMORY");
-            default:
-                throw new IllegalStateException("Framebuffer is not complete: " + status);
+            case GL30C.GL_FRAMEBUFFER_COMPLETE -> {
+            }
+            case GL30C.GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT -> throw new IllegalStateException("Framebuffer is not complete: GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
+            case GL30C.GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT -> throw new IllegalStateException("Framebuffer is not complete: GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
+            case GL30C.GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER -> throw new IllegalStateException("Framebuffer is not complete: GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER");
+            case GL30C.GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER -> throw new IllegalStateException("Framebuffer is not complete: GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER");
+            case GL30C.GL_FRAMEBUFFER_UNSUPPORTED -> throw new IllegalStateException("Framebuffer is not complete: GL_FRAMEBUFFER_UNSUPPORTED");
+            case GL30C.GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE -> throw new IllegalStateException("Framebuffer is not complete: GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE");
+            case GL32C.GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS -> throw new IllegalStateException("Framebuffer is not complete: GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS");
+            case GL11C.GL_OUT_OF_MEMORY -> throw new IllegalStateException("Framebuffer is not complete: GL_OUT_OF_MEMORY");
+            default -> throw new IllegalStateException("Framebuffer is not complete: " + status);
         }
     }
 

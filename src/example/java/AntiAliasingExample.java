@@ -23,12 +23,12 @@ import org.joml.Matrix4fStack;
 
 public class AntiAliasingExample extends GLFWApplicationRunner {
 
-    public static void main(String[] args) {
-        new AntiAliasingExample().run();
-    }
-
     public AntiAliasingExample() {
         super(new Configuration().setWindowTitle("ThinGL Example - AntiAliasing").setExtendedDebugMode(true));
+    }
+
+    void main() {
+        this.run();
     }
 
     @Override

@@ -22,7 +22,10 @@ import net.raphimc.thingl.gl.wrapper.Blending;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL14C;
 
-public class DefaultGLStates {
+public final class DefaultGLStates {
+
+    private DefaultGLStates() {
+    }
 
     public static void push() {
         ThinGL.glStateStack().push();

@@ -36,19 +36,19 @@ import java.io.IOException;
 
 public class TextRenderingExample extends GLFWApplicationRunner {
 
-    public static void main(String[] args) {
-        new TextRenderingExample().run();
-    }
-
-    public TextRenderingExample() {
-        super(new Configuration().setWindowTitle("ThinGL Example - Text rendering").setExtendedDebugMode(true));
-    }
-
     // Instead of creating a new RendererText instance, you can use ThinGL.rendererText() to get the default text renderer.
     private RendererText bitmapTextRenderer = new RendererText(new BitmapTextRenderer());
     private RendererText sdfTextRenderer = new RendererText(new SDFTextRenderer());
     private FontInstance robotoRegular;
     private ShapedTextRun multiColoredText;
+
+    public TextRenderingExample() {
+        super(new Configuration().setWindowTitle("ThinGL Example - Text rendering").setExtendedDebugMode(true));
+    }
+
+    void main() {
+        this.run();
+    }
 
     @Override
     protected void init() {
@@ -59,7 +59,7 @@ public class TextRenderingExample extends GLFWApplicationRunner {
 
             // this.robotoRegular = new StbFontFace(fontData).getInstance(32); // Its also possible to use STB for font rendering, but it has less features than FreeType
             // this.robotoRegular = new AwtFontFace(new Font("Arial", Font.PLAIN, 32)).getInstance(32); // Or use AWT to load system fonts (AWT only work with the BitmapTextRenderer)
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException(e);
         }
 
@@ -67,15 +67,15 @@ public class TextRenderingExample extends GLFWApplicationRunner {
         // FreeTypeLibrary.checkError(FreeType.FT_Select_Charmap(font.getFontFace(), FreeType.FT_ENCODING_MS_SYMBOL), "Failed to select charmap");
 
         // Text run with multiple differently styled segments
-        this.multiColoredText = new TextRun(robotoRegular, new TextSegment("Multi", Color.RED), new TextSegment("color ", Color.GREEN), new TextSegment("Text", Color.BLUE)).shape();
+        this.multiColoredText = new TextRun(this.robotoRegular, new TextSegment("Multi", Color.RED), new TextSegment("color ", Color.GREEN), new TextSegment("Text", Color.BLUE)).shape();
         // Same as above, but using the add method instead of the constructor
-        this.multiColoredText = new TextRun(robotoRegular)
+        this.multiColoredText = new TextRun(this.robotoRegular)
                 .add(new TextSegment("Multi", Color.RED))
                 .add(new TextSegment("color ", Color.GREEN))
                 .add(new TextSegment("Text", Color.BLUE)).shape();
 
         // Optionally you can use HarfBuzz for better text shaping (Complex scripts, ligatures, kerning, ...)
-        TextRun.fromString(robotoRegular, "text here").shape(HarfBuzzTextShaper.INSTANCE);
+        TextRun.fromString(this.robotoRegular, "text here").shape(HarfBuzzTextShaper.INSTANCE);
     }
 
     @Override
@@ -87,42 +87,42 @@ public class TextRenderingExample extends GLFWApplicationRunner {
         }
         { // Text outline
             positionMatrix.translate(0, this.robotoRegular.getHeight(), 0);
-            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "Outlined Text", new TextStyle(Color.WHITE, 0, Color.RED), 0, 0);
+            this.sdfTextRenderer.string(positionMatrix, this.robotoRegular, "Outlined Text", new TextStyle(Color.WHITE, 0, Color.RED), 0, 0);
         }
         { // Bold text
             positionMatrix.translate(0, this.robotoRegular.getHeight(), 0);
-            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "Bold Text", new TextStyle(Color.WHITE, TextStyle.BOLD_BIT), 0, 0);
+            this.sdfTextRenderer.string(positionMatrix, this.robotoRegular, "Bold Text", new TextStyle(Color.WHITE, TextStyle.BOLD_BIT), 0, 0);
         }
         { // Shadowed text
             positionMatrix.translate(0, this.robotoRegular.getHeight(), 0);
-            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "Shadowed Text", new TextStyle(Color.WHITE, TextStyle.SHADOW_BIT), 0, 0);
+            this.sdfTextRenderer.string(positionMatrix, this.robotoRegular, "Shadowed Text", new TextStyle(Color.WHITE, TextStyle.SHADOW_BIT), 0, 0);
         }
         { // Italic text
             positionMatrix.translate(0, this.robotoRegular.getHeight(), 0);
-            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "Italic Text", new TextStyle(Color.WHITE, TextStyle.ITALIC_BIT), 0, 0);
+            this.sdfTextRenderer.string(positionMatrix, this.robotoRegular, "Italic Text", new TextStyle(Color.WHITE, TextStyle.ITALIC_BIT), 0, 0);
         }
         { // Underline text
             positionMatrix.translate(0, this.robotoRegular.getHeight(), 0);
-            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "Underlined Text", new TextStyle(Color.WHITE, TextStyle.UNDERLINE_BIT), 0, 0);
+            this.sdfTextRenderer.string(positionMatrix, this.robotoRegular, "Underlined Text", new TextStyle(Color.WHITE, TextStyle.UNDERLINE_BIT), 0, 0);
         }
         { // Strikethrough text
             positionMatrix.translate(0, this.robotoRegular.getHeight(), 0);
-            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "Strikethrough Text", new TextStyle(Color.WHITE, TextStyle.STRIKETHROUGH_BIT), 0, 0);
+            this.sdfTextRenderer.string(positionMatrix, this.robotoRegular, "Strikethrough Text", new TextStyle(Color.WHITE, TextStyle.STRIKETHROUGH_BIT), 0, 0);
         }
         { // Multiple styles text
             positionMatrix.translate(0, this.robotoRegular.getHeight(), 0);
-            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "Multiple Styles", new TextStyle(Color.WHITE, TextStyle.SHADOW_BIT | TextStyle.BOLD_BIT | TextStyle.ITALIC_BIT, Color.BLUE), 0, 0);
+            this.sdfTextRenderer.string(positionMatrix, this.robotoRegular, "Multiple Styles", new TextStyle(Color.WHITE, TextStyle.SHADOW_BIT | TextStyle.BOLD_BIT | TextStyle.ITALIC_BIT, Color.BLUE), 0, 0);
         }
         { // Markup text
             positionMatrix.translate(0, this.robotoRegular.getHeight(), 0);
-            this.sdfTextRenderer.markupString(positionMatrix, robotoRegular, "<color rgb=#FF0000><u>Mark<i>up</i></u></color> <color value=blue><b>Text</b></color>", 0, 0);
+            this.sdfTextRenderer.markupString(positionMatrix, this.robotoRegular, "<color rgb=#FF0000><u>Mark<i>up</i></u></color> <color value=blue><b>Text</b></color>", 0, 0);
         }
         positionMatrix.popMatrix();
 
         { // Bitmap text renderer
             positionMatrix.pushMatrix();
             this.animatedScale(positionMatrix);
-            this.bitmapTextRenderer.string(positionMatrix, robotoRegular, "Bitmap Text", TextStyle.WHITE, 0, 0);
+            this.bitmapTextRenderer.string(positionMatrix, this.robotoRegular, "Bitmap Text", TextStyle.WHITE, 0, 0);
             positionMatrix.popMatrix();
         }
 
@@ -131,7 +131,7 @@ public class TextRenderingExample extends GLFWApplicationRunner {
         { // SDF text renderer
             positionMatrix.pushMatrix();
             this.animatedScale(positionMatrix);
-            this.sdfTextRenderer.string(positionMatrix, robotoRegular, "SDF Text!", TextStyle.WHITE, 0, 0);
+            this.sdfTextRenderer.string(positionMatrix, this.robotoRegular, "SDF Text!", TextStyle.WHITE, 0, 0);
             positionMatrix.popMatrix();
         }
     }

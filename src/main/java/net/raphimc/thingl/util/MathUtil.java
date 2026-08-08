@@ -17,7 +17,7 @@
  */
 package net.raphimc.thingl.util;
 
-public class MathUtil {
+public final class MathUtil {
 
     public static final float PI = org.joml.Math.PI_f;
     public static final float TWO_PI = org.joml.Math.PI_TIMES_2_f;
@@ -25,6 +25,9 @@ public class MathUtil {
 
     public static final float FIXED_16_16 = /*Math.powExact(2, 16)*/ 65536;
     public static final float FIXED_26_6 = /*Math.powExact(2, 6)*/ 64;
+
+    private MathUtil() {
+    }
 
     /**
      * Encodes a float value into a half precision float (IEEE-754 fp16) value.
@@ -35,12 +38,12 @@ public class MathUtil {
     public static short encodeHalfFloat(final float v) {
         final int bits = Float.floatToRawIntBits(v);
         final int s = (bits >>> 16) & 0x8000;
-        final int em = bits & 0x7fffffff;
+        final int em = bits & 0x7FFFFFFF;
 
         int h = (em - (112 << 23) + (1 << 12)) >> 13;
         h = (em < (113 << 23)) ? 0 : h;
-        h = (em >= (143 << 23)) ? 0x7c00 : h;
-        h = (em > (255 << 23)) ? 0x7e00 : h;
+        h = (em >= (143 << 23)) ? 0x7C00 : h;
+        h = (em > (255 << 23)) ? 0x7E00 : h;
 
         return (short) (s | h);
     }
@@ -53,7 +56,7 @@ public class MathUtil {
      */
     public static float decodeHalfFloat(final short v) {
         final int s = (v & 0x8000) << 16;
-        final int em = v & 0x7fff;
+        final int em = v & 0x7FFF;
 
         int r = (em + (112 << 10)) << 13;
         r = (em < (1 << 10)) ? 0 : r;

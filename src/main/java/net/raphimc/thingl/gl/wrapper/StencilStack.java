@@ -32,7 +32,9 @@ public class StencilStack {
         ThinGL.get().addFrameFinishedCallback(() -> {
             if (!this.stack.isEmpty()) {
                 ThinGL.LOGGER.warn("StencilStack was not empty at the end of the frame!");
-                while (!this.stack.isEmpty()) this.pop();
+                while (!this.stack.isEmpty()) {
+                    this.pop();
+                }
             }
         });
     }
@@ -107,8 +109,7 @@ public class StencilStack {
                 ThinGL.glBackend().stencilFunc(GL11C.GL_LEQUAL, stackSize + 1, 0xFF);
                 ThinGL.glBackend().stencilOp(GL11C.GL_KEEP, GL11C.GL_KEEP, GL11C.GL_KEEP);
             }
-        },
-        ;
+        };
 
         protected abstract void begin(final int stackSize);
 

@@ -29,7 +29,10 @@ import java.util.List;
  * Based on <a href="https://github.com/maplibre/earcut4j/blob/abc69f30e10134936a29cb7c4e1175636062d946/src/main/java/org/maplibre/earcut4j/Earcut.java">earcut4j</a>.<br>
  * Original licensed under the <a href="https://github.com/maplibre/earcut4j/blob/abc69f30e10134936a29cb7c4e1175636062d946/LICENSE">ISC</a> license.
  */
-public class Earcut {
+public final class Earcut {
+
+    private Earcut() {
+    }
 
     public static IntList earcut(final List<Vector2f> points) {
         final Node startNode = buildLinkedRing(points, true);
@@ -223,10 +226,10 @@ public class Earcut {
     }
 
     private static boolean isValidDiagonal(final Node a, final Node b) {
-        return a.next.i != b.i && a.prev.i != b.i && !intersectsAnyPolygonEdge(a, b) && // doesn't intersect other edges
-                (isLocallyInside(a, b) && isLocallyInside(b, a) && isMidpointInsidePolygon(a, b) && // locally visible
-                        (orientedTriangleArea(a.prev, a, b.prev) != 0F || orientedTriangleArea(a, b.prev, b) != 0F) || // does not create opposite-facing sectors
-                        a.equals(b) && orientedTriangleArea(a.prev, a, a.next) > 0F && orientedTriangleArea(b.prev, b, b.next) > 0F); // special zero-length case
+        return a.next.i != b.i && a.prev.i != b.i && !intersectsAnyPolygonEdge(a, b) // doesn't intersect other edges
+            && (isLocallyInside(a, b) && isLocallyInside(b, a) && isMidpointInsidePolygon(a, b) // locally visible
+            && (orientedTriangleArea(a.prev, a, b.prev) != 0F || orientedTriangleArea(a, b.prev, b) != 0F) // does not create opposite-facing sectors
+            || a.equals(b) && orientedTriangleArea(a.prev, a, a.next) > 0F && orientedTriangleArea(b.prev, b, b.next) > 0F); // special zero-length case
     }
 
     private static boolean isLocallyInside(final Node a, final Node b) {
@@ -380,13 +383,14 @@ public class Earcut {
                 for (int i = 0; i < inSize; i++) {
                     pSize++;
                     q = q.nextZ;
-                    if (q == null)
+                    if (q == null) {
                         break;
+                    }
                 }
 
                 int qSize = inSize;
                 while (pSize > 0 || (qSize > 0 && q != null)) {
-                    Node e;
+                    final Node e;
                     if (pSize == 0) {
                         e = q;
                         q = q.nextZ;
@@ -436,7 +440,7 @@ public class Earcut {
         return !(ax == px && ay == py) && isPointInTriangle(ax, ay, bx, by, cx, cy, px, py);
     }
 
-    private static class Node extends Vector2f {
+    private static final class Node extends Vector2f {
 
         private final int i; // index in the input point list
         private Node prev = this; // previous node in a polygon ring

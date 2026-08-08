@@ -21,7 +21,7 @@ import net.raphimc.thingl.resource.font.face.FontFace;
 import net.raphimc.thingl.resource.font.instance.FontInstance;
 import net.raphimc.thingl.resource.font.instance.impl.AwtFontInstance;
 
-import java.awt.*;
+import java.awt.Font;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 

@@ -18,7 +18,11 @@
 package net.raphimc.thingl.implementation.window;
 
 import net.raphimc.thingl.implementation.util.sdl.SdlException;
-import org.lwjgl.sdl.*;
+import org.lwjgl.sdl.SDLEvents;
+import org.lwjgl.sdl.SDLVideo;
+import org.lwjgl.sdl.SDL_Event;
+import org.lwjgl.sdl.SDL_EventFilter;
+import org.lwjgl.sdl.SDL_WindowEvent;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;

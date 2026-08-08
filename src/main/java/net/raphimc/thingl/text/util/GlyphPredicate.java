@@ -38,7 +38,6 @@ public interface GlyphPredicate {
         return any(IntSet.of(codePoints));
     }
 
-
     boolean test(final int codePoint);
 
     default GlyphPredicate and(final GlyphPredicate other) {

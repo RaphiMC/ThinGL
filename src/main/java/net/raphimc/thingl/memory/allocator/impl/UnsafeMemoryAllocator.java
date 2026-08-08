@@ -20,7 +20,7 @@ package net.raphimc.thingl.memory.allocator.impl;
 import net.raphimc.thingl.memory.allocator.MemoryAllocator;
 import net.raphimc.thingl.resource.memory.Memory;
 import net.raphimc.thingl.resource.memory.impl.UnsafeMemory;
-import sun.misc.Unsafe;
+import sun.misc.Unsafe; // SUPPRESS CHECKSTYLE IllegalImport
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -49,7 +49,7 @@ public class UnsafeMemoryAllocator extends MemoryAllocator {
             if (unsafeInstance.arrayIndexScale(byte[].class) == 1) {
                 byteArrayBaseOffset = unsafeInstance.arrayBaseOffset(byte[].class);
             }
-        } catch (Throwable _) {
+        } catch (final Throwable _) {
         }
         UNSAFE = unsafeInstance;
         BYTE_ARRAY_BASE_OFFSET = byteArrayBaseOffset;

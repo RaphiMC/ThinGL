@@ -26,12 +26,12 @@ import org.joml.Matrix4fStack;
 
 public class InstancedRenderingExample extends GLFWApplicationRunner {
 
-    public static void main(String[] args) {
-        new InstancedRenderingExample().run();
-    }
-
     public InstancedRenderingExample() {
         super(new Configuration().setWindowTitle("ThinGL Example - Instancing").setExtendedDebugMode(true));
+    }
+
+    void main() {
+        this.run();
     }
 
     @Override

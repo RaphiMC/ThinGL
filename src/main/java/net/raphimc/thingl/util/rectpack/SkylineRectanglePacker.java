@@ -124,7 +124,7 @@ public class SkylineRectanglePacker {
         }
     }
 
-    private static class SkylineNode {
+    private static final class SkylineNode {
 
         private int x;
         private int y;

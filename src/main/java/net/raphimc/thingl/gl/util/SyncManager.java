@@ -24,6 +24,7 @@ import net.raphimc.thingl.gl.resource.sync.FenceSync;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.function.Consumer;
 
 public class SyncManager {
@@ -33,20 +34,20 @@ public class SyncManager {
 
     public SyncManager() {
         ThinGL.get().addFrameFinishedCallback(() -> {
-            for (int i = 0; i < this.pendingFenceSyncs.size(); i++) {
-                final Pair<FenceSync, Consumer<FenceSync>> pair = this.pendingFenceSyncs.get(i);
+            final ListIterator<Pair<FenceSync, Consumer<FenceSync>>> fenceSyncIterator = this.pendingFenceSyncs.listIterator();
+            while (fenceSyncIterator.hasNext()) {
+                final Pair<FenceSync, Consumer<FenceSync>> pair = fenceSyncIterator.next();
                 if (pair.key().isSignaled()) {
                     pair.value().accept(pair.key());
-                    this.pendingFenceSyncs.remove(i);
-                    i--;
+                    fenceSyncIterator.remove();
                 }
             }
-            for (int i = 0; i < this.pendingQueries.size(); i++) {
-                final Pair<Query, Consumer<Query>> pair = this.pendingQueries.get(i);
+            final ListIterator<Pair<Query, Consumer<Query>>> queryIterator = this.pendingQueries.listIterator();
+            while (queryIterator.hasNext()) {
+                final Pair<Query, Consumer<Query>> pair = queryIterator.next();
                 if (pair.key().isResultAvailable()) {
                     pair.value().accept(pair.key());
-                    this.pendingQueries.remove(i);
-                    i--;
+                    queryIterator.remove();
                 }
             }
         });

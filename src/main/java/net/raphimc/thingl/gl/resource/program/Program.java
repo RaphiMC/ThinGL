@@ -30,7 +30,11 @@ import net.raphimc.thingl.gl.resource.sampler.Sampler;
 import net.raphimc.thingl.gl.resource.shader.Shader;
 import net.raphimc.thingl.memory.allocator.MemoryAllocator;
 import net.raphimc.thingl.resource.memory.Memory;
-import org.joml.*;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL20C;
 import org.lwjgl.opengl.GL31C;
@@ -62,7 +66,7 @@ public class Program extends GLContainerObject {
                 this.attachShader(shader);
             }
             this.link();
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             this.free();
             throw e;
         }

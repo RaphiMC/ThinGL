@@ -29,8 +29,7 @@ public enum IntegerColorParser {
 
     RGB(rgb -> Color.fromRGB(rgb[0] & 0xFF, rgb[1] & 0xFF, rgb[2] & 0xFF)),
     RGBA(rgba -> Color.fromRGBA(rgba[0] & 0xFF, rgba[1] & 0xFF, rgba[2] & 0xFF, rgba[3] & 0xFF)),
-    ARGB(argb -> Color.fromRGBA(argb[1] & 0xFF, argb[2] & 0xFF, argb[3] & 0xFF, argb[0] & 0xFF)),
-    ;
+    ARGB(argb -> Color.fromRGBA(argb[1] & 0xFF, argb[2] & 0xFF, argb[3] & 0xFF, argb[0] & 0xFF));
 
     private final String name;
     private final String[] components;
@@ -63,7 +62,7 @@ public enum IntegerColorParser {
                         throw new IllegalArgumentException("Invalid " + this.name + " component value: '" + component + "', expected range: 0-255");
                     }
                     components[i] = (byte) component;
-                } catch (NumberFormatException e) {
+                } catch (final NumberFormatException _) {
                     throw new IllegalArgumentException("Invalid " + this.name + " component value: '" + parts[i].trim() + "', expected an integer");
                 }
             }

@@ -27,8 +27,16 @@ import net.raphimc.thingl.gl.rendering.dataholder.ImmediateMultiDrawBatchDataHol
 import net.raphimc.thingl.gl.text.SDFTextRenderer;
 import net.raphimc.thingl.gl.util.QuadIndexBuffer;
 import net.raphimc.thingl.gl.util.SyncManager;
-import net.raphimc.thingl.gl.util.pool.*;
-import net.raphimc.thingl.gl.wrapper.*;
+import net.raphimc.thingl.gl.util.pool.FramebufferPool;
+import net.raphimc.thingl.gl.util.pool.GpuBufferPool;
+import net.raphimc.thingl.gl.util.pool.ImmediateVertexArrays;
+import net.raphimc.thingl.gl.util.pool.MemoryBufferPool;
+import net.raphimc.thingl.gl.util.pool.SamplerCache;
+import net.raphimc.thingl.gl.wrapper.GLStateManager;
+import net.raphimc.thingl.gl.wrapper.GLStateStack;
+import net.raphimc.thingl.gl.wrapper.ScissorStack;
+import net.raphimc.thingl.gl.wrapper.StencilStack;
+import net.raphimc.thingl.gl.wrapper.TrackingGLStateManager;
 import net.raphimc.thingl.implementation.Capabilities;
 import net.raphimc.thingl.implementation.Config;
 import net.raphimc.thingl.implementation.GlobalUniforms;
@@ -53,6 +61,48 @@ public class ThinGL {
     public static final Logger LOGGER = LoggerFactory.getLogger("ThinGL");
 
     private static InstanceManager INSTANCE_MANAGER = new SingleInstanceManager();
+
+    private final Thread renderThread;
+    private final WindowInterface windowInterface;
+    private final Config config;
+    private final GLBackend glBackend;
+    private final Capabilities capabilities;
+    private final GLStateManager glStateManager;
+
+    private final GLStateStack glStateStack;
+    private final ScissorStack scissorStack;
+    private final StencilStack stencilStack;
+    private final Programs programs;
+    private final Renderer2D renderer2D;
+    private final Renderer3D renderer3D;
+    private final RendererText rendererText;
+
+    private final GlobalUniforms globalUniforms;
+    private final ImmediateMultiDrawBatchDataHolder globalDrawBatch;
+    private final MemoryBufferPool memoryBufferPool;
+    private final GpuBufferPool gpuBufferPool;
+    private final FramebufferPool framebufferPool;
+    private final ImmediateVertexArrays immediateVertexArrays;
+    private final SamplerCache samplerCache;
+    private final QuadIndexBuffer quadIndexBuffer;
+    private final SyncManager syncManager;
+
+    private final FreeTypeLibrary freeTypeLibrary;
+
+    private final List<Runnable> frameBeginActions = new ArrayList<>();
+    private final List<Runnable> frameStartActions = new ArrayList<>();
+    private final List<Runnable> frameFinishedActions = new ArrayList<>();
+    private final List<Runnable> frameEndActions = new ArrayList<>();
+    private final List<Runnable> frameFinishedCallbacks = new ArrayList<>();
+
+    private boolean allocated = true;
+    private long frameBeginTime;
+    private long frameStartTime;
+    private float frameTime;
+    private float fullFrameTime;
+    private long lastFpsUpdateTime;
+    private int fpsCounter;
+    private int fps;
 
     public static ThinGL get() {
         final ThinGL instance = INSTANCE_MANAGER.get();
@@ -161,48 +211,6 @@ public class ThinGL {
         return get().getFreeTypeLibrary();
     }
 
-    private final Thread renderThread;
-    private final WindowInterface windowInterface;
-    private final Config config;
-    private final GLBackend glBackend;
-    private final Capabilities capabilities;
-    private final GLStateManager glStateManager;
-
-    private final GLStateStack glStateStack;
-    private final ScissorStack scissorStack;
-    private final StencilStack stencilStack;
-    private final Programs programs;
-    private final Renderer2D renderer2D;
-    private final Renderer3D renderer3D;
-    private final RendererText rendererText;
-
-    private final GlobalUniforms globalUniforms;
-    private final ImmediateMultiDrawBatchDataHolder globalDrawBatch;
-    private final MemoryBufferPool memoryBufferPool;
-    private final GpuBufferPool gpuBufferPool;
-    private final FramebufferPool framebufferPool;
-    private final ImmediateVertexArrays immediateVertexArrays;
-    private final SamplerCache samplerCache;
-    private final QuadIndexBuffer quadIndexBuffer;
-    private final SyncManager syncManager;
-
-    private final FreeTypeLibrary freeTypeLibrary;
-
-    private final List<Runnable> frameBeginActions = new ArrayList<>();
-    private final List<Runnable> frameStartActions = new ArrayList<>();
-    private final List<Runnable> frameFinishedActions = new ArrayList<>();
-    private final List<Runnable> frameEndActions = new ArrayList<>();
-    private final List<Runnable> frameFinishedCallbacks = new ArrayList<>();
-
-    private boolean allocated = true;
-    private long frameBeginTime;
-    private long frameStartTime;
-    private float frameTime;
-    private float fullFrameTime;
-    private long lastFpsUpdateTime;
-    private int fpsCounter;
-    private int fps;
-
     public ThinGL(final Supplier<WindowInterface> windowInterface) {
         this(windowInterface.get());
     }
@@ -259,7 +267,7 @@ public class ThinGL {
         for (Runnable action : this.frameBeginActions) {
             try {
                 action.run();
-            } catch (Throwable e) {
+            } catch (final Throwable e) {
                 LOGGER.error("Exception while invoking frame begin action", e);
             }
         }
@@ -272,7 +280,7 @@ public class ThinGL {
         for (Runnable action : this.frameStartActions) {
             try {
                 action.run();
-            } catch (Throwable e) {
+            } catch (final Throwable e) {
                 LOGGER.error("Exception while invoking frame start action", e);
             }
         }
@@ -283,7 +291,7 @@ public class ThinGL {
         for (Runnable action : this.frameFinishedActions) {
             try {
                 action.run();
-            } catch (Throwable e) {
+            } catch (final Throwable e) {
                 LOGGER.error("Exception while invoking frame finished action", e);
             }
         }
@@ -291,7 +299,7 @@ public class ThinGL {
         for (Runnable callback : this.frameFinishedCallbacks) {
             try {
                 callback.run();
-            } catch (Throwable e) {
+            } catch (final Throwable e) {
                 LOGGER.error("Exception while invoking frame finished callback", e);
             }
         }
@@ -310,7 +318,7 @@ public class ThinGL {
         for (Runnable action : this.frameEndActions) {
             try {
                 action.run();
-            } catch (Throwable e) {
+            } catch (final Throwable e) {
                 LOGGER.error("Exception while invoking frame end action", e);
             }
         }

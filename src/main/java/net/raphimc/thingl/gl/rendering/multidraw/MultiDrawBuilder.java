@@ -17,7 +17,12 @@
  */
 package net.raphimc.thingl.gl.rendering.multidraw;
 
-import it.unimi.dsi.fastutil.ints.*;
+import it.unimi.dsi.fastutil.ints.Int2LongMap;
+import it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import net.lenni0451.commons.math.MathUtils;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.rendering.upload.DrawBatchDataUploader;

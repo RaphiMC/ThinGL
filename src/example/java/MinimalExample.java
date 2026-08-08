@@ -23,12 +23,12 @@ import org.joml.Matrix4fStack;
 
 public class MinimalExample extends GLFWApplicationRunner {
 
-    public static void main(String[] args) {
-        new MinimalExample().run();
-    }
-
     public MinimalExample() {
         super(new Configuration().setWindowTitle("ThinGL Example - Minimal Example").setExtendedDebugMode(true));
+    }
+
+    void main() {
+        this.run();
     }
 
     @Override

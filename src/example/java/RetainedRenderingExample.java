@@ -25,20 +25,20 @@ import org.joml.Matrix4fStack;
 
 public class RetainedRenderingExample extends GLFWApplicationRunner {
 
-    public static void main(String[] args) {
-        new RetainedRenderingExample().run();
-    }
+    private final PersistentMultiDrawBatchDataHolder persistentDrawBatch = new PersistentMultiDrawBatchDataHolder();
 
     public RetainedRenderingExample() {
         super(new Configuration().setWindowTitle("ThinGL Example - Retained rendering").setExtendedDebugMode(true));
     }
 
-    private final PersistentMultiDrawBatchDataHolder persistentDrawBatch = new PersistentMultiDrawBatchDataHolder();
+    void main() {
+        this.run();
+    }
 
     @Override
     protected void init() {
         super.init();
-        ThinGL.renderer2D().beginBuffering(persistentDrawBatch); // Renderer2D now renders everything into persistentDrawBatch
+        ThinGL.renderer2D().beginBuffering(this.persistentDrawBatch); // Renderer2D now renders everything into persistentDrawBatch
         for (int i = 0; i < 10; i++) {
             final int x = i * 10;
             final int y = i * 10;
@@ -48,12 +48,12 @@ public class RetainedRenderingExample extends GLFWApplicationRunner {
         }
         ThinGL.renderer2D().endBuffering(); // Renderer2D now renders everything immediately again
 
-        persistentDrawBatch.build(); // Build the buffers
+        this.persistentDrawBatch.build(); // Build the buffers
     }
 
     @Override
     protected void render(final Matrix4fStack positionMatrix) {
-        persistentDrawBatch.draw(positionMatrix); // Draw the built contents of the drawBatch
+        this.persistentDrawBatch.draw(positionMatrix); // Draw the built contents of the drawBatch
 
         // persistentDrawBatch.free(); // Free up resources when done
     }

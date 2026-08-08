@@ -71,7 +71,6 @@ public abstract class MemoryAllocator {
         INSTANCE.free(memory);
     }
 
-
     public abstract Memory wrap(final long address, final long size);
 
     public abstract Memory allocate(final long size);

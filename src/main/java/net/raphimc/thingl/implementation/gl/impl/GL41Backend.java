@@ -18,7 +18,13 @@
 package net.raphimc.thingl.implementation.gl.impl;
 
 import io.github.ocelot.glslprocessor.api.GlslParser;
-import io.github.ocelot.glslprocessor.api.grammar.*;
+import io.github.ocelot.glslprocessor.api.grammar.GlslFunctionHeader;
+import io.github.ocelot.glslprocessor.api.grammar.GlslParameterDeclaration;
+import io.github.ocelot.glslprocessor.api.grammar.GlslSpecifiedType;
+import io.github.ocelot.glslprocessor.api.grammar.GlslStructField;
+import io.github.ocelot.glslprocessor.api.grammar.GlslStructSpecifier;
+import io.github.ocelot.glslprocessor.api.grammar.GlslTypeQualifier;
+import io.github.ocelot.glslprocessor.api.grammar.GlslTypeSpecifier;
 import io.github.ocelot.glslprocessor.api.node.GlslNode;
 import io.github.ocelot.glslprocessor.api.node.GlslNodeList;
 import io.github.ocelot.glslprocessor.api.node.GlslTree;
@@ -29,7 +35,11 @@ import io.github.ocelot.glslprocessor.api.node.expression.GlslOperationNode;
 import io.github.ocelot.glslprocessor.api.node.function.GlslFunctionNode;
 import io.github.ocelot.glslprocessor.api.node.function.GlslInvokeFunctionNode;
 import io.github.ocelot.glslprocessor.api.node.function.GlslPrimitiveConstructorNode;
-import io.github.ocelot.glslprocessor.api.node.variable.*;
+import io.github.ocelot.glslprocessor.api.node.variable.GlslGetArrayNode;
+import io.github.ocelot.glslprocessor.api.node.variable.GlslGetFieldNode;
+import io.github.ocelot.glslprocessor.api.node.variable.GlslNewFieldNode;
+import io.github.ocelot.glslprocessor.api.node.variable.GlslStructDeclarationNode;
+import io.github.ocelot.glslprocessor.api.node.variable.GlslVariableNode;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -39,7 +49,32 @@ import net.raphimc.thingl.rendering.command.impl.DrawArraysCommand;
 import net.raphimc.thingl.rendering.command.impl.DrawElementsCommand;
 import net.raphimc.thingl.resource.image.Image;
 import net.raphimc.thingl.util.glsl.GlslNodeMutator;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.ARBBufferStorage;
+import org.lwjgl.opengl.ARBTextureStorage;
+import org.lwjgl.opengl.ARBTextureStorageMultisample;
+import org.lwjgl.opengl.ARBVertexAttribBinding;
+import org.lwjgl.opengl.EXTDebugLabel;
+import org.lwjgl.opengl.EXTDirectStateAccess;
+import org.lwjgl.opengl.EXTShaderImageLoadStore;
+import org.lwjgl.opengl.EXTTextureStorage;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL12C;
+import org.lwjgl.opengl.GL13C;
+import org.lwjgl.opengl.GL14C;
+import org.lwjgl.opengl.GL15C;
+import org.lwjgl.opengl.GL20C;
+import org.lwjgl.opengl.GL30C;
+import org.lwjgl.opengl.GL31C;
+import org.lwjgl.opengl.GL32C;
+import org.lwjgl.opengl.GL33C;
+import org.lwjgl.opengl.GL40C;
+import org.lwjgl.opengl.GL41C;
+import org.lwjgl.opengl.GL42C;
+import org.lwjgl.opengl.GL43C;
+import org.lwjgl.opengl.GL44C;
+import org.lwjgl.opengl.GL45C;
+import org.lwjgl.opengl.GLCapabilities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,58 +84,6 @@ import java.util.Map;
 public class GL41Backend extends GL45Backend {
 
     private static final int SHADER_STORAGE_BUFFER_TEXTURE_UNIT_OFFSET = 16;
-
-    private static int getTextureQuery(final int target) {
-        return switch (target) {
-            case GL11C.GL_TEXTURE_1D -> GL11C.GL_TEXTURE_BINDING_1D;
-            case GL30C.GL_TEXTURE_1D_ARRAY -> GL30C.GL_TEXTURE_BINDING_1D_ARRAY;
-            case GL11C.GL_TEXTURE_2D -> GL11C.GL_TEXTURE_BINDING_2D;
-            case GL30C.GL_TEXTURE_2D_ARRAY -> GL30C.GL_TEXTURE_BINDING_2D_ARRAY;
-            case GL32C.GL_TEXTURE_2D_MULTISAMPLE -> GL32C.GL_TEXTURE_BINDING_2D_MULTISAMPLE;
-            case GL32C.GL_TEXTURE_2D_MULTISAMPLE_ARRAY -> GL32C.GL_TEXTURE_BINDING_2D_MULTISAMPLE_ARRAY;
-            case GL12C.GL_TEXTURE_3D -> GL12C.GL_TEXTURE_BINDING_3D;
-            case GL13C.GL_TEXTURE_CUBE_MAP -> GL13C.GL_TEXTURE_BINDING_CUBE_MAP;
-            case GL40C.GL_TEXTURE_CUBE_MAP_ARRAY -> GL40C.GL_TEXTURE_BINDING_CUBE_MAP_ARRAY;
-            case GL31C.GL_TEXTURE_BUFFER -> GL31C.GL_TEXTURE_BINDING_BUFFER;
-            default -> throw new IllegalArgumentException("Unsupported texture target: " + target);
-        };
-    }
-
-    private static int getTextureFormat(final int internalFormat) {
-        return switch (internalFormat) {
-            case GL11C.GL_RGBA8 -> GL11C.GL_RGBA;
-            case GL11C.GL_RGB8 -> GL11C.GL_RGB;
-            case GL30C.GL_RG8 -> GL30C.GL_RG;
-            case GL30C.GL_R8 -> GL11C.GL_RED;
-            case GL30C.GL_DEPTH_COMPONENT32F, GL14C.GL_DEPTH_COMPONENT32, GL14C.GL_DEPTH_COMPONENT24, GL14C.GL_DEPTH_COMPONENT16 -> GL11C.GL_DEPTH_COMPONENT;
-            case GL30C.GL_DEPTH32F_STENCIL8, GL30C.GL_DEPTH24_STENCIL8 -> GL30C.GL_DEPTH_STENCIL;
-            default -> throw new IllegalArgumentException("Unknown texture internal format: " + internalFormat);
-        };
-    }
-
-    private static int getTextureType(final int internalFormat) {
-        return switch (internalFormat) {
-            case GL11C.GL_RGBA8, GL11C.GL_RGB8, GL30C.GL_RG8, GL30C.GL_R8 -> GL11C.GL_UNSIGNED_BYTE;
-            case GL30C.GL_DEPTH_COMPONENT32F -> GL11C.GL_FLOAT;
-            case GL14C.GL_DEPTH_COMPONENT32, GL14C.GL_DEPTH_COMPONENT24 -> GL11C.GL_UNSIGNED_INT;
-            case GL14C.GL_DEPTH_COMPONENT16 -> GL11C.GL_UNSIGNED_SHORT;
-            case GL30C.GL_DEPTH32F_STENCIL8 -> GL30C.GL_FLOAT_32_UNSIGNED_INT_24_8_REV;
-            case GL30C.GL_DEPTH24_STENCIL8 -> GL30C.GL_UNSIGNED_INT_24_8;
-            default -> throw new IllegalArgumentException("Unknown texture internal format: " + internalFormat);
-        };
-    }
-
-    private static int getDebugLabelObjectTypeEXT(final int identifier) {
-        return switch (identifier) {
-            case GL43C.GL_BUFFER -> EXTDebugLabel.GL_BUFFER_OBJECT_EXT;
-            case GL43C.GL_SHADER -> EXTDebugLabel.GL_SHADER_OBJECT_EXT;
-            case GL43C.GL_PROGRAM -> EXTDebugLabel.GL_PROGRAM_OBJECT_EXT;
-            case GL11C.GL_VERTEX_ARRAY -> EXTDebugLabel.GL_VERTEX_ARRAY_OBJECT_EXT;
-            case GL43C.GL_QUERY -> EXTDebugLabel.GL_QUERY_OBJECT_EXT;
-            case GL43C.GL_PROGRAM_PIPELINE -> EXTDebugLabel.GL_PROGRAM_PIPELINE_OBJECT_EXT;
-            default -> identifier;
-        };
-    }
 
     private final GLCapabilities capabilities = GL.getCapabilities();
     private final Int2IntMap textureTargets = new Int2IntOpenHashMap();
@@ -152,7 +135,7 @@ public class GL41Backend extends GL45Backend {
             if (modified) {
                 string = glslTree.toSourceString();
             }
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             ThinGL.LOGGER.warn("Failed to rewrite shader source, using original source", e);
         }
         super.shaderSource(shader, string);
@@ -1409,7 +1392,59 @@ public class GL41Backend extends GL45Backend {
         this.queryTargets.put(query, target);
     }
 
-    private static class VertexArrayObject {
+    private static int getTextureQuery(final int target) {
+        return switch (target) {
+            case GL11C.GL_TEXTURE_1D -> GL11C.GL_TEXTURE_BINDING_1D;
+            case GL30C.GL_TEXTURE_1D_ARRAY -> GL30C.GL_TEXTURE_BINDING_1D_ARRAY;
+            case GL11C.GL_TEXTURE_2D -> GL11C.GL_TEXTURE_BINDING_2D;
+            case GL30C.GL_TEXTURE_2D_ARRAY -> GL30C.GL_TEXTURE_BINDING_2D_ARRAY;
+            case GL32C.GL_TEXTURE_2D_MULTISAMPLE -> GL32C.GL_TEXTURE_BINDING_2D_MULTISAMPLE;
+            case GL32C.GL_TEXTURE_2D_MULTISAMPLE_ARRAY -> GL32C.GL_TEXTURE_BINDING_2D_MULTISAMPLE_ARRAY;
+            case GL12C.GL_TEXTURE_3D -> GL12C.GL_TEXTURE_BINDING_3D;
+            case GL13C.GL_TEXTURE_CUBE_MAP -> GL13C.GL_TEXTURE_BINDING_CUBE_MAP;
+            case GL40C.GL_TEXTURE_CUBE_MAP_ARRAY -> GL40C.GL_TEXTURE_BINDING_CUBE_MAP_ARRAY;
+            case GL31C.GL_TEXTURE_BUFFER -> GL31C.GL_TEXTURE_BINDING_BUFFER;
+            default -> throw new IllegalArgumentException("Unsupported texture target: " + target);
+        };
+    }
+
+    private static int getTextureFormat(final int internalFormat) {
+        return switch (internalFormat) {
+            case GL11C.GL_RGBA8 -> GL11C.GL_RGBA;
+            case GL11C.GL_RGB8 -> GL11C.GL_RGB;
+            case GL30C.GL_RG8 -> GL30C.GL_RG;
+            case GL30C.GL_R8 -> GL11C.GL_RED;
+            case GL30C.GL_DEPTH_COMPONENT32F, GL14C.GL_DEPTH_COMPONENT32, GL14C.GL_DEPTH_COMPONENT24, GL14C.GL_DEPTH_COMPONENT16 -> GL11C.GL_DEPTH_COMPONENT;
+            case GL30C.GL_DEPTH32F_STENCIL8, GL30C.GL_DEPTH24_STENCIL8 -> GL30C.GL_DEPTH_STENCIL;
+            default -> throw new IllegalArgumentException("Unknown texture internal format: " + internalFormat);
+        };
+    }
+
+    private static int getTextureType(final int internalFormat) {
+        return switch (internalFormat) {
+            case GL11C.GL_RGBA8, GL11C.GL_RGB8, GL30C.GL_RG8, GL30C.GL_R8 -> GL11C.GL_UNSIGNED_BYTE;
+            case GL30C.GL_DEPTH_COMPONENT32F -> GL11C.GL_FLOAT;
+            case GL14C.GL_DEPTH_COMPONENT32, GL14C.GL_DEPTH_COMPONENT24 -> GL11C.GL_UNSIGNED_INT;
+            case GL14C.GL_DEPTH_COMPONENT16 -> GL11C.GL_UNSIGNED_SHORT;
+            case GL30C.GL_DEPTH32F_STENCIL8 -> GL30C.GL_FLOAT_32_UNSIGNED_INT_24_8_REV;
+            case GL30C.GL_DEPTH24_STENCIL8 -> GL30C.GL_UNSIGNED_INT_24_8;
+            default -> throw new IllegalArgumentException("Unknown texture internal format: " + internalFormat);
+        };
+    }
+
+    private static int getDebugLabelObjectTypeEXT(final int identifier) {
+        return switch (identifier) {
+            case GL43C.GL_BUFFER -> EXTDebugLabel.GL_BUFFER_OBJECT_EXT;
+            case GL43C.GL_SHADER -> EXTDebugLabel.GL_SHADER_OBJECT_EXT;
+            case GL43C.GL_PROGRAM -> EXTDebugLabel.GL_PROGRAM_OBJECT_EXT;
+            case GL11C.GL_VERTEX_ARRAY -> EXTDebugLabel.GL_VERTEX_ARRAY_OBJECT_EXT;
+            case GL43C.GL_QUERY -> EXTDebugLabel.GL_QUERY_OBJECT_EXT;
+            case GL43C.GL_PROGRAM_PIPELINE -> EXTDebugLabel.GL_PROGRAM_PIPELINE_OBJECT_EXT;
+            default -> identifier;
+        };
+    }
+
+    private static final class VertexArrayObject {
 
         private final int id;
         private final Int2ObjectMap<VertexBufferBinding> vertexBufferBinding = new Int2ObjectOpenHashMap<>();
@@ -1459,7 +1494,7 @@ public class GL41Backend extends GL45Backend {
             GL30C.glBindVertexArray(previousVertexArray);
         }
 
-        private static class VertexBufferBinding {
+        private static final class VertexBufferBinding {
 
             private int buffer;
             private long offset;
@@ -1471,7 +1506,7 @@ public class GL41Backend extends GL45Backend {
 
         }
 
-        private static class VertexAttribute {
+        private static final class VertexAttribute {
 
             private int bindingindex;
             private VertexAttribFormat format;
@@ -1495,7 +1530,7 @@ public class GL41Backend extends GL45Backend {
 
     }
 
-    private static class ShaderStorageBufferShaderRewriter {
+    private static final class ShaderStorageBufferShaderRewriter {
 
         private static boolean modify(final GlslTree tree) {
             final List<GlslStructDeclarationNode> bufferStructs = getBufferStructs(tree);
@@ -1543,26 +1578,26 @@ public class GL41Backend extends GL45Backend {
         private static GlslFunctionNode generateGetter(final GlslTree tree, final int offset, final String bufferStructName, final GlslStructField field) {
             final String functionName = "get_" + bufferStructName + "_" + field.getName();
             final String varName = "var";
-            GlslFunctionNode functionNode;
+            final GlslFunctionNode functionNode;
             if (field.getType().getSpecifier() instanceof GlslTypeSpecifier.Array arraySpecifier) {
                 // If the buffer struct field is an array, the getter doesn't return the entire array, instead it returns only the element at the given index.
                 // This prevents a lot of unnecessary converting of data.
                 final int typeSize = calculateSize(tree, arraySpecifier.getSpecifier());
                 functionNode = new GlslFunctionNode(
-                        new GlslFunctionHeader(functionName, arraySpecifier.getSpecifier(), List.of(new GlslParameterDeclaration(GlslTypeSpecifier.BuiltinType.INT, "index"))),
-                        List.of()
+                    new GlslFunctionHeader(functionName, arraySpecifier.getSpecifier(), List.of(new GlslParameterDeclaration(GlslTypeSpecifier.BuiltinType.INT, "index"))),
+                    List.of()
                 );
                 functionNode.getBody().add(new GlslNewFieldNode(arraySpecifier.getSpecifier(), varName, null));
                 functionNode.getBody().addAll(generateConstructor(
-                        tree,
-                        bufferStructName,
-                        new GlslOperationNode(
-                                GlslNode.intConstant(offset),
-                                new GlslOperationNode(new GlslVariableNode("index"), GlslNode.intConstant(typeSize), GlslOperationNode.Operand.MULTIPLY),
-                                GlslOperationNode.Operand.ADD
-                        ),
-                        new GlslVariableNode(varName),
-                        arraySpecifier.getSpecifier())
+                    tree,
+                    bufferStructName,
+                    new GlslOperationNode(
+                        GlslNode.intConstant(offset),
+                        new GlslOperationNode(new GlslVariableNode("index"), GlslNode.intConstant(typeSize), GlslOperationNode.Operand.MULTIPLY),
+                        GlslOperationNode.Operand.ADD
+                    ),
+                    new GlslVariableNode(varName),
+                    arraySpecifier.getSpecifier())
                 );
             } else {
                 // If the buffer struct field is not an array, the getter simply reads and returns the value.
@@ -1588,11 +1623,11 @@ public class GL41Backend extends GL45Backend {
                 for (int i = 0; i < fields.size(); i++) {
                     final GlslStructField field = fields.get(i);
                     nodeList.addAll(generateConstructor(
-                            tree,
-                            arrayName,
-                            new GlslOperationNode(offset, GlslNode.intConstant(currentOffset), GlslOperationNode.Operand.ADD),
-                            new GlslGetFieldNode(target, field.getName()),
-                            field.getType().getSpecifier()
+                        tree,
+                        arrayName,
+                        new GlslOperationNode(offset, GlslNode.intConstant(currentOffset), GlslOperationNode.Operand.ADD),
+                        new GlslGetFieldNode(target, field.getName()),
+                        field.getType().getSpecifier()
                     ));
                     if (i < fields.size() - 1) {
                         currentOffset += calculateSize(tree, field.getType().getSpecifier());

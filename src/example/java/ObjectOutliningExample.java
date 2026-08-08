@@ -24,12 +24,12 @@ import org.joml.Matrix4fStack;
 
 public class ObjectOutliningExample extends GLFWApplicationRunner {
 
-    public static void main(String[] args) {
-        new ObjectOutliningExample().run();
-    }
-
     public ObjectOutliningExample() {
         super(new Configuration().setWindowTitle("ThinGL Example - Object outlining").setExtendedDebugMode(true));
+    }
+
+    void main() {
+        this.run();
     }
 
     @Override

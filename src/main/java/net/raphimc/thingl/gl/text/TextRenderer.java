@@ -30,7 +30,11 @@ import net.raphimc.thingl.rendering.dataholder.MultiDrawBatchDataHolder;
 import net.raphimc.thingl.resource.font.instance.FontInstance;
 import net.raphimc.thingl.resource.font.instance.ScaledFontInstance;
 import net.raphimc.thingl.text.TextStyle;
-import net.raphimc.thingl.text.shaping.*;
+import net.raphimc.thingl.text.shaping.ShapedTextBlock;
+import net.raphimc.thingl.text.shaping.ShapedTextLine;
+import net.raphimc.thingl.text.shaping.ShapedTextRun;
+import net.raphimc.thingl.text.shaping.ShapedTextSegment;
+import net.raphimc.thingl.text.shaping.TextShaper;
 import net.raphimc.thingl.util.ArrayCache;
 import net.raphimc.thingl.util.rectpack.Slot;
 import org.joml.Matrix4f;
@@ -59,17 +63,17 @@ public abstract class TextRenderer {
 
     protected TextRenderer(final Supplier<Program> program, final FontInstance.GlyphBitmap.RenderMode glyphRenderMode, final Consumer<Program> programSetup) {
         this.drawBatch = new DrawBatch.Builder(DrawBatches.TEXTURE_SNIPPET)
-                .program(program)
-                .vertexDataLayout(DrawBatches.TEXT_GLYPH_LAYOUT)
-                .appendSetupAction(programSetup)
-                .appendSetupAction(p -> {
-                    final int[] textureIds = new int[this.glyphAtlases.size()];
-                    for (int i = 0; i < this.glyphAtlases.size(); i++) {
-                        textureIds[i] = this.glyphAtlases.get(i).getGlId();
-                    }
-                    p.setUniformSamplerArray("u_Textures", textureIds);
-                })
-                .build();
+            .program(program)
+            .vertexDataLayout(DrawBatches.TEXT_GLYPH_LAYOUT)
+            .appendSetupAction(programSetup)
+            .appendSetupAction(p -> {
+                final int[] textureIds = new int[this.glyphAtlases.size()];
+                for (int i = 0; i < this.glyphAtlases.size(); i++) {
+                    textureIds[i] = this.glyphAtlases.get(i).getGlId();
+                }
+                p.setUniformSamplerArray("u_Textures", textureIds);
+            })
+            .build();
         this.glyphRenderMode = glyphRenderMode;
     }
 
@@ -126,6 +130,7 @@ public abstract class TextRenderer {
         return this.glyphRenderMode;
     }
 
+    @SuppressWarnings("checkstyle:OverloadMethodsDeclarationOrder")
     protected void renderTextRun(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextRun textRun, final float x, final float y, final float z, final FontInstance decorationFont) {
         final FontInstance font = textRun.font();
         for (ShapedTextSegment textSegment : textRun.segments()) {
@@ -218,10 +223,10 @@ public abstract class TextRenderer {
             final AtlasGlyph baseAtlasGlyph = this.getAtlasGlyph(scaledFont.getBaseInstance(), glyphIndex);
             if (baseAtlasGlyph != AtlasGlyph.EMPTY) {
                 return new AtlasGlyph(baseAtlasGlyph.atlasIndex(), baseAtlasGlyph.u1(), baseAtlasGlyph.v1(), baseAtlasGlyph.u2(), baseAtlasGlyph.v2(),
-                        baseAtlasGlyph.xOffset() * scaledFont.getScale(),
-                        baseAtlasGlyph.yOffset() * scaledFont.getScale(),
-                        baseAtlasGlyph.width() * scaledFont.getScale(),
-                        baseAtlasGlyph.height() * scaledFont.getScale()
+                    baseAtlasGlyph.xOffset() * scaledFont.getScale(),
+                    baseAtlasGlyph.yOffset() * scaledFont.getScale(),
+                    baseAtlasGlyph.width() * scaledFont.getScale(),
+                    baseAtlasGlyph.height() * scaledFont.getScale()
                 );
             } else {
                 return AtlasGlyph.EMPTY;

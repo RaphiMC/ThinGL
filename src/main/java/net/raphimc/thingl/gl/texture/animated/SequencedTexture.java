@@ -50,7 +50,7 @@ public class SequencedTexture extends Texture2DArray {
                 frameIndex++;
             }
             this.frameTimes.put(relativeTime, frameIndex - 1);
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             this.free();
             throw e;
         } finally {

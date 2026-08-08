@@ -32,8 +32,12 @@ public enum DataType {
     HALF_FLOAT(GL30C.GL_HALF_FLOAT, "Half Float", Short.BYTES, TargetDataType.FLOAT),
     FIXED_FLOAT(GL41C.GL_FIXED, "Fixed Float", Float.BYTES, TargetDataType.FLOAT),
     FLOAT(GL11C.GL_FLOAT, "Float", Float.BYTES, TargetDataType.FLOAT),
-    DOUBLE(GL11C.GL_DOUBLE, "Double", Double.BYTES, TargetDataType.DOUBLE),
-    ;
+    DOUBLE(GL11C.GL_DOUBLE, "Double", Double.BYTES, TargetDataType.DOUBLE);
+
+    private final int glType;
+    private final String displayName;
+    private final int size;
+    private final TargetDataType targetDataType;
 
     public static DataType fromGlType(final int glType) {
         for (DataType type : values()) {
@@ -44,11 +48,6 @@ public enum DataType {
 
         throw new IllegalArgumentException("Unknown data type: " + glType);
     }
-
-    private final int glType;
-    private final String displayName;
-    private final int size;
-    private final TargetDataType targetDataType;
 
     DataType(final int glType, final String displayName, final int size, final TargetDataType targetDataType) {
         this.glType = glType;

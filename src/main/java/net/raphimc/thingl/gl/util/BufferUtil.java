@@ -22,9 +22,12 @@ import net.raphimc.thingl.gl.resource.buffer.impl.ImmutableBuffer;
 import net.raphimc.thingl.gl.resource.buffer.impl.MutableBuffer;
 import net.raphimc.thingl.resource.memory.Memory;
 
-public class BufferUtil {
+public final class BufferUtil {
 
     public static final long DEFAULT_BUFFER_SIZE = 256 * 1024L;
+
+    private BufferUtil() {
+    }
 
     public static Buffer uploadResizing(Buffer buffer, final Memory dataBuffer) {
         buffer = ensureSize(buffer, dataBuffer.getSize());
