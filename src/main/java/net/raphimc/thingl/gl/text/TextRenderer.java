@@ -130,7 +130,6 @@ public abstract class TextRenderer {
         return this.glyphRenderMode;
     }
 
-    @SuppressWarnings("checkstyle:OverloadMethodsDeclarationOrder")
     protected void renderTextRun(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextRun textRun, final float x, final float y, final float z, final FontInstance decorationFont) {
         final FontInstance font = textRun.font();
         for (ShapedTextSegment textSegment : textRun.segments()) {
