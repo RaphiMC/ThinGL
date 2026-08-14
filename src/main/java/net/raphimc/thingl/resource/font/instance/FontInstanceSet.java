@@ -29,7 +29,7 @@ import java.util.SequencedMap;
 public class FontInstanceSet {
 
     private final FontInstance mainInstance;
-    private final SequencedMap<FontInstance, GlyphPredicate> instances = new LinkedHashMap<>();
+    private final SequencedMap<FontInstance, GlyphPredicate> instances;
     private final Int2ObjectMap<FontInstanceSet> scaledInstanceSets = Int2ObjectMaps.synchronize(new Int2ObjectOpenHashMap<>());
 
     public FontInstanceSet(final SequencedMap<FontInstance, GlyphPredicate> instances) {
@@ -37,7 +37,7 @@ public class FontInstanceSet {
             throw new IllegalArgumentException("Font instance set must contain at least one instance");
         }
         this.mainInstance = instances.firstEntry().getKey();
-        this.instances.putAll(instances);
+        this.instances = new LinkedHashMap<>(instances);
     }
 
     public FontInstanceSet getScaledInstanceSet(final int size) {

@@ -31,7 +31,7 @@ import java.util.SequencedMap;
 public class FontFaceSet {
 
     private final FontFace mainFace;
-    private final SequencedMap<FontFace, GlyphPredicate> faces = new LinkedHashMap<>();
+    private final SequencedMap<FontFace, GlyphPredicate> faces;
     private final Int2ObjectMap<FontInstanceSet> instanceSets = Int2ObjectMaps.synchronize(new Int2ObjectOpenHashMap<>());
 
     public FontFaceSet(final SequencedMap<FontFace, GlyphPredicate> faces) {
@@ -39,7 +39,7 @@ public class FontFaceSet {
             throw new IllegalArgumentException("Font face set must contain at least one face");
         }
         this.mainFace = faces.firstEntry().getKey();
-        this.faces.putAll(faces);
+        this.faces = new LinkedHashMap<>(faces);
     }
 
     public FontInstanceSet getInstanceSet(final int size) {
