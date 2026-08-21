@@ -36,20 +36,20 @@ import java.awt.image.BufferedImage;
 public class AwtFontInstance extends FontInstance {
 
     private final Font font;
+    private final LineMetrics fontMetrics;
     private final BufferedImage drawImage;
     private final Graphics2D graphics;
-    private final LineMetrics fontMetrics;
 
     public AwtFontInstance(final AwtFontFace face, final int size) {
         super(face, size);
         this.font = face.getFont().deriveFont((float) size);
+        this.fontMetrics = this.font.getLineMetrics("", AwtFontFace.FONT_RENDER_CONTEXT);
         this.drawImage = new BufferedImage(this.font.getSize() * 2, this.font.getSize() * 2, BufferedImage.TYPE_INT_ARGB);
         this.graphics = this.drawImage.createGraphics();
         AwtUtil.configureGraphics2DForMaximumQuality(this.graphics);
-        this.graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+        this.graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, AwtFontFace.FONT_RENDER_CONTEXT.getFractionalMetricsHint());
         this.graphics.setFont(this.font);
         this.graphics.setColor(Color.WHITE);
-        this.fontMetrics = this.font.getLineMetrics("", this.graphics.getFontRenderContext());
     }
 
     @Override
@@ -60,7 +60,7 @@ public class AwtFontInstance extends FontInstance {
         }
         switch (renderMode) {
             case PIXELATED, COLORED_PIXELATED -> this.graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-            case ANTIALIASED, COLORED_ANTIALIASED -> this.graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            case ANTIALIASED, COLORED_ANTIALIASED -> this.graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, AwtFontFace.FONT_RENDER_CONTEXT.getAntiAliasingHint());
             default -> throw new IllegalArgumentException("Unsupported render mode: " + renderMode);
         }
         final GlyphVector glyphVector = this.font.createGlyphVector(this.graphics.getFontRenderContext(), new int[]{glyphIndex});
@@ -124,7 +124,7 @@ public class AwtFontInstance extends FontInstance {
 
     @Override
     protected GlyphMetrics loadGlyphMetrics(final int glyphIndex) {
-        final GlyphVector glyphVector = this.font.createGlyphVector(this.graphics.getFontRenderContext(), new int[]{glyphIndex});
+        final GlyphVector glyphVector = this.font.createGlyphVector(AwtFontFace.FONT_RENDER_CONTEXT, new int[]{glyphIndex});
         if (glyphVector.getNumGlyphs() != 1) {
             throw new IllegalStateException("Glyph vector for glyph index " + glyphIndex + " does not map to exactly one glyph");
         }

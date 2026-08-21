@@ -27,7 +27,7 @@ import java.awt.font.GlyphVector;
 
 public class AwtFontFace extends FontFace {
 
-    private static final FontRenderContext FONT_RENDER_CONTEXT = new FontRenderContext(null, true, true);
+    public static final FontRenderContext FONT_RENDER_CONTEXT = new FontRenderContext(null, true, true);
 
     private final Font font;
     private final String postScriptName;
