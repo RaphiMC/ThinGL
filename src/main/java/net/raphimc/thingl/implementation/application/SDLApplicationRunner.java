@@ -136,7 +136,7 @@ public abstract class SDLApplicationRunner extends ApplicationRunner {
 
     protected void freeSDL() {
         SDLInit.SDL_Quit();
-        SDLLog.nSDL_SetLogOutputFunction(SDLLog.nSDL_GetDefaultLogOutputFunction(), 0L);
+        SDLLog.nSDL_SetLogOutputFunction(SDLLog.SDL_GetDefaultLogOutputFunction(), 0L);
         if (this.logOutputFunction != null) {
             this.logOutputFunction.free();
             this.logOutputFunction = null;

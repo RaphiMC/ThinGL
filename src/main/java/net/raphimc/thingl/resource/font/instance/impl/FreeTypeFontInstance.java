@@ -71,7 +71,7 @@ public class FreeTypeFontInstance extends FontInstance {
     public GlyphBitmap createGlyphBitmap(final int glyphIndex, final GlyphBitmap.RenderMode renderMode) {
         int loadFlags = FreeType.FT_LOAD_DEFAULT | FreeType.FT_LOAD_NO_HINTING;
         if (renderMode == GlyphBitmap.RenderMode.PIXELATED || renderMode == GlyphBitmap.RenderMode.COLORED_PIXELATED) {
-            loadFlags |= FreeType.FT_FT_LOAD_TARGET_MONO;
+            loadFlags |= FreeType.FT_LOAD_TARGET_MONO;
         }
         if (renderMode == GlyphBitmap.RenderMode.COLORED_PIXELATED || renderMode == GlyphBitmap.RenderMode.COLORED_ANTIALIASED) {
             loadFlags |= FreeType.FT_LOAD_COLOR;
