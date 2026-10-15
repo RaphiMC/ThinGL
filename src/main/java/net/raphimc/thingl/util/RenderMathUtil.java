@@ -62,15 +62,23 @@ public final class RenderMathUtil {
         final int[] viewport = ThinGL.glStateManager().getViewport().toArray();
         final Matrix4f mvpMatrix = RenderMathUtil.getMvpMatrix(positionMatrix);
         final Vector3f topLeft = new Vector3f(xtl, ytl, 0F);
+        final Vector3f topRight = new Vector3f(xbr, ytl, 0F);
+        final Vector3f bottomLeft = new Vector3f(xtl, ybr, 0F);
         final Vector3f bottomRight = new Vector3f(xbr, ybr, 0F);
 
         mvpMatrix.project(topLeft, viewport, topLeft);
+        mvpMatrix.project(topRight, viewport, topRight);
+        mvpMatrix.project(bottomLeft, viewport, bottomLeft);
         mvpMatrix.project(bottomRight, viewport, bottomRight);
 
+        final float minX = Math.min(Math.min(topLeft.x, topRight.x), Math.min(bottomLeft.x, bottomRight.x));
+        final float minY = Math.min(Math.min(topLeft.y, topRight.y), Math.min(bottomLeft.y, bottomRight.y));
+        final float maxX = Math.max(Math.max(topLeft.x, topRight.x), Math.max(bottomLeft.x, bottomRight.x));
+        final float maxY = Math.max(Math.max(topLeft.y, topRight.y), Math.max(bottomLeft.y, bottomRight.y));
         if (flipY) {
-            return new Rectanglei(Math.round(topLeft.x), Math.round(viewport[3] - topLeft.y), Math.round(bottomRight.x), Math.round(viewport[3] - bottomRight.y));
+            return new Rectanglei(Math.round(minX), Math.round(viewport[3] - maxY), Math.round(maxX), Math.round(viewport[3] - minY));
         } else {
-            return new Rectanglei(Math.round(topLeft.x), Math.round(bottomRight.y), Math.round(bottomRight.x), Math.round(topLeft.y));
+            return new Rectanglei(Math.round(minX), Math.round(minY), Math.round(maxX), Math.round(maxY));
         }
     }
 
