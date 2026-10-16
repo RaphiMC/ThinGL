@@ -31,7 +31,7 @@ import net.raphimc.thingl.gl.rendering.upload.UploadedDrawBatchData;
 import net.raphimc.thingl.gl.resource.buffer.Buffer;
 import net.raphimc.thingl.rendering.DrawBatch;
 import net.raphimc.thingl.util.RenderMathUtil;
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -121,7 +121,7 @@ public class MultiDrawRenderer {
         this.draw(RenderMathUtil.getIdentityMatrix());
     }
 
-    public void draw(final Matrix4f modelMatrix) {
+    public void draw(final Matrix4fc modelMatrix) {
         if (this.hasDrawBatches()) {
             for (DrawBatch drawBatch : this.firstOrderedDrawBatches) {
                 this.draw(drawBatch, modelMatrix);
@@ -137,7 +137,7 @@ public class MultiDrawRenderer {
         }
     }
 
-    public void draw(final Matrix4f modelMatrix, final Buffer drawDataBuffer) {
+    public void draw(final Matrix4fc modelMatrix, final Buffer drawDataBuffer) {
         if (this.hasDrawBatches()) {
             for (DrawBatch drawBatch : this.firstOrderedDrawBatches) {
                 this.draw(drawBatch, modelMatrix, drawDataBuffer);
@@ -153,11 +153,11 @@ public class MultiDrawRenderer {
         }
     }
 
-    public void draw(final DrawBatch drawBatch, final Matrix4f modelMatrix) {
+    public void draw(final DrawBatch drawBatch, final Matrix4fc modelMatrix) {
         this.draw(drawBatch, modelMatrix, null);
     }
 
-    public void draw(final DrawBatch drawBatch, final Matrix4f modelMatrix, final Buffer drawDataBuffer) {
+    public void draw(final DrawBatch drawBatch, final Matrix4fc modelMatrix, final Buffer drawDataBuffer) {
         final MultiDrawBuilder multiDrawBuilder = this.drawBatches.get(drawBatch);
         if (multiDrawBuilder != null) {
             multiDrawBuilder.getUploadedDrawBatchData().shaderStorageBuffers().put("ssbo_DrawData", drawDataBuffer);

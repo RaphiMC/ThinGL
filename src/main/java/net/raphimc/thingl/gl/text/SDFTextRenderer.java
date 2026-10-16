@@ -25,7 +25,7 @@ import net.raphimc.thingl.resource.font.instance.FontInstance;
 import net.raphimc.thingl.resource.font.instance.ScaledFontInstance;
 import net.raphimc.thingl.text.TextStyle;
 import net.raphimc.thingl.text.shaping.ShapedTextSegment;
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 
 public class SDFTextRenderer extends TextRenderer {
 
@@ -40,7 +40,7 @@ public class SDFTextRenderer extends TextRenderer {
     }
 
     @Override
-    protected void renderTextSegment(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final FontInstance font, final ShapedTextSegment textSegment, final float x, final float y, final float z) {
+    protected void renderTextSegment(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final FontInstance font, final ShapedTextSegment textSegment, final float x, final float y, final float z) {
         final ShaderBufferBuilder textDataBufferBuilder = multiDrawBatchDataHolder.getShaderStorageBufferBuilder(this.getDrawBatch(), "ssbo_TextData", Std430ShaderBufferBuilder.SUPPLIER).ensureInTopLevelArray();
         final TextStyle textStyle = textSegment.style();
         final float boldnessExpansion = this.getBaseFont(font).getSize() * (textStyle.boldnessStrength() / 100F);

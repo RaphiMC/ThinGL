@@ -21,6 +21,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import org.joml.Vector2f;
+import org.joml.Vector2fc;
 
 import java.util.Collection;
 import java.util.List;
@@ -34,7 +35,7 @@ public final class Earcut {
     private Earcut() {
     }
 
-    public static IntList earcut(final List<Vector2f> points) {
+    public static IntList earcut(final List<? extends Vector2fc> points) {
         final Node startNode = buildLinkedRing(points, true);
         if (startNode == null || startNode.next == startNode.prev) {
             return IntLists.emptyList();
@@ -45,11 +46,11 @@ public final class Earcut {
         return triangles;
     }
 
-    private static Node buildLinkedRing(final List<Vector2f> points, final boolean clockwise) {
+    private static Node buildLinkedRing(final List<? extends Vector2fc> points, final boolean clockwise) {
         float signedArea = 0F;
-        Vector2f previousPoint = points.getLast();
-        for (Vector2f point : points) {
-            signedArea += (previousPoint.x - point.x) * (point.y + previousPoint.y);
+        Vector2fc previousPoint = points.getLast();
+        for (Vector2fc point : points) {
+            signedArea += (previousPoint.x() - point.x()) * (point.y() + previousPoint.y());
             previousPoint = point;
         }
 
@@ -449,11 +450,11 @@ public final class Earcut {
         private Node prevZ; // previous node in z-order
         private Node nextZ; // next node in z-order
 
-        private Node(final Vector2f point, final int index) {
+        private Node(final Vector2fc point, final int index) {
             this(point, index, null);
         }
 
-        private Node(final Vector2f point, final int index, final Node last) {
+        private Node(final Vector2fc point, final int index, final Node last) {
             super(point);
             this.i = index;
             if (last != null) {
@@ -479,23 +480,23 @@ public final class Earcut {
 
     private record PolygonBounds(float minX, float minY, float maxX, float maxY, float invSize) {
 
-        private PolygonBounds(final Collection<Vector2f> points) {
+        private PolygonBounds(final Collection<? extends Vector2fc> points) {
             float minX = Float.MAX_VALUE;
             float minY = Float.MAX_VALUE;
             float maxX = -Float.MAX_VALUE;
             float maxY = -Float.MAX_VALUE;
-            for (Vector2f point : points) {
-                if (point.x < minX) {
-                    minX = point.x;
+            for (Vector2fc point : points) {
+                if (point.x() < minX) {
+                    minX = point.x();
                 }
-                if (point.y < minY) {
-                    minY = point.y;
+                if (point.y() < minY) {
+                    minY = point.y();
                 }
-                if (point.x > maxX) {
-                    maxX = point.x;
+                if (point.x() > maxX) {
+                    maxX = point.x();
                 }
-                if (point.y > maxY) {
-                    maxY = point.y;
+                if (point.y() > maxY) {
+                    maxY = point.y();
                 }
             }
             final float size = Math.max(maxX - minX, maxY - minY);

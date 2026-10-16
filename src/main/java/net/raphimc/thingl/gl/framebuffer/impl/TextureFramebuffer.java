@@ -20,7 +20,7 @@ package net.raphimc.thingl.gl.framebuffer.impl;
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.framebuffer.ResizingFramebuffer;
 import net.raphimc.thingl.gl.resource.image.texture.impl.Texture2D;
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL14C;
 import org.lwjgl.opengl.GL30C;
@@ -52,7 +52,7 @@ public class TextureFramebuffer extends ResizingFramebuffer {
         } : null);
     }
 
-    public void render(final Matrix4f positionMatrix, final float x, final float y, final float width, final float height) {
+    public void render(final Matrix4fc positionMatrix, final float x, final float y, final float width, final float height) {
         ThinGL.globalUniforms().getProjectionMatrix().pushMatrix().setOrtho(0F, this.getWidth(), this.getHeight(), 0F, -1000F, 1000F);
         ThinGL.globalUniforms().getViewMatrix().pushMatrix().identity();
         ThinGL.renderer2D().textureWithRawTexCoord(positionMatrix, this.getColorAttachment(0), x, y, width, height, 0F, 1F, 1F, -1F);

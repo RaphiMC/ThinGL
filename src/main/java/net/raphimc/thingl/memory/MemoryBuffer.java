@@ -21,18 +21,31 @@ import net.lenni0451.commons.math.MathUtils;
 import net.raphimc.thingl.memory.allocator.MemoryAllocator;
 import net.raphimc.thingl.resource.memory.Memory;
 import org.joml.Matrix3d;
+import org.joml.Matrix3dc;
 import org.joml.Matrix3f;
+import org.joml.Matrix3fc;
 import org.joml.Matrix4d;
+import org.joml.Matrix4dc;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 import org.joml.Vector2d;
+import org.joml.Vector2dc;
 import org.joml.Vector2f;
+import org.joml.Vector2fc;
 import org.joml.Vector2i;
+import org.joml.Vector2ic;
 import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.joml.Vector3i;
+import org.joml.Vector3ic;
 import org.joml.Vector4d;
+import org.joml.Vector4dc;
 import org.joml.Vector4f;
+import org.joml.Vector4fc;
 import org.joml.Vector4i;
+import org.joml.Vector4ic;
 
 public class MemoryBuffer {
 
@@ -175,8 +188,8 @@ public class MemoryBuffer {
         return vector;
     }
 
-    public MemoryBuffer writeVector2i(final Vector2i vector) {
-        return this.writeVector2i(vector.x, vector.y);
+    public MemoryBuffer writeVector2i(final Vector2ic vector) {
+        return this.writeVector2i(vector.x(), vector.y());
     }
 
     public MemoryBuffer writeVector2i(final int x, final int y) {
@@ -197,8 +210,8 @@ public class MemoryBuffer {
         return vector;
     }
 
-    public MemoryBuffer writeVector3i(final Vector3i vector) {
-        return this.writeVector3i(vector.x, vector.y, vector.z);
+    public MemoryBuffer writeVector3i(final Vector3ic vector) {
+        return this.writeVector3i(vector.x(), vector.y(), vector.z());
     }
 
     public MemoryBuffer writeVector3i(final int x, final int y, final int z) {
@@ -219,8 +232,8 @@ public class MemoryBuffer {
         return vector;
     }
 
-    public MemoryBuffer writeVector4i(final Vector4i vector) {
-        return this.writeVector4i(vector.x, vector.y, vector.z, vector.w);
+    public MemoryBuffer writeVector4i(final Vector4ic vector) {
+        return this.writeVector4i(vector.x(), vector.y(), vector.z(), vector.w());
     }
 
     public MemoryBuffer writeVector4i(final int x, final int y, final int z, final int w) {
@@ -241,8 +254,8 @@ public class MemoryBuffer {
         return vector;
     }
 
-    public MemoryBuffer writeVector2f(final Vector2f vector) {
-        return this.writeVector2f(vector.x, vector.y);
+    public MemoryBuffer writeVector2f(final Vector2fc vector) {
+        return this.writeVector2f(vector.x(), vector.y());
     }
 
     public MemoryBuffer writeVector2f(final float x, final float y) {
@@ -263,8 +276,8 @@ public class MemoryBuffer {
         return vector;
     }
 
-    public MemoryBuffer writeVector3f(final Vector3f vector) {
-        return this.writeVector3f(vector.x, vector.y, vector.z);
+    public MemoryBuffer writeVector3f(final Vector3fc vector) {
+        return this.writeVector3f(vector.x(), vector.y(), vector.z());
     }
 
     public MemoryBuffer writeVector3f(final float x, final float y, final float z) {
@@ -285,8 +298,8 @@ public class MemoryBuffer {
         return vector;
     }
 
-    public MemoryBuffer writeVector4f(final Vector4f vector) {
-        return this.writeVector4f(vector.x, vector.y, vector.z, vector.w);
+    public MemoryBuffer writeVector4f(final Vector4fc vector) {
+        return this.writeVector4f(vector.x(), vector.y(), vector.z(), vector.w());
     }
 
     public MemoryBuffer writeVector4f(final float x, final float y, final float z, final float w) {
@@ -307,8 +320,8 @@ public class MemoryBuffer {
         return vector;
     }
 
-    public MemoryBuffer writeVector2d(final Vector2d vector) {
-        return this.writeVector2d(vector.x, vector.y);
+    public MemoryBuffer writeVector2d(final Vector2dc vector) {
+        return this.writeVector2d(vector.x(), vector.y());
     }
 
     public MemoryBuffer writeVector2d(final double x, final double y) {
@@ -329,8 +342,8 @@ public class MemoryBuffer {
         return vector;
     }
 
-    public MemoryBuffer writeVector3d(final Vector3d vector) {
-        return this.writeVector3d(vector.x, vector.y, vector.z);
+    public MemoryBuffer writeVector3d(final Vector3dc vector) {
+        return this.writeVector3d(vector.x(), vector.y(), vector.z());
     }
 
     public MemoryBuffer writeVector3d(final double x, final double y, final double z) {
@@ -351,8 +364,8 @@ public class MemoryBuffer {
         return vector;
     }
 
-    public MemoryBuffer writeVector4d(final Vector4d vector) {
-        return this.writeVector4d(vector.x, vector.y, vector.z, vector.w);
+    public MemoryBuffer writeVector4d(final Vector4dc vector) {
+        return this.writeVector4d(vector.x(), vector.y(), vector.z(), vector.w());
     }
 
     public MemoryBuffer writeVector4d(final double x, final double y, final double z, final double w) {
@@ -373,7 +386,7 @@ public class MemoryBuffer {
         return matrix;
     }
 
-    public MemoryBuffer writeMatrix3f(final Matrix3f matrix) {
+    public MemoryBuffer writeMatrix3f(final Matrix3fc matrix) {
         if (this.getRemainingWritable() < Memory.MATRIX3F_SIZE) {
             this.ensureCanWrite(Memory.MATRIX3F_SIZE);
         }
@@ -391,7 +404,7 @@ public class MemoryBuffer {
         return matrix;
     }
 
-    public MemoryBuffer writeMatrix4f(final Matrix4f matrix) {
+    public MemoryBuffer writeMatrix4f(final Matrix4fc matrix) {
         if (this.getRemainingWritable() < Memory.MATRIX4F_SIZE) {
             this.ensureCanWrite(Memory.MATRIX4F_SIZE);
         }
@@ -409,7 +422,7 @@ public class MemoryBuffer {
         return matrix;
     }
 
-    public MemoryBuffer writeMatrix3d(final Matrix3d matrix) {
+    public MemoryBuffer writeMatrix3d(final Matrix3dc matrix) {
         if (this.getRemainingWritable() < Memory.MATRIX3D_SIZE) {
             this.ensureCanWrite(Memory.MATRIX3D_SIZE);
         }
@@ -427,7 +440,7 @@ public class MemoryBuffer {
         return matrix;
     }
 
-    public MemoryBuffer writeMatrix4d(final Matrix4d matrix) {
+    public MemoryBuffer writeMatrix4d(final Matrix4dc matrix) {
         if (this.getRemainingWritable() < Memory.MATRIX4D_SIZE) {
             this.ensureCanWrite(Memory.MATRIX4D_SIZE);
         }

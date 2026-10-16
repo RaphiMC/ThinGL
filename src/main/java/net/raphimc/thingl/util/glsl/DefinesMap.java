@@ -17,9 +17,9 @@
  */
 package net.raphimc.thingl.util.glsl;
 
-import org.joml.Vector2f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import org.joml.Vector2fc;
+import org.joml.Vector3fc;
+import org.joml.Vector4fc;
 
 import java.util.HashMap;
 
@@ -41,24 +41,24 @@ public class DefinesMap extends HashMap<String, String> {
         this.put(key, Float.toString(value));
     }
 
-    public void putVector2f(final String key, final Vector2f vector) {
-        this.put(key, "vec2(" + vector.x + ", " + vector.y + ')');
+    public void putVector2f(final String key, final Vector2fc vector) {
+        this.putVector2f(key, vector.x(), vector.y());
     }
 
     public void putVector2f(final String key, final float x, final float y) {
         this.put(key, "vec2(" + x + ", " + y + ')');
     }
 
-    public void putVector3f(final String key, final Vector3f vector) {
-        this.put(key, "vec3(" + vector.x + ", " + vector.y + ", " + vector.z + ')');
+    public void putVector3f(final String key, final Vector3fc vector) {
+        this.putVector3f(key, vector.x(), vector.y(), vector.z());
     }
 
     public void putVector3f(final String key, final float x, final float y, final float z) {
         this.put(key, "vec3(" + x + ", " + y + ", " + z + ')');
     }
 
-    public void putVector4f(final String key, final Vector4f vector) {
-        this.put(key, "vec4(" + vector.x + ", " + vector.y + ", " + vector.z + ", " + vector.w + ')');
+    public void putVector4f(final String key, final Vector4fc vector) {
+        this.putVector4f(key, vector.x(), vector.y(), vector.z(), vector.w());
     }
 
     public void putVector4f(final String key, final float x, final float y, final float z, final float w) {

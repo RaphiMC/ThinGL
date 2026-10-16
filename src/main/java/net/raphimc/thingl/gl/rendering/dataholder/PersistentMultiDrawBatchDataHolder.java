@@ -30,7 +30,7 @@ import net.raphimc.thingl.rendering.dataholder.MultiDrawBatchDataHolder;
 import net.raphimc.thingl.rendering.preparation.DrawBatchDataOptimizer;
 import net.raphimc.thingl.rendering.preparation.DrawBatchDataPreparer;
 import net.raphimc.thingl.rendering.preparation.PreparedDrawBatchData;
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 
 import java.util.Map;
 
@@ -74,7 +74,7 @@ public class PersistentMultiDrawBatchDataHolder extends MultiDrawBatchDataHolder
     }
 
     @Override
-    public void draw(final Matrix4f modelMatrix) {
+    public void draw(final Matrix4fc modelMatrix) {
         if (this.hasDrawBatches()) {
             for (DrawBatch drawBatch : this.firstOrderedDrawBatches) {
                 this.draw(drawBatch, modelMatrix);
@@ -91,7 +91,7 @@ public class PersistentMultiDrawBatchDataHolder extends MultiDrawBatchDataHolder
     }
 
     @Override
-    public void draw(final DrawBatch drawBatch, final Matrix4f modelMatrix) {
+    public void draw(final DrawBatch drawBatch, final Matrix4fc modelMatrix) {
         final UploadedDrawBatchData uploadedDrawBatchData = this.uploadedDrawBatches.get(drawBatch);
         if (uploadedDrawBatchData != null) {
             DrawBatchRenderer.render(uploadedDrawBatchData, modelMatrix);

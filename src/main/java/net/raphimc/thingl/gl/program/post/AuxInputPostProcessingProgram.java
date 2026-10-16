@@ -23,7 +23,7 @@ import net.raphimc.thingl.gl.program.PostProcessingProgram;
 import net.raphimc.thingl.gl.resource.shader.Shader;
 import net.raphimc.thingl.gl.wrapper.Blending;
 import net.raphimc.thingl.util.RenderMathUtil;
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 import org.lwjgl.opengl.GL11C;
 
 public abstract class AuxInputPostProcessingProgram extends PostProcessingProgram {
@@ -57,7 +57,7 @@ public abstract class AuxInputPostProcessingProgram extends PostProcessingProgra
         this.renderInput(RenderMathUtil.getIdentityMatrix());
     }
 
-    public void renderInput(final Matrix4f positionMatrix) {
+    public void renderInput(final Matrix4fc positionMatrix) {
         ThinGL.glStateStack().pushBlendFunc();
         Blending.premultipliedAlphaBlending();
         this.inputFramebuffer.render(positionMatrix, 0, 0, this.inputFramebuffer.getWidth(), this.inputFramebuffer.getHeight());

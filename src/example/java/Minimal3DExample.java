@@ -45,9 +45,9 @@ public class Minimal3DExample extends GLFWApplicationRunner {
         ThinGL.globalUniforms().getProjectionMatrix().setPerspective((float) Math.toRadians(90F), width / height, 0.1F, 1000F);
 
         ThinGL.globalUniforms().getViewMatrix().setLookAt(
-                1F, 1F, 1F,
-                0F, 0F, 0F,
-                0F, 1F, 0F
+            1F, 1F, 1F,
+            0F, 0F, 0F,
+            0F, 1F, 0F
         );
     }
 

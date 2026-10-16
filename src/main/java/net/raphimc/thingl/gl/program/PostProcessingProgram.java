@@ -24,6 +24,7 @@ import net.raphimc.thingl.gl.wrapper.GLStateManager;
 import net.raphimc.thingl.rendering.DrawMode;
 import net.raphimc.thingl.util.RenderMathUtil;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 import org.joml.primitives.Rectanglei;
 import org.lwjgl.opengl.GL11C;
 
@@ -50,7 +51,7 @@ public class PostProcessingProgram extends Program {
         this.render(RenderMathUtil.getIdentityMatrix(), xtl, ytl, xbr, ybr);
     }
 
-    public final void render(final Matrix4f positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr) {
+    public final void render(final Matrix4fc positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr) {
         final Rectanglei rectangle = RenderMathUtil.getWindowRectangle(positionMatrix, xtl, ytl, xbr, ybr, true);
         final GLStateManager.Viewport viewport = ThinGL.glStateManager().getViewport();
         rectangle.translate(-viewport.x(), viewport.y());

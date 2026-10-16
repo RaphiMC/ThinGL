@@ -25,7 +25,7 @@ import net.raphimc.thingl.rendering.bufferbuilder.ShaderBufferBuilder;
 import net.raphimc.thingl.rendering.bufferbuilder.impl.IndexBufferBuilder;
 import net.raphimc.thingl.rendering.bufferbuilder.impl.VertexBufferBuilder;
 import net.raphimc.thingl.util.RenderMathUtil;
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -79,9 +79,9 @@ public abstract class MultiDrawBatchDataHolder {
         this.draw(RenderMathUtil.getIdentityMatrix());
     }
 
-    public abstract void draw(final Matrix4f modelMatrix);
+    public abstract void draw(final Matrix4fc modelMatrix);
 
-    public abstract void draw(final DrawBatch drawBatch, final Matrix4f modelMatrix);
+    public abstract void draw(final DrawBatch drawBatch, final Matrix4fc modelMatrix);
 
     public void free() {
         this.drawBatches.values().forEach(DrawBatchDataHolder::free);

@@ -20,17 +20,16 @@ package net.raphimc.thingl.rendering.bufferbuilder;
 import net.lenni0451.commons.color.Color;
 import net.raphimc.thingl.memory.MemoryBuffer;
 import org.joml.Math;
-import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
-import org.joml.Vector2d;
-import org.joml.Vector2f;
-import org.joml.Vector2i;
-import org.joml.Vector3d;
-import org.joml.Vector3f;
-import org.joml.Vector3i;
-import org.joml.Vector4d;
-import org.joml.Vector4f;
-import org.joml.Vector4i;
+import org.joml.Vector2dc;
+import org.joml.Vector2fc;
+import org.joml.Vector2ic;
+import org.joml.Vector3dc;
+import org.joml.Vector3fc;
+import org.joml.Vector3ic;
+import org.joml.Vector4dc;
+import org.joml.Vector4fc;
+import org.joml.Vector4ic;
 
 public abstract class DataBufferBuilder<T extends DataBufferBuilder<T>> extends BufferBuilder<T> {
 
@@ -53,8 +52,8 @@ public abstract class DataBufferBuilder<T extends DataBufferBuilder<T>> extends 
         return (T) this;
     }
 
-    public T writeVector2i(final Vector2i vector) {
-        return this.writeVector2i(vector.x, vector.y);
+    public T writeVector2i(final Vector2ic vector) {
+        return this.writeVector2i(vector.x(), vector.y());
     }
 
     public T writeVector2i(final int x, final int y) {
@@ -62,8 +61,8 @@ public abstract class DataBufferBuilder<T extends DataBufferBuilder<T>> extends 
         return (T) this;
     }
 
-    public T writeVector3i(final Vector3i vector) {
-        return this.writeVector3i(vector.x, vector.y, vector.z);
+    public T writeVector3i(final Vector3ic vector) {
+        return this.writeVector3i(vector.x(), vector.y(), vector.z());
     }
 
     public T writeVector3i(final int x, final int y, final int z) {
@@ -71,8 +70,8 @@ public abstract class DataBufferBuilder<T extends DataBufferBuilder<T>> extends 
         return (T) this;
     }
 
-    public T writeVector4i(final Vector4i vector) {
-        return this.writeVector4i(vector.x, vector.y, vector.z, vector.w);
+    public T writeVector4i(final Vector4ic vector) {
+        return this.writeVector4i(vector.x(), vector.y(), vector.z(), vector.w());
     }
 
     public T writeVector4i(final int x, final int y, final int z, final int w) {
@@ -80,8 +79,8 @@ public abstract class DataBufferBuilder<T extends DataBufferBuilder<T>> extends 
         return (T) this;
     }
 
-    public T writeVector2f(final Vector2f vector) {
-        return this.writeVector2f(vector.x, vector.y);
+    public T writeVector2f(final Vector2fc vector) {
+        return this.writeVector2f(vector.x(), vector.y());
     }
 
     public T writeVector2f(final float x, final float y) {
@@ -89,8 +88,8 @@ public abstract class DataBufferBuilder<T extends DataBufferBuilder<T>> extends 
         return (T) this;
     }
 
-    public T writeVector3f(final Vector3f vector) {
-        return this.writeVector3f(vector.x, vector.y, vector.z);
+    public T writeVector3f(final Vector3fc vector) {
+        return this.writeVector3f(vector.x(), vector.y(), vector.z());
     }
 
     public T writeVector3f(final float x, final float y, final float z) {
@@ -98,15 +97,15 @@ public abstract class DataBufferBuilder<T extends DataBufferBuilder<T>> extends 
         return (T) this;
     }
 
-    public T writeVector3f(final Matrix4f positionMatrix, final Vector3f vector) {
-        return this.writeVector3f(positionMatrix, vector.x, vector.y, vector.z);
+    public T writeVector3f(final Matrix4fc positionMatrix, final Vector3fc vector) {
+        return this.writeVector3f(positionMatrix, vector.x(), vector.y(), vector.z());
     }
 
-    public T writeVector3f(final Matrix4f positionMatrix, final Vector2f vector, final float z) {
-        return this.writeVector3f(positionMatrix, vector.x, vector.y, z);
+    public T writeVector3f(final Matrix4fc positionMatrix, final Vector2fc vector, final float z) {
+        return this.writeVector3f(positionMatrix, vector.x(), vector.y(), z);
     }
 
-    public T writeVector3f(final Matrix4f positionMatrix, final float x, final float y, final float z) {
+    public T writeVector3f(final Matrix4fc positionMatrix, final float x, final float y, final float z) {
         // Code from Vector3f#mulPosition
         if ((positionMatrix.properties() & Matrix4fc.PROPERTY_IDENTITY) != 0) {
             return this.writeVector3f(x, y, z);
@@ -121,8 +120,8 @@ public abstract class DataBufferBuilder<T extends DataBufferBuilder<T>> extends 
         }
     }
 
-    public T writeVector4f(final Vector4f vector) {
-        return this.writeVector4f(vector.x, vector.y, vector.z, vector.w);
+    public T writeVector4f(final Vector4fc vector) {
+        return this.writeVector4f(vector.x(), vector.y(), vector.z(), vector.w());
     }
 
     public T writeVector4f(final float x, final float y, final float z, final float w) {
@@ -130,8 +129,8 @@ public abstract class DataBufferBuilder<T extends DataBufferBuilder<T>> extends 
         return (T) this;
     }
 
-    public T writeVector2d(final Vector2d vector) {
-        return this.writeVector2d(vector.x, vector.y);
+    public T writeVector2d(final Vector2dc vector) {
+        return this.writeVector2d(vector.x(), vector.y());
     }
 
     public T writeVector2d(final double x, final double y) {
@@ -139,8 +138,8 @@ public abstract class DataBufferBuilder<T extends DataBufferBuilder<T>> extends 
         return (T) this;
     }
 
-    public T writeVector3d(final Vector3d vector) {
-        return this.writeVector3d(vector.x, vector.y, vector.z);
+    public T writeVector3d(final Vector3dc vector) {
+        return this.writeVector3d(vector.x(), vector.y(), vector.z());
     }
 
     public T writeVector3d(final double x, final double y, final double z) {
@@ -148,8 +147,8 @@ public abstract class DataBufferBuilder<T extends DataBufferBuilder<T>> extends 
         return (T) this;
     }
 
-    public T writeVector4d(final Vector4d vector) {
-        return this.writeVector4d(vector.x, vector.y, vector.z, vector.w);
+    public T writeVector4d(final Vector4dc vector) {
+        return this.writeVector4d(vector.x(), vector.y(), vector.z(), vector.w());
     }
 
     public T writeVector4d(final double x, final double y, final double z, final double w) {

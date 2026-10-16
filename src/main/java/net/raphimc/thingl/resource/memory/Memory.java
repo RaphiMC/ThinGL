@@ -19,18 +19,31 @@ package net.raphimc.thingl.resource.memory;
 
 import net.raphimc.thingl.resource.Resource;
 import org.joml.Matrix3d;
+import org.joml.Matrix3dc;
 import org.joml.Matrix3f;
+import org.joml.Matrix3fc;
 import org.joml.Matrix4d;
+import org.joml.Matrix4dc;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 import org.joml.Vector2d;
+import org.joml.Vector2dc;
 import org.joml.Vector2f;
+import org.joml.Vector2fc;
 import org.joml.Vector2i;
+import org.joml.Vector2ic;
 import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.joml.Vector3i;
+import org.joml.Vector3ic;
 import org.joml.Vector4d;
+import org.joml.Vector4dc;
 import org.joml.Vector4f;
+import org.joml.Vector4fc;
 import org.joml.Vector4i;
+import org.joml.Vector4ic;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
@@ -112,8 +125,8 @@ public abstract class Memory extends Resource {
         );
     }
 
-    public Memory putVector2i(final long offset, final Vector2i vector) {
-        return this.putVector2i(offset, vector.x, vector.y);
+    public Memory putVector2i(final long offset, final Vector2ic vector) {
+        return this.putVector2i(offset, vector.x(), vector.y());
     }
 
     public Memory putVector2i(final long offset, final int x, final int y) {
@@ -130,8 +143,8 @@ public abstract class Memory extends Resource {
         );
     }
 
-    public Memory putVector3i(final long offset, final Vector3i vector) {
-        return this.putVector3i(offset, vector.x, vector.y, vector.z);
+    public Memory putVector3i(final long offset, final Vector3ic vector) {
+        return this.putVector3i(offset, vector.x(), vector.y(), vector.z());
     }
 
     public Memory putVector3i(final long offset, final int x, final int y, final int z) {
@@ -150,8 +163,8 @@ public abstract class Memory extends Resource {
         );
     }
 
-    public Memory putVector4i(final long offset, final Vector4i vector) {
-        return this.putVector4i(offset, vector.x, vector.y, vector.z, vector.w);
+    public Memory putVector4i(final long offset, final Vector4ic vector) {
+        return this.putVector4i(offset, vector.x(), vector.y(), vector.z(), vector.w());
     }
 
     public Memory putVector4i(final long offset, final int x, final int y, final int z, final int w) {
@@ -169,8 +182,8 @@ public abstract class Memory extends Resource {
         );
     }
 
-    public Memory putVector2f(final long offset, final Vector2f vector) {
-        return this.putVector2f(offset, vector.x, vector.y);
+    public Memory putVector2f(final long offset, final Vector2fc vector) {
+        return this.putVector2f(offset, vector.x(), vector.y());
     }
 
     public Memory putVector2f(final long offset, final float x, final float y) {
@@ -187,8 +200,8 @@ public abstract class Memory extends Resource {
         );
     }
 
-    public Memory putVector3f(final long offset, final Vector3f vector) {
-        return this.putVector3f(offset, vector.x, vector.y, vector.z);
+    public Memory putVector3f(final long offset, final Vector3fc vector) {
+        return this.putVector3f(offset, vector.x(), vector.y(), vector.z());
     }
 
     public Memory putVector3f(final long offset, final float x, final float y, final float z) {
@@ -207,8 +220,8 @@ public abstract class Memory extends Resource {
         );
     }
 
-    public Memory putVector4f(final long offset, final Vector4f vector) {
-        return this.putVector4f(offset, vector.x, vector.y, vector.z, vector.w);
+    public Memory putVector4f(final long offset, final Vector4fc vector) {
+        return this.putVector4f(offset, vector.x(), vector.y(), vector.z(), vector.w());
     }
 
     public Memory putVector4f(final long offset, final float x, final float y, final float z, final float w) {
@@ -226,8 +239,8 @@ public abstract class Memory extends Resource {
         );
     }
 
-    public Memory putVector2d(final long offset, final Vector2d vector) {
-        return this.putVector2d(offset, vector.x, vector.y);
+    public Memory putVector2d(final long offset, final Vector2dc vector) {
+        return this.putVector2d(offset, vector.x(), vector.y());
     }
 
     public Memory putVector2d(final long offset, final double x, final double y) {
@@ -244,8 +257,8 @@ public abstract class Memory extends Resource {
         );
     }
 
-    public Memory putVector3d(final long offset, final Vector3d vector) {
-        return this.putVector3d(offset, vector.x, vector.y, vector.z);
+    public Memory putVector3d(final long offset, final Vector3dc vector) {
+        return this.putVector3d(offset, vector.x(), vector.y(), vector.z());
     }
 
     public Memory putVector3d(final long offset, final double x, final double y, final double z) {
@@ -264,8 +277,8 @@ public abstract class Memory extends Resource {
         );
     }
 
-    public Memory putVector4d(final long offset, final Vector4d vector) {
-        return this.putVector4d(offset, vector.x, vector.y, vector.z, vector.w);
+    public Memory putVector4d(final long offset, final Vector4dc vector) {
+        return this.putVector4d(offset, vector.x(), vector.y(), vector.z(), vector.w());
     }
 
     public Memory putVector4d(final long offset, final double x, final double y, final double z, final double w) {
@@ -290,16 +303,16 @@ public abstract class Memory extends Resource {
         );
     }
 
-    public Memory putMatrix3f(final long offset, final Matrix3f matrix) {
-        this.putFloat(offset + Float.BYTES * 0, matrix.m00);
-        this.putFloat(offset + Float.BYTES * 1, matrix.m01);
-        this.putFloat(offset + Float.BYTES * 2, matrix.m02);
-        this.putFloat(offset + Float.BYTES * 3, matrix.m10);
-        this.putFloat(offset + Float.BYTES * 4, matrix.m11);
-        this.putFloat(offset + Float.BYTES * 5, matrix.m12);
-        this.putFloat(offset + Float.BYTES * 6, matrix.m20);
-        this.putFloat(offset + Float.BYTES * 7, matrix.m21);
-        this.putFloat(offset + Float.BYTES * 8, matrix.m22);
+    public Memory putMatrix3f(final long offset, final Matrix3fc matrix) {
+        this.putFloat(offset + Float.BYTES * 0, matrix.m00());
+        this.putFloat(offset + Float.BYTES * 1, matrix.m01());
+        this.putFloat(offset + Float.BYTES * 2, matrix.m02());
+        this.putFloat(offset + Float.BYTES * 3, matrix.m10());
+        this.putFloat(offset + Float.BYTES * 4, matrix.m11());
+        this.putFloat(offset + Float.BYTES * 5, matrix.m12());
+        this.putFloat(offset + Float.BYTES * 6, matrix.m20());
+        this.putFloat(offset + Float.BYTES * 7, matrix.m21());
+        this.putFloat(offset + Float.BYTES * 8, matrix.m22());
         return this;
     }
 
@@ -324,7 +337,7 @@ public abstract class Memory extends Resource {
         );
     }
 
-    public Memory putMatrix4f(final long offset, final Matrix4f matrix) {
+    public Memory putMatrix4f(final long offset, final Matrix4fc matrix) {
         this.putFloat(offset + Float.BYTES * 0, matrix.m00());
         this.putFloat(offset + Float.BYTES * 1, matrix.m01());
         this.putFloat(offset + Float.BYTES * 2, matrix.m02());
@@ -358,16 +371,16 @@ public abstract class Memory extends Resource {
         );
     }
 
-    public Memory putMatrix3d(final long offset, final Matrix3d matrix) {
-        this.putDouble(offset + Double.BYTES * 0, matrix.m00);
-        this.putDouble(offset + Double.BYTES * 1, matrix.m01);
-        this.putDouble(offset + Double.BYTES * 2, matrix.m02);
-        this.putDouble(offset + Double.BYTES * 3, matrix.m10);
-        this.putDouble(offset + Double.BYTES * 4, matrix.m11);
-        this.putDouble(offset + Double.BYTES * 5, matrix.m12);
-        this.putDouble(offset + Double.BYTES * 6, matrix.m20);
-        this.putDouble(offset + Double.BYTES * 7, matrix.m21);
-        this.putDouble(offset + Double.BYTES * 8, matrix.m22);
+    public Memory putMatrix3d(final long offset, final Matrix3dc matrix) {
+        this.putDouble(offset + Double.BYTES * 0, matrix.m00());
+        this.putDouble(offset + Double.BYTES * 1, matrix.m01());
+        this.putDouble(offset + Double.BYTES * 2, matrix.m02());
+        this.putDouble(offset + Double.BYTES * 3, matrix.m10());
+        this.putDouble(offset + Double.BYTES * 4, matrix.m11());
+        this.putDouble(offset + Double.BYTES * 5, matrix.m12());
+        this.putDouble(offset + Double.BYTES * 6, matrix.m20());
+        this.putDouble(offset + Double.BYTES * 7, matrix.m21());
+        this.putDouble(offset + Double.BYTES * 8, matrix.m22());
         return this;
     }
 
@@ -392,7 +405,7 @@ public abstract class Memory extends Resource {
         );
     }
 
-    public Memory putMatrix4d(final long offset, final Matrix4d matrix) {
+    public Memory putMatrix4d(final long offset, final Matrix4dc matrix) {
         this.putDouble(offset + Double.BYTES * 0, matrix.m00());
         this.putDouble(offset + Double.BYTES * 1, matrix.m01());
         this.putDouble(offset + Double.BYTES * 2, matrix.m02());

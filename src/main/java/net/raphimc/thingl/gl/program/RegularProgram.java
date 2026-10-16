@@ -21,7 +21,7 @@ import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.gl.resource.program.Program;
 import net.raphimc.thingl.gl.resource.shader.Shader;
 import net.raphimc.thingl.gl.wrapper.GLStateManager;
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 
 public class RegularProgram extends Program {
 
@@ -39,7 +39,7 @@ public class RegularProgram extends Program {
         this.setUniformVector2f("u_Viewport", viewport.width(), viewport.height());
     }
 
-    public void configureParameters(final Matrix4f modelMatrix) {
+    public void configureParameters(final Matrix4fc modelMatrix) {
         this.setUniformMatrix4f("u_ModelMatrix", modelMatrix);
     }
 

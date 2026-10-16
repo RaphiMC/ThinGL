@@ -21,6 +21,7 @@ import net.raphimc.thingl.ThinGL;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.joml.primitives.Rectanglei;
 
 public final class RenderMathUtil {
@@ -42,25 +43,21 @@ public final class RenderMathUtil {
         return (int) (Math.floor(Math.log(maxDim) / Math.log(2))) + 1;
     }
 
-    public static Matrix4f getIdentityMatrix() {
-        if ((IDENTITY_MATRIX.properties() & Matrix4fc.PROPERTY_IDENTITY) == 0) {
-            ThinGL.LOGGER.warn("IDENTITY_MATRIX was modified");
-            IDENTITY_MATRIX.identity();
-        }
+    public static Matrix4fc getIdentityMatrix() {
         return IDENTITY_MATRIX;
     }
 
-    public static Matrix4f getMvpMatrix(final Matrix4f positionMatrix) {
+    public static Matrix4f getMvpMatrix(final Matrix4fc positionMatrix) {
         return new Matrix4f().mul(ThinGL.globalUniforms().getProjectionMatrix()).mul(ThinGL.globalUniforms().getViewMatrix()).mul(positionMatrix);
     }
 
-    public static Rectanglei getWindowRectangle(final Matrix4f positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr) {
+    public static Rectanglei getWindowRectangle(final Matrix4fc positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr) {
         return getWindowRectangle(positionMatrix, xtl, ytl, xbr, ybr, false);
     }
 
-    public static Rectanglei getWindowRectangle(final Matrix4f positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr, final boolean flipY) {
+    public static Rectanglei getWindowRectangle(final Matrix4fc positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr, final boolean flipY) {
         final int[] viewport = ThinGL.glStateManager().getViewport().toArray();
-        final Matrix4f mvpMatrix = RenderMathUtil.getMvpMatrix(positionMatrix);
+        final Matrix4fc mvpMatrix = RenderMathUtil.getMvpMatrix(positionMatrix);
         final Vector3f topLeft = new Vector3f(xtl, ytl, 0F);
         final Vector3f topRight = new Vector3f(xbr, ytl, 0F);
         final Vector3f bottomLeft = new Vector3f(xtl, ybr, 0F);
@@ -82,15 +79,15 @@ public final class RenderMathUtil {
         }
     }
 
-    public static Vector3f projectToWindowCoordinates(final Matrix4f positionMatrix, final Vector3f position) {
+    public static Vector3f projectToWindowCoordinates(final Matrix4fc positionMatrix, final Vector3fc position) {
         final int[] viewport = ThinGL.glStateManager().getViewport().toArray();
-        final Matrix4f mvpMatrix = RenderMathUtil.getMvpMatrix(positionMatrix);
+        final Matrix4fc mvpMatrix = RenderMathUtil.getMvpMatrix(positionMatrix);
         return mvpMatrix.project(position, viewport, new Vector3f());
     }
 
-    public static Vector3f unprojectFromWindowCoordinates(final Matrix4f positionMatrix, final Vector3f windowPosition) {
+    public static Vector3f unprojectFromWindowCoordinates(final Matrix4fc positionMatrix, final Vector3fc windowPosition) {
         final int[] viewport = ThinGL.glStateManager().getViewport().toArray();
-        final Matrix4f mvpMatrix = RenderMathUtil.getMvpMatrix(positionMatrix);
+        final Matrix4fc mvpMatrix = RenderMathUtil.getMvpMatrix(positionMatrix);
         return mvpMatrix.unproject(windowPosition, viewport, new Vector3f());
     }
 

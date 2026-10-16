@@ -21,8 +21,8 @@ import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.raphimc.thingl.memory.MemoryBuffer;
 import net.raphimc.thingl.resource.memory.Memory;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
+import org.joml.Matrix3fc;
+import org.joml.Matrix4fc;
 
 public abstract class StdShaderBufferBuilder extends ShaderBufferBuilder {
 
@@ -131,16 +131,16 @@ public abstract class StdShaderBufferBuilder extends ShaderBufferBuilder {
         return this;
     }
 
-    public ShaderBufferBuilder writeMatrix3f(final Matrix3f matrix) {
+    public ShaderBufferBuilder writeMatrix3f(final Matrix3fc matrix) {
         this.inArrayStack.push(true);
-        this.writeVector3f(matrix.m00, matrix.m01, matrix.m02);
-        this.writeVector3f(matrix.m10, matrix.m11, matrix.m12);
-        this.writeVector3f(matrix.m20, matrix.m21, matrix.m22);
+        this.writeVector3f(matrix.m00(), matrix.m01(), matrix.m02());
+        this.writeVector3f(matrix.m10(), matrix.m11(), matrix.m12());
+        this.writeVector3f(matrix.m20(), matrix.m21(), matrix.m22());
         this.inArrayStack.popBoolean();
         return this;
     }
 
-    public ShaderBufferBuilder writeMatrix4f(final Matrix4f matrix) {
+    public ShaderBufferBuilder writeMatrix4f(final Matrix4fc matrix) {
         this.memoryBuffer.alignWritePosition(Memory.MATRIX4F_SIZE);
         this.memoryBuffer.writeMatrix4f(matrix);
         this.trackStructMaxMemberAlignment(Memory.MATRIX4F_SIZE);

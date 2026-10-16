@@ -21,7 +21,7 @@ import net.lenni0451.commons.math.MathUtils;
 import net.raphimc.thingl.memory.MemoryBuffer;
 import net.raphimc.thingl.rendering.bufferbuilder.ShaderBufferBuilder;
 import net.raphimc.thingl.rendering.bufferbuilder.StdShaderBufferBuilder;
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 
 import java.util.function.Function;
 
@@ -108,7 +108,7 @@ public class Std140ShaderBufferBuilder extends StdShaderBufferBuilder {
     }
 
     @Override
-    public ShaderBufferBuilder writeMatrix4f(final Matrix4f matrix) {
+    public ShaderBufferBuilder writeMatrix4f(final Matrix4fc matrix) {
         this.checkArrayAlignment();
         return super.writeMatrix4f(matrix);
     }

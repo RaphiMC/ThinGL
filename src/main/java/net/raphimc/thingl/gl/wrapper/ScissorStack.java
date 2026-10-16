@@ -19,7 +19,7 @@ package net.raphimc.thingl.gl.wrapper;
 
 import net.raphimc.thingl.ThinGL;
 import net.raphimc.thingl.util.RenderMathUtil;
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 import org.joml.primitives.Rectanglei;
 import org.lwjgl.opengl.GL11C;
 
@@ -44,7 +44,7 @@ public class ScissorStack {
         this.pushOverwrite(RenderMathUtil.getIdentityMatrix(), xtl, ytl, xbr, ybr);
     }
 
-    public void pushOverwrite(final Matrix4f positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr) {
+    public void pushOverwrite(final Matrix4fc positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr) {
         if (this.stack.isEmpty()) {
             ThinGL.glStateStack().push();
             ThinGL.glStateStack().enable(GL11C.GL_SCISSOR_TEST);
@@ -58,7 +58,7 @@ public class ScissorStack {
         this.pushIntersection(RenderMathUtil.getIdentityMatrix(), xtl, ytl, xbr, ybr);
     }
 
-    public void pushIntersection(final Matrix4f positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr) {
+    public void pushIntersection(final Matrix4fc positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr) {
         if (this.stack.isEmpty()) {
             this.pushOverwrite(positionMatrix, xtl, ytl, xbr, ybr);
             return;
@@ -82,7 +82,7 @@ public class ScissorStack {
         return this.intersectsRectangle(RenderMathUtil.getIdentityMatrix(), xtl, ytl, xbr, ybr);
     }
 
-    public boolean intersectsRectangle(final Matrix4f positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr) {
+    public boolean intersectsRectangle(final Matrix4fc positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr) {
         if (this.stack.isEmpty()) {
             return true;
         }
@@ -95,7 +95,7 @@ public class ScissorStack {
         return this.containsRectangle(RenderMathUtil.getIdentityMatrix(), xtl, ytl, xbr, ybr);
     }
 
-    public boolean containsRectangle(final Matrix4f positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr) {
+    public boolean containsRectangle(final Matrix4fc positionMatrix, final float xtl, final float ytl, final float xbr, final float ybr) {
         if (this.stack.isEmpty()) {
             return true;
         }

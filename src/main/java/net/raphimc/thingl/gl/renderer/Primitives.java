@@ -23,7 +23,7 @@ import net.raphimc.thingl.rendering.bufferbuilder.impl.VertexBufferBuilder;
 import net.raphimc.thingl.rendering.dataholder.MultiDrawBatchDataHolder;
 import net.raphimc.thingl.util.MathUtil;
 import org.joml.Math;
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 
 public final class Primitives {
 
@@ -39,7 +39,7 @@ public final class Primitives {
      * (xtl, ybr, c) ----- (xbr, ybr, c)
      * </pre>
      */
-    public static void filledRectangle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xtl, final float ytl, final float xbr, final float ybr, final int c) {
+    public static void filledRectangle(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xtl, final float ytl, final float xbr, final float ybr, final int c) {
         filledRectangle(positionMatrix, multiDrawBatchDataHolder, xtl, ybr, 0F, xbr, ybr, 0F, xbr, ytl, 0F, xtl, ytl, 0F, c, c, c, c);
     }
 
@@ -52,7 +52,7 @@ public final class Primitives {
      * (xtl, ybr, cbl) ----- (xbr, ybr, cbr)
      * </pre>
      */
-    public static void filledRectangle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xtl, final float ytl, final float xbr, final float ybr, final int cbl, final int cbr, final int ctr, final int ctl) {
+    public static void filledRectangle(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xtl, final float ytl, final float xbr, final float ybr, final int cbl, final int cbr, final int ctr, final int ctl) {
         filledRectangle(positionMatrix, multiDrawBatchDataHolder, xtl, ybr, 0F, xbr, ybr, 0F, xbr, ytl, 0F, xtl, ytl, 0F, cbl, cbr, ctr, ctl);
     }
 
@@ -65,7 +65,7 @@ public final class Primitives {
      * (xtl, ybr, z, c) ----- (xbr, ybr, z, c)
      * </pre>
      */
-    public static void filledRectangle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xtl, final float ytl, final float xbr, final float ybr, final float z, final int c) {
+    public static void filledRectangle(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xtl, final float ytl, final float xbr, final float ybr, final float z, final int c) {
         filledRectangle(positionMatrix, multiDrawBatchDataHolder, xtl, ybr, z, xbr, ybr, z, xbr, ytl, z, xtl, ytl, z, c, c, c, c);
     }
 
@@ -78,7 +78,7 @@ public final class Primitives {
      * (xtl, ybr, z, cbl) ----- (xbr, ybr, z, cbr)
      * </pre>
      */
-    public static void filledRectangle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xtl, final float ytl, final float xbr, final float ybr, final float z, final int cbl, final int cbr, final int ctr, final int ctl) {
+    public static void filledRectangle(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xtl, final float ytl, final float xbr, final float ybr, final float z, final int cbl, final int cbr, final int ctr, final int ctl) {
         filledRectangle(positionMatrix, multiDrawBatchDataHolder, xtl, ybr, z, xbr, ybr, z, xbr, ytl, z, xtl, ytl, z, cbl, cbr, ctr, ctl);
     }
 
@@ -91,7 +91,7 @@ public final class Primitives {
      * (xbl, ybl, c) ----- (xbr, ybr, c)
      * </pre>
      */
-    public static void filledRectangle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xbl, final float ybl, final float xbr, final float ybr, final float xtr, final float ytr, final float xtl, final float ytl, final int c) {
+    public static void filledRectangle(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xbl, final float ybl, final float xbr, final float ybr, final float xtr, final float ytr, final float xtl, final float ytl, final int c) {
         filledRectangle(positionMatrix, multiDrawBatchDataHolder, xbl, ybl, 0F, xbr, ybr, 0F, xtr, ytr, 0F, xtl, ytl, 0F, c, c, c, c);
     }
 
@@ -104,7 +104,7 @@ public final class Primitives {
      * (xbl, ybl, cbl) ----- (xbr, ybr, cbr)
      * </pre>
      */
-    public static void filledRectangle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xbl, final float ybl, final float xbr, final float ybr, final float xtr, final float ytr, final float xtl, final float ytl, final int cbl, final int cbr, final int ctr, final int ctl) {
+    public static void filledRectangle(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xbl, final float ybl, final float xbr, final float ybr, final float xtr, final float ytr, final float xtl, final float ytl, final int cbl, final int cbr, final int ctr, final int ctl) {
         filledRectangle(positionMatrix, multiDrawBatchDataHolder, xbl, ybl, 0F, xbr, ybr, 0F, xtr, ytr, 0F, xtl, ytl, 0F, cbl, cbr, ctr, ctl);
     }
 
@@ -117,7 +117,7 @@ public final class Primitives {
      * (xbl, ybl, zbl, c) ----- (xbr, ybr, zbr, c)
      * </pre>
      */
-    public static void filledRectangle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xbl, final float ybl, final float zbl, final float xbr, final float ybr, final float zbr, final float xtr, final float ytr, final float ztr, final float xtl, final float ytl, final float ztl, final int c) {
+    public static void filledRectangle(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xbl, final float ybl, final float zbl, final float xbr, final float ybr, final float zbr, final float xtr, final float ytr, final float ztr, final float xtl, final float ytl, final float ztl, final int c) {
         filledRectangle(positionMatrix, multiDrawBatchDataHolder, xbl, ybl, zbl, xbr, ybr, zbr, xtr, ytr, ztr, xtl, ytl, ztl, c, c, c, c);
     }
 
@@ -130,7 +130,7 @@ public final class Primitives {
      * (xbl, ybl, zbl, cbl) ----- (xbr, ybr, zbr, cbr)
      * </pre>
      */
-    public static void filledRectangle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xbl, final float ybl, final float zbl, final float xbr, final float ybr, final float zbr, final float xtr, final float ytr, final float ztr, final float xtl, final float ytl, final float ztl, final int cbl, final int cbr, final int ctr, final int ctl) {
+    public static void filledRectangle(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xbl, final float ybl, final float zbl, final float xbr, final float ybr, final float zbr, final float xtr, final float ytr, final float ztr, final float xtl, final float ytl, final float ztl, final int cbl, final int cbr, final int ctr, final int ctl) {
         final VertexBufferBuilder vertexBufferBuilder = multiDrawBatchDataHolder.getVertexBufferBuilder(DrawBatches.COLOR_QUAD);
 
         vertexBufferBuilder.writeVector3f(positionMatrix, xbl, ybl, zbl).writeColor(cbl).endVertex();
@@ -147,7 +147,7 @@ public final class Primitives {
      * (xl, yl, c) ----- (xr, yr, c)
      * </pre>
      */
-    public static void filledTriangle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xl, final float yl, final float xm, final float ym, final float xr, final float yr, final int c) {
+    public static void filledTriangle(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xl, final float yl, final float xm, final float ym, final float xr, final float yr, final int c) {
         filledTriangle(positionMatrix, multiDrawBatchDataHolder, xl, yl, 0F, xm, ym, 0F, xr, yr, 0F, c, c, c);
     }
 
@@ -159,7 +159,7 @@ public final class Primitives {
      * (xl, yl, cl) ----- (xr, yr, cr)
      * </pre>
      */
-    public static void filledTriangle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xl, final float yl, final float xm, final float ym, final float xr, final float yr, final int cl, final int cm, final int cr) {
+    public static void filledTriangle(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xl, final float yl, final float xm, final float ym, final float xr, final float yr, final int cl, final int cm, final int cr) {
         filledTriangle(positionMatrix, multiDrawBatchDataHolder, xl, yl, 0F, xm, ym, 0F, xr, yr, 0F, cl, cm, cr);
     }
 
@@ -171,7 +171,7 @@ public final class Primitives {
      * (xl, yl, zl, c) ----- (xr, yr, zr, c)
      * </pre>
      */
-    public static void filledTriangle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xl, final float yl, final float zl, final float xm, final float ym, final float zm, final float xr, final float yr, final float zr, final int c) {
+    public static void filledTriangle(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xl, final float yl, final float zl, final float xm, final float ym, final float zm, final float xr, final float yr, final float zr, final int c) {
         filledTriangle(positionMatrix, multiDrawBatchDataHolder, xl, yl, zl, xm, ym, zm, xr, yr, zr, c, c, c);
     }
 
@@ -183,7 +183,7 @@ public final class Primitives {
      * (xl, yl, zl, cl) ----- (xr, yr, zr, cr)
      * </pre>
      */
-    public static void filledTriangle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xl, final float yl, final float zl, final float xm, final float ym, final float zm, final float xr, final float yr, final float zr, final int cl, final int cm, final int cr) {
+    public static void filledTriangle(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float xl, final float yl, final float zl, final float xm, final float ym, final float zm, final float xr, final float yr, final float zr, final int cl, final int cm, final int cr) {
         final VertexBufferBuilder vertexBufferBuilder = multiDrawBatchDataHolder.getVertexBufferBuilder(DrawBatches.COLOR_TRIANGLE);
 
         vertexBufferBuilder.writeVector3f(positionMatrix, xl, yl, zl).writeColor(cl).endVertex();
@@ -191,19 +191,19 @@ public final class Primitives {
         vertexBufferBuilder.writeVector3f(positionMatrix, xr, yr, zr).writeColor(cr).endVertex();
     }
 
-    public static void filledCircle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float radius, final int c) {
+    public static void filledCircle(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float radius, final int c) {
         filledCircle(positionMatrix, multiDrawBatchDataHolder, x, y, 0F, radius, 0, 360, c);
     }
 
-    public static void filledCircle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float z, final float radius, final int c) {
+    public static void filledCircle(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float z, final float radius, final int c) {
         filledCircle(positionMatrix, multiDrawBatchDataHolder, x, y, z, radius, 0, 360, c);
     }
 
-    public static void filledCircle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float radius, final float degStart, final float degEnd, final int c) {
+    public static void filledCircle(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float radius, final float degStart, final float degEnd, final int c) {
         filledCircle(positionMatrix, multiDrawBatchDataHolder, x, y, 0F, radius, degStart, degEnd, c);
     }
 
-    public static void filledCircle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float z, final float radius, final float degStart, final float degEnd, final int c) {
+    public static void filledCircle(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float z, final float radius, final float degStart, final float degEnd, final int c) {
         final VertexBufferBuilder vertexBufferBuilder = multiDrawBatchDataHolder.getVertexBufferBuilder(DrawBatches.COLOR_TRIANGLE_FAN);
 
         vertexBufferBuilder.writeVector3f(positionMatrix, x, y, z).writeColor(c).endVertex();
@@ -211,19 +211,19 @@ public final class Primitives {
         vertexBufferBuilder.endConnectedPrimitive();
     }
 
-    public static void outlinedCircle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float radius, final float w, final int c) {
+    public static void outlinedCircle(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float radius, final float w, final int c) {
         outlinedCircle(positionMatrix, multiDrawBatchDataHolder, x, y, 0F, radius, w, 0, 360, c);
     }
 
-    public static void outlinedCircle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float z, final float radius, final float w, final int c) {
+    public static void outlinedCircle(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float z, final float radius, final float w, final int c) {
         outlinedCircle(positionMatrix, multiDrawBatchDataHolder, x, y, z, radius, w, 0, 360, c);
     }
 
-    public static void outlinedCircle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float radius, final float w, final float degStart, final float degEnd, final int c) {
+    public static void outlinedCircle(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float radius, final float w, final float degStart, final float degEnd, final int c) {
         outlinedCircle(positionMatrix, multiDrawBatchDataHolder, x, y, 0F, radius, w, degStart, degEnd, c);
     }
 
-    public static void outlinedCircle(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float z, final float radius, final float w, final float degStart, final float degEnd, final int c) {
+    public static void outlinedCircle(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x, final float y, final float z, final float radius, final float w, final float degStart, final float degEnd, final int c) {
         final VertexBufferBuilder vertexBufferBuilder = multiDrawBatchDataHolder.getVertexBufferBuilder(DrawBatches.COLOR_TRIANGLE_STRIP);
 
         _outlinedCircle(positionMatrix, vertexBufferBuilder, x, y, z, radius, w, degStart, degEnd, c);
@@ -235,7 +235,7 @@ public final class Primitives {
      * (x1, y1, c) ----- (x2, y2, c)
      * </pre>
      */
-    public static void rectLine(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float x2, final float y2, final float w, final int c) {
+    public static void rectLine(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float x2, final float y2, final float w, final int c) {
         rectLine(positionMatrix, multiDrawBatchDataHolder, x1, y1, x2, y2, w, c, c);
     }
 
@@ -244,7 +244,7 @@ public final class Primitives {
      * (x1, y1, c1) ----- (x2, y2, c2)
      * </pre>
      */
-    public static void rectLine(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float x2, final float y2, final float w, final int c1, final int c2) {
+    public static void rectLine(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float x2, final float y2, final float w, final int c1, final int c2) {
         final float angle = MathUtil.PI - Math.atan2(y2 - y1, x2 - x1);
         final float xOffset = Math.sin(angle) * w / 2F;
         final float yOffset = -Math.cos(angle) * w / 2F;
@@ -257,7 +257,7 @@ public final class Primitives {
      * (x1, y1, c) ----- (x2, y2, c)
      * </pre>
      */
-    public static void glLine(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float x2, final float y2, final int c) {
+    public static void glLine(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float x2, final float y2, final int c) {
         glLine(positionMatrix, multiDrawBatchDataHolder, x1, y1, 0F, x2, y2, 0F, c, c);
     }
 
@@ -266,7 +266,7 @@ public final class Primitives {
      * (x1, y1, z1, c) ----- (x2, y2, z2, c)
      * </pre>
      */
-    public static void glLine(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float z1, final float x2, final float y2, final float z2, final int c) {
+    public static void glLine(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float z1, final float x2, final float y2, final float z2, final int c) {
         glLine(positionMatrix, multiDrawBatchDataHolder, x1, y1, z1, x2, y2, z2, c, c);
     }
 
@@ -275,7 +275,7 @@ public final class Primitives {
      * (x1, y1, c1) ----- (x2, y2, c2)
      * </pre>
      */
-    public static void glLine(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float x2, final float y2, final int c1, final int c2) {
+    public static void glLine(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float x2, final float y2, final int c1, final int c2) {
         glLine(positionMatrix, multiDrawBatchDataHolder, x1, y1, 0F, x2, y2, 0F, c1, c2);
     }
 
@@ -284,7 +284,7 @@ public final class Primitives {
      * (x1, y1, z1, c1) ----- (x2, y2, z2, c2)
      * </pre>
      */
-    public static void glLine(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float z1, final float x2, final float y2, final float z2, final int c1, final int c2) {
+    public static void glLine(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float z1, final float x2, final float y2, final float z2, final int c1, final int c2) {
         final VertexBufferBuilder vertexBufferBuilder = multiDrawBatchDataHolder.getVertexBufferBuilder(DrawBatches.COLOR_GL_LINE);
 
         vertexBufferBuilder.writeVector3f(positionMatrix, x1, y1, z1).writeColor(c1).endVertex();
@@ -296,7 +296,7 @@ public final class Primitives {
      * (x1, y1, c) ----- (x2, y2, c)
      * </pre>
      */
-    public static void line(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float x2, final float y2, final float width, final int c) {
+    public static void line(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float x2, final float y2, final float width, final int c) {
         line(positionMatrix, multiDrawBatchDataHolder, x1, y1, 0F, x2, y2, 0F, width, c, c);
     }
 
@@ -305,7 +305,7 @@ public final class Primitives {
      * (x1, y1, z1, c) ----- (x2, y2, z2, c)
      * </pre>
      */
-    public static void line(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float z1, final float x2, final float y2, final float z2, final float width, final int c) {
+    public static void line(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float z1, final float x2, final float y2, final float z2, final float width, final int c) {
         line(positionMatrix, multiDrawBatchDataHolder, x1, y1, z1, x2, y2, z2, width, c, c);
     }
 
@@ -314,7 +314,7 @@ public final class Primitives {
      * (x1, y1, c1) ----- (x2, y2, c2)
      * </pre>
      */
-    public static void line(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float x2, final float y2, final float width, final int c1, final int c2) {
+    public static void line(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float x2, final float y2, final float width, final int c1, final int c2) {
         line(positionMatrix, multiDrawBatchDataHolder, x1, y1, 0F, x2, y2, 0F, width, c1, c2);
     }
 
@@ -323,18 +323,18 @@ public final class Primitives {
      * (x1, y1, z1, c1) ----- (x2, y2, z2, c2)
      * </pre>
      */
-    public static void line(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float z1, final float x2, final float y2, final float z2, final float width, final int c1, final int c2) {
+    public static void line(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final float x1, final float y1, final float z1, final float x2, final float y2, final float z2, final float width, final int c1, final int c2) {
         final VertexBufferBuilder vertexBufferBuilder = multiDrawBatchDataHolder.getVertexBufferBuilder(DrawBatches.COLOR_LINE);
 
         vertexBufferBuilder.writeVector3f(positionMatrix, x1, y1, z1).writeColor(c1).writeFloat(width).endVertex();
         vertexBufferBuilder.writeVector3f(positionMatrix, x2, y2, z2).writeColor(c2).writeFloat(width).endVertex();
     }
 
-    public static void _filledCircle(final Matrix4f positionMatrix, final VertexBufferBuilder vertexBufferBuilder, final float x, final float y, final float z, final float radius, final float degFrom, final float degTo, final int c) {
+    public static void _filledCircle(final Matrix4fc positionMatrix, final VertexBufferBuilder vertexBufferBuilder, final float x, final float y, final float z, final float radius, final float degFrom, final float degTo, final int c) {
         _circle(degFrom, degTo, (xc, yc) -> vertexBufferBuilder.writeVector3f(positionMatrix, x + xc * radius, y + yc * radius, z).writeColor(c).endVertex());
     }
 
-    public static void _outlinedCircle(final Matrix4f positionMatrix, final VertexBufferBuilder vertexBufferBuilder, final float x, final float y, final float z, final float radius, final float w, final float degFrom, final float degTo, final int c) {
+    public static void _outlinedCircle(final Matrix4fc positionMatrix, final VertexBufferBuilder vertexBufferBuilder, final float x, final float y, final float z, final float radius, final float w, final float degFrom, final float degTo, final int c) {
         final float innerRadius = radius - w / 2F;
         final float outerRadius = radius + w / 2F;
         _circle(degFrom, degTo, (xc, yc) -> {

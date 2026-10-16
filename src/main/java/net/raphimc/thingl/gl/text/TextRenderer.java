@@ -37,7 +37,7 @@ import net.raphimc.thingl.text.shaping.ShapedTextSegment;
 import net.raphimc.thingl.text.shaping.TextShaper;
 import net.raphimc.thingl.util.ArrayCache;
 import net.raphimc.thingl.util.rectpack.Slot;
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL30C;
 import org.lwjgl.opengl.GL33C;
@@ -77,21 +77,21 @@ public abstract class TextRenderer {
         this.glyphRenderMode = glyphRenderMode;
     }
 
-    public void renderTextBlock(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextBlock textBlock, final float x, float y, final float z) {
+    public void renderTextBlock(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextBlock textBlock, final float x, float y, final float z) {
         for (ShapedTextLine textLine : textBlock.lines()) {
             this.renderTextLine(positionMatrix, multiDrawBatchDataHolder, textLine, x, y, z);
             y += textLine.logicalBounds().lengthY();
         }
     }
 
-    public void renderTextLine(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextLine textLine, float x, final float y, final float z) {
+    public void renderTextLine(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextLine textLine, float x, final float y, final float z) {
         for (ShapedTextRun textRun : textLine.runs()) {
             this.renderTextRun(positionMatrix, multiDrawBatchDataHolder, textRun, x, y, z, textLine.runs().getFirst().font());
             x += textRun.logicalBounds().lengthX();
         }
     }
 
-    public void renderTextRun(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextRun textRun, final float x, final float y, final float z) {
+    public void renderTextRun(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextRun textRun, final float x, final float y, final float z) {
         this.renderTextRun(positionMatrix, multiDrawBatchDataHolder, textRun, x, y, z, textRun.font());
     }
 
@@ -130,7 +130,7 @@ public abstract class TextRenderer {
         return this.glyphRenderMode;
     }
 
-    protected void renderTextRun(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextRun textRun, final float x, final float y, final float z, final FontInstance decorationFont) {
+    protected void renderTextRun(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final ShapedTextRun textRun, final float x, final float y, final float z, final FontInstance decorationFont) {
         final FontInstance font = textRun.font();
         for (ShapedTextSegment textSegment : textRun.segments()) {
             if (textSegment.glyphs().isEmpty()) {
@@ -159,9 +159,9 @@ public abstract class TextRenderer {
         }
     }
 
-    protected abstract void renderTextSegment(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final FontInstance font, final ShapedTextSegment textSegment, final float x, final float y, final float z);
+    protected abstract void renderTextSegment(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final FontInstance font, final ShapedTextSegment textSegment, final float x, final float y, final float z);
 
-    protected void renderTextSegment(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final FontInstance font, final ShapedTextSegment textSegment, final float x, final float y, final float z, final int textDataIndex) {
+    protected void renderTextSegment(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final FontInstance font, final ShapedTextSegment textSegment, final float x, final float y, final float z, final int textDataIndex) {
         final VertexBufferBuilder vertexBufferBuilder = multiDrawBatchDataHolder.getVertexBufferBuilder(this.drawBatch);
         final ArrayCache<AtlasGlyph> atlasGlyphs = this.getAtlasGlyphs(font);
         for (TextShaper.Glyph shapedGlyph : textSegment.glyphs()) {
@@ -172,7 +172,7 @@ public abstract class TextRenderer {
         }
     }
 
-    protected void renderTextDecorations(final Matrix4f positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final FontInstance font, final ShapedTextSegment textSegment, final float x, final float y, final float z) {
+    protected void renderTextDecorations(final Matrix4fc positionMatrix, final MultiDrawBatchDataHolder multiDrawBatchDataHolder, final FontInstance font, final ShapedTextSegment textSegment, final float x, final float y, final float z) {
         final TextStyle style = textSegment.style();
         if (style.isUnderline()) {
             final float lineY = y + font.getUnderlinePosition();
@@ -186,7 +186,7 @@ public abstract class TextRenderer {
         }
     }
 
-    private void renderGlyph(final Matrix4f positionMatrix, final VertexBufferBuilder vertexBufferBuilder, final AtlasGlyph glyph, final float x, final float y, final float z, final TextStyle textStyle, final int textDataIndex) {
+    private void renderGlyph(final Matrix4fc positionMatrix, final VertexBufferBuilder vertexBufferBuilder, final AtlasGlyph glyph, final float x, final float y, final float z, final TextStyle textStyle, final int textDataIndex) {
         final float x1 = x + glyph.xOffset();
         final float x2 = x1 + glyph.width();
         final float y1 = y + glyph.yOffset();

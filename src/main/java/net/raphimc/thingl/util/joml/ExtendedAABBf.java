@@ -19,14 +19,15 @@ package net.raphimc.thingl.util.joml;
 
 import org.joml.Vector3fc;
 import org.joml.primitives.AABBf;
+import org.joml.primitives.AABBfc;
 
 public class ExtendedAABBf extends AABBf {
 
     public ExtendedAABBf() {
     }
 
-    public ExtendedAABBf(final AABBf source) {
-        super(source);
+    public ExtendedAABBf(final AABBfc source) {
+        super(source.minX(), source.minY(), source.minZ(), source.maxX(), source.maxY(), source.maxZ());
     }
 
     public ExtendedAABBf(final Vector3fc min, final Vector3fc max) {

@@ -26,13 +26,13 @@ import net.raphimc.thingl.rendering.DrawBatch;
 import net.raphimc.thingl.rendering.DrawBatches;
 import net.raphimc.thingl.rendering.bufferbuilder.impl.VertexBufferBuilder;
 import net.raphimc.thingl.util.CacheUtil;
-import org.joml.Matrix4f;
-import org.joml.Vector3d;
-import org.joml.Vector3f;
-import org.joml.Vector3i;
-import org.joml.primitives.AABBd;
-import org.joml.primitives.AABBf;
-import org.joml.primitives.AABBi;
+import org.joml.Matrix4fc;
+import org.joml.Vector3dc;
+import org.joml.Vector3fc;
+import org.joml.Vector3ic;
+import org.joml.primitives.AABBdc;
+import org.joml.primitives.AABBfc;
+import org.joml.primitives.AABBic;
 import org.lwjgl.opengl.GL32C;
 
 import java.util.function.IntFunction;
@@ -59,35 +59,35 @@ public class Renderer3D extends Renderer {
         .prependCleanupAction(() -> ThinGL.glStateStack().popDepthMask())
         .build());
 
-    public void filledBox(final Matrix4f positionMatrix, final AABBd aabb, final Color color) {
-        this.filledBox(positionMatrix, (float) aabb.minX, (float) aabb.minY, (float) aabb.minZ, (float) aabb.maxX, (float) aabb.maxY, (float) aabb.maxZ, color);
+    public void filledBox(final Matrix4fc positionMatrix, final AABBdc aabb, final Color color) {
+        this.filledBox(positionMatrix, (float) aabb.minX(), (float) aabb.minY(), (float) aabb.minZ(), (float) aabb.maxX(), (float) aabb.maxY(), (float) aabb.maxZ(), color);
     }
 
-    public void filledBox(final Matrix4f positionMatrix, final AABBf aabb, final Color color) {
-        this.filledBox(positionMatrix, aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, color);
+    public void filledBox(final Matrix4fc positionMatrix, final AABBfc aabb, final Color color) {
+        this.filledBox(positionMatrix, aabb.minX(), aabb.minY(), aabb.minZ(), aabb.maxX(), aabb.maxY(), aabb.maxZ(), color);
     }
 
-    public void filledBox(final Matrix4f positionMatrix, final AABBi aabb, final Color color) {
-        this.filledBox(positionMatrix, aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, color);
+    public void filledBox(final Matrix4fc positionMatrix, final AABBic aabb, final Color color) {
+        this.filledBox(positionMatrix, aabb.minX(), aabb.minY(), aabb.minZ(), aabb.maxX(), aabb.maxY(), aabb.maxZ(), color);
     }
 
-    public void filledBox(final Matrix4f positionMatrix, final float minX, final float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final Color color) {
+    public void filledBox(final Matrix4fc positionMatrix, final float minX, final float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final Color color) {
         this.filledBox(positionMatrix, minX, minY, minZ, maxX, maxY, maxZ, color, (byte) 0);
     }
 
-    public void filledBox(final Matrix4f positionMatrix, final AABBd aabb, final Color color, final byte excludedFaces) {
-        this.filledBox(positionMatrix, (float) aabb.minX, (float) aabb.minY, (float) aabb.minZ, (float) aabb.maxX, (float) aabb.maxY, (float) aabb.maxZ, color, excludedFaces);
+    public void filledBox(final Matrix4fc positionMatrix, final AABBdc aabb, final Color color, final byte excludedFaces) {
+        this.filledBox(positionMatrix, (float) aabb.minX(), (float) aabb.minY(), (float) aabb.minZ(), (float) aabb.maxX(), (float) aabb.maxY(), (float) aabb.maxZ(), color, excludedFaces);
     }
 
-    public void filledBox(final Matrix4f positionMatrix, final AABBf aabb, final Color color, final byte excludedFaces) {
-        this.filledBox(positionMatrix, aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, color, excludedFaces);
+    public void filledBox(final Matrix4fc positionMatrix, final AABBfc aabb, final Color color, final byte excludedFaces) {
+        this.filledBox(positionMatrix, aabb.minX(), aabb.minY(), aabb.minZ(), aabb.maxX(), aabb.maxY(), aabb.maxZ(), color, excludedFaces);
     }
 
-    public void filledBox(final Matrix4f positionMatrix, final AABBi aabb, final Color color, final byte excludedFaces) {
-        this.filledBox(positionMatrix, aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, color, excludedFaces);
+    public void filledBox(final Matrix4fc positionMatrix, final AABBic aabb, final Color color, final byte excludedFaces) {
+        this.filledBox(positionMatrix, aabb.minX(), aabb.minY(), aabb.minZ(), aabb.maxX(), aabb.maxY(), aabb.maxZ(), color, excludedFaces);
     }
 
-    public void filledBox(final Matrix4f positionMatrix, final float minX, final float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final Color color, final byte excludedFaces) {
+    public void filledBox(final Matrix4fc positionMatrix, final float minX, final float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final Color color, final byte excludedFaces) {
         if (excludedFaces == ALL_FACES) {
             return;
         }
@@ -115,35 +115,35 @@ public class Renderer3D extends Renderer {
         this.drawIfNotBuffering();
     }
 
-    public void outlinedBox(final Matrix4f positionMatrix, final AABBd aabb, final float lineWidth, final Color color) {
-        this.outlinedBox(positionMatrix, (float) aabb.minX, (float) aabb.minY, (float) aabb.minZ, (float) aabb.maxX, (float) aabb.maxY, (float) aabb.maxZ, lineWidth, color);
+    public void outlinedBox(final Matrix4fc positionMatrix, final AABBdc aabb, final float lineWidth, final Color color) {
+        this.outlinedBox(positionMatrix, (float) aabb.minX(), (float) aabb.minY(), (float) aabb.minZ(), (float) aabb.maxX(), (float) aabb.maxY(), (float) aabb.maxZ(), lineWidth, color);
     }
 
-    public void outlinedBox(final Matrix4f positionMatrix, final AABBf aabb, final float lineWidth, final Color color) {
-        this.outlinedBox(positionMatrix, aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, lineWidth, color);
+    public void outlinedBox(final Matrix4fc positionMatrix, final AABBfc aabb, final float lineWidth, final Color color) {
+        this.outlinedBox(positionMatrix, aabb.minX(), aabb.minY(), aabb.minZ(), aabb.maxX(), aabb.maxY(), aabb.maxZ(), lineWidth, color);
     }
 
-    public void outlinedBox(final Matrix4f positionMatrix, final AABBi aabb, final float lineWidth, final Color color) {
-        this.outlinedBox(positionMatrix, aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, lineWidth, color);
+    public void outlinedBox(final Matrix4fc positionMatrix, final AABBic aabb, final float lineWidth, final Color color) {
+        this.outlinedBox(positionMatrix, aabb.minX(), aabb.minY(), aabb.minZ(), aabb.maxX(), aabb.maxY(), aabb.maxZ(), lineWidth, color);
     }
 
-    public void outlinedBox(final Matrix4f positionMatrix, final float minX, final float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final float lineWidth, final Color color) {
+    public void outlinedBox(final Matrix4fc positionMatrix, final float minX, final float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final float lineWidth, final Color color) {
         this.outlinedBox(positionMatrix, minX, minY, minZ, maxX, maxY, maxZ, lineWidth, color, (byte) 0);
     }
 
-    public void outlinedBox(final Matrix4f positionMatrix, final AABBd aabb, final float lineWidth, final Color color, final byte excludedFaces) {
-        this.outlinedBox(positionMatrix, (float) aabb.minX, (float) aabb.minY, (float) aabb.minZ, (float) aabb.maxX, (float) aabb.maxY, (float) aabb.maxZ, lineWidth, color, excludedFaces);
+    public void outlinedBox(final Matrix4fc positionMatrix, final AABBdc aabb, final float lineWidth, final Color color, final byte excludedFaces) {
+        this.outlinedBox(positionMatrix, (float) aabb.minX(), (float) aabb.minY(), (float) aabb.minZ(), (float) aabb.maxX(), (float) aabb.maxY(), (float) aabb.maxZ(), lineWidth, color, excludedFaces);
     }
 
-    public void outlinedBox(final Matrix4f positionMatrix, final AABBf aabb, final float lineWidth, final Color color, final byte excludedFaces) {
-        this.outlinedBox(positionMatrix, aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, lineWidth, color, excludedFaces);
+    public void outlinedBox(final Matrix4fc positionMatrix, final AABBfc aabb, final float lineWidth, final Color color, final byte excludedFaces) {
+        this.outlinedBox(positionMatrix, aabb.minX(), aabb.minY(), aabb.minZ(), aabb.maxX(), aabb.maxY(), aabb.maxZ(), lineWidth, color, excludedFaces);
     }
 
-    public void outlinedBox(final Matrix4f positionMatrix, final AABBi aabb, final float lineWidth, final Color color, final byte excludedFaces) {
-        this.outlinedBox(positionMatrix, aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, lineWidth, color, excludedFaces);
+    public void outlinedBox(final Matrix4fc positionMatrix, final AABBic aabb, final float lineWidth, final Color color, final byte excludedFaces) {
+        this.outlinedBox(positionMatrix, aabb.minX(), aabb.minY(), aabb.minZ(), aabb.maxX(), aabb.maxY(), aabb.maxZ(), lineWidth, color, excludedFaces);
     }
 
-    public void outlinedBox(final Matrix4f positionMatrix, final float minX, final float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final float lineWidth, final Color color, final byte excludedFaces) {
+    public void outlinedBox(final Matrix4fc positionMatrix, final float minX, final float minY, final float minZ, final float maxX, final float maxY, final float maxZ, final float lineWidth, final Color color, final byte excludedFaces) {
         if (excludedFaces == ALL_FACES) {
             return;
         }
@@ -197,36 +197,36 @@ public class Renderer3D extends Renderer {
         this.drawIfNotBuffering();
     }
 
-    public void line(final Matrix4f positionMatrix, final Vector3d start, final Vector3d end, final float width, final Color color) {
-        this.line(positionMatrix, (float) start.x, (float) start.y, (float) start.z, (float) end.x, (float) end.y, (float) end.z, width, color);
+    public void line(final Matrix4fc positionMatrix, final Vector3dc start, final Vector3dc end, final float width, final Color color) {
+        this.line(positionMatrix, (float) start.x(), (float) start.y(), (float) start.z(), (float) end.x(), (float) end.y(), (float) end.z(), width, color);
     }
 
-    public void line(final Matrix4f positionMatrix, final Vector3f start, final Vector3f end, final float width, final Color color) {
-        this.line(positionMatrix, start.x, start.y, start.z, end.x, end.y, end.z, width, color);
+    public void line(final Matrix4fc positionMatrix, final Vector3fc start, final Vector3fc end, final float width, final Color color) {
+        this.line(positionMatrix, start.x(), start.y(), start.z(), end.x(), end.y(), end.z(), width, color);
     }
 
-    public void line(final Matrix4f positionMatrix, final Vector3i start, final Vector3i end, final float width, final Color color) {
-        this.line(positionMatrix, start.x, start.y, start.z, end.x, end.y, end.z, width, color);
+    public void line(final Matrix4fc positionMatrix, final Vector3ic start, final Vector3ic end, final float width, final Color color) {
+        this.line(positionMatrix, start.x(), start.y(), start.z(), end.x(), end.y(), end.z(), width, color);
     }
 
-    public void line(final Matrix4f positionMatrix, final float x1, final float y1, final float z1, final float x2, final float y2, final float z2, final float width, final Color color) {
+    public void line(final Matrix4fc positionMatrix, final float x1, final float y1, final float z1, final float x2, final float y2, final float z2, final float width, final Color color) {
         Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, x1, y1, z1, x2, y2, z2, width, color.toABGR());
         this.drawIfNotBuffering();
     }
 
-    public void line(final Matrix4f positionMatrix, final Vector3d start, final Vector3d end, final float width, final Color startColor, final Color endColor) {
-        this.line(positionMatrix, (float) start.x, (float) start.y, (float) start.z, (float) end.x, (float) end.y, (float) end.z, width, startColor, endColor);
+    public void line(final Matrix4fc positionMatrix, final Vector3dc start, final Vector3dc end, final float width, final Color startColor, final Color endColor) {
+        this.line(positionMatrix, (float) start.x(), (float) start.y(), (float) start.z(), (float) end.x(), (float) end.y(), (float) end.z(), width, startColor, endColor);
     }
 
-    public void line(final Matrix4f positionMatrix, final Vector3f start, final Vector3f end, final float width, final Color startColor, final Color endColor) {
-        this.line(positionMatrix, start.x, start.y, start.z, end.x, end.y, end.z, width, startColor, endColor);
+    public void line(final Matrix4fc positionMatrix, final Vector3fc start, final Vector3fc end, final float width, final Color startColor, final Color endColor) {
+        this.line(positionMatrix, start.x(), start.y(), start.z(), end.x(), end.y(), end.z(), width, startColor, endColor);
     }
 
-    public void line(final Matrix4f positionMatrix, final Vector3i start, final Vector3i end, final float width, final Color startColor, final Color endColor) {
-        this.line(positionMatrix, start.x, start.y, start.z, end.x, end.y, end.z, width, startColor, endColor);
+    public void line(final Matrix4fc positionMatrix, final Vector3ic start, final Vector3ic end, final float width, final Color startColor, final Color endColor) {
+        this.line(positionMatrix, start.x(), start.y(), start.z(), end.x(), end.y(), end.z(), width, startColor, endColor);
     }
 
-    public void line(final Matrix4f positionMatrix, final float x1, final float y1, final float z1, final float x2, final float y2, final float z2, final float width, final Color startColor, final Color endColor) {
+    public void line(final Matrix4fc positionMatrix, final float x1, final float y1, final float z1, final float x2, final float y2, final float z2, final float width, final Color startColor, final Color endColor) {
         Primitives.line(positionMatrix, this.targetMultiDrawBatchDataHolder, x1, y1, z1, x2, y2, z2, width, startColor.toABGR(), endColor.toABGR());
         this.drawIfNotBuffering();
     }

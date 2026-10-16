@@ -27,7 +27,7 @@ import net.raphimc.thingl.rendering.DrawMode;
 import net.raphimc.thingl.rendering.command.DrawCommand;
 import net.raphimc.thingl.rendering.command.impl.DrawArraysCommand;
 import net.raphimc.thingl.rendering.command.impl.DrawElementsCommand;
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 
 import java.util.List;
 import java.util.Map;
@@ -37,7 +37,7 @@ public final class DrawBatchRenderer {
     private DrawBatchRenderer() {
     }
 
-    public static void render(final UploadedDrawBatchData uploadedDrawBatchData, final Matrix4f modelMatrix) {
+    public static void render(final UploadedDrawBatchData uploadedDrawBatchData, final Matrix4fc modelMatrix) {
         final DrawBatch drawBatch = uploadedDrawBatchData.drawBatch();
         final DrawMode drawMode = drawBatch.drawMode();
         final VertexArray vertexArray = uploadedDrawBatchData.vertexArray();
